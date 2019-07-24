@@ -1,0 +1,106 @@
+.sidebar .dropdown-item{
+    color: #fff;
+    font-size: 0.85rem;
+}
+.dropdown-item:hover, .dropdown-item:focus{
+    color: #16181b;
+}
+
+@media only screen and (min-width: 768px){
+    .sidebar .nav-item .nav-link{
+        padding: 0.75rem 1rem;
+    }
+}
+
+.content-title{
+    display: flex;
+    flex-wrap: wrap;
+    padding: .5rem 1rem;
+    margin-bottom: 1rem;
+    list-style: none;
+    background-color: #e9ecef;
+    border-radius: .25rem;
+    font-size: 20px;
+    text-transform: uppercase;
+}
+
+/* Apply css on any version of Firefox*/
+@-moz-document url-prefix() { 
+    .navbar-nav .nav-item.dropdown .dropdown-toggle::after{
+        margin-top: -20px;
+    }
+}
+.custom-select {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+}
+.dataTables_filter label{ 
+    padding-left: 5px;
+}
+.md-tabs .nav-item.open .nav-link, .md-tabs .nav-link.active {
+    background-color: rgba(0,0,0,.2);
+    color: #fff;
+    transition: all 1s;
+}
+.workingtime{
+    .col-day{        
+        float:left;
+        width: 14.22%;
+        min-width: 100px;
+        max-width: 140px;
+        text-align:center;
+        label{ 
+            margin-top: 10px; 
+            margin-bottom: 0px;
+        }
+    }
+}
+.btn-day.active{
+    background-color: #59a769;
+    border-color: #59a769;
+    color: #fff;
+}
+.btn-day{
+    background-color: #cdcdcd;
+    border-color: #cdcdcd;
+    color: #fff;
+}
+form.sb-form .form-inline{
+    label{
+        text-align: left;
+        align-items: left;
+        justify-content: left;
+    }
+    .form-control{
+        width:100%;
+    }
+    .input-group .form-control{
+        width: auto;
+    }
+}
+.tableFilter .dt-buttons,
+.tableFilter .dataTables_filter{    
+    float:right !important;    
+    padding-left:5px;
+}
+td.details-control {
+    background: url('../images/details_open.png') no-repeat center center;
+    cursor: pointer;
+}
+tr.shown td.details-control {
+    background: url('../images/details_close.png') no-repeat center center;
+}
+form{
+    label.required{
+        font-weight: bold;
+    }
+    label.required::after{
+        content: "*";
+        color: red;
+        padding-left: 4px;
+    }
+}
+.nowrap{
+    white-space: nowrap;
+}
