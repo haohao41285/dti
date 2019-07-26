@@ -30,9 +30,9 @@ $navs = [
         ['text' => 'Users', 'link'=> 'user/list'],
         ['text' => 'Roles', 'link'=> 'user/roles'],        
         ['text' => 'Roles Permissions', 'link'=> 'user/rolepermission'],        
-        ['text' => 'Agent Licenses', 'link'=> 'user/agentlicense'],        
     ]],    
-    ['text' => 'Settings', 'icon'=>'fas fa-cog', 'link' => 'settings'],
+    ['text' => 'Settings', 'icon'=>'fas fa-cog', 'link' => 'setting'],
+    ['text' => 'Recent Logs', 'icon'=>'fas fa-list-alt', 'link' => 'recentlog'],
 ];    
 $request_url = request()->segment(1);
 $request_sub_url = request()->segment(2);

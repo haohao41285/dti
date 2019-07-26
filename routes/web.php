@@ -58,11 +58,15 @@ Route::group(['middleware' => ['auth']], function () {
          Route::get('theme/add', 'ThemeController@add')->name('addTheme');
          Route::get('theme/edit', 'ThemeController@edit')->name('editTheme');
          Route::get('licenses', 'LicenseController@index')->name('listLicenses');
-         Route::get('license/generate', 'LicenseController@add')->name('generateLicenses');
+         Route::get('license/generate', 'LicenseController@generate')->name('generateLicenses');
     });
     
     Route::group(['prefix'=>'tools'],function(){
         Route::get('clonewebsite', 'ItToolsController@cloneWebsite')->name('cloneWebsite');
         Route::get('updatewebsite', 'ItToolsController@updateWebsite')->name('updateWebsite');
     });
+    
+    Route::get('recentlog', 'RecentLogController@index')->name('recentlog');
+    Route::get('setting', 'SettingController@index')->name('setting');
+    
 });

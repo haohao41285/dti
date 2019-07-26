@@ -5,13 +5,13 @@
 @section('content')
 <form class="sb-form" action="edit.php">
     <div class="form-group">
-    <div class="col-md-7 form-inline">
-        <label class="col-sm-4 required">First Name</label>
-        <div class="col-sm-8">            
-             <input type='text' value=""  class="form-control form-control-sm" /> 
-        </div>
-    </div>    
-</div>
+        <div class="col-md-7 form-inline">
+            <label class="col-sm-4 required">First Name</label>
+            <div class="col-sm-8">            
+                 <input type='text' value=""  class="form-control form-control-sm" /> 
+            </div>
+        </div>    
+    </div>
 <div class="form-group">
     <div class="col-md-7 form-inline">
          <label class="col-sm-4 required">Last Name</label>
@@ -64,7 +64,7 @@
     <div class="col-md-7 form-inline">
         <label class="col-md-4">&nbsp;</label>
         <div class="col-md-8">
-            <input class="btn btn-sm btn-primary" value="Save changes" type="submit">   
+            <input class="btn btn-sm btn-primary" value="Submit" type="submit">   
             <input class="btn btn-sm btn-secondary" value="Cancel" type="button">   
         </div>
     </div>    

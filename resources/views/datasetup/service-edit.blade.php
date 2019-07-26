@@ -1,6 +1,6 @@
 @extends('layouts.app')
 @section('content-title')
-    Create new Service
+    Edit Service
 @endsection
 @section('content')
 <form class="sb-form" action="servicedetails.php">
@@ -48,10 +48,40 @@
             <div class="form-group form-inline">
                 <label class="col-sm-4">Status</label>
                 <div class="col-sm-8">
-                   <input type="checkbox" class="js-switch" checked="checked" />
+                   <div class="custom-control custom-radio custom-control-inline">
+                          <input type="radio" class="custom-control-input" id="customRadio" name="example" value="customEx" checked="checked">
+                        <label class="custom-control-label" for="customRadio">Active</label>
+                      </div>
+                      <div class="custom-control custom-radio custom-control-inline">
+                        <input type="radio" class="custom-control-input" id="customRadio2" name="example" value="customEx">
+                        <label class="custom-control-label" for="customRadio2">Inactive</label>
+                      </div> 
                 </div>
             </div>
-           
+           <div class="form-group form-inline">
+                <h5 class="col-sm-12 margin-0">List selected service details</h5>
+                <div class="col-sm-12">
+                <table class="table table-sm display" width="100%">
+                    <thead>
+                        <tr>
+                            <th class="text-left">Service Detail</th>
+                            <th class="text-right">Price</th>
+                            <th class="text-center">Action</th>
+                        </tr>
+                    </thead>
+                      <tbody>
+                        
+                        <tr>
+                            <td>Service Detail 1</td>
+                            <td class="text-right">$25</td>
+                            <td class="text-center">
+                                <a class="btn btn-sm btn-secondary" href="#"><i class="fas fa-trash"></i></a>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                </div>    
+            </div>
         </div>
         <div class="col-sm-12 col-md-6">
             <table class="table table-sm display" id="dataTable" width="100%">
@@ -84,6 +114,8 @@
 
     </div>
 </form>    
+@endsection    
+@push('scripts')
 <script type="text/javascript">
  $(document).ready(function() {
     var table = $('#dataTable').DataTable({
@@ -104,4 +136,4 @@
     } );
 });
 </script>
-@endsection    
+@endpush

@@ -11,6 +11,7 @@
                 <th>Price($)</th>
                 <th>Description</th>
                 <th width="80">Status</th>
+                <th>Last Update</th>
                 <th width="80">Action</th>
             </tr>
         </thead>
@@ -21,8 +22,9 @@
                 <td class="text-right">69</td>
                 <td>Payroll</td>              
                 <td class="text-center"><input type="checkbox" class="js-switch" checked="checked" /></td>
+                <td>20/11/2019 10:11 AM by admin</td>
                 <td class="text-center nowrap">
-                    <a class="btn btn-sm btn-secondary" href="datasetup/service-edit.php"><i class="fas fa-edit"></i></a>
+                    <a class="btn btn-sm btn-secondary" href="{{ route('editService') }}"><i class="fas fa-edit"></i></a>
                     <a class="btn btn-sm btn-secondary" href="#"><i class="fas fa-trash"></i></a>
                 </td>
             </tr>
@@ -34,17 +36,19 @@
 <script type="text/javascript">
  $(document).ready(function() {
     var table = $('#dataTable').DataTable({
-         buttons: [
+        buttons: [
               {
-                  text: 'Add Service',
+                  text: '<i class="fas fa-plus"></i> Add Service',
                   className: 'btn btn-sm btn-primary',
                   action: function ( e, dt, node, config ) {
-                     document.location.href = "service-add.php";
+                     document.location.href = "{{ route('addService') }}";
                   }
               },
-              { extend: 'csvHtml5', className: 'btn btn-sm btn-primary' },
-              { extend: 'pdfHtml5', className: 'btn btn-sm btn-primary'}
-          ]
+              { text : '<i class="fas fa-download"></i> Export',
+                extend: 'csvHtml5', 
+                className: 'btn btn-sm btn-primary' 
+              }
+          ]  
     });
    
 });

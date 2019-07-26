@@ -45,7 +45,14 @@
     <div class="col-md-7 form-inline">
         <label class="col-sm-4">Status</label>
         <div class="col-sm-8">
-           <input type="checkbox" class="js-switch" checked="checked" />
+           <div class="custom-control custom-radio custom-control-inline">
+                          <input type="radio" class="custom-control-input" id="customRadio" name="example" value="customEx" checked="checked">
+                        <label class="custom-control-label" for="customRadio">Active</label>
+                      </div>
+                      <div class="custom-control custom-radio custom-control-inline">
+                        <input type="radio" class="custom-control-input" id="customRadio2" name="example" value="customEx">
+                        <label class="custom-control-label" for="customRadio2">Inactive</label>
+                      </div> 
         </div>
     </div>    
 </div>

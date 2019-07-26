@@ -54,8 +54,7 @@
           },
           dom: "<'row'<'col-sm-12 col-md-6'l><'col-sm-12 col-md-6 tableFilter'Bf>><'row'<'col-sm-12'tr>><'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
           buttons: [
-              { extend: 'csvHtml5', className: 'btn btn-sm btn-primary' },
-              { extend: 'pdfHtml5', className: 'btn btn-sm btn-primary'}
+              { extend: 'csvHtml5', className: 'btn btn-sm btn-primary' , text : '<i class="fas fa-download"></i> Export'},
           ]
       } );
    }

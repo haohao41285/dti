@@ -1,29 +1,25 @@
 @extends('layouts.app')
 @section('content-title')
-    Combo Management
+    License Management
 @endsection
 @section('content')
-<h1 class="content-title">Services Management</h1>
 <div class="table-responsive">
     <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
         <thead>           
-                <th>Name</th>
-                <th>Parent Service</th>
-                <th>Price($)</th>
-                <th>Description</th>
-                <th width="80">Action</th>
+                <th>License Code</th>
+                <th>User Sale</th>
+                <th>Place Store</th>
+                <th>Status</th>
+                <th>Created Date</th>
             </tr>
         </thead>
         <tbody>
             <tr>
-                <td>Bacsic Packet</td>
-                <td></td>
-                <td class="text-right">69</td>
-                <td class="text-center">Payroll</td>               
-                <td class="text-center">
-                    <a class="btn btn-sm btn-secondary" href="datasetup/service-edit.php"><i class="fas fa-edit"></i></a>
-                    <a class="btn btn-sm btn-secondary" href="#"><i class="fas fa-trash"></i></a>
-                </td>
+                <td>5a0d3a90f102d1.23209932</td>
+                <td>(nick.name)Full Name</td>
+                <td><a href="#">Place Store 1</a></td>
+                <td class="text-center"><input type="checkbox" class="js-switch" checked="checked" /></td>     
+                <td class="text-center">11/11/2019 11:20 AM</td>
             </tr>
         </tbody>
     </table>
@@ -35,14 +31,16 @@
     var table = $('#dataTable').DataTable({
          buttons: [
               {
-                  text: 'Add New Combo',
+                  text: '<i class="fas fa-plus"></i> Generate Licenses',
                   className: 'btn btn-sm btn-primary',
                   action: function ( e, dt, node, config ) {
-                     document.location.href = "combo-add.php";
+                     document.location.href = "{{ route('generateLicenses') }}";
                   }
               },
-              { extend: 'csvHtml5', className: 'btn btn-sm btn-primary' },
-              { extend: 'pdfHtml5', className: 'btn btn-sm btn-primary'}
+              { text : '<i class="fas fa-download"></i> Export',
+                extend: 'csvHtml5', 
+                className: 'btn btn-sm btn-primary' 
+              }
           ]
     });
 });

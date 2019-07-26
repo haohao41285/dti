@@ -12,7 +12,7 @@
                     <form method="POST" action="{{ route('login') }}">
                        {{ csrf_field() }}
                        @if($errors->has('errorLogin'))                       
-                        <div class="alert alert-error">
+                        <div class="alert alert-danger">
                           <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
                           {{$errors->first('errorLogin')}}
                         </div>
