@@ -43,7 +43,7 @@ $request_sub_url = request()->segment(2);
 
   <!-- Sidebar - Brand -->
   <a class="sidebar-brand d-flex align-items-center justify-content-center" href="{{ asset('/') }}">
-      <img src="{{asset("images/logo169x46.png")}}" alt="logo">     
+      <img style="width: 100%;" src="{{asset("images/logo169x46.png")}}" alt="logo">     
   </a>
   @foreach($navs as $nav)
         @php $className = ($request_url == $nav["link"])?' active':'';  @endphp 
@@ -53,7 +53,7 @@ $request_sub_url = request()->segment(2);
                 <i class="{{ $nav['icon'] }}"></i>
                 <span>{{ $nav['text'] }}</span>
             </a>
-            <div id="collapseId{{ $loop->index }}" class="collapse{{ $className ==" active"?' show':'' }}" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
+            <div id="collapseId{{ $loop->index }}" class="collapse{{ $className ==" active"?' show':'' }}" aria-labelledby="headingTwo" data-parent="#accordionSidebar" >
                 @foreach($nav['childrens'] as $childNav)
                     @php $className = Request::is($childNav["link"])?' active':'';  @endphp 
                      <a class="dropdown-item{{ $className }}" href="{{ asset($childNav['link']) }}">{{ $childNav['text'] }}</a>
