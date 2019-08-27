@@ -68,5 +68,16 @@ Route::group(['middleware' => ['auth']], function () {
     
     Route::get('recentlog', 'RecentLogController@index')->name('recentlog');
     Route::get('setting', 'SettingController@index')->name('setting');
+
+    Route::group(['prefix'=>'user'],function(){
+        Route::get('list','UserController@index')->name('userList');
+        Route::get('user-datatable','UserController@userDataTable')->name('user-datatable');
+        Route::get('change-user-status','UserController@changeStatusUser')->name('change-user-status');
+
+        Route::get('roles','UserController@roleList')->name('role-list');
+        Route::get('role-datatable','UserController@roleDatatable')->name('role-datatable');
+        Route::get('change-status-role','UserController@changeStatusRole')->name('change-status-role');
+        Route::get('add-role','UserController@addRole')->name('add-role');
+    });
     
 });
