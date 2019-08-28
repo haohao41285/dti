@@ -3,7 +3,7 @@
 @section('content')
 <div class="container">
     <div class="row justify-content-center">
-        <div class="col-xl-10 col-lg-12 col-md-9">
+        <div class="col-xl-9 col-lg-12 col-md-9">
             <div class="card o-hidden border-0 shadow-lg my-5">
                 <div class="card-header page-title text-center">
                     <img src="{{ asset("images/logo274x29.png")}}" alt="logo"/>
@@ -18,7 +18,7 @@
                         </div>
                        @endif   
                         <div class="form-group row">
-                            <label for="user_phone" class="col-sm-4 col-form-label text-md-right">{{ __('Username') }}</label>
+                            <label for="user_phone" class="col-sm-4 col-form-label text-md-right">{{ __('Phone') }}</label>
 
                             <div class="col-md-6">
                                 <input id="user_phone" type="username" class="form-control{{ $errors->has('user_phone') ? ' is-invalid' : '' }}" name="user_phone" value="{{ old('user_phone') }}" required autofocus>

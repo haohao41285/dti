@@ -9,7 +9,19 @@
 {{ Html::favicon( 'favicon.ico' ) }}
 {{ Html::style('fontawesome-free/css/all.min.css') }}
 {{ Html::style('css/app.css') }}
+{{-- <link rel="stylesheet" href="{{ asset('plugins/toastr/toastr.min.css') }}"> --}}
 @stack('styles')
+<style>
+	/*custom */
+	table>tbody>tr>td>span.switchery>small{
+		top:-1px;
+	}
+	ul.toggled>li>div.show{
+		border-radius: 5px;
+    	padding: 10px;
+    	background: rgb(59, 97, 209);
+	}
+</style>
 {{-- Scripts --}}
 <script type="text/javascript">
     window.Laravel = {!! json_encode([

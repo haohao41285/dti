@@ -10,7 +10,7 @@ const mix = require('laravel-mix');
  | file for the application as well as bundling up all the JS files.
  |
  */
-
+mix.copy('resources/plugins', 'public/plugins');
 mix.copy('resources/images', 'public/images');
 mix.copy('resources/*.ico', 'public/');
 mix.sass('resources/scss/app.scss', 'public/css');
@@ -24,7 +24,7 @@ mix.js('resources/js/app.js', 'public/js').extract([
     'datatables.net-rowgroup-bs4','datatables.net-select-bs4',
     'datatables.net-buttons/js/buttons.colVis',
     'datatables.net-buttons/js/buttons.html5',
-    'datatables.net-buttons/js/buttons.print'
+    'datatables.net-buttons/js/buttons.print',
 ]);
 
 mix.autoload({
