@@ -34,10 +34,12 @@ Route::group(['middleware' => ['auth']], function () {
     Route::get('logout', 'Auth\LoginController@logout')->name('logout');
     
     Route::group(['prefix'=>'customer', 'namespace'=>'Customer'],function(){
+         Route::get('my-customers', 'CustomerController@listMyCustomer')->name('myCustomers');
          Route::get('customers', 'CustomerController@listCustomer')->name('customers');
          Route::get('merchants', 'CustomerController@listMerchant')->name('merchants');
          Route::get('add', 'CustomerController@addCustomer')->name('addCustomer');
          Route::get('edit', 'CustomerController@editCustomer')->name('editCustomer');
+         Route::get('customers/datatable', 'CustomerController@customersDatatable')->name('customersDatatable');
     });
     
     Route::group(['prefix'=>'marketing', 'namespace'=>'Marketing'],function(){

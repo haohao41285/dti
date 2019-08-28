@@ -22,7 +22,6 @@
         </div><!-- /.content -->
     </div><!-- /.content-wrapper -->    
     @include('layouts.partials.footer')
-
 </div><!-- ./wrapper -->
 @section('scripts')
     @include('layouts.partials.scripts')

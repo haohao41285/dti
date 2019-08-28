@@ -9,6 +9,7 @@
 {{ Html::favicon( 'favicon.ico' ) }}
 {{ Html::style('fontawesome-free/css/all.min.css') }}
 {{ Html::style('css/app.css') }}
+{{-- <link rel="stylesheet" href="{{ asset('plugins/toastr/toastr.min.css') }}"> --}}
 @stack('styles')
 <style>
 	/*custom */
