@@ -5,7 +5,7 @@ Role List
 @section('content')
 <div class="row">
 	<div class="col-md-6">
-		<h5>Role List</h5>
+		<h5><b>Role List</b></h5>
         <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
 			<thead>
 				<tr>
@@ -18,7 +18,8 @@ Role List
 			</thead>
 		</table>
 	</div>
-	<div class="col-md-5 offset-md-1" style="padding-top: 30px">
+	<div class="col-md-5 offset-md-1" style="padding-top: 0px">
+		<h5><b class="role-tip">Add Role</b></h5>
 		<div class="form-group">
 			<label for="">Role Name</label>
 			<input type="text" class="form-control form-control-sm" name="" id="gu_name">
@@ -28,7 +29,7 @@ Role List
 			<textarea class="form-control form-control-sm" rows="3" id="gu_descript" ></textarea>
 		</div>
 		<div class="form-group">
-			<button type="button" class="btn btn-sm btn-danger float-right">Cancel</button>
+			<button type="button" class="btn btn-sm btn-danger float-right cancel-role ml-2">Cancel</button>
 			<button type="button" class="btn btn-sm btn-primary float-right submit-role">Submit</button>
 		</div>
 	</div>
@@ -55,6 +56,10 @@ Role List
 	                "targets": 3,
 	                "className": "text-center",
 	            },
+	            {
+	                "targets": 4,
+	                "className": "text-center",
+	            }
             ],
           ajax:{ url:"{{route('role-datatable')}}"},
                 columns:[
@@ -78,6 +83,7 @@ Role List
 
 			var gu_id = $(this).siblings('input').attr('gu_id');
 			var gu_status = $(this).siblings('input').attr('gu_status');
+			clearView();
 
 			$.ajax({
 				url: '{{route('change-status-role')}}',
@@ -88,56 +94,71 @@ Role List
 					gu_id: gu_id
 				},
 			})
-			.done(function() {
+			.done(function(data) {
+				if(data != ""){
+					data = JSON.parse(data);
+					if(data.message != ""){
+						alert(data.message);
+					}
+				}
 				dataTable.draw();
 			})
-			.fail(function() {
-				console.log("error");
-				alert('Error!');
+			.fail(function(data) {
+				data = JSON.parse(data.responseText);
+				alert(data.message);
+				dataTable.draw();
 			});
 			
 		});
 		$('#dataTable tbody').on( 'click', 'tr', function () {
 
 	      $("#gu_name").val(dataTable.row(this).data()['gu_name']);
-	      $("#gu_descript").text(dataTable.row(this).data()['gu_descript']);
+	      $("#gu_descript").val(dataTable.row(this).data()['gu_descript']);
+	      $(".role-tip").text("Edit Role");
 	      gu_id = dataTable.row(this).data()['gu_id'];
 
 	    });
 	    $(document).on('click','.submit-role',function(){
 
-	    	var gu_descript = $("#gu_descript").text();
+	    	var gu_descript = $("#gu_descript").val();
 	    	var gu_name = $("#gu_name").val();
-	    	alert(gu_id);
 
-	    	$.ajax({
-	    		url: '{{route('add-role')}}',
-	    		type: 'GET',
-	    		dataType: 'html',
-	    		data: {
-	    			gu_descript: gu_descript,
-	    			gu_name: gu_name,
-	    			gu_id: gu_id
-	    		},
-	    	})
-	    	.done(function(data) {
-	    		console.log(data);
-	    		if(data == 0){
-	    			alert('Error!');
-	    		}else{
-	    			$("#gu_descript").text("");
-	    			$("#gu_name").val("");
-	    			gu_id = 0;
-	    			dataTable.draw();
-	    		}
-	    		console.log(data);
-	    	})
-			.fail(function(xhr, ajaxOptions, thrownError) {
-            alert('Error  !');
-            console.log(thrownError + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText);
-         });
-	    	
+	    	if(gu_descript != "" && gu_name != ""){
+	    		$.ajax({
+		    		url: '{{route('add-role')}}',
+		    		type: 'GET',
+		    		dataType: 'html',
+		    		data: {
+		    			gu_descript: gu_descript,
+		    			gu_name: gu_name,
+		    			gu_id: gu_id
+		    		},
+		    	})
+		    	.done(function(data) {
+		    		console.log(data);
+		    		if(data == 0){
+		    			alert('Error!');
+		    		}else{
+	      				clearView();
+		    			dataTable.draw();
+		    		}
+		    		console.log(data);
+		    	})
+				.fail(function(xhr, ajaxOptions, thrownError) {
+	                alert('Error!');
+	                console.log(thrownError + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText);
+	         	});
+	    	}
+	    });
+	    $(".cancel-role").click(function(){
+	    	clearView();
 	    })
+	    function clearView(){
+	    	$(".role-tip").text("Add Role");
+			$("#gu_descript").val("");
+			$("#gu_name").val("");
+			gu_id = 0;
+	    }
 	});
 </script>
 @endpush

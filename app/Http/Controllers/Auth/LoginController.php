@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 use Illuminate\Support\MessageBag;
 use Validator;
+use DB;
 
 class LoginController extends Controller
 {
@@ -55,7 +56,18 @@ class LoginController extends Controller
 
         }
          $credentials = ($request->only('user_phone', 'user_password'));
-        if (Auth::attempt($credentials)){ 
+        if (Auth::attempt($credentials)){
+
+            //GET PROMISSION
+            $user_list = DB::table('main_user')->join('main_group_user',function($join){
+                                    $join->on('main_user.user_group_id','main_group_user.gu_id');
+                                    })
+                                    ->where('user_phone',$user_phone)
+                                    ->get();
+            foreach ($user_list[0] as $key => $value) {
+                Session::put('permission_list_session',$value->gu_role_new);
+            }
+
             return redirect()->intended('/');
         } else {          
             $errors = new MessageBag(['errorLogin' => 'User Phone or Password is incorrect']);

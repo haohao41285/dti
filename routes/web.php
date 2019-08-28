@@ -70,6 +70,7 @@ Route::group(['middleware' => ['auth']], function () {
     Route::get('setting', 'SettingController@index')->name('setting');
 
     Route::group(['prefix'=>'user'],function(){
+
         Route::get('list','UserController@index')->name('userList');
         Route::get('user-datatable','UserController@userDataTable')->name('user-datatable');
         Route::get('change-user-status','UserController@changeStatusUser')->name('change-user-status');
@@ -78,6 +79,9 @@ Route::group(['middleware' => ['auth']], function () {
         Route::get('role-datatable','UserController@roleDatatable')->name('role-datatable');
         Route::get('change-status-role','UserController@changeStatusRole')->name('change-status-role');
         Route::get('add-role','UserController@addRole')->name('add-role');
+
+        Route::get('rolepermission/{id}','UserController@permission')->where(['id'=>'[0-9]+'])->name('permission');
+        Route::get('change-permission','UserController@changePermission')->name('change-permission');
     });
     
 });
