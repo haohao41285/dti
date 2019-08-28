@@ -11,10 +11,8 @@ class MainUser extends Model
 
 	public $timestamps = true;
 
-<<<<<<< HEAD
 	protected $primaryKey = 'user_id';
 		
-=======
 	protected $fillable = [
 		'user_id',
 		'user_nickname',
@@ -31,5 +29,4 @@ class MainUser extends Model
 	];
 
 	protected $guarded = [];
->>>>>>> origin/thieu
 }
