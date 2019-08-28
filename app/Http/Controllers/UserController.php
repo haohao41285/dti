@@ -98,19 +98,20 @@ class UserController extends Controller
     }
     public function roleDatatable(Request $request){
 
-        $role_list = DB::table('main_group_user')->select('gu_id','gu_name','gu_descript','gu_status');
+    	$role_list = DB::table('main_group_user')->select('gu_id','gu_name','gu_descript','gu_status');
 
-        return DataTables::of($role_list)
-                ->editColumn('gu_status',function($row){
-                    if($row->gu_status == 1) $checked='checked';
-                    else $checked="";
-                    return '<input type="checkbox" gu_id="'.$row->gu_id.'" gu_status="'.$row->gu_status.'" class="js-switch"'.$checked.'/>';
-                })
-                ->addColumn('action',function($row){
-                    return '<a class="btn btn-sm btn-secondary" href=""><i class="fas fa-plus"></i></a><a class="btn btn-sm btn-secondary role-edit" href="javascript:void(0)"><i class="fas fa-edit"></i></a>';
-                })
-                ->rawColumns(['gu_status','action'])
-                ->make(true);
+    	return DataTables::of($role_list)
+    			->editColumn('gu_status',function($row){
+    				if($row->gu_status == 1) $checked='checked';
+    	       		else $checked="";
+    				return '<input type="checkbox" gu_id="'.$row->gu_id.'" gu_status="'.$row->gu_status.'" class="js-switch"'.$checked.'/>';
+    			})
+    			->addColumn('action',function($row){
+    				return '<a class="btn btn-sm btn-secondary role-edit" href="'.route('permission',$row->gu_id).'"><i class="fas fa-edit"></i></a>';
+    	        })
+    	        ->rawColumns(['gu_status','action'])
+    	        ->make(true);
+
     }
     public function changeStatusRole(Request $request){
 
@@ -127,6 +128,7 @@ class UserController extends Controller
         }
     	else
     		$gu_status = 1;
+
 
         DB::table('main_group_user')->where('gu_id',$gu_id)->update(['gu_status'=>$gu_status]);
     }
