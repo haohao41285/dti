@@ -1,0 +1,1 @@
+ALTER TABLE `main_user` ADD `user_team` INT(11) NULL COMMENT 'main_team' AFTER `user_status`;

@@ -40,6 +40,7 @@ Route::group(['middleware' => ['auth']], function () {
          Route::get('add', 'CustomerController@addCustomer')->name('addCustomer');
          Route::get('edit', 'CustomerController@editCustomer')->name('editCustomer');
          Route::get('customers/datatable', 'CustomerController@customersDatatable')->name('customersDatatable');
+         Route::get('get-customer-detail', 'CustomerController@getCustomerDetail')->name('get-customer-detail');
     });
     
     Route::group(['prefix'=>'marketing', 'namespace'=>'Marketing'],function(){

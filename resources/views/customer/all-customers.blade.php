@@ -7,7 +7,7 @@
     <div class="form-group col-md-12 row">
         <div class="col-md-2">
             <label for="">Created date</label>
-            <input type="text" class="form-control form-control-sm">
+            <input type="text" id="created_at" class="form-control form-control-sm">
         </div>
         <div class="col-md-2">
             <label for="">City</label>
@@ -41,55 +41,15 @@
     <hr>
     <table class="table table-bordered" id="dataTableAllCustomer" width="100%" cellspacing="0">
         <thead>                
-                <th>Full Name</th>
+                <th>ID</th>
                 <th>Nail Shop</th>
-                <th>Phone</th>
-                <th>Email</th>
-                <th>Status</th>
-                <th>Date Expired</th>
+                <th>Contact Name</th>
+                <th>Business Phone</th>
+                <th>Cell Phone</th>
                 <th>Created Date</th>
                 <th>Action</th>
             </tr>
         </thead>
-        {{-- <tbody> --}}
-           {{--  <tr>                
-                <td>Jendy</td>
-                <td>Laguna Spa & Nails Salon</td>
-                <td class="text-center">19494582430</td>
-                <td>dsds@gmail.com</td>
-                <td class="text-center"><span class="text-gray-500">Expired</span></td>                
-                <td class="text-center"><span class="text-gray-500">06-02-2019</span></td>
-                <td class="text-center">06-02-2018</td>
-                <td class="text-center">
-                    <a class="btn btn-sm btn-secondary" href="{{ route("editCustomer") }}"><i class="fas fa-edit"></i></a>
-                </td>
-            </tr>
-     
-           <tr>                
-                <td>Jendy</td>
-                <td>Laguna Spa & Nails Salon</td>
-                <td class="text-center">19494582430</td>
-                <td>dsds@gmail.com</td>
-                <td class="text-center">Trial</td>                
-                <td class="text-center">06-12-2019</td>
-                <td class="text-center">06-02-2018</td>
-                <td class="text-center">
-                    <a class="btn btn-sm btn-secondary" href="{{ route("editCustomer") }}"><i class="fas fa-edit"></i></a>
-                </td>
-            </tr>
-         <tr>                
-                <td>Jendy</td>
-                <td>Laguna Spa & Nails Salon</td>
-                <td class="text-center">19494582430</td>
-                <td>dsds@gmail.com</td>
-                <td class="text-center">Purchasing</td>                
-                <td class="text-center">06-12-2019</td>
-                <td class="text-center">06-02-2018</td>
-                <td class="text-center">
-                    <a class="btn btn-sm btn-secondary" href="{{ route("editCustomer") }}"><i class="fas fa-edit"></i></a>
-                </td>
-            </tr> --}}
-           {{-- </tbody>     --}}
     </table>
 </div>
 
@@ -98,17 +58,12 @@
   <div style="max-width: 90%" class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+        <h5 class="modal-title text-center" id="exampleModalLabel"><b>Customer Detail</b></h5>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
-      <div class="modal-body">
-        ...
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-        <button type="button" class="btn btn-primary">Save changes</button>
+      <div class="modal-body" id="content-customer-detail">
       </div>
     </div>
   </div>
@@ -117,6 +72,7 @@
 @push('scripts')
 <script type="text/javascript">
  $(document).ready(function() {
+    $("#created_at").datepicker({});
     var table = $('#dataTableAllCustomer').DataTable({
          // dom: "lBfrtip",
              buttons: [
@@ -140,13 +96,12 @@
           },
          columns: [
 
-                  { data: 'customer_fullname', name: 'customer_fullname' },
-                  { data: 'customer_fullname', name: 'customer_fullname' },
-                  { data: 'customer_phone', name: 'customer_phone' ,class:'text-center'},
-                  { data: 'customer_email', name: 'customer_email' },
-                  { data: 'customer_status', name: 'customer_status' ,class:'text-center'},
-                  { data: 'customer_status', name: 'customer_status' ,class:'text-center'},
-                  { data: 'customer_status', name: 'customer_status' ,class:'text-center'},                 
+                  { data: 'id', name: 'id',class:'text-center' },
+                  { data: 'ct_salon_name', name: 'ct_salon_name' },
+                  { data: 'ct_contact_name', name: 'ct_contact_name'},
+                  { data: 'ct_business_phone', name: 'ct_business_phone' ,class:'text-center'},
+                  { data: 'ct_cell_phone', name: 'ct_cell_phone',class:'text-center' },
+                  { data: 'created_at', name: 'created_at' ,class:'text-center'},                
                   { data: 'action' , name:'action' ,orderable: false, searcheble: false ,class:'text-center'}
           ],       
     });
@@ -156,10 +111,80 @@
         table.ajax.reload(null, false);
     });
 
-    $(document).on('click','.view',function(e){
-        e.preventDefault();
-        var id = $(this).attr('data');
-        $("#viewModal").modal('show');
+   
+    $(document).on("click",".view",function(){
+
+      var customer_id = $(this).attr('customer_id');
+
+      $.ajax({
+        url: '{{route('get-customer-detail')}}',
+        type: 'GET',
+        dataType: 'html',
+        data: {customer_id: customer_id},
+      })
+      .done(function(data) {
+
+        if(data == 0){
+          toastr.error('Get Detaill Customer Error!');
+        }else{
+          data = JSON.parse(data);
+          $("#content-customer-detail").html(`
+            <div class="row pr-5 pl-5" >
+          <div class="col-md-6">
+            <div class="row">
+              <span class="col-md-4">Salon Name:</span>
+              <h5 class="col-md-8">`+data.ct_salon_name+`</h5>
+            </div>
+            <div class="row">
+              <span class="col-md-4">Contact Name:</span>
+              <h5 class="col-md-8">`+data.ct_contact_name+`</h5>
+            </div>
+            <div class="row">
+              <span class="col-md-4">Business Phone:</span>
+              <h5 class="col-md-8">`+data.ct_business_phone+`</h5>
+            </div>
+            <div class="row">
+              <span class="col-md-4">Cell Phone:</span>
+              <h5 class="col-md-8">`+data.ct_cell_phone+`</h5>
+            </div>
+            <div class="row">
+              <span class="col-md-4">Email:</span>
+              <h5 class="col-md-8">`+data.ct_email+`</h5>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="row">
+              <span class="col-md-4">Address:</span>
+              <h5 class="col-md-8">`+data.ct_address+`</h5>
+            </div>
+            <div class="row">
+              <span class="col-md-4">Website:</span>
+              <h5 class="col-md-8">`+data.ct_website+`</h5>
+            </div>
+            <div class="row">
+              <span class="col-md-4">Note:</span>
+              <h5 class="col-md-8">`+data.ct_note+`</h5>
+            </div>
+            <div class="row">
+              <span class="col-md-4">Status:</span>
+              <h5 class="col-md-8">`+data.ct_status+`</h5>
+            </div>
+            <div class="row float-right">
+              <button type="button" class="btn btn-primary btn-sm">Get</button>
+              <button type="button" class="btn btn-danger btn-sm ml-2">Close</button>
+            </div>
+          </div>
+        </div>
+            `);
+          $("#viewModal").modal('show');
+        }
+
+      
+        console.log(data);
+      })
+      .fail(function() {
+        console.log("error");
+      });
     })
 });
 </script>

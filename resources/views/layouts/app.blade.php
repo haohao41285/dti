@@ -10,7 +10,7 @@
         <div id="content-wrapper" class="d-flex flex-column">
         <!-- content -->
         <div id="content">
-            @include('layouts.partials.header')  
+            @include('layouts.partials.header')
             <!-- Begin Page Content -->
             <div class="container-fluid">
               <!-- Page Heading -->
