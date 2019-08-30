@@ -65,4 +65,23 @@ class GeneralHelper{
         return $str;
 
     }
+    public static function getCustomerStatus($status_id){
+        // 1 is assigned, 2 is disabled, 3 is new arrivals,4 is serviced  
+        switch ($status_id) {
+            case 1:
+                $status_name = "Assigned";
+                break;
+            case 3:
+                $status_name = "Arrivals";
+                break;
+            case 4:
+                $status_name = "Serviced";
+                break;
+             
+            default:
+                $status_name = "Disabled";
+            break;
+        }
+        return $status_name;
+    }
 }

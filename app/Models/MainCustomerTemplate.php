@@ -16,7 +16,6 @@ class MainCustomerTemplate extends Model
     	'ct_address',
     	'ct_website',
     	'ct_note',
-    	'ct_status',
     	'created_by',
     	'updated_by'
     ];
