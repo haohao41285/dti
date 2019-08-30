@@ -154,7 +154,7 @@
         <span class="mr-2 d-none d-lg-inline text-gray-600 small">
             @if(Auth::check()) {{ Auth::user()->user_nickname }} @endif
         </span>
-        <img class="img-profile rounded-circle" src="{{isset(Auth::user()->user_avatar) ? env('PATH_UPLOAD_IMAGE').Auth::user()->user_avatar : ''}}">
+        <img class="img-profile rounded-circle" src="{{isset(Auth::user()->user_avatar) ? env('PATH_VIEW_IMAGE').Auth::user()->user_avatar : ''}}">
       </a>
       <!-- Dropdown - User Information -->
       <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in" aria-labelledby="userDropdown">

@@ -8,11 +8,11 @@ class ImagesHelper
             $img = $requestImage;
             $img_name = time()."-".$img->getClientOriginalName();
             if(!empty($nameImageDB)){
-            	if(file_exists('upload/images/'.$nameImageDB)){
-               	 	unlink('upload/images/'.$nameImageDB);
+            	if(file_exists(env('PATH_UPLOAD_IMAGE').'/'.$nameImageDB)){
+               	 	unlink(env('PATH_UPLOAD_IMAGE').'/'.$nameImageDB);
             	}
             }
-            $img->move('upload/images',$img_name);
+            $img->move(env('PATH_UPLOAD_IMAGE'),$img_name);
             return $img_name;
         }
 	}
