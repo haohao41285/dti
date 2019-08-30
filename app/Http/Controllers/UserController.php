@@ -2,13 +2,17 @@
 
 namespace App\Http\Controllers;
 
+
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use App\Helpers\MenuHelper;
+use App\Helpers\GeneralHelper;
 use App\Models\MainUser;
 use Auth;
 use DataTables;
 use DB;
 use App\Helpers\ImagesHelper;
+use Gate;
 
 class UserController extends Controller 
 {    
@@ -97,60 +101,167 @@ class UserController extends Controller
     }
     public function roleDatatable(Request $request){
 
-        $role_list = DB::table('main_group_user')->select('gu_id','gu_name','gu_descript','gu_status');
+    	$role_list = DB::table('main_group_user')->select('gu_id','gu_name','gu_descript','gu_status');
 
-        return DataTables::of($role_list)
-                ->editColumn('gu_status',function($row){
-                    if($row->gu_status == 1) $checked='checked';
-                    else $checked="";
-                    return '<input type="checkbox" gu_id="'.$row->gu_id.'" gu_status="'.$row->gu_status.'" class="js-switch"'.$checked.'/>';
-                })
-                ->addColumn('action',function($row){
-                    return '<a class="btn btn-sm btn-secondary" href=""><i class="fas fa-plus"></i></a><a class="btn btn-sm btn-secondary role-edit" href="javascript:void(0)"><i class="fas fa-edit"></i></a>';
-                })
-                ->rawColumns(['gu_status','action'])
-                ->make(true);
+    	return DataTables::of($role_list)
+    			->editColumn('gu_status',function($row){
+    				if($row->gu_status == 1) $checked='checked';
+    	       		else $checked="";
+    				return '<input type="checkbox" gu_id="'.$row->gu_id.'" gu_status="'.$row->gu_status.'" class="js-switch"'.$checked.'/>';
+    			})
+    			->addColumn('action',function($row){
+    				return '<a class="btn btn-sm btn-secondary role-edit" href="'.route('permission',$row->gu_id).'"><i class="fas fa-edit"></i></a>';
+    	        })
+    	        ->rawColumns(['gu_status','action'])
+    	        ->make(true);
+
     }
     public function changeStatusRole(Request $request){
 
         $gu_id = $request->gu_id;
         $gu_status = $request->gu_status;
 
-        if($gu_status == 1)
-
+    	if($gu_status == 1){
             $gu_status = 0;
-        else
-            $gu_status = 1;
+            //CHECK USER USE THIS ROLE
+            $count_user = DB::table('main_user')->where('user_group_id',$gu_id)->where('user_status',1)->count();
+            if($count_user > 0){
+                return response()->json(['message'=>'Can delete this role. Cause users are using it!']);
+            }
+        }
+    	else
+    		$gu_status = 1;
+
 
         DB::table('main_group_user')->where('gu_id',$gu_id)->update(['gu_status'=>$gu_status]);
     }
     public function addRole(Request $request){
 
-        $gu_id = $request->gu_id;
-        $gu_name = $request->gu_name;
-        $gu_descript = $request->gu_descript;
+    	$gu_id = $request->gu_id;
+    	$gu_name = $request->gu_name;
+    	$gu_descript = $request->gu_descript;
 
-        if($gu_id > 0){
+    	if($gu_id > 0){
 
-            $gu_insert = DB::table('main_group_user')->where('gu_id',$gu_id)->update(['gu_name'=>$gu_name,'gu_descript'=>$gu_descript]);
+    		$gu_insert = DB::table('main_group_user')->where('gu_id',$gu_id)->update(['gu_name'=>$gu_name,'gu_descript'=>$gu_descript]);
+    	}else{
+    		$gu_id_max = DB::table('main_group_user')->max('gu_id')+1;
+
+    		$gu_arr = [
+    			'gu_id' => $gu_id_max,
+    			'gu_name' => $gu_name,
+    			'gu_descript' => $gu_descript,
+    			'gu_role' => 'empty',
+                'gu_role_new' => self::setPermissionList()
+    		];
+    		$gu_insert = DB::table('main_group_user')->insert($gu_arr);
+    	}
+    	if(!isset($gu_insert)){
+			return 0;
+		}
+		else{
+			return 1;
+		}
+    }
+    public static function setPermissionList(){
+
+        $permission_arr = [];
+
+        $menu_list = MenuHelper::getMenuList();
+
+
+        foreach ($menu_list as $number => $menu) {
+
+            $menu_arr = self::getChildrenMenu($menu);
+
+            foreach ($menu_arr as $key => $value) {
+
+                $permission_arr[$value] = [
+                    'Create' => 0,
+                    'Read' => 0,
+                    'Update' => 0,
+                    'Delete' => 0
+                ];
+            }
+        }
+        return json_encode($permission_arr);
+    }
+    public static function getChildrenMenu($menu){
+
+        $permission_arr = ['Create','Read','Update','Delete'];
+        $menu_arr = [];
+
+        if(isset($menu['childrens'])){
+
+            foreach ($menu['childrens'] as $key => $value) {
+
+                $menu_list = self::getChildrenMenu($value);
+
+                foreach ($menu_list as $key => $value) {
+
+                    $menu_arr[] = $menu_list[0];
+                }
+            }
+        }else{
+             $menu_arr[] = $menu['text'];
+        }
+        return $menu_arr;
+    }
+    public function permission($role_id){
+
+        if(Gate::forUser("Roles")->denies('permission',"Update")){
+
+            return back()->with('error',"You don't have permission!");
+
         }else{
 
-            $gu_id_max = DB::table('main_group_user')->max('gu_id')+1;
+            $permission_arr = ['Create','Read','Update','Delete'];
 
-            $gu_arr = [
-                'gu_id' => $gu_id_max,
-                'gu_name' => $gu_name,
-                'gu_descript' => $gu_descript,
-                'gu_role' => 'tyty'
-            ];
-            $gu_insert = DB::table('main_group_user')->insert($gu_arr);
+            $permission_check = DB::table('main_group_user')
+                                ->where('gu_id',$role_id)
+                                ->where('gu_status',1)
+                                ->first();
+
+            if(!isset($permission_check)){
+                return redirect()->route('dashboard');
+            }else
+                $permission_list = $permission_check->gu_role_new;
+
+            $role_name = $permission_check->gu_name;
+
+            $role_permission_arr = json_decode($permission_list,TRUE);
+
+            $menu_list = MenuHelper::getMenuList();
+
+            return view('user.role-permission',compact('menu_list','role_permission_arr','permission_arr','role_id','role_name'));
         }
-        if(!isset($gu_insert)){
+    }
+    public function changePermission(Request $request){
+
+        $permission_name = $request->permission_name;
+        $permission_status = $request->permission_status;
+        $menu = $request->menu;
+        $role_id = $request->role_id;
+
+        if($permission_status == 1)
+            $permission_status = 0;
+        else
+            $permission_status = 1;
+
+        $permission_list =  DB::table('main_group_user')->where('gu_id',$role_id)->first()->gu_role_new;
+
+        $permission_list = json_decode($permission_list,TRUE);
+
+        $permission_list[$menu][$permission_name] = $permission_status;
+
+        $permission_list = json_encode($permission_list);
+
+        $permission_update = DB::table('main_group_user')->where('gu_id',$role_id)->update(['gu_role_new'=>$permission_list]);
+
+        if(!isset($permission_update))
             return 0;
-        }
-        else{
+        else
             return 1;
-        }
     }
 }
 

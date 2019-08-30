@@ -1,0 +1,1 @@
+ALTER TABLE `main_group_user` ADD `gu_role_new` TEXT NULL COMMENT 'for permission for new project' AFTER `gu_role`;

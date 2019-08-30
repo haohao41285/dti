@@ -2,10 +2,14 @@
 
 namespace App\Http\Controllers\Customer;
 
+use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Helpers\Option;
-use DataTables;
 use App\Models\MainCustomer;
+use App\Models\MainCustomerTemplate;
+use Auth;
+use DataTables;
+use DB;
 
 class CustomerController extends Controller 
 {
@@ -38,19 +42,24 @@ class CustomerController extends Controller
     }
 
     public function customersDatatable(){
-        $customers = MainCustomer::where('customer_status',1)->get();
+        $customers = MainCustomerTemplate::where('ct_status','!=',2)->get();
 
         return Datatables::of($customers)        
-        ->addColumn('customer_fullname',function($customers){
-            return $customers->customer_firstname." ".$customers->customer_lastname;
-        })
-        ->addColumn('customer_status',function($customers){
-            return "status";
-        })
-        ->addColumn('action', function ($customers){
-            return '<a class="btn btn-sm btn-secondary view" data="'.$customers->customers_id.'" href="#"><i class="fas fa-eye"></i></a>';
-        })
-        ->rawColumns(['action'])
-        ->make(true);
+            ->addColumn('action', function ($row){
+                return '<a class="btn btn-sm btn-secondary view" customer_id="'.$row->id.'" href="javascript:void(0)"><i class="fas fa-eye"></i></a>';
+            })
+            ->rawColumns(['action'])
+            ->make(true);
+    }
+    public function getCustomerDetail(Request $request){
+
+        $customer_id = $request->customer_id;
+
+        $customer_list = MainCustomerTemplate::where('id',$customer_id)->first();
+
+        if(!isset($customer_list))
+            return 0;
+        else
+            return $customer_list;
     }
 }
