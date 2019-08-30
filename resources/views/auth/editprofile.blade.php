@@ -12,7 +12,7 @@
          @csrf
       <div class="row m-y-2">
          <div class="col-lg-4 pull-lg-8 text-center">
-         <img  src="//placehold.it/150/" class="m-x-auto img-fluid img-circle rounded-circle" loadImageFromId="avatar"/>
+         <img  src="{{isset($user->user_avatar) ? env('PATH_UPLOAD_IMAGE').$user->user_avatar : '//placehold.it/150/'}}" class="m-x-auto img-fluid img-circle rounded-circle" loadImageFromId="avatar"/>
          <h6 class="m-t-2">Upload a different photo</h6>
          <label class="custom-file col-md-8">
          <span id="choose_file" class="form-control">Choose file</span>

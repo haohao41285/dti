@@ -2,12 +2,13 @@
 
 namespace App\Http\Controllers;
 
-// use App\Http\Controllers\Controller;
+use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\MainUser;
 use Auth;
 use DataTables;
 use DB;
+use App\Helpers\ImagesHelper;
 
 class UserController extends Controller 
 {    
@@ -34,8 +35,9 @@ class UserController extends Controller
     	$user->user_firstname = $request->user_firstname;
     	$user->user_lastname = $request->user_lastname;
 
-        if($request->hasFile('avatar')){            
-            
+        if($request->hasFile('avatar')){
+            $user->user_avatar = ImagesHelper::uploadImage($request->hasFile('avatar'),$request->avatar,$user->user_avatar);
+            // dd($user->user_avatar);
         }
 
         if($request->password && $request->new_password && $request->confirm_password){
