@@ -84,4 +84,12 @@ class GeneralHelper{
         }
         return $status_name;
     }
+    public static function getCustomerStatusList(){
+        return [
+            1 => "Assigned",
+            2 => "Disabled",
+            3 => "Arrivals",
+            4 => "Serviced"
+        ];
+    }
 }

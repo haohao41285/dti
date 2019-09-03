@@ -69,6 +69,38 @@
     </div>
   </div>
 </div>
+{{-- MODAL IMPORT --}}
+<div class="modal fade" id="import-modal" tabindex="-1" role="dialog" aria-labelledby="" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-body">
+          <form  method="post" id="customer-import-form" enctype="multipart/form-data" name="customer-import-form">
+            <div class="col-md-12">
+                <div class="row col-md-12">
+                  <a href="" class="blue">Download an import template spreadsheet</a>
+                </div>
+                <div class="row col-md-12">    
+                  <input type="file" class="btn btn-sm" id="file" name="file">
+                </div>
+                <div class="row col-md-12">
+                  <label class="col-md-6">Begin Row Index</label>
+                  <input type='number' name="begin_row" id="begin_row" class="form-control form-control-sm col-md-6" value="0"/>
+                </div> 
+                <div class="row col-md-12">
+                  <label class="col-md-6">End Row Index</label>
+                  <input type='number' name="end_row" id="end_row" class="form-control form-control-sm col-md-6" value="1000"/>
+                </div>
+                <div class="row col-md-12 ">   
+                     <button type="button" class="btn btn-danger btn-sm float-right cancle-import" >Cancle</button>   
+                     <button type="button" class="btn btn-primary btn-sm ml-2 float-right submit-form" >Submit</button>               
+                </div>   
+            </div>
+        </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
 @endsection
 @push('scripts')
 <script type="text/javascript">
@@ -77,15 +109,16 @@
     var table = $('#dataTableAllCustomer').DataTable({
          // dom: "lBfrtip",
              buttons: [
-                 {   
-                     extend: 'csv', 
+                 { 
                      text: '<i class="fas fa-download"></i> Import',
-                     className: "btn-sm"
+                     className: "btn-sm import-show"
                  },
-                 {   
-                     extend: 'csv', 
+                 { 
                      text: '<i class="fas fa-upload"></i> Export',
-                     className: "btn-sm"
+                     className: "btn-sm export",
+                     action: function ( e, dt, node, config ) {
+                        document.location.href = "{{route('export-my-customer')}}";
+                    }
                  }
              ],  
              processing: true,
@@ -99,7 +132,7 @@
 
                   { data: 'id', name: 'id',class:'text-center' },
                   { data: 'ct_salon_name', name: 'ct_salon_name' },
-                  { data: 'ct_contact_name', name: 'ct_contact_name'},
+                  { data: 'ct_fullname', name: 'ct_fullname'},
                   { data: 'ct_business_phone', name: 'ct_business_phone' ,class:'text-center'},
                   { data: 'ct_cell_phone', name: 'ct_cell_phone',class:'text-center' },
                   { data: 'ct_status', name: 'ct_status',class:'text-center' },
@@ -131,7 +164,7 @@
         }else{
           data = JSON.parse(data);
           if(data.ct_salon_name==null)data.ct_salon_name="";
-          if(data.ct_contact_name==null)data.ct_contact_name="";
+          if(data.ct_fullname==null)data.ct_fullname="";
           if(data.ct_business_phone==null)data.ct_business_phone="";
           if(data.ct_cell_phone==null)data.ct_cell_phone="";
           if(data.ct_email==null)data.ct_email="";
@@ -152,7 +185,7 @@
             </div>
             <div class="row">
               <span class="col-md-4">Contact Name:</span>
-              <h5 class="col-md-8">`+data.ct_contact_name+`</h5>
+              <h5 class="col-md-8">`+data.ct_fullname+`</h5>
             </div>
             <div class="row">
               <span class="col-md-4">Business Phone:</span>
@@ -228,7 +261,45 @@
       .fail(function() {
         console.log("error");
       });
-      
+    });
+    $(document).on('click','.import-show',function(){
+      $("#import-modal").modal("show");
+    });
+     $(".submit-form").click(function(){
+
+      var begin_row = $("#begin_row").val();
+      var end_row = $("#end_row").val();
+
+      var formData = new FormData();
+      formData.append('begin_row', begin_row);
+      formData.append('end_row', end_row);
+      formData.append('_token','{{csrf_token()}}')
+      formData.append('check_my_customer',1)
+      // Attach file
+      formData.append('file', $('#file')[0].files[0]);
+
+      $.ajax({
+        url: '{{route('import-customer')}}',
+        type: 'POST',
+        dataType: 'html',
+        data: formData,
+        contentType: false,
+        processData: false
+      })
+      .done(function(data) {
+        data = JSON.parse(data);
+        if(data.status == 'success'){
+          $("#import-modal").modal('hide');
+          table.draw();
+          toastr.success(data.message);
+        }
+        else
+          toastr.error(data.message);
+        console.log(data);
+      })
+      .fail(function() {
+        console.log("error");
+      });
     });
 });
 </script>

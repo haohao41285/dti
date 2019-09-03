@@ -5,38 +5,33 @@
 @section('content')
 <div class="table-responsive">
     <div class="form-group col-md-12 row">
-        <div class="col-md-2">
+        <div class="col-md-4">
             <label for="">Created date</label>
-            <input type="text" id="created_at" class="form-control form-control-sm">
+            <div class="input-daterange input-group" id="created_at">
+              <input type="text" class="input-sm form-control form-control-sm" id="start_date" name="start" />
+              <span class="input-group-addon">to</span>
+              <input type="text" class="input-sm form-control form-control-sm" id="end_date" name="end" />
+            </div>
         </div>
         <div class="col-md-2">
-            <label for="">City</label>
-            <input type="text" class="form-control form-control-sm">
-        </div>
-        <div class="col-md-2">
-            <label for="">State</label>
-            <select name="" id="" class="form-control form-control-sm">
-                <option value="">-- ALL --</option>
-                @foreach ($state as $element)                    
-                    <option value="{{$element}}">{{$element}}</option>
-                @endforeach
-            </select>
+            <label for="">Address</label>
+            <input type="text" id="address" name="address" class="form-control form-control-sm">
         </div>
         <div class="col-md-2">
             <label for="">Status</label>
-            <select name="" id="" class="form-control form-control-sm">
+            <select id="status-customer" name="status_customer" class="form-control form-control-sm">
                 <option value="">-- ALL --</option>
-                @foreach ($status as $element)                    
-                    <option value="{{$element}}">{{$element}}</option>
+                @foreach ($status as $key =>  $element)                    
+                    <option value="{{$key}}">{{$element}}</option>
                 @endforeach
             </select>
         </div>
         <div class="col-2 " style="position: relative;">
             <div style="position: absolute;top: 50%;" class="">
-            <input type="button" class="btn btn-primary btn-sm" value="Search">
+            <input type="button" class="btn btn-primary btn-sm" id="search-button" value="Search">
             <input type="button" class="btn btn-secondary btn-sm" id="reset" value="Reset">
             </div>
-        </div>      
+        </div>  
     </div>
     <hr>
     <table class="table table-bordered" id="dataTableAllCustomer" width="100%" cellspacing="0">
@@ -58,7 +53,39 @@
 <!-- Modal view-->
 <div class="modal fade" id="viewModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
   <div style="max-width: 70%" class="modal-dialog modal-sm" role="document">
+    <div class="modal-content modal-content-view">
+    </div>
+  </div>
+</div>
+{{-- MODAL IMPORT --}}
+<div class="modal fade" id="import-modal" tabindex="-1" role="dialog" aria-labelledby="" aria-hidden="true">
+  <div class="modal-dialog" role="document">
     <div class="modal-content">
+      <div class="modal-body">
+          <form  method="post" id="customer-import-form" enctype="multipart/form-data" name="customer-import-form">
+            <div class="col-md-12">
+                <div class="row col-md-12">
+                  <a href="" class="blue">Download an import template spreadsheet</a>
+                </div>
+                <div class="row col-md-12">    
+                  <input type="file" class="btn btn-sm" id="file" name="file">
+                </div>
+                <div class="row col-md-12">
+                  <label class="col-md-6">Begin Row Index</label>
+                  <input type='number' name="begin_row" id="begin_row" class="form-control form-control-sm col-md-6" value="0"/>
+                </div> 
+                <div class="row col-md-12">
+                  <label class="col-md-6">End Row Index</label>
+                  <input type='number' name="end_row" id="end_row" class="form-control form-control-sm col-md-6" value="1000"/>
+                </div>
+                <div class="row col-md-12 ">   
+                     <button type="button" class="btn btn-danger btn-sm float-right cancle-import" >Cancle</button>   
+                     <button type="button" class="btn btn-primary btn-sm ml-2 float-right submit-form" >Submit</button>               
+                </div>   
+            </div>
+        </form>
+        </div>
+      </div>
     </div>
   </div>
 </div>
@@ -72,28 +99,32 @@
          // dom: "lBfrtip",
              buttons: [
                  {   
-                     extend: 'csv', 
                      text: '<i class="fas fa-download"></i> Import',
-                     className: "btn-sm"
+                     className: "btn-sm import-show",
                  },
                  {   
-                     extend: 'csv', 
                      text: '<i class="fas fa-upload"></i> Export',
-                     className: "btn-sm"
+                     className: "btn-sm",
+                     action: function ( e, dt, node, config ) {
+                        document.location.href = "{{route('export-customer')}}";
+                    }
                  }
              ],  
              processing: true,
              serverSide: true,
          ajax:{ url:"{{ route('customersDatatable') }}",
          data: function (d) {
-
+            d.start_date = $("#start_date").val();
+            d.end_date = $("#end_date").val();
+            d.address = $("#address").val();
+            d.status_customer = $("#status-customer :selected").val();
               } 
           },
          columns: [
 
                   { data: 'id', name: 'id',class:'text-center' },
                   { data: 'ct_salon_name', name: 'ct_salon_name' },
-                  { data: 'ct_contact_name', name: 'ct_contact_name'},
+                  { data: 'ct_fullname', name: 'ct_fullname'},
                   { data: 'ct_business_phone', name: 'ct_business_phone' ,class:'text-center'},
                   { data: 'ct_cell_phone', name: 'ct_cell_phone',class:'text-center' },
                   { data: 'ct_note', name: 'ct_note',class:'text-center' },
@@ -104,6 +135,9 @@
     });
 
     $("#reset").on('click',function(e){
+        $("#start_date").val("");
+        $("#end_date").val("");
+        $("#address").val("");
         e.preventDefault();
         table.ajax.reload(null, false);
     });
@@ -138,7 +172,7 @@
           var button = ``;
           if(data.ct_status === 'Arrivals')
             button = `<button type="button" id=`+data.id+` class="btn btn-primary btn-sm get-customer">Assign</button>`;
-          $(".modal-content").html(`
+          $(".modal-content-view").html(`
             <div class="modal-header">
               <h5 class="modal-title text-center" id="exampleModalLabel"><b>Customer Detail</b></h5>
               <button type="button" class="close" data-dismiss="modal" aria-label="Close">
@@ -154,7 +188,7 @@
               </div>
               <div class="row">
                 <span class="col-md-4">Contact Name:</span>
-                <p class="col-md-8"><b>`+data.ct_contact_name+`</b></p>
+                <p class="col-md-8"><b>`+data.ct_fullname+`</b></p>
               </div>
               <div class="row">
                 <span class="col-md-4">Business Phone:</span>
@@ -208,7 +242,7 @@
     //CLOSE MODAL DETAI CUSTOMER
     $(document).on('click','.close-customer-detail',function(){
       $("#viewModal").modal('hide');
-      $(".modal-content").html(``);
+      $(".modal-content-view").html(``);
     });
     //GET CUSTOMER TO MY CUSTOMER
     $(document).on('click','.get-customer',function(){
@@ -267,7 +301,7 @@
               </div>
               <div class="form-group row">
                 <label class="col-md-4" for="ct_contact_name">Contact Name<i class="text-danger">*</i></label>
-                <input type="text" class="col-md-8 form-control form-control-sm" name="ct_contact_name" id="ct_contact_name" value="`+data.ct_contact_name+`" placeholder="">
+                <input type="text" class="col-md-8 form-control form-control-sm" name="ct_contact_name" id="ct_contact_name" value="`+data.ct_fullname+`" placeholder="">
               </div>
               <div class="form-group row">
                 <label class="col-md-4" for="ct_business_phone">Business Phone<i class="text-danger">*</i></label>
@@ -293,7 +327,7 @@
               </div>
               <div class="form-group row">
                 <label class="col-md-4" for="ct_note">Note</label>
-                <textarea class="col-md-8 form-control form-control-sm" name="ct_note" rows="3" >`+data.ct_note+`</textarea>
+                <textarea class="col-md-8 form-control form-control-sm" name="ct_note" id="ct_note" rows="3" >`+data.ct_note+`</textarea>
               </div>
               <div class="form-group float-right">
                 <button type="button" class="btn btn-danger btn-sm" data-dismiss="modal">Cancel</button>
@@ -354,9 +388,76 @@
       .fail(function() {
         console.log("error");
       });
-      
+    });
+    $("#search-button").click(function(){
+      table.draw();
+    });
+    $(document).on('click','.delete-customer',function(){
 
-    })
+      var customer_id = $(this).attr('customer_id');
+
+      $.ajax({
+        url: '{{route('delete-customer')}}',
+        type: 'GET',
+        dataType: 'html',
+        data: {customer_id: customer_id},
+      })
+      .done(function(data) {
+        if(data == 1){
+          table.ajax.reload(null, false);
+          toastr.success('Update Success!');
+        }else
+          toastr.error('Update Error!');
+        console.log(data);
+      })
+      .fail(function() {
+        console.log("error");
+      });
+    });
+    $(document).on('click','.deleted',function(){
+      toastr.error('This Customer Deleted!');
+    });
+    $(document).on('click','.import-show',function(){
+      $("#import-modal").modal("show");
+    });
+    $(".submit-form").click(function(){
+
+      var begin_row = $("#begin_row").val();
+      var end_row = $("#end_row").val();
+
+      var formData = new FormData();
+      formData.append('begin_row', begin_row);
+      formData.append('end_row', end_row);
+      formData.append('_token','{{csrf_token()}}')
+      // Attach file
+      formData.append('file', $('#file')[0].files[0]);
+
+      $.ajax({
+        url: '{{route('import-customer')}}',
+        type: 'POST',
+        dataType: 'html',
+        data: formData,
+        contentType: false,
+        processData: false
+      })
+      .done(function(data) {
+        data = JSON.parse(data);
+        if(data.status == 'success'){
+          $("#import-modal").modal('hide');
+          table.draw();
+          toastr.success(data.message);
+        }
+        else
+          toastr.error(data.message);
+        console.log(data);
+      })
+      .fail(function() {
+        console.log("error");
+      });
+    });
+    $(".cancle-import").click(function(){
+      $("#import-modal").modal("hide");
+    });
 });
 </script>
 @endpush
