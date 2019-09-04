@@ -83,6 +83,14 @@ Route::group(['middleware' => ['auth']], function () {
     
     Route::group(['prefix' => 'setting','namespace' => 'Setting'], function() {
         Route::get('setup-team', 'SetupTeamController@index')->name('setupTeam');
+        Route::get('get-team-list', 'SetupTeamController@getTemDatatable')->name('get-team-list');
+        Route::get('edit-team', 'SetupTeamController@editTeam')->name('edit-team');
+        Route::get('save-team', 'SetupTeamController@saveTeam')->name('save-team');
+        Route::get('delete-team', 'SetupTeamController@deleteTeam')->name('delete-team');
+        Route::get('get-member-list', 'SetupTeamController@getMemberList')->name('get-member-list');
+        Route::get('get-user-list', 'SetupTeamController@getUserList')->name('get-user-list');
+        Route::get('remove-member-from-team', 'SetupTeamController@removeMemberFromTeam')->name('remove-member-from-team');
+        Route::get('add-member-to-team', 'SetupTeamController@addMemberToTeam')->name('add-member-to-team');
     });
 
     Route::group(['prefix'=>'user'],function(){

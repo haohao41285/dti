@@ -29,4 +29,8 @@ class MainUser extends Model
 	];
 
 	protected $guarded = [];
+
+	public function getFullname(){
+		return $this->user_firstname." ".$this->user_lastname;
+	}
 }
