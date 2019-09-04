@@ -3,5 +3,5 @@
     Setting
 @endsection
 @section('content')
-
+	
 @endsection

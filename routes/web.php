@@ -80,7 +80,10 @@ Route::group(['middleware' => ['auth']], function () {
     });
     
     Route::get('recentlog', 'RecentLogController@index')->name('recentlog');
-    Route::get('setting', 'SettingController@index')->name('setting');
+    
+    Route::group(['prefix' => 'setting','namespace' => 'Setting'], function() {
+        Route::get('setup-team', 'SetupTeamController@index')->name('setupTeam');
+    });
 
     Route::group(['prefix'=>'user'],function(){
 
