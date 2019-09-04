@@ -12,6 +12,10 @@ class MainCustomerSeeder extends Seeder
     public function run()
     {
     	$customer_arr = [];
+        $customer_status_arr = [];
+        $team_arr = [];
+
+        \DB::table('main_customer_template')->truncate();
 
     	for ($i=1; $i < 100; $i++) { 
     		$customer_arr[] = [
@@ -19,11 +23,23 @@ class MainCustomerSeeder extends Seeder
 	        	'ct_contact_name' => 'A.'.$i,
 	        	'ct_business_phone' => '123456789'.$i,
 	        	'ct_cell_phone' => '123456789'.$i,
-	        	'ct_status' => 1,
 	        	'created_by' => 10,
 	        	'updated_by' => 10
 	        ];
+            $customer_status_arr[$i] = 1;
     	}
+        $customer_status_list = json_encode($customer_status_arr);
+
+        for ($i=1; $i < 4; $i++) {
+            $team_arr[] = [
+                'team_name' => 'Team'.$i,
+                'team_leader' => $i,
+                'team_status' => 1,
+                'team_customer_status' => $customer_status_list,
+            ];
+        }
     	\DB::table('main_customer_template')->insert($customer_arr);
+        \DB::table('main_team')->insert($team_arr);
+
     }
 }

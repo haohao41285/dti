@@ -1,0 +1,1 @@
+ALTER TABLE `main_user` ADD `user_customer_list` TEXT NULL DEFAULT NULL COMMENT 'implode id in main_customer_template with ;' AFTER `user_team`;

@@ -38,9 +38,16 @@ Route::group(['middleware' => ['auth']], function () {
          Route::get('customers', 'CustomerController@listCustomer')->name('customers');
          Route::get('merchants', 'CustomerController@listMerchant')->name('merchants');
          Route::get('add', 'CustomerController@addCustomer')->name('addCustomer');
-         Route::get('edit', 'CustomerController@editCustomer')->name('editCustomer');
+         Route::get('edit', 'CustomerController@editCustomer')->where(['id'=>'[0-9]+'])->name('editCustomer');
          Route::get('customers/datatable', 'CustomerController@customersDatatable')->name('customersDatatable');
          Route::get('get-customer-detail', 'CustomerController@getCustomerDetail')->name('get-customer-detail');
+         Route::get('add-customer-to-my', 'CustomerController@addCustomerToMy')->name('add-customer-to-my');
+         Route::get('get-my-customer', 'CustomerController@getMyCustomer')->name('get-my-customer');
+         Route::get('save-customer', 'CustomerController@saveCustomer')->name('save-customer');
+         Route::get('delete-customer', 'CustomerController@deleteCustomer')->name('delete-customer');
+         Route::post('import-customer', 'CustomerController@importCustomer')->name('import-customer');
+         Route::get('export-customer', 'CustomerController@exportCustomer')->name('export-customer');
+         Route::get('export-my-customer', 'CustomerController@exportMyCustomer')->name('export-my-customer');
     });
     
     Route::group(['prefix'=>'marketing', 'namespace'=>'Marketing'],function(){
