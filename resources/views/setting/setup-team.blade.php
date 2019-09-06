@@ -206,12 +206,9 @@ Setup Team
           `);
         
         $("#editModal").modal("show");
-
-          console.log(team_leader_html);
-          console.log(data);
         })
         .fail(function() {
-          console.log("error");
+          toastr.error("Error. Check Again!");
         });
       });
       $('.cancle-change').click(function(){
@@ -242,12 +239,12 @@ Setup Team
           else{
             $("#editModal").modal('hide');
             table.draw();
+            memberTable.draw();
             toastr.success(data.message);
           }
-          console.log(data);
         })
         .fail(function() {
-          console.log("error");
+          toastr.error("Error. Check again!");
         });
       });
       $(document).on('click','.delete-team',function(){
@@ -270,7 +267,7 @@ Setup Team
             }
           })
           .fail(function() {
-            console.log("error");
+            toastr.error("Error. Check again!");
           });
         }else{
 
@@ -302,10 +299,9 @@ Setup Team
             userTable.draw();
             toastr.success(data.message);
           }
-          console.log(data);
         })
         .fail(function() {
-          console.log("error");
+          toastr.error("Error. Check again!");
         });
       });
       $("#user-table tbody").on('click','tr',function(){
@@ -334,10 +330,9 @@ Setup Team
               userTable.draw();
               memberTable.draw();
             }
-            console.log(data);
           })
           .fail(function() {
-            console.log("error");
+            toastr.error("Error. Check again!");
           });
         }
       });
@@ -383,12 +378,9 @@ Setup Team
           `);
         
         $("#editModal").modal("show");
-
-          console.log(team_leader_html);
-          console.log(data);
         })
         .fail(function() {
-          console.log("error");
+          toastr.error('Error! Check again!');
         });
       });
     });

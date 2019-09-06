@@ -91,6 +91,10 @@ Route::group(['middleware' => ['auth']], function () {
         Route::get('get-user-list', 'SetupTeamController@getUserList')->name('get-user-list');
         Route::get('remove-member-from-team', 'SetupTeamController@removeMemberFromTeam')->name('remove-member-from-team');
         Route::get('add-member-to-team', 'SetupTeamController@addMemberToTeam')->name('add-member-to-team');
+        Route::get('setup-team-type', 'SetupTeamController@setupTeamType')->name('setup-team-type');
+        Route::get('setup-service', 'SetupTeamController@setupService')->name('setup-service');
+        Route::get('service-datatable', 'SetupTeamController@serviceDatabase')->name('service-datatable');
+        Route::get('change-status-cs', 'SetupTeamController@changeStatusCs')->name('change-status-cs');
     });
 
     Route::group(['prefix'=>'user'],function(){

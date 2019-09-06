@@ -8,8 +8,9 @@ use App\Helpers\GeneralHelper;
 use App\Models\MainTeam;
 use App\Models\MainTeamType;
 use App\Models\MainUser;
+use App\Models\MainComboService;
 use DataTables;
-
+use DB;
 
 class SetupTeamController  extends Controller
 {
@@ -66,15 +67,24 @@ class SetupTeamController  extends Controller
 				return response(['status'=>'error','message'=>'Team Name existed! Check again!']);
 			}else
 			{
+				DB::beginTransaction();
 				$team_update = MainTeam::where('id',$team_id)->update([
 					'team_name'=>$team_name,
 					'team_type'=>$team_type_id,
 					'team_leader' => $team_leader
 				]);
-				if(!isset($team_update))
+
+				//INSERT TEAM LEADER INSIDE TEAM
+				$user_update = MainUser::where('user_id',$team_leader)->update(['user_team'=>$team_id]);
+
+				if(!isset($team_update) || !isset($user_update)){
+					DB::calllback();
 					return response(['status'=>'error','message'=>'Update Team Error!']);
-				else
+				}
+				else{
+					DB::commit();
 					return response(['status' => 'success','message'=>'Update Team Success!']);
+				}
 			}
 		}elseif ($team_id == 0) {
 			//CHECK TEAM EXISTED
@@ -84,6 +94,7 @@ class SetupTeamController  extends Controller
 				return response(['status'=>'error','message'=>'Team Name existed! Check again!']);
 			}else
 			{
+			    DB::beginTransaction();
 				$team_arr = [
 					'team_name'=>$team_name,
 					'team_type'=>$team_type_id,
@@ -92,13 +103,21 @@ class SetupTeamController  extends Controller
 				];
 
 				$team_insert = MainTeam::insert($team_arr);
+				//INSERT TEAM LEADER INSIDE TEAM
+				$max_id = MainTeam::max('id');
+				$user_update = MainUser::where('user_id',$team_leader)->update(['user_team'=>$max_id]);
 
-				if(!isset($team_insert))
+				if(!isset($team_insert) || !isset($user_update)){
+					DB::callback();
 					return response(['status'=>'error','message'=>'Add Team Error!']);
-				else
+				}
+				else{
+					DB::commit();
 					return response(['status' => 'success','message'=>'Add Team Success!']);
+				}
 			}
-		}
+		}else
+		    return response(['status'=>'error','message'=>'Error! Check again!']);
 			
 	}
 	public function deleteTeam(Request $request)
@@ -147,10 +166,22 @@ class SetupTeamController  extends Controller
 	{
 		$user_id = $request->user_id;
 
+		//CHECK TEAM LEADER
+
+		$user_info = MainUser::join('main_team',function($join){
+								$join->on('main_user.user_team','main_team.id');
+							})
+								->where('user_id',$user_id)
+								->select('main_team.id')
+								->get();
+
+		if($user_info[0]->id == $user_id)
+			return response(['status'=>'error','message'=>'Error! This User is Leader. Change leader first']);
+
 		$user_update = MainUser::where('user_id',$user_id)->update(['user_team'=>NULL]);
 
 		if(!isset($user_update))
-			return response(['status'=>'error','message'=>'Remove Error. Check agaig!']);
+			return response(['status'=>'error','message'=>'Remove Error. Check again!']);
 		else
 			return response(['status'=>'success','message'=>'Remove Success!']);
 	}
@@ -173,5 +204,83 @@ class SetupTeamController  extends Controller
 			return response(['status'=>'error','message'=>'Adding Error. Check Again!']);
 		else
 			return response(['status'=>'success','message'=>'Adding Success!']);
+	}
+	public function setupTeamType()
+	{
+		return view('setting.setup-team-type');
+	}
+	public function setupService(Request $request){
+
+		return view('setting.setup-service');
+	}
+	public function serviceDatabase(Request $request)
+	{
+		$combo_service_arr = [];
+		$service_combo_list = MainComboService::all();
+
+		foreach ($service_combo_list as $key => $service_combo) {
+
+			$service_name_arr = "";
+
+			if($service_combo->cs_service_id != NULL){
+
+				$service_id = explode(";",$service_combo->cs_service_id);
+
+				$service_name = MainComboService::whereIn('id',$service_id)->get();
+
+				foreach ($service_name as $key => $value) {
+					$service_name_arr .= "<span>- ".$value->cs_name."</span><br>";
+				}
+			}
+			$combo_service_arr[] = [
+				'id' => $service_combo->id,
+				'cs_name' => $service_combo->cs_name,
+				'cs_price' => $service_combo->cs_price,
+				'cs_expiry_period' => $service_combo->cs_expiry_period,
+				'cs_service_id' => $service_name_arr,
+				'cs_description' => $service_combo->cs_description,
+				'cs_type' => $service_combo->cs_type,
+				'cs_status' => $service_combo->cs_status,
+			];
+		}
+
+		return DataTables::of($combo_service_arr)
+
+		    ->editColumn('cs_type',function($row){
+		    	if($row['cs_type'] == 1)
+		    		return "Combo";
+		    	else
+		    		return "Service";
+		    })
+		    ->addColumn('cs_status',function($row){
+				if($row['cs_status'] == 1) $checked='checked';
+	       		else $checked="";
+				return '<input type="checkbox" cs_id="'.$row['id'].'" cs_status="'.$row['cs_status'].'" class="js-switch"'.$checked.'/>';
+			})
+			->addColumn('action',function($row){
+				return '<a class="btn btn-sm btn-secondary add-team"  href="javascript:void(0)"><i class="fas fa-plus"></i></a> <a class="btn btn-sm btn-secondary edit-cs" href="javascript:void(0)"><i class="fas fa-edit"></i></a>
+                <a class="btn btn-sm btn-secondary delete-team" href="javascript:void(0)"><i class="fas fa-trash"></i></a>';
+			})
+			->rawColumns(['cs_status','action','cs_service_id'])
+		    ->make(true);
+	}
+	public function changeStatusCs(Request $request){
+
+		$cs_id = $request->cs_id;
+		$cs_status = $request->cs_status;
+
+		if(!isset($cs_id))
+			return response(['status'=>'error','message'=>'Change Error!']);
+
+		if($cs_status == 1)
+			$status = 0;
+		else
+			$status = 1;
+		$cs_update = MainComboService::where('id',$cs_id)->update(['cs_status'=>$status]);
+
+		if(!issset($cs_update))
+			return response(['status'=>'error','message'=>'Change Error!']);
+		else
+			return response(['status'=>'success','message'=>'Change Success!']);
 	}
 }
