@@ -92,9 +92,12 @@ Route::group(['middleware' => ['auth']], function () {
         Route::get('remove-member-from-team', 'SetupTeamController@removeMemberFromTeam')->name('remove-member-from-team');
         Route::get('add-member-to-team', 'SetupTeamController@addMemberToTeam')->name('add-member-to-team');
         Route::get('setup-team-type', 'SetupTeamController@setupTeamType')->name('setup-team-type');
-        Route::get('setup-service', 'SetupTeamController@setupService')->name('setup-service');
-        Route::get('service-datatable', 'SetupTeamController@serviceDatabase')->name('service-datatable');
-        Route::get('change-status-cs', 'SetupTeamController@changeStatusCs')->name('change-status-cs');
+        Route::get('setup-service', 'SetupServiceController@setupService')->name('setup-service');
+        Route::get('service-datatable', 'SetupServiceController@serviceDatabase')->name('service-datatable');
+        Route::get('change-status-cs', 'SetupServiceController@changeStatusCs')->name('change-status-cs');
+        Route::get('get-service-combo', 'SetupServiceController@getServiceCombo')->name('get-service-combo');
+        Route::get('save-service-combo', 'SetupServiceController@saveServiceCombo')->name('save-service-combo');
+        Route::get('get-cs', 'SetupServiceController@getCs')->name('get-cs');
     });
 
     Route::group(['prefix'=>'user'],function(){
