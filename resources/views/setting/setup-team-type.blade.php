@@ -1,36 +1,37 @@
 @extends('layouts.app')
 @section('title')
-Role List
+Team Type List
 @stop
 @section('content')
 <div class="row">
 	<div class="col-md-6">
-		<h5><b>Role List</b></h5>
+		<h5><b>Team Type List</b></h5>
         <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
 			<thead>
 				<tr>
 					<th class="text-center">ID</th>
-					<th>Role Name</th>
+					<th>Team Type Name</th>
 					<th>Description</th>
 					<th>Status</th>
-					<th class="text-center">Action</th>
+					<th>Created At</th>
+					<th class="text-center" style="width:100px">Action</th>
 				</tr>
 			</thead>
 		</table>
 	</div>
 	<div class="col-md-5 offset-md-1" style="padding-top: 0px">
-		<h5><b class="role-tip">Add Role</b></h5>
+		<h5><b class="tt-tip">Add Team Type</b></h5>
 		<div class="form-group">
-			<label for="">Role Name</label>
-			<input type="text" class="form-control form-control-sm" name="" id="gu_name">
+			<label for="">Name</label>
+			<input type="text" class="form-control form-control-sm" name="" id="team_type_name">
 		</div>
 		<div class="form-group">
-			<label for="">Role Description</label>
-			<textarea class="form-control form-control-sm" rows="3" id="gu_descript" ></textarea>
+			<label for="">Description</label>
+			<textarea class="form-control form-control-sm" rows="3" id="team_type_description" ></textarea>
 		</div>
 		<div class="form-group">
-			<button type="button" class="btn btn-sm btn-danger float-right cancel-role ml-2">Cancel</button>
-			<button type="button" class="btn btn-sm btn-primary float-right submit-role">Submit</button>
+			<button type="button" class="btn btn-sm btn-danger float-right cancel-tt ml-2">Cancel</button>
+			<button type="button" class="btn btn-sm btn-primary float-right submit-tt">Submit</button>
 		</div>
 	</div>
 </div>
@@ -46,28 +47,15 @@ Role List
             serverSide: true,
             autoWidth: true,
 			buttons: [
-            ],
-            columnDefs: [
-                {
-                    "targets": 0, 
-                    "className": "text-center"
-                },
-	            {
-	                "targets": 3,
-	                "className": "text-center",
-	            },
-	            {
-	                "targets": 4,
-	                "className": "text-center",
-	            }
-            ],
-          ajax:{ url:"{{route('role-datatable')}}"},
+             ],
+          ajax:{ url:"{{route('team-type-datatable')}}"},
                 columns:[
-	                {data:'gu_id', name:'gu_id'},
-	                {data:'gu_name', name:'gu_name'},
-	                {data:'gu_descript', name:'gu_descript'},
-	                {data:'gu_status', name:'gu_status'},
-	                {data:'action', name:'action',orderable: false, searchable: false},
+	                {data:'id', name:'id',class:'text-center'},
+	                {data:'team_type_name', name:'team_type_name'},
+	                {data:'team_type_description', name:'team_type_description'},
+	                {data:'team_type_status', name:'team_type_status',class: 'text-center'},
+	                {data:'created_at', name:'created_at',class: 'text-center'},
+	                {data:'action', name:'action',orderable: false, searchable: false,class: 'text-center'},
                 ],
                 fnDrawCallback:function (oSettings) {
                     var elems = Array.prototype.slice.call(document.querySelectorAll('.js-switch'));
@@ -81,25 +69,26 @@ Role List
 		})
 		$(document).on('click','.switchery',function(){
 
-			var gu_id = $(this).siblings('input').attr('gu_id');
-			var gu_status = $(this).siblings('input').attr('gu_status');
+			var id = $(this).siblings('input').attr('id');
+			var team_type_status = $(this).siblings('input').attr('team_type_status');
 			clearView();
 
 			$.ajax({
-				url: '{{route('change-status-role')}}',
+				url: '{{route('change-status-team-type')}}',
 				type: 'GET',
 				dataType: 'html',
 				data: {
-					gu_status: gu_status,
-					gu_id: gu_id
+					team_type_status: team_type_status,
+					id: id
 				},
 			})
 			.done(function(data) {
 				if(data != ""){
 					data = JSON.parse(data);
-					if(data.message != ""){
-						alert(data.message);
-					}
+					if(data.message == "error"){
+						toasrt.error(data.message);
+					}else
+					toastr.success(data.message);
 				}
 				dataTable.draw();
 			})
@@ -112,32 +101,32 @@ Role List
 		});
 		$('#dataTable tbody').on( 'click', 'tr', function () {
 
-	      $("#gu_name").val(dataTable.row(this).data()['gu_name']);
-	      $("#gu_descript").val(dataTable.row(this).data()['gu_descript']);
-	      $(".role-tip").text("Edit Role");
-	      gu_id = dataTable.row(this).data()['gu_id'];
+	      $("#team_type_name").val(dataTable.row(this).data()['team_type_name']);
+	      $("#team_type_description").val(dataTable.row(this).data()['team_type_description']);
+	      $(".tt-tip").text("Edit Team Type");
+	      id = dataTable.row(this).data()['id'];
 
 	    });
-	    $(document).on('click','.submit-role',function(){
+	    $(document).on('click','.submit-tt',function(){
 
-	    	var gu_descript = $("#gu_descript").val();
-	    	var gu_name = $("#gu_name").val();
+	    	var team_type_description = $("#team_type_description").val();
+	    	var team_type_name = $("#team_type_name").val();
 
-	    	if(gu_descript != "" && gu_name != ""){
+	    	if(team_type_description != "" && team_type_name != ""){
 	    		$.ajax({
-		    		url: '{{route('add-role')}}',
+		    		url: '{{route('add-team-type')}}',
 		    		type: 'GET',
 		    		dataType: 'html',
 		    		data: {
-		    			gu_descript: gu_descript,
-		    			gu_name: gu_name,
-		    			gu_id: gu_id
+		    			team_type_description: team_type_description,
+		    			team_type_name: team_type_name,
+		    			id: id
 		    		},
 		    	})
 		    	.done(function(data) {
-		    		console.log(data);
-		    		if(data == 0){
-		    			alert('Error!');
+		    	    data = JSON.parse(data);
+		    		if(data.status == 'error'){
+		    			toastr.error(data.message);
 		    		}else{
 	      				clearView();
 		    			dataTable.draw();
@@ -145,19 +134,19 @@ Role List
 		    		console.log(data);
 		    	})
 				.fail(function(xhr, ajaxOptions, thrownError) {
-	                alert('Error!');
-	                console.log(thrownError + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText);
+	                toastr.error('Error!');
+	                // console.log(thrownError + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText);
 	         	});
 	    	}
 	    });
-	    $(".cancel-role").click(function(){
+	    $(".cancel-tt").click(function(){
 	    	clearView();
 	    })
 	    function clearView(){
-	    	$(".role-tip").text("Add Role");
-			$("#gu_descript").val("");
-			$("#gu_name").val("");
-			gu_id = 0;
+	    	$(".tt-tip").text("Add Team Type");
+			$("#team_type_description").val("");
+			$("#team_type_name").val("");
+		    id = 0;
 	    }
 	});
 </script>

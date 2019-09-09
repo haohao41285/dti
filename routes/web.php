@@ -98,6 +98,10 @@ Route::group(['middleware' => ['auth']], function () {
         Route::get('get-service-combo', 'SetupServiceController@getServiceCombo')->name('get-service-combo');
         Route::get('save-service-combo', 'SetupServiceController@saveServiceCombo')->name('save-service-combo');
         Route::get('get-cs', 'SetupServiceController@getCs')->name('get-cs');
+
+        Route::get('team-type-datatable', 'SetupTeamController@teamTypeDatatable')->name('team-type-datatable');
+        Route::get('change-status-team-type', 'SetupTeamController@changeStatusTeamtype')->name('change-status-team-type');
+        Route::get('add-team-type', 'SetupTeamController@addTeamType')->name('add-team-type');
     });
 
     Route::group(['prefix'=>'user'],function(){

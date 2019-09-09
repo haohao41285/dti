@@ -72,7 +72,6 @@ Role List
 
       var cs_id = $(this).siblings('input').attr('cs_id');
       var cs_status = $(this).siblings('input').attr('cs_status');
-      // clearView();
 
       $.ajax({
         url: '{{route('change-status-cs')}}',

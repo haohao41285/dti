@@ -9,8 +9,10 @@ use App\Models\MainTeam;
 use App\Models\MainTeamType;
 use App\Models\MainUser;
 use App\Models\MainComboService;
+use Carbon\Carbon;
 use DataTables;
 use DB;
+use Auth;
 
 class SetupTeamController  extends Controller
 {
@@ -208,5 +210,66 @@ class SetupTeamController  extends Controller
 	public function setupTeamType()
 	{
 		return view('setting.setup-team-type');
+	}
+	public function teamTypeDatatable(Request $request)
+	{
+		$team_type_list = MainTeamType::leftjoin('main_user',function($join){
+			$join->on('main_team_type.created_by','main_user.user_id');
+		})
+		->select('main_team_type.*','main_user.user_nickname');
+
+		return DataTables::of($team_type_list)
+		    ->editColumn('team_type_status',function($row){
+		    	if($row->team_type_status == 1) $checked='checked';
+	       		else $checked="";
+				return '<input type="checkbox" id="'.$row->id.'" team_type_status="'.$row->team_type_status.'" class="js-switch"'.$checked.'/>';
+		    })
+		    ->editColumn('created_at',function($row){
+		    	return Carbon::parse($row->created_at)->format('m/d/Y') ." by ".$row->user_nickname;
+		    })
+		    ->addColumn('action',function($row){
+				return '<a class="btn btn-sm btn-secondary edit-cs" title="Edit" href="javascript:void(0)"><i class="fas fa-edit"></i></a>';
+			})
+			->rawColumns(['action','team_type_status'])
+			->make(true);
+	}
+	public function changeStatusTeamtype(Request $request)
+	{
+		$id = $request->id;
+		$team_type_status = $request->team_type_status;
+
+		if(!isset($id))
+			return response(['status'=>'error','message'=>'Error. Check again!']);
+
+		if($team_type_status == 1)
+			$status = 0;
+		else
+			$status = 1;
+		$update_tt = MainTeamType::where('id',$id)->update(['team_type_status'=>$status]);
+
+		if(!isset($update_tt))
+			return response(['status'=>'error','message'=>'Error. Check again!']);
+		else
+			return response(['status'=>'success','message'=>'Success!']);
+	}
+	public function addTeamType(Request $request)
+	{
+		$id = $request->id;
+		$team_type_description = $request->team_type_description;
+		$team_type_name = $request->team_type_name;
+
+		if($id != 0){
+			$tt_update = MainTeamType::where('id',$id)->update(['team_type_description'=>$team_type_description,'team_type_name'=>$team_type_name]);
+		}else
+		    $tt_update = MainTeamType::insert([
+		    	'team_type_description'=>$team_type_description,
+		    	'team_type_name'=>$team_type_name,
+		    	'team_type_status'=>1,
+		    	'created_by' => Auth::user()->user_id,
+		    ]);
+		if(!isset($tt_update))
+			return response(['status'=>'error','message'=>'Error. Check again!']);
+		else
+			return response(['status'=>'success','message'=>'Success!']);
 	}
 }
