@@ -37,7 +37,7 @@ class SetupTeamController  extends Controller
 				return $row->user_firstname." ".$row->user_lastname;
 			})
 			->addColumn('action',function($row){
-			return '<a class="btn btn-sm btn-secondary add-team"  href="javascript:void(0)"><i class="fas fa-plus"></i></a> <a class="btn btn-sm btn-secondary edit-team" team_name="'.$row->team_name.'" team_type="'.$row->team_type.'" leader_id="'.$row->user_id.'" team_id="'.$row->id.'" href="javascript:void(0)"><i class="fas fa-edit"></i></a>
+			return '<a class="btn btn-sm btn-secondary edit-team" team_name="'.$row->team_name.'" team_type="'.$row->team_type.'" leader_id="'.$row->user_id.'" team_id="'.$row->id.'" href="javascript:void(0)"><i class="fas fa-edit"></i></a>
                 <a class="btn btn-sm btn-secondary delete-team" team_id="'.$row->id.'" href="javascript:void(0)"><i class="fas fa-trash"></i></a>';
 			})
 			->rawColumns(['action'])
@@ -133,7 +133,7 @@ class SetupTeamController  extends Controller
 		if(!isset($delete_team))
 			return response(['status'=>'error','message'=>'Deleting Error!']);
 		else
-			return response(['status'=>'success','message'=>'Deleting Error']);
+			return response(['status'=>'success','message'=>'Deleting Success!']);
 	}
 	public function getMemberList(Request $request)
 	{
@@ -228,7 +228,7 @@ class SetupTeamController  extends Controller
 		    	return Carbon::parse($row->created_at)->format('m/d/Y') ." by ".$row->user_nickname;
 		    })
 		    ->addColumn('action',function($row){
-				return '<a class="btn btn-sm btn-secondary edit-cs" title="Edit" href="javascript:void(0)"><i class="fas fa-edit"></i></a>';
+				return '<a class="btn btn-sm btn-secondary edit-cs" title="Edit" href="javascript:void(0)"><i class="fas fa-edit"></i></a> <a class="btn btn-sm btn-secondary delete-tt" title="Delete" tt_id="'.$row->id.'"  href="javascript:void(0)"><i class="fas fa-trash"></i></a>';
 			})
 			->rawColumns(['action','team_type_status'])
 			->make(true);
@@ -269,6 +269,25 @@ class SetupTeamController  extends Controller
 		    ]);
 		if(!isset($tt_update))
 			return response(['status'=>'error','message'=>'Error. Check again!']);
+		else
+			return response(['status'=>'success','message'=>'Success!']);
+	}
+	public function deleteTeamType(Request $request)
+	{
+		$tt_id = $request->tt_id;
+
+		if(!isset($tt_id))
+			return response(['status'=>'error','message'=>'Error!']);
+		//CHECK TEAM USE TYPE
+		$check = MainTeam::where('team_type',$tt_id)->count();
+
+		if($check > 0)
+			return response(['status'=>'error','message'=>'Error! This Type includes Team']);
+
+		$team_type_delete = MainTeamType::find($tt_id)->delete();
+
+		if(!isset($team_type_delete))
+			return response(['status'=>'error','message'=>'Error!']);
 		else
 			return response(['status'=>'success','message'=>'Success!']);
 	}

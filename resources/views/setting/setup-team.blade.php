@@ -1,5 +1,5 @@
 @extends('layouts.app')
-@section('content-title')
+@section('title')
 Setup Team
 @endsection
 @push('styles')
@@ -98,7 +98,11 @@ Setup Team
          paging: false,
          info: false,
          buttons: [
-         ],  
+                 {   
+                     text: '<i class="fas fa-plus"></i>Add Team',
+                     className: "btn-sm add-team",
+                 }
+             ],  
          processing: true,
          serverSide: true,
          ajax:{ url:"{{ route('get-team-list') }}",

@@ -51,7 +51,12 @@ Route::group(['middleware' => ['auth']], function () {
     });
     
     Route::group(['prefix'=>'marketing', 'namespace'=>'Marketing'],function(){
-         
+        Route::get('sendsms','SmsController@view');
+        Route::get('get-content-template','SmsController@getContentTemplate')->name('get-content-template');
+        Route::get('download-template-file','SmsController@downloadTemplateFile')->name('download-template-file');
+        Route::post('send-sms','SmsController@postSendSMS')->name('post-send-sms');
+
+
     });
     
     Route::group(['prefix'=>'statistics', 'namespace'=>'Statistics'],function(){
@@ -102,6 +107,7 @@ Route::group(['middleware' => ['auth']], function () {
         Route::get('team-type-datatable', 'SetupTeamController@teamTypeDatatable')->name('team-type-datatable');
         Route::get('change-status-team-type', 'SetupTeamController@changeStatusTeamtype')->name('change-status-team-type');
         Route::get('add-team-type', 'SetupTeamController@addTeamType')->name('add-team-type');
+        Route::get('delete-team-type', 'SetupTeamController@deleteTeamType')->name('delete-team-type');
     });
 
     Route::group(['prefix'=>'user'],function(){

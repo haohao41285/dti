@@ -4,7 +4,7 @@ Team Type List
 @stop
 @section('content')
 <div class="row">
-	<div class="col-md-6">
+	<div class="col-md-7">
 		<h5><b>Team Type List</b></h5>
         <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
 			<thead>
@@ -19,7 +19,7 @@ Team Type List
 			</thead>
 		</table>
 	</div>
-	<div class="col-md-5 offset-md-1" style="padding-top: 0px">
+	<div class="col-md-5 " style="padding-top: 0px">
 		<h5><b class="tt-tip">Add Team Type</b></h5>
 		<div class="form-group">
 			<label for="">Name</label>
@@ -131,7 +131,6 @@ Team Type List
 	      				clearView();
 		    			dataTable.draw();
 		    		}
-		    		console.log(data);
 		    	})
 				.fail(function(xhr, ajaxOptions, thrownError) {
 	                toastr.error('Error!');
@@ -148,6 +147,33 @@ Team Type List
 			$("#team_type_name").val("");
 		    id = 0;
 	    }
+	    $(document).on("click",".delete-tt",function(){
+	      	clearView();
+	    	if(confirm("Do you want to delete this team type?")){
+
+	    		var tt_id = $(this).attr('tt_id');
+
+	    		$.ajax({
+	    			url: '{{route('delete-team-type')}}',
+	    			type: 'GET',
+	    			dataType: 'html',
+	    			data: {tt_id: tt_id},
+	    		})
+	    		.done(function(data) {
+	    			data = JSON.parse(data);
+	    			if(data.status == 'error')
+	    				toastr.error(data.message);
+	    			else{
+	    				toastr.success(data.message);
+		    			dataTable.draw();
+	    			}
+	    		})
+	    		.fail(function() {
+	    			console.log("error");
+	    		});
+	    		
+	    	}
+	    })
 	});
 </script>
 @endpush

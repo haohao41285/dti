@@ -10,11 +10,12 @@ const mix = require('laravel-mix');
  | file for the application as well as bundling up all the JS files.
  |
  */
-mix.copy('resources/plugins', 'public/plugins');
+// mix.copy('resources/plugins', 'public/plugins');
 mix.copy('resources/images', 'public/images');
 mix.copy('resources/*.ico', 'public/');
 mix.sass('resources/scss/app.scss', 'public/css');
 mix.copy('node_modules/@fortawesome/fontawesome-free', 'public/fontawesome-free');
+mix.copy('resources/file', 'public/file');
 
 mix.js('resources/js/app.js', 'public/js').extract([
     'lodash', 'popper.js', 'jquery', 'bootstrap',
