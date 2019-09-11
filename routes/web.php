@@ -51,7 +51,12 @@ Route::group(['middleware' => ['auth']], function () {
     });
     
     Route::group(['prefix'=>'marketing', 'namespace'=>'Marketing'],function(){
-         
+        Route::get('sendsms','SmsController@view');
+        Route::get('get-content-template','SmsController@getContentTemplate')->name('get-content-template');
+        Route::get('download-template-file','SmsController@downloadTemplateFile')->name('download-template-file');
+        Route::post('send-sms','SmsController@postSendSMS')->name('post-send-sms');
+
+
     });
     
     Route::group(['prefix'=>'statistics', 'namespace'=>'Statistics'],function(){
@@ -83,6 +88,26 @@ Route::group(['middleware' => ['auth']], function () {
     
     Route::group(['prefix' => 'setting','namespace' => 'Setting'], function() {
         Route::get('setup-team', 'SetupTeamController@index')->name('setupTeam');
+        Route::get('get-team-list', 'SetupTeamController@getTemDatatable')->name('get-team-list');
+        Route::get('edit-team', 'SetupTeamController@editTeam')->name('edit-team');
+        Route::get('save-team', 'SetupTeamController@saveTeam')->name('save-team');
+        Route::get('delete-team', 'SetupTeamController@deleteTeam')->name('delete-team');
+        Route::get('get-member-list', 'SetupTeamController@getMemberList')->name('get-member-list');
+        Route::get('get-user-list', 'SetupTeamController@getUserList')->name('get-user-list');
+        Route::get('remove-member-from-team', 'SetupTeamController@removeMemberFromTeam')->name('remove-member-from-team');
+        Route::get('add-member-to-team', 'SetupTeamController@addMemberToTeam')->name('add-member-to-team');
+        Route::get('setup-team-type', 'SetupTeamController@setupTeamType')->name('setup-team-type');
+        Route::get('setup-service', 'SetupServiceController@setupService')->name('setup-service');
+        Route::get('service-datatable', 'SetupServiceController@serviceDatabase')->name('service-datatable');
+        Route::get('change-status-cs', 'SetupServiceController@changeStatusCs')->name('change-status-cs');
+        Route::get('get-service-combo', 'SetupServiceController@getServiceCombo')->name('get-service-combo');
+        Route::get('save-service-combo', 'SetupServiceController@saveServiceCombo')->name('save-service-combo');
+        Route::get('get-cs', 'SetupServiceController@getCs')->name('get-cs');
+
+        Route::get('team-type-datatable', 'SetupTeamController@teamTypeDatatable')->name('team-type-datatable');
+        Route::get('change-status-team-type', 'SetupTeamController@changeStatusTeamtype')->name('change-status-team-type');
+        Route::get('add-team-type', 'SetupTeamController@addTeamType')->name('add-team-type');
+        Route::get('delete-team-type', 'SetupTeamController@deleteTeamType')->name('delete-team-type');
     });
 
     Route::group(['prefix'=>'user'],function(){
