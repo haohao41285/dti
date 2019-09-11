@@ -83,6 +83,7 @@ Route::group(['middleware' => ['auth']], function () {
     
     Route::group(['prefix' => 'setting','namespace' => 'Setting'], function() {
         Route::get('setup-team', 'SetupTeamController@index')->name('setupTeam');
+        Route::get('setup-background', 'SetupBackground@index')->name('setupBackground');
     });
 
     Route::group(['prefix'=>'user'],function(){

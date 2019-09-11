@@ -16,4 +16,8 @@ class SettingController extends Controller {
     {
         return view('setting.index');
     }
+
+    public function setupBackground(){
+
+    }
 }

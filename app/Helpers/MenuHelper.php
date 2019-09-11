@@ -31,12 +31,14 @@ class MenuHelper{
 		        ['text' => 'Clone Website', 'link'=> 'tools/clonewebsite'],
 		        ['text' => 'Update Website', 'link'=> 'tools/updatewebsite'],
 		    ]],
+		    ['text' => 'Orders', 'icon'=>'fas fa-list-alt', 'link' => 'order'],
 		    ['text' => 'Users', 'icon'=>'fas fa-user-cog', 'link' => 'user','childrens' => [
 		        ['text' => 'Users', 'link'=> 'user/list'],
 		        ['text' => 'Roles', 'link'=> 'user/roles'],      
 		    ]],    
 		    ['text' => 'Settings', 'icon'=>'fas fa-cog', 'link' => 'setting','childrens' => [
 		        ['text' => 'Setup Team', 'link'=> 'setting/setup-team'],		        
+		        ['text' => 'Setup Background Image', 'link'=> 'setting/setup-background'],		        
 		    ]],
 		    ['text' => 'Recent Logs', 'icon'=>'fas fa-list-alt', 'link' => 'recentlog'],
 		];
