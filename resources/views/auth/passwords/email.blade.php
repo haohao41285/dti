@@ -2,49 +2,50 @@
 
 @section('content')
 <div class="container">
+
+    <!-- Outer Row -->
     <div class="row justify-content-center">
-        <div class="col-xl-9 col-lg-12 col-md-9">
-            <div class="card o-hidden border-0 shadow-lg my-5">
-                <div class="card-header page-title text-center">
-                    <img src="{{ asset("images/logo274x29.png")}}" alt="logo"/>
-                </div>
-                <div class="card-body">
-                    <form method="POST" action="{{ url('/password/email') }}">
+
+      <div class="col-xl-10 col-lg-12 col-md-9">
+
+        <div class="card o-hidden border-0 shadow-lg my-5">
+          <div class="card-body p-0">
+            <!-- Nested Row within Card Body -->
+            <div class="row" style="height: 35rem">
+              <div class="col-lg-6 d-none d-lg-block bg-image"></div>
+              <div class="col-lg-6">
+                <div class="p-5">
+                  <div class="text-center">
+                    <h1 class="h4 text-gray-900 mb-2">Forgot Your Password?</h1>
+                    <p class="mb-4">We get it, stuff happens. Just enter your email address below and we'll send you a link to reset your password!</p>
+                  </div>
+                  <form method="POST" action="{{ url('/password/email') }}">
                        {{ csrf_field() }}
-                       @if($errors->has('errorLogin'))                       
-                        <div class="alert alert-danger">
-                          <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
-                          {{$errors->first('errorLogin')}}
-                        </div>
-                       @endif   
-                        <div class="form-group row">
-                            <label for="user_phone" class="col-sm-4 col-form-label text-md-right">{{ __('Email') }}</label>
-
-                            <div class="col-md-6">
-                                <input required="" type="email" class="form-control" placeholder="Email" name="email" value="{{ old('email') }}"/>                               
-                            </div>
-                        </div>           
-                        
-                        <div class="form-group row mb-4">
-                            <div class="col-md-8 offset-md-4">
-                                <button type="submit" class="btn btn-primary">
-                                    {{ __('Send Password Reset Link') }}
-                                </button>
-
-                                <a class="btn btn-link" href="{{ route('login') }}">
-                                    {{ __('Login') }}
-                                </a>
-                            </div>
-                        </div>
-
-
-                    </form>
+                    <div class="form-group">
+                      <input required="" type="email" class="form-control" placeholder="Enter Email Address..." name="email" value="{{ old('email') }}"/>        
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-user btn-block">
+                      Reset Password
+                    </button>
+                  </form>
+                  <hr>
+                  <div class="text-center">
+                    <a class="small" href="{{ route('login') }}">Already have an account? Login!</a>
+                  </div>
                 </div>
+              </div>
             </div>
+          </div>
         </div>
+
+      </div>
+
     </div>
-</div>
+
+  </div>
+
 
 @endsection
+
 
 
