@@ -88,9 +88,7 @@ Route::group(['middleware' => ['auth']], function () {
     
     Route::group(['prefix' => 'setting','namespace' => 'Setting'], function() {
         Route::get('setup-team', 'SetupTeamController@index')->name('setupTeam');
-<<<<<<< HEAD
         Route::get('setup-background', 'SetupBackground@index')->name('setupBackground');
-=======
         Route::get('get-team-list', 'SetupTeamController@getTemDatatable')->name('get-team-list');
         Route::get('edit-team', 'SetupTeamController@editTeam')->name('edit-team');
         Route::get('save-team', 'SetupTeamController@saveTeam')->name('save-team');
@@ -111,7 +109,6 @@ Route::group(['middleware' => ['auth']], function () {
         Route::get('change-status-team-type', 'SetupTeamController@changeStatusTeamtype')->name('change-status-team-type');
         Route::get('add-team-type', 'SetupTeamController@addTeamType')->name('add-team-type');
         Route::get('delete-team-type', 'SetupTeamController@deleteTeamType')->name('delete-team-type');
->>>>>>> 0d256c47e7d89e9cd5b1f88e04e82c4809f60949
     });
 
     Route::group(['prefix'=>'user'],function(){
@@ -127,6 +124,13 @@ Route::group(['middleware' => ['auth']], function () {
 
         Route::get('rolepermission/{id}','UserController@permission')->where(['id'=>'[0-9]+'])->name('permission');
         Route::get('change-permission','UserController@changePermission')->name('change-permission');
+    });
+
+    Route::group(['prefix' => 'orders','namespace' => 'Orders'], function() {
+        Route::get('/all', 'OrdersController@index');
+        Route::get('my-orders', 'OrdersController@getMyOrders');
+        Route::get('sellers', 'OrdersController@getSellers');
+        Route::get('add', 'OrdersController@add');
     });
     
 });

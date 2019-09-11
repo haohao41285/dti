@@ -31,7 +31,12 @@ class MenuHelper{
 		        ['text' => 'Clone Website', 'link'=> 'tools/clonewebsite'],
 		        ['text' => 'Update Website', 'link'=> 'tools/updatewebsite'],
 		    ]],
-		    ['text' => 'Orders', 'icon'=>'fas fa-list-alt', 'link' => 'order'],
+		    ['text' => 'Orders', 'icon'=>'fas fa-user-cog', 'link' => 'orders','childrens' => [
+		        ['text' => 'My Orders', 'link'=> 'orders/my-orders'],
+		        ['text' => 'All Orders', 'link'=> 'orders/all'],
+		        ['text' => "Seller's Orders", 'link'=> 'orders/sellers'],
+		        ['text' => "New Order", 'link'=> 'orders/add'],
+		    ]],  
 		    ['text' => 'Users', 'icon'=>'fas fa-user-cog', 'link' => 'user','childrens' => [
 		        ['text' => 'Users', 'link'=> 'user/list'],
 		        ['text' => 'Roles', 'link'=> 'user/roles'],      
