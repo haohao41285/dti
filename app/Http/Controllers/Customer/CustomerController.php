@@ -41,7 +41,7 @@ class CustomerController extends Controller
 
     public function listMyCustomer(){
         $data['state'] = Option::state();
-        $data['status'] = Option::status();
+        $data['status'] = GeneralHelper::getCustomerStatusList();
         return view('customer.my-customers',$data);
     }
 
@@ -208,6 +208,10 @@ class CustomerController extends Controller
 
         $user_id = Auth::user()->user_id;
         $team_id = Auth::user()->user_team;
+        $start_date = $request->start_date;
+        $end_date = $request->end_date;
+        $address = $request->address;
+        $status_customer = $request->status_customer;
         $customer_arr = [];
 
         $user_customer_list = MainUser::where('user_id',$user_id)->first()->user_customer_list;
@@ -219,9 +223,21 @@ class CustomerController extends Controller
             $customer_list = MainCustomerTemplate::leftjoin('main_user',function($join){
                                                     $join->on('main_customer_template.created_by','main_user.user_id');
                                                 })
-                                                ->whereIn('main_customer_template.id',$user_customer_arr)
-                                                ->select('main_customer_template.*','main_user.user_nickname')
-                                                ->get();
+                                                ->whereIn('main_customer_template.id',$user_customer_arr);
+
+        if($start_date != "" && $end_date != ""){
+
+            $start_date = Carbon::parse($start_date)->format('Y-m-d');
+            $end_date = Carbon::parse($end_date)->format('Y-m-d');
+
+            $customer_list->whereDate('main_customer_template.created_at','>=',$start_date)
+                    ->whereDate('main_customer_template.created_at','<=',$end_date);
+        }
+        if($address != ""){
+            $customer_list->where('ct_address','LIKE',"%".$address."%");
+        }
+
+            $customer_list = $customer_list->select('main_customer_template.*','main_user.user_nickname')->get();
 
             //GET LIST TEAM CUSTOMER LIST 
             $team_customer_status = MainTeam::where('id',$team_id)->first()->team_customer_status;
@@ -230,18 +246,37 @@ class CustomerController extends Controller
 
             foreach ($customer_list as $key => $customer) {
 
-                $ct_status = GeneralHelper::getCustomerStatus($customer_status_arr[$customer->id]);
+                if(!isset($customer_status_arr[$customer->id])){
+                    $customer_status_arr[$customer->id] = 1;
+                    $ct_status = 'Arrivals';
+                }
+                else
+                    $ct_status = GeneralHelper::getCustomerStatus($customer_status_arr[$customer->id]);
 
-                $customer_arr[] = [
-                    'id' => $customer->id,
-                    'ct_salon_name' => $customer->ct_salon_name,
-                    'ct_fullname' => $customer->ct_fullname,
-                    'ct_business_phone' => $customer->ct_business_phone,
-                    'ct_cell_phone' => $customer->ct_cell_phone,
-                    'ct_status' => $ct_status,
-                    'updated_at' => $customer->updated_at,
-                    'user_nickname' => $customer->user_nickname
-                ];
+                if($status_customer != "" && intval($customer_status_arr[$customer->id]) ==  intval($status_customer)){
+                    $customer_arr[] = [
+                        'id' => $customer->id,
+                        'ct_salon_name' => $customer->ct_salon_name,
+                        'ct_fullname' => $customer->ct_fullname,
+                        'ct_business_phone' => $customer->ct_business_phone,
+                        'ct_cell_phone' => $customer->ct_cell_phone,
+                        'ct_status' => $ct_status,
+                        'updated_at' => $customer->updated_at,
+                        'user_nickname' => $customer->user_nickname
+                    ];
+                }
+                if($status_customer == ""){
+                    $customer_arr[] = [
+                        'id' => $customer->id,
+                        'ct_salon_name' => $customer->ct_salon_name,
+                        'ct_fullname' => $customer->ct_fullname,
+                        'ct_business_phone' => $customer->ct_business_phone,
+                        'ct_cell_phone' => $customer->ct_cell_phone,
+                        'ct_status' => $ct_status,
+                        'updated_at' => $customer->updated_at,
+                        'user_nickname' => $customer->user_nickname
+                    ];
+                }
             }
         }else{
             $customer_arr = [];

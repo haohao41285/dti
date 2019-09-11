@@ -5,38 +5,33 @@
 @section('content')
 <div class="table-responsive">
     <div class="form-group col-md-12 row">
-        <div class="col-md-2">
+        <div class="col-md-4">
             <label for="">Created date</label>
-            <input type="text" id="created_at" class="form-control form-control-sm">
+            <div class="input-daterange input-group" id="created_at">
+              <input type="text" class="input-sm form-control form-control-sm" id="start_date" name="start" />
+              <span class="input-group-addon">to</span>
+              <input type="text" class="input-sm form-control form-control-sm" id="end_date" name="end" />
+            </div>
         </div>
         <div class="col-md-2">
-            <label for="">City</label>
-            <input type="text" class="form-control form-control-sm">
-        </div>
-        <div class="col-md-2">
-            <label for="">State</label>
-            <select name="" id="" class="form-control form-control-sm">
-                <option value="">-- ALL --</option>
-                @foreach ($state as $element)                    
-                    <option value="{{$element}}">{{$element}}</option>
-                @endforeach
-            </select>
+            <label for="">Address</label>
+            <input type="text" id="address" name="address" class="form-control form-control-sm">
         </div>
         <div class="col-md-2">
             <label for="">Status</label>
-            <select name="" id="" class="form-control form-control-sm">
+            <select id="status-customer" name="status_customer" class="form-control form-control-sm">
                 <option value="">-- ALL --</option>
-                @foreach ($status as $element)                    
-                    <option value="{{$element}}">{{$element}}</option>
+                @foreach ($status as $key =>  $element)                    
+                    <option value="{{$key}}">{{$element}}</option>
                 @endforeach
             </select>
         </div>
         <div class="col-2 " style="position: relative;">
             <div style="position: absolute;top: 50%;" class="">
-            <input type="button" class="btn btn-primary btn-sm" value="Search">
+            <input type="button" class="btn btn-primary btn-sm" id="search-button" value="Search">
             <input type="button" class="btn btn-secondary btn-sm" id="reset" value="Reset">
             </div>
-        </div>      
+        </div>  
     </div>
     <hr>
     <table class="table table-bordered" id="dataTableAllCustomer" width="100%" cellspacing="0">
@@ -125,7 +120,10 @@
              serverSide: true,
          ajax:{ url:"{{ route('get-my-customer') }}",
          data: function (d) {
-
+            d.start_date = $("#start_date").val();
+            d.end_date = $("#end_date").val();
+            d.address = $("#address").val();
+            d.status_customer = $("#status-customer :selected").val();
               } 
           },
          columns: [
@@ -300,6 +298,16 @@
       .fail(function() {
         console.log("error");
       });
+    });
+     $("#search-button").click(function(){
+      table.draw();
+    });
+    $("#reset").on('click',function(e){
+      $("#start_date").val("");
+      $("#end_date").val("");
+      $("#address").val("");
+      e.preventDefault();
+      table.ajax.reload(null, false);
     });
 });
 </script>

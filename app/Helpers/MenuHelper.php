@@ -37,8 +37,10 @@ class MenuHelper{
 		        ['text' => 'Roles', 'link'=> 'user/roles'],      
 		    ]],    
 		    ['text' => 'Settings', 'icon'=>'fas fa-cog', 'link' => 'setting','childrens' => [
-		        ['text' => 'Setup Team', 'link'=> 'setting/setup-team'],		        
-		        ['text' => 'Setup Background Image', 'link'=> 'setting/setup-background'],		        
+		        ['text' => 'Setup Team', 'link'=> 'setting/setup-team'],
+		        ['text' => 'Setup Team Type', 'link'=> 'setting/setup-team-type'],
+		        ['text' => 'Setup Service', 'link'=> 'setting/setup-service'],
+		        ['text' => 'Setup Background Image', 'link'=> 'setting/setup-background'],	        
 		    ]],
 		    ['text' => 'Recent Logs', 'icon'=>'fas fa-list-alt', 'link' => 'recentlog'],
 		];
