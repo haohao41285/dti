@@ -424,23 +424,35 @@ class CustomerController extends Controller
                                     'status' => 'error',
                                     'message' => 'Import Error.(Busines Name, Fullname,Firstname, Lastname, Business Phone, Cell phone not empty. Check again!'
                                 ]);
+                            //CHECK PHONE NUMBER EXIST
+                            $check_phone = MainCustomerTemplate::where('ct_business_phone',$value['business_phone'])->where('ct_cell_phone',$value['cell_phone'])->count();
 
-                            $customer_arr[] = [
-                                'ct_salon_name' => $value['business_name'],
-                                'ct_fullname' => $value['fullname'],
-                                'ct_firstname' => $value['firstname'],
-                                'ct_lastname' => $value['lastname'],
-                                'ct_business_phone' => $value['business_phone'],
-                                'ct_cell_phone' => $value['cell_phone'],
-                                'ct_email' => $value['email'],
-                                'ct_address' => $value['address'],
-                                'ct_note' => $value['note'],
-                                'created_by' => Auth::user()->user_id,
-                                'updated_by' => Auth::user()->user_id
-                            ];
-                            $insert_count++;
+                            if($check_phone == 0){
+                                $customer_arr[] = [
+                                    'ct_salon_name' => $value['business_name'],
+                                    'ct_fullname' => $value['fullname'],
+                                    'ct_firstname' => $value['firstname'],
+                                    'ct_lastname' => $value['lastname'],
+                                    'ct_business_phone' => $value['business_phone'],
+                                    'ct_cell_phone' => $value['cell_phone'],
+                                    'ct_email' => $value['email'],
+                                    'ct_address' => $value['address'],
+                                    'ct_note' => $value['note'],
+                                    'created_by' => Auth::user()->user_id,
+                                    'updated_by' => Auth::user()->user_id
+                                ];
+                                $insert_count++;
+                            }
                         }
                     }
+                    if($insert_count == 0){
+                        DB::callback();
+                        return response([
+                            'status' => 'error',
+                            'message' => 'Import Error.This file had imported. Check again!'
+                        ]);
+                    }
+
                     if(isset($request->check_my_customer)){
                         $customer_id_max = MainCustomerTemplate::max('id');
                         $customer_id = $request->customer_id;

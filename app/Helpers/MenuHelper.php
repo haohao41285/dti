@@ -13,7 +13,7 @@ class MenuHelper{
 		    ]],
 		    ['text' => 'Marketing', 'icon'=>'fas fa-lightbulb', 'link' => 'marketing','childrens' => [
 		        ['text' => 'Send SMS', 'link'=> 'marketing/sendsms'],
-		        ['text' => 'Tracking History', 'link'=> 'marketing/trackinghistory'],        
+		        ['text' => 'Tracking History', 'link'=> 'marketing/tracking-history'],        
 		    ]],
 		    ['text' => 'DataSetup', 'icon'=>'fas fa-database', 'link' => 'datasetup','childrens' => [
 		        ['text' => 'Combo', 'link'=> 'datasetup/combos'],
@@ -38,7 +38,8 @@ class MenuHelper{
 		    ['text' => 'Settings', 'icon'=>'fas fa-cog', 'link' => 'setting','childrens' => [
 		        ['text' => 'Setup Team', 'link'=> 'setting/setup-team'],
 		        ['text' => 'Setup Team Type', 'link'=> 'setting/setup-team-type'],
-		        ['text' => 'Setup Service', 'link'=> 'setting/setup-service'],	        
+		        ['text' => 'Setup Service', 'link'=> 'setting/setup-service'],
+		        ['text' => 'Setup Template SMS', 'link'=> 'setting/setup-template-sms'],	  
 		    ]],
 		    ['text' => 'Recent Logs', 'icon'=>'fas fa-list-alt', 'link' => 'recentlog'],
 		];

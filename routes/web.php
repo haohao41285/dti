@@ -55,7 +55,10 @@ Route::group(['middleware' => ['auth']], function () {
         Route::get('get-content-template','SmsController@getContentTemplate')->name('get-content-template');
         Route::get('download-template-file','SmsController@downloadTemplateFile')->name('download-template-file');
         Route::post('send-sms','SmsController@postSendSMS')->name('post-send-sms');
-
+        Route::get('tracking-history','SmsController@trackingHistory')->name('tracking-history');
+        Route::get('tracking-history-datatable','SmsController@trackingHistoryDatatable')->name('tracking-history-datatable');
+        Route::get('/sms/event-detail','SmsController@eventDetail')->name('event-detail');
+        Route::get('/sms/calculate-sms','SmsController@calculateSms')->name('calculate-sms');
 
     });
     
@@ -108,6 +111,11 @@ Route::group(['middleware' => ['auth']], function () {
         Route::get('change-status-team-type', 'SetupTeamController@changeStatusTeamtype')->name('change-status-team-type');
         Route::get('add-team-type', 'SetupTeamController@addTeamType')->name('add-team-type');
         Route::get('delete-team-type', 'SetupTeamController@deleteTeamType')->name('delete-team-type');
+
+        Route::get('setup-template-sms','SetupSmsController@setupTemplateSms')->name('setup-template-sms');
+        Route::get('sms-template-datatable','SetupSmsController@smsTemplateDatatable')->name('sms-template-datatable');
+        Route::post('delete-template','SetupSmsController@deleteTemplate')->name('delete-template');
+        Route::post('save-template-sms','SetupSmsController@saveTemplateSms')->name('save-template-sms');
     });
 
     Route::group(['prefix'=>'user'],function(){
