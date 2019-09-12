@@ -7,11 +7,11 @@ class ImagesHelper
 		if($checkImage){ 
             $img = $requestImage;
             $img_name = time()."-".$img->getClientOriginalName();
-            if(!empty($nameImageDB)){
-            	if(file_exists(env('PATH_UPLOAD_IMAGE').'/'.$nameImageDB)){
-               	 	unlink(env('PATH_UPLOAD_IMAGE').'/'.$nameImageDB);
-            	}
-            }
+            // if(!empty($nameImageDB)){
+            // 	if(file_exists(env('PATH_UPLOAD_IMAGE').'/'.$nameImageDB)){
+            //    	 	unlink(env('PATH_UPLOAD_IMAGE').'/'.$nameImageDB);
+            // 	}
+            // }
             $img->move(env('PATH_UPLOAD_IMAGE'),$img_name);
             return $img_name;
         }

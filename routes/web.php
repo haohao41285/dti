@@ -91,6 +91,7 @@ Route::group(['middleware' => ['auth']], function () {
     
     Route::group(['prefix' => 'setting','namespace' => 'Setting'], function() {
         Route::get('setup-team', 'SetupTeamController@index')->name('setupTeam');
+        Route::get('setup-background', 'SetupBackground@index')->name('setupBackground');
         Route::get('get-team-list', 'SetupTeamController@getTemDatatable')->name('get-team-list');
         Route::get('edit-team', 'SetupTeamController@editTeam')->name('edit-team');
         Route::get('save-team', 'SetupTeamController@saveTeam')->name('save-team');
@@ -131,6 +132,13 @@ Route::group(['middleware' => ['auth']], function () {
 
         Route::get('rolepermission/{id}','UserController@permission')->where(['id'=>'[0-9]+'])->name('permission');
         Route::get('change-permission','UserController@changePermission')->name('change-permission');
+    });
+
+    Route::group(['prefix' => 'orders','namespace' => 'Orders'], function() {
+        Route::get('/all', 'OrdersController@index');
+        Route::get('my-orders', 'OrdersController@getMyOrders');
+        Route::get('sellers', 'OrdersController@getSellers');
+        Route::get('add', 'OrdersController@add');
     });
     
 });

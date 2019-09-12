@@ -92,4 +92,15 @@ class GeneralHelper{
             4 => "Serviced"
         ];
     }
+
+    public static function getOrdersStatus(){
+        return [
+            'New',
+            'Processing',
+            'Done',
+            'Fixing',
+            'Cancel',
+            'Notpayment',
+        ];
+    }
 }
