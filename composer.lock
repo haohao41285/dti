@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "52dab92625a24d03f64872b9966bb9c3",
+    "content-hash": "82f5884959f212291c22fd66a6b2f9f3",
     "packages": [
         {
             "name": "dnoegel/php-xdg-base-dir",
@@ -1424,6 +1424,65 @@
                 "laravel"
             ],
             "time": "2018-09-04T19:00:09+00:00"
+        },
+        {
+            "name": "mbarwick83/shorty",
+            "version": "2.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/mbarwick83/shorty.git",
+                "reference": "3d4551b216bf7cc7aa6874de6f1b480404b025d3"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/mbarwick83/shorty/zipball/3d4551b216bf7cc7aa6874de6f1b480404b025d3",
+                "reference": "3d4551b216bf7cc7aa6874de6f1b480404b025d3",
+                "shasum": ""
+            },
+            "require": {
+                "illuminate/support": "~5.1",
+                "php": ">=5.3.0"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "4.*",
+                "scrutinizer/ocular": "~1.1"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "Mbarwick83\\Shorty\\ShortyServiceProvider"
+                    ],
+                    "aliases": {
+                        "Shorty": "Mbarwick83\\Shorty\\Facades\\Shorty"
+                    }
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Mbarwick83\\Shorty\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Mike Barwick",
+                    "email": "mike@barwickandco.com"
+                }
+            ],
+            "description": "Google Url Shortener API Package for Laravel 5.1",
+            "homepage": "https://github.com/mbarwick83/shorty",
+            "keywords": [
+                "api",
+                "google",
+                "laravel",
+                "shortener",
+                "url"
+            ],
+            "time": "2018-08-01T20:58:11+00:00"
         },
         {
             "name": "monolog/monolog",

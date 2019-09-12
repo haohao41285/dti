@@ -180,6 +180,7 @@ return [
          */
         App\Providers\HelperServiceProvider::class,
         Maatwebsite\Excel\ExcelServiceProvider::class,
+        Mbarwick83\Shorty\ShortyServiceProvider::class
     ],
 
     /*
@@ -231,6 +232,7 @@ return [
         'Validator' => Illuminate\Support\Facades\Validator::class,
         'View' => Illuminate\Support\Facades\View::class,
         'Excel' => Maatwebsite\Excel\Facades\Excel::class,
+        'Shorty'    => Mbarwick83\Shorty\Facades\Shorty::class
     ],
 
 ];

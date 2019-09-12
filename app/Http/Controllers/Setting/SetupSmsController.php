@@ -80,4 +80,5 @@ class SetupSmsController extends Controller
 		else
 			return response(['status'=>'success','message'=>'Saving Success']);
     }
+    
 }
