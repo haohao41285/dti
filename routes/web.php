@@ -48,6 +48,8 @@ Route::group(['middleware' => ['auth']], function () {
          Route::post('import-customer', 'CustomerController@importCustomer')->name('import-customer');
          Route::get('export-customer', 'CustomerController@exportCustomer')->name('export-customer');
          Route::get('export-my-customer', 'CustomerController@exportMyCustomer')->name('export-my-customer');
+         Route::get('order-buy/{id}', 'CustomerController@orderBuy')->where(['id'=>'[0-9]+'])->name('order-buy');
+
     });
     
     Route::group(['prefix'=>'marketing', 'namespace'=>'Marketing'],function(){
@@ -139,6 +141,7 @@ Route::group(['middleware' => ['auth']], function () {
         Route::get('my-orders', 'OrdersController@getMyOrders');
         Route::get('sellers', 'OrdersController@getSellers');
         Route::get('add', 'OrdersController@add');
+        Route::get('authorize','OrdersController@authorizeCreditCard')->name('authorize');
     });
     
 });

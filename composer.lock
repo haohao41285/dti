@@ -4,8 +4,51 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "82f5884959f212291c22fd66a6b2f9f3",
+    "content-hash": "d509c60a37ad55f4d79695dec7e22894",
     "packages": [
+        {
+            "name": "authorizenet/authorizenet",
+            "version": "2.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/AuthorizeNet/sdk-php.git",
+                "reference": "7fa78e6397d363296e462c3b348573c17175b7a8"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/AuthorizeNet/sdk-php/zipball/7fa78e6397d363296e462c3b348573c17175b7a8",
+                "reference": "7fa78e6397d363296e462c3b348573c17175b7a8",
+                "shasum": ""
+            },
+            "require": {
+                "ext-curl": "*",
+                "ext-json": "*",
+                "php": ">=5.6"
+            },
+            "require-dev": {
+                "phpmd/phpmd": "~2.0",
+                "phpunit/phpunit": "~4.0"
+            },
+            "type": "library",
+            "autoload": {
+                "classmap": [
+                    "lib"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "proprietary"
+            ],
+            "description": "Official PHP SDK for Authorize.Net",
+            "homepage": "http://developer.authorize.net",
+            "keywords": [
+                "authorize.net",
+                "authorizenet",
+                "ecommerce",
+                "payment"
+            ],
+            "time": "2019-01-14T13:32:41+00:00"
+        },
         {
             "name": "dnoegel/php-xdg-base-dir",
             "version": "0.1",
@@ -1424,65 +1467,6 @@
                 "laravel"
             ],
             "time": "2018-09-04T19:00:09+00:00"
-        },
-        {
-            "name": "mbarwick83/shorty",
-            "version": "2.1",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/mbarwick83/shorty.git",
-                "reference": "3d4551b216bf7cc7aa6874de6f1b480404b025d3"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/mbarwick83/shorty/zipball/3d4551b216bf7cc7aa6874de6f1b480404b025d3",
-                "reference": "3d4551b216bf7cc7aa6874de6f1b480404b025d3",
-                "shasum": ""
-            },
-            "require": {
-                "illuminate/support": "~5.1",
-                "php": ">=5.3.0"
-            },
-            "require-dev": {
-                "phpunit/phpunit": "4.*",
-                "scrutinizer/ocular": "~1.1"
-            },
-            "type": "library",
-            "extra": {
-                "laravel": {
-                    "providers": [
-                        "Mbarwick83\\Shorty\\ShortyServiceProvider"
-                    ],
-                    "aliases": {
-                        "Shorty": "Mbarwick83\\Shorty\\Facades\\Shorty"
-                    }
-                }
-            },
-            "autoload": {
-                "psr-4": {
-                    "Mbarwick83\\Shorty\\": "src/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Mike Barwick",
-                    "email": "mike@barwickandco.com"
-                }
-            ],
-            "description": "Google Url Shortener API Package for Laravel 5.1",
-            "homepage": "https://github.com/mbarwick83/shorty",
-            "keywords": [
-                "api",
-                "google",
-                "laravel",
-                "shortener",
-                "url"
-            ],
-            "time": "2018-08-01T20:58:11+00:00"
         },
         {
             "name": "monolog/monolog",

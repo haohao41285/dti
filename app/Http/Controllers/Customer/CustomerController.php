@@ -10,6 +10,7 @@ use App\Models\MainCustomer;
 use App\Models\MainCustomerTemplate;
 use App\Models\MainTeam;
 use App\Models\MainUser;
+use App\Models\MainComboService;
 use Carbon\Carbon;
 use Auth;
 use DataTables;
@@ -297,7 +298,7 @@ class CustomerController extends Controller
                     return Carbon::parse($row['updated_at'])->format('m/d/Y')." by ".$row['user_nickname'];
                 })     
                 ->addColumn('action', function ($row){
-                    return '<a class="btn btn-sm btn-secondary view" customer_id="'.$row['id'].'" href="javascript:void(0)"><i class="fas fa-eye"></i></a>';
+                    return '<a class="btn btn-sm btn-secondary order-service" href="'.route('order-buy',$row['id']).'">Order</a> <a class="btn btn-sm btn-secondary view" customer_id="'.$row['id'].'" href="javascript:void(0)"><i class="fas fa-eye"></i></a>';
                 })
                 ->rawColumns(['action'])
                 ->make(true);
@@ -572,7 +573,19 @@ class CustomerController extends Controller
             })->download("xlsx");
         }else{
             return back()->with('error','No any customer to export!');
-            
-    }
         }
+    }
+    public function orderBuy($customer_id)
+    {
+        if(!$customer_id)
+            return back()->with('error','Error!');
+
+        $customer_info = MainCustomerTemplate::where('id',$customer_id)->first();
+
+        $combo_service_list = MainComboService::where('cs_status',1)->get();
+
+        $count = round($combo_service_list->count()/2);
+
+        return view('orders.buy-service-combo',compact('customer_info','combo_service_list','count'));
+    }
 }
