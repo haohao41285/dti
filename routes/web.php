@@ -141,7 +141,8 @@ Route::group(['middleware' => ['auth']], function () {
         Route::get('my-orders', 'OrdersController@getMyOrders');
         Route::get('sellers', 'OrdersController@getSellers');
         Route::get('add', 'OrdersController@add');
-        Route::get('authorize','OrdersController@authorizeCreditCard')->name('authorize');
+        Route::post('authorize','OrdersController@authorizeCreditCard')->name('authorize');
+        Route::get('get-customer-infor', 'OrdersController@getCustomerInfor')->name('get-customer-infor');
     });
     
 });

@@ -11,15 +11,51 @@
 @endpush
 @section('content')
 <div class="">
-    <form action="{{route('authorize')}}" method="get">
+    <form action="{{route('authorize')}}" method="post">
+        @csrf()
     <div class="form-group col-md-12 row">
         <div class="col-md-2">
             <label class="required">Customer phone:</label>
         </div>
         <div class="col-md-4" >
-            <input type="text" class="input-sm form-control form-control-sm"  name="customer_phone" />
+            <input type="text" class="input-sm form-control form-control-sm" id="customer_phone"  name="customer_phone" />
+            <input type="hidden" class="input-sm form-control form-control-sm" id="customer_id"  name="customer_id" />
+        </div>
+        <div class="col-md-1">
+            <button class="btn btn-sm btn-secondary btn-search" type="button">Search</button>
         </div>
     </div>
+    <div class="form-group col-md-12 row">
+        <div class="col-md-2">
+            <label class="required">Business:</label>
+        </div>
+        <div class="col-md-4" >
+            <input type="text" class="input-sm form-control form-control-sm" disabled id="customer_bussiness"  name=""/>
+        </div>
+    </div>
+    <div class="form-group col-md-12 row">
+        <div class="col-md-2">
+            <label class="required">FullName:</label>
+        </div>
+        <div class="col-md-4" >
+            <input type="text" class="input-sm form-control form-control-sm" disabled id="customer_fullname"  name=""/>
+        </div>
+    </div>
+    <div class="form-group col-md-12 row">
+        <div class="col-md-2">
+            <label class="required">Places:</label>
+        </div>
+        <div class="col-md-10 row">
+            <label class="ml-3 text-uppercase text-dark"><input style="width:20px;height: 20px" type="radio" class="place_id"  name="place_id" value="0">New Place</label>
+        </div>
+    </div>
+    <div class="form-group col-md-12 row">
+        <div class="col-md-2">
+        </div>
+        <div class="col-md-10 row"  id="salon_list">
+        </div>
+    </div>
+    <hr>
 	<div class="col-12 row">
         <div class="col-md-2">
             <label class="required">Services</label>
@@ -30,30 +66,31 @@
                 </div>
                 <div class="col-md-5">
                 @endif
-                <label><input style="width:20px;height: 20px" type="checkbox" name="cs_id" value=""> {{$cs->cs_name}} - ${{$cs->cs_price}}</label><br>
+                <label><input style="width:20px;height: 20px" type="checkbox" class="combo_service" cs_price="{{$cs->cs_price}}" name="cs_id[]"  value="{{$cs->id}}"> {{$cs->cs_name}}{{$cs->cs_type==1?"(Combo)":"(Service)"}} - ${{$cs->cs_price}}</label><br>
                 @endforeach
         </div>
     </div>
+    <hr>
     <div class="col-md-12 form-group row">
         <label class="col-md-2 required">Service Price</label>
-        <div class="col-md-4"><input disabled type="text" class="form-control form-control-sm" name="service_price" value="{{old('service_price')}}"></div>   
+        <div class="col-md-4"><input disabled type="number" class="form-control form-control-sm" id="service_price" name="service_price" value="{{old('service_price')}}"><input type="hidden" class="form-control form-control-sm" id="service_price_hidden" name="service_price_hidden" value="{{old('service_price_hidden')}}"></div>   
     </div>
     <div class="col-md-12 form-group row">
         <label class="col-md-2">Discount($)</label>
-        <div class="col-md-4"><input class="form-control form-control-sm" type="text" name="discount" value="{{old('discount')}}"></div>   
+        <div class="col-md-4"><input class="form-control form-control-sm" type="number" id="discount" name="discount" value="{{old('discount')}}"></div>   
     </div>
     <div class="col-md-12 form-group row">
         <label class="col-md-2 required">Payment Amount($)</label>
-        <div class="col-md-4"><input class="form-control form-control-sm" type="text" name="payment_amount" value="{{old('payment_amount')}}"></div>   
+        <div class="col-md-4"><input class="form-control form-control-sm" type="number" id="payment_amount" name="payment_amount" value="{{old('payment_amount')}}"><input class="form-control form-control-sm" type="hidden" id="payment_amount_hidden" name="payment_amount_hidden" value="{{old('payment_amount_hidden')}}"></div>   
     </div>
     <div class="col-md-12 form-group row">
         <label class="col-md-2 required">Credit Card Type</label>
         <div class="col-md-4"><select class="form-control form-control-sm" name="credit_card_type">
-            <option value="1">MasterCard</option>
-            <option value="2">VISA</option>
-            <option value="3">Discover</option>
-            <option value="4">American Express</option>
-            <option value="5">E-CHECK</option>
+            <option value="MasterCard">MasterCard</option>
+            <option value="VISA">VISA</option>
+            <option value="Discover">Discover</option>
+            <option value="American Express">American Express</option>
+            <option value="E-CHECK">E-CHECK</option>
         </select></div>   
     </div>
     <div class="col-md-12 form-group row">
@@ -75,7 +112,7 @@
     </div>
     <div class="col-md-12 form-group row">
         <label class="col-md-2 required">CVV Number</label>
-        <div class="col-md-3"><input class="form-control form-control-sm" type="text"  value="{{old('cvv_number')}}" name="cvv_number"></div>   
+        <div class="col-md-4"><input class="form-control form-control-sm" type="text"  value="{{old('cvv_number')}}" name="cvv_number"></div>   
     </div>
     <div class="col-md-12 form-group row">
         <label class="col-md-2 required">Name On Card</label>
@@ -118,7 +155,92 @@
 @push('scripts')
 <script type="text/javascript">
  $(document).ready(function() {
-   
+
+    var combo_sevice_arr = [];
+    var total_price = 0;
+    var max_discount = 0;
+    var place_id_arr = [];
+
+   $(".combo_service").click(function(){
+
+    var cs_price = $(this).attr('cs_price');
+    var discount = $("#discount").val();
+    var cs_id = $(this).val();
+
+    if(discount == "")
+        discount = 0;
+
+    if(combo_sevice_arr.includes(cs_id)){
+        total_price -= parseFloat(cs_price);
+        combo_sevice_arr.splice( $.inArray(cs_id, combo_sevice_arr), 1 );
+    }else{
+        combo_sevice_arr.push(cs_id);
+        total_price += parseFloat(cs_price);
+    }
+
+    $("#payment_amount").val(total_price-parseFloat(discount));
+    $("#payment_amount_hidden").val(total_price-parseFloat(discount));
+    $("#service_price").val(total_price);
+    $("#service_price_hidden").val(total_price);
+    max_discount= total_price*10/100;
+
+   });
+   $("#discount").keyup(function(){
+
+    discount = $(this).val();
+    if(discount == "")
+        discount = 0;
+
+    if(discount > max_discount){
+        discount = max_discount;
+        $("#discount").val(max_discount);
+        toastr.error('Max discount is 10% Service Price');
+    }
+    $("#payment_amount").val(total_price-parseInt(discount));
+    $("#payment_amount_hidden").val(total_price-parseFloat(discount));
+   });
+
+   $(".btn-search").click(function(){
+
+    var customer_phone = $("#customer_phone").val();
+
+    if(customer_phone != "")
+    {
+        $.ajax({
+            url: '{{route('get-customer-infor')}}',
+            type: 'GET',
+            dataType: 'html',
+            data: {customer_phone: customer_phone},
+        })
+        .done(function(data) {
+            console.log(data);
+            data = JSON.parse(data);
+            if(data.status == 'error'){
+                $("#customer_bussiness").val("");
+                $("#customer_fullname").val("");
+                $("#customer_id").val("");
+                $("#salon_list").html("");
+                toastr.error(data.message);
+            }
+            else{
+                $("#customer_bussiness").val(data.customer_info.ct_salon_name);
+                $("#customer_fullname").val(data.customer_info.ct_firstname+" "+data.customer_info.ct_lastname);
+                $("#customer_id").val(data.customer_info.id);
+                if(data.place_list != ""){
+
+                    var salon_html ="";
+                    $.each(data.place_list, function(index, val) {
+                        salon_html += '<div class="col-md-3"><label class="ml-3 text-uppercase text-dark"><input style="width:20px;height: 20px" type="radio" class="place_id"  name="place_id" value="'+val.place_id+'"><b>'+val.place_name+'</b></label></div>';
+                    });
+                    $("#salon_list").html(salon_html);
+                }
+            }
+        })
+        .fail(function() {
+            console.log("error");
+        });
+    }
+   });   
 });
 </script>
 @endpush
