@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Models\MainComboService;
 
 /**
  * Class MainCustomerService
@@ -28,5 +29,9 @@ class MainCustomerService extends Model
 	];
 
 	protected $guarded = [];
+	
+	public function getComboService(){
+		return $this->belongsTo(MainComboService::class,'cs_service_id','id');
+	}
 
 }
