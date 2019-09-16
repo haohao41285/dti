@@ -121,7 +121,7 @@ class SmsController extends Controller
 
                 $excel ->sheet($request->sms_send_event_title, function ($sheet) use ($receiver_total)
                 {
-                    $sheet->cell('A1', function($cell) {$cell->setValue('{p1}');   });
+                    $sheet->cell('A1', function($cell) {$cell->setValue('phone');   });
                     $sheet->cell('B1', function($cell) {$cell->setValue('{p3}');   });
                     $sheet->cell('C1', function($cell) {$cell->setValue('{p2}');   });
 
@@ -177,13 +177,12 @@ class SmsController extends Controller
             // 'timeout'  => 5.0,            
         ]);
 
-        $sms_content_template = str_replace("{name}","{p1}",$input['sms_content_template']);
-        $sms_content_template = str_replace("{phone}","{p2}",$sms_content_template);
+        $sms_content_template = str_replace("{name}","{p2}",$input['sms_content_template']);
+        // $sms_content_template = str_replace("{phone}","{p2}",$sms_content_template);
         $sms_content_template = str_replace("{birthday}","{p3}",$sms_content_template);
-        // return $url;
-        $date_time_send = $input['sms_send_event_start_day']." ".$input['sms_send_event_start_time'];
-        $date_time_send = Carbon::parse($date_time_send)->format('d-m-Y h:i:s');
-        $date_time_end =  Carbon::today()->addDays(1)->format('d-m-Y h:i:s'); 
+
+        $date_time_send = Carbon::parse($input['sms_send_event_start_day'])->format('d-m-Y')." 00:00:00";
+        $date_time_end =  Carbon::parse($input['sms_send_event_start_day'])->format('d-m-Y')." 23:59:59";
 
         $response = $client->request('POST', $url ,[
                     'multipart' => [

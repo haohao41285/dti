@@ -140,7 +140,7 @@
         <div class="col-md-4"><input class="form-control form-control-sm" type="text" value="{{old('country')}}"  name="country"></div>   
     </div>
     <div class="col-md-12 form-group row">
-        <label class="col-md-2">Zip Code</label>
+        <label class="col-md-2">Note</label>
         <div class="col-md-4"><textarea class="form-control form-control-sm" name="note" value="{{old('note')}}"  rows="5"></textarea></div>   
     </div>
     <div class="form-group col-md-12">

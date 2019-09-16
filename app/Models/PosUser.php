@@ -18,6 +18,7 @@ class PosUser extends Authenticatable
     protected $fillable = [
         'user_id',
         'user_nickname',
+        'user_default_place_id',
         'user_email',
         'user_password',
         'user_fullname',
