@@ -14,9 +14,11 @@ use App\Models\MainTeam;
 use App\Models\PosPlace;
 use App\Models\MainCustomer;
 use App\Models\PosUser;
+use App\Models\MainUser;
 use net\authorize\api\contract\v1 as AnetAPI;
 use net\authorize\api\controller as AnetController;
 use Carbon\Carbon;
+use DataTables;
 use Validator;
 use Auth;
 use DB;
@@ -43,20 +45,33 @@ class OrdersController extends Controller
 	public function getSellers(){
 		$data['state'] = Option::state();
         $data['status'] = GeneralHelper::getOrdersStatus();
+        $team = Auth::user()->user_team;
+        $data['user_teams'] = MainUser::where('user_team',$team)->get();
+        $data['services'] = MainComboService::where('cs_status',1)->get();
 		return view('orders.sellers',$data);
 	}
 
-	public function add($customer_id =1){
-		if(!$customer_id)
-            return back()->with('error','Error!');
+	public function add($customer_id = 0){
 
-        $customer_info = MainCustomerTemplate::where('id',$customer_id)->first();
+        if($customer_id != 0 ){
+        }
 
-        $combo_service_list = MainComboService::where('cs_status',1)->orderBy('cs_type','asc')->get();
+        $data['customer_info'] = MainCustomerTemplate::where('id',$customer_id)->first();
 
-        $count = round($combo_service_list->count()/2);
+        if(!empty($data['customer_info'])){
+        	$data['place_list'] = PosPlace::join('main_customer',function($join){
+			    	$join->on('pos_place.place_customer_id','main_customer.customer_id');
+			    })
+			    	->where('main_customer.customer_phone',$data['customer_info']->ct_business_phone)
+					->select('pos_place.place_id','pos_place.place_name')
+			        ->get();
+        }
+       
+        $data['combo_service_list'] = MainComboService::where('cs_status',1)->orderBy('cs_type','asc')->get();
 
-        return view('orders.add',compact('customer_info','combo_service_list','count'));
+        $data['count'] = round($data['combo_service_list']->count()/2);
+
+        return view('orders.add',$data);
 	}
 	function authorizeCreditCard(Request $request)
 	{
@@ -201,7 +216,8 @@ class OrdersController extends Controller
 				'csb_card_type' => $request->credit_card_type,
 				'csb_amount_deal' => $request->discount,
 				'csb_card_number' => $number_credit,
-				'csb_status' => 1
+				'csb_status' => 1,
+				'created_by' => Auth::user()->user_id,
 			];
 			
 			//END INSERT MAIN_COMBO_SERVICE_BOUGHT
@@ -368,15 +384,13 @@ class OrdersController extends Controller
 							if(!isset($insert_order) 
 								|| !isset($update_team_customr_status) 
 								|| !isset($customer_service_update)){
-								DB::callback();
+
 								return back()->with(['error'=>'Transaction Failed. Check again!']);
 							}else{
 								DB::commit();
-							    return back()->with(['success'=>'Transaction Successfully!']);
+							    return redirect()->route('my-orders')->with(['success'=>'Transaction Successfully!']);
 							}
-							
 						}
-
 		            	// return back()->with(['success'=>'Transaction Successfully!']);
 
 
@@ -386,7 +400,6 @@ class OrdersController extends Controller
 		                // echo " Auth Code: " . $tresponse->getAuthCode() . "\n";
 		                // echo " Description: " . $tresponse->getMessages()[0]->getDescription() . "\n";
 		            } else {
-						DB::callback();
 		            	return back()->with(['error'=>'Transaction Failed. Check again!']);
 		                // echo "Transaction Failed \n";
 		                // if ($tresponse->getErrors() != null) {
@@ -396,7 +409,6 @@ class OrdersController extends Controller
 		            }
 		            // Or, print errors if the API request wasn't successful
 		        } else {
-					DB::callback();
 		        	return back()->with(['error'=>'Transaction Failed. Check again!']);
 
 		            // echo "Transaction Failed \n";
@@ -461,5 +473,127 @@ class OrdersController extends Controller
 				return response(['customer_info'=>$customer_info,'place_list'=>$place_list]);
 		}
 	}
-	// public function myOrderd
+	public function myOrderDatatable(Request $request)
+	{
+		$start_date =$request->start_date;
+		$end_date = $request->end_date;
+		$my_order_arr = [];
+
+		$my_order_list = MainComboServiceBought::join('main_customer',function($join){
+						$join->on('main_combo_service_bought.csb_customer_id','main_customer.customer_id');
+					})
+						->join('main_user',function($join){
+							$join->on('main_combo_service_bought.created_by','main_user.user_id');
+						});
+
+		if(isset($request->my_order)){
+			$my_order_list = $my_order_list->where('main_combo_service_bought.created_by',Auth::user()->user_id);
+		}
+		if($start_date != ""){
+			$start_date = Carbon::parse($request->start_date)->format('Y-m-d');
+			$my_order_list = $my_order_list->whereDate('main_combo_service_bought.created_at','>=',$start_date);
+		}
+		if($end_date != ""){
+			$end_date = Carbon::parse($request->end_date)->format('Y-m-d');
+			$my_order_list = $my_order_list->whereDate('main_combo_service_bought.created_at','<=',$end_date);
+		}
+
+		$my_order_list = $my_order_list->select('main_combo_service_bought.*','main_customer.customer_lastname','main_customer.customer_firstname','main_user.user_nickname')
+		->get();
+
+	    foreach ($my_order_list as $key => $order) {
+
+	    	$infor = "<span>ID: ".$order->csb_trans_id."</span><br><span>Name: ".$order->csb_card_type."</span><br><span>Number: ".$order->csb_card_number."</span>";
+
+	    	$services = explode(";",$order->csb_combo_service_id);
+
+	    	$service_list = MainComboService::whereIn('id',$services)->select('cs_name')->get();
+	    	$service_name = "";
+	    	foreach ($service_list as $service) {
+	    		$service_name .= "-".$service->cs_name."<br>";
+	    	}
+
+	    	if(!isset($request->my_order))
+	    		$order_date = Carbon::parse($order->created_at)->format('m/d/Y H:i:s')." by ".$order->user_nickname;
+	    	else
+	    		$order_date = Carbon::parse($order->created_at)->format('m/d/Y H:i:s');
+
+	    	$my_order_arr[] = [
+	    		'id' => $order->id,
+	    		'order_date' => $order_date,
+	    		'customer' => $order->customer_firstname. " " .$order->customer_lastname,
+	    		'servivce' => $service_name,
+	    		'subtotal' => $order->csb_amount,
+	    		'discount' => $order->csb_amount_deal,
+	    		'total_charge' => $order->csb_charge,
+	    		'information' => $infor,
+	    	];
+	    }
+		return  DataTables::of($my_order_arr)
+		        ->rawColumns(['servivce','information'])
+				->make(true);
+	}
+	public function sellerOrderDatatable(Request $request)
+	{
+		$start_date = $request->start_date;
+		$end_date = $request->end_date;
+		$service_id = $request->service_id;
+		$user_id = $request->user_id;
+		$team_id = Auth::user()->user_team;
+		$order_arr = [];
+
+		$order_list = MainComboServiceBought::join('main_user',function($join){
+			$join->on('main_combo_service_bought.created_by','main_user.user_id');
+		})
+		    ->where('main_user.user_team',$team_id);
+
+		if($start_date != ""){
+			$start_date = Carbon::parse($start_date)->format('Y-m-d');
+			$order_list = $order_list->whereDate('main_combo_service_bought.created_at','>=',$start_date);
+		}
+		if($end_date != ""){
+			$end_date = Carbon::parse($end_date)->format('Y-m-d');
+			$order_list = $order_list->whereDate('main_combo_service_bought.created_at','<=',$end_date);
+		}
+		if($user_id != ""){
+			$order_list = $order_list->where('main_combo_service_bought.created_by',$user_id);
+		}
+		if($service_id != ""){
+			$order_list = $order_list->where(function($query) use ($service_id){
+				$query->where('csb_combo_service_id',$service_id)
+				->orWhere('csb_combo_service_id','like','%;'.$service_id)
+				->orWhere('csb_combo_service_id','like',$service_id.";%")
+				->orWhere('csb_combo_service_id','like','%;'.$service_id.';%');
+			});
+		}
+		$order_list = $order_list->select('main_combo_service_bought.*','main_user.user_nickname')->get();
+
+		foreach ($order_list as $key => $order) {
+
+	    	$infor = "<span>ID: ".$order->csb_trans_id."</span><br><span>Name: ".$order->csb_card_type."</span><br><span>Number: ".$order->csb_card_number."</span>";
+
+	    	$services = explode(";",$order->csb_combo_service_id);
+
+	    	$service_list = MainComboService::whereIn('id',$services)->select('cs_name')->get();
+	    	$service_name = "";
+	    	foreach ($service_list as $service) {
+	    		$service_name .= "-".$service->cs_name."<br>";
+	    	}
+
+	    	$order_arr[] = [
+	    		'id' => $order->id,
+	    		'order_date' => Carbon::parse($order->created_at)->format('m/d/Y H:i:s'),
+	    		'customer' => $order->customer_firstname. " " .$order->customer_lastname,
+	    		'servivce' => $service_name,
+	    		'subtotal' => $order->csb_amount,
+	    		'discount' => $order->csb_amount_deal,
+	    		'total_charge' => $order->csb_charge,
+	    		'seller' => $order->user_nickname,
+	    		'information' => $infor,
+	    	];
+	    }
+		return  DataTables::of($order_arr)
+		        ->rawColumns(['servivce','information'])
+				->make(true);
+	}
 }
