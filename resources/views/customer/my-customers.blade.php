@@ -60,6 +60,7 @@
         </button>
       </div>
       <div class="modal-body" id="content-customer-detail">
+        
       </div>
     </div>
   </div>
@@ -153,73 +154,111 @@
         url: '{{route('get-customer-detail')}}',
         type: 'GET',
         dataType: 'html',
-        data: {customer_id: customer_id},
+        data: {
+          customer_id: customer_id,
+          my_customer: 1
+        },
       })
       .done(function(data) {
+        // console.log(data);
+        // return;
 
         if(data == 0){
           toastr.error('Get Detaill Customer Error!');
         }else{
           data = JSON.parse(data);
-          if(data.ct_salon_name==null)data.ct_salon_name="";
-          if(data.ct_fullname==null)data.ct_fullname="";
-          if(data.ct_business_phone==null)data.ct_business_phone="";
-          if(data.ct_cell_phone==null)data.ct_cell_phone="";
-          if(data.ct_email==null)data.ct_email="";
-          if(data.ct_address==null)data.ct_address="";
-          if(data.ct_website==null)data.ct_website="";
-          if(data.ct_note==null)data.ct_note="";
-          if(data.ct_status==null)data.ct_status="";
+          if(data.customer_list.ct_salon_name==null)data.customer_list.ct_salon_name="";
+          if(data.customer_list.ct_fullname==null)data.customer_list.ct_fullname="";
+          if(data.customer_list.ct_business_phone==null)data.customer_list.ct_business_phone="";
+          if(data.customer_list.ct_cell_phone==null)data.customer_list.ct_cell_phone="";
+          if(data.customer_list.ct_email==null)data.customer_list.ct_email="";
+          if(data.customer_list.ct_address==null)data.customer_list.ct_address="";
+          if(data.customer_list.ct_website==null)data.customer_list.ct_website="";
+          if(data.customer_list.ct_note==null)data.customer_list.ct_note="";
+          if(data.customer_list.ct_status==null)data.customer_list.ct_status="";
+
+          var place_service = "";
+          var content_table = "";
+          if(data.place_arr.length != 0){
+            $.each(data.place_arr, function(index, val) {
+
+            content_table +=  `<tr>
+                  <td>`+index+`</td>
+                  <td>`+val+`</td>
+                </tr>;`
+            });
+            place_service = `<table class="table table-hovered table-bordered" style="width: 100%">
+              <thead>
+                <tr>
+                  <th>Places</th>
+                  <th>Service</th>
+                </tr>
+              </thead>
+              <tbody>
+                `+content_table+`
+              </tbody>
+            </table>`;
+
+          }
+          
 
           var button = ``;
-          if(data.ct_status === 'Assigned')
-            button = `<button type="button" id=`+data.id+` class="btn btn-primary btn-sm get-customer">Get</button>`;
+          if(data.customer_list.ct_status === 'Assigned')
+            button = `<button type="button" id=`+data.customer_list.id+` class="btn btn-primary btn-sm get-customer">Get</button>`;
           $("#content-customer-detail").html(`
             <div class="row pr-5 pl-5" >
           <div class="col-md-6">
-            <div class="row">
-              <span class="col-md-4">Salon Name:</span>
-              <h5 class="col-md-8">`+data.ct_salon_name+`</h5>
+              <div class="row">
+                <span class="col-md-4">Business:</span>
+                <p class="col-md-8"><b>`+data.customer_list.ct_salon_name+`</b></p>
+              </div>
+              <div class="row">
+                <span class="col-md-4">Contact Name:</span>
+                <p class="col-md-8"><b>`+data.customer_list.ct_fullname+`</b></p>
+              </div>
+              <div class="row">
+                <span class="col-md-4">Business Phone:</span>
+                <p class="col-md-8"><b>`+data.customer_list.ct_business_phone+`</b></p>
+              </div>
+              <div class="row">
+                <span class="col-md-4">Cell Phone:</span>
+                <p class="col-md-8"><b>`+data.customer_list.ct_cell_phone+`</b></p>
+              </div>
+              <div class="row">
+                <span class="col-md-4">Email:</span>
+                <p class="col-md-8"><b>`+data.customer_list.ct_email+`</b></p>
+              </div>
             </div>
-            <div class="row">
-              <span class="col-md-4">Contact Name:</span>
-              <h5 class="col-md-8">`+data.ct_fullname+`</h5>
+            <div class="col-md-6">
+              <div class="row">
+                <span class="col-md-4">Address:</span>
+                <p class="col-md-8"><b>`+data.customer_list.ct_address+`</b></p>
+              </div>
+              <div class="row">
+                <span class="col-md-4">Website:</span>
+                <p class="col-md-8"><b>`+data.customer_list.ct_website+`</b></p>
+              </div>
+              <div class="row">
+                <span class="col-md-4">Note:</span>
+                <p class="col-md-8"><b>`+data.customer_list.ct_note+`</b></p>
+              </div>
+              <div class="row">
+                <span class="col-md-4">Created:</span>
+                <p class="col-md-8"><b>`+data.customer_list.created_at+` by `+data.customer_list.user_nickname+`</b></p>
+              </div>
+              <div class="row">
+                <span class="col-md-4">Status:</span>
+                <p class="col-md-8"><b>`+data.customer_list.ct_status+`</b></p>
+              </div>
+              
             </div>
-            <div class="row">
-              <span class="col-md-4">Business Phone:</span>
-              <h5 class="col-md-8">`+data.ct_business_phone+`</h5>
+            `+place_service+`
+            <div class="col-md-12">
+              <div class="row float-right">
+                `+button+`
+                <button type="button" class="btn btn-danger btn-sm ml-2 close-customer-detail">Close</button>
+              </div>
             </div>
-            <div class="row">
-              <span class="col-md-4">Cell Phone:</span>
-              <h5 class="col-md-8">`+data.ct_cell_phone+`</h5>
-            </div>
-            <div class="row">
-              <span class="col-md-4">Email:</span>
-              <h5 class="col-md-8">`+data.ct_email+`</h5>
-            </div>
-          </div>
-          <div class="col-md-6">
-            <div class="row">
-              <span class="col-md-4">Address:</span>
-              <h5 class="col-md-8">`+data.ct_address+`</h5>
-            </div>
-            <div class="row">
-              <span class="col-md-4">Website:</span>
-              <h5 class="col-md-8">`+data.ct_website+`</h5>
-            </div>
-            <div class="row">
-              <span class="col-md-4">Note:</span>
-              <h5 class="col-md-8">`+data.ct_note+`</h5>
-            </div>
-            <div class="row">
-              <span class="col-md-4">Status:</span>
-              <h5 class="col-md-8">`+data.ct_status+`</h5>
-            </div>
-            <div class="row float-right">
-              `+button+`
-              <button type="button" class="btn btn-danger btn-sm ml-2 close-customer-detail">Close</button>
-            </div>
-          </div>
         </div>
             `);
           $("#viewModal").modal('show');

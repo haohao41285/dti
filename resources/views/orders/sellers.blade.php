@@ -4,14 +4,15 @@
 @endsection
 @section('content')
 <div class="table-responsive">
+    <form action="" id="search-form" accept-charset="utf-8">
 	<div class="form-group col-md-12 row">
 		<div class="col-md-2">
 			<label for="">Seller</label>
-            <select id="status-customer" name="status_customer" class="form-control form-control-sm">
+            <select id="user_id" name="status_customer" class="form-control form-control-sm">
                 <option value="">-- ALL --</option>
-                {{-- @foreach ($status as $key =>  $element)
-                    <option value="{{$key}}">{{$element}}</option>
-                @endforeach --}}
+                @foreach ($user_teams as $key =>  $user)
+                    <option value="{{$user->user_id}}">{{$user->user_nickname}}</option>
+                @endforeach
             </select>
 		</div>
         <div class="col-md-4">
@@ -22,7 +23,7 @@
               <input type="text" class="input-sm form-control form-control-sm" id="end_date" name="end" />
             </div>
         </div>
-        <div class="col-md-2">
+        {{-- <div class="col-md-2">
             <label for="">Status</label>
             <select id="status-customer" name="status_customer" class="form-control form-control-sm">
                 <option value="">-- ALL --</option>
@@ -30,14 +31,14 @@
                     <option value="{{$key}}">{{$element}}</option>
                 @endforeach
             </select>
-        </div>
+        </div> --}}
         <div class="col-md-2">
 			<label for="">Service</label>
-            <select id="status-customer" name="status_customer" class="form-control form-control-sm">
+            <select id="service_id" name="status_customer" class="form-control form-control-sm">
                 <option value="">-- ALL --</option>
-                {{-- @foreach ($status as $key =>  $element)
-                    <option value="{{$key}}">{{$element}}</option>
-                @endforeach --}}
+                @foreach ($services as $key =>  $service)
+                    <option value="{{$service->id}}">{{$service->cs_name}}</option>
+                @endforeach
             </select>
 		</div>
         <div class="col-2 " style="position: relative;">
@@ -47,8 +48,9 @@
             </div>
         </div>  
     </div>
+    </form>
     <hr>
-    <table class="table table-bordered" id="dataTableAllCustomer" width="100%" cellspacing="0">
+    <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
         <thead>                
                 <th>Id</th>
                 <th>Order Date</th>
@@ -57,29 +59,10 @@
                 <th>Subtotal($)</th>
                 <th>Discount($)</th>
                 <th>Total Charged($)</th>
-                <th>Order Status</th>
                 <th>Serller</th>
-                <th>Note</th>
+                <th style="width: 160px">Info</th>
             </tr>
         </thead>
-        <tbody>
-            <tr>
-                <td>1</td>
-                <td>06-06-2019</td>
-                <td class="text-center">abc customer</td>
-                <td class="text-center">123 Services</td>
-                <td>1</td>                           
-                <td>1</td>                           
-                <td>1</td>                           
-                <td class="text-center">06-02-2018</td>
-                <td class="text-center">06-02-2018</td>
-                <td class="text-center">06-02-2018</td>
-                {{-- <td class="text-center nowrap">
-                    <a class="btn btn-sm btn-secondary" href="{{ route("editCustomer") }}"><i class="fas fa-edit"></i></a>
-                    <a class="btn btn-sm btn-secondary" href="#"><i class="fas fa-link"></i></a>
-                </td> --}}
-            </tr>
-        </tbody>
     </table>
 </div>
 @endsection
@@ -87,7 +70,42 @@
 <script type="text/javascript">
  $(document).ready(function() {
  	$("#created_at").datepicker({});
-    $('#dataTableAllCustomer').DataTable({})   
+    var table = $('#dataTable').DataTable({
+         dom: "lBfrtip",
+            buttons: [
+            ],  
+            processing: true,
+            serverSide: true,
+        ajax:{ url:"{{ route('seller-order-datatable') }}",
+        
+        data: function (d) {
+            d.start_date = $("#start_date").val();
+            d.end_date = $("#end_date").val();
+            d.service_id = $("#service_id :selected").val();
+            d.user_id = $("#user_id :selected").val();
+            } 
+        },
+        columns: [
+
+            { data: 'id', name: 'id',class:'text-center' },
+            { data: 'order_date', name: 'order_date', class:'text-center' },
+            { data: 'customer', name: 'customer'},
+            { data: 'servivce', name: 'servivce' },
+            { data: 'subtotal', name: 'subtotal',class:'text-right' },
+            { data: 'discount', name: 'discount',class:'text-right' },
+            { data: 'total_charge', name: 'total_charge',class:'text-right' },
+            { data: 'seller', name: 'seller' },
+            { data: 'information', name: 'information'},                
+                  // { data: 'action' , name:'action' ,orderable: false, searcheble: false ,class:'text-center'}
+        ],
+    });
+    $("#search-button").click(function(){
+        table.draw();
+    });
+    $("#reset").click(function(){
+        $("#search-form")[0].reset();
+        table.draw();
+    });
 });
 </script>
 @endpush

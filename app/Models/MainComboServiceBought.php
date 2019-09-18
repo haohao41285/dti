@@ -10,6 +10,7 @@ class MainComboServiceBought extends Model
     protected $fillable = [
     	'csb_customer_id',
     	'csb_combo_service_id',
+        'csb_trans_id',
     	'csb_amount',
     	'csb_charge',
     	'csb_cashback',

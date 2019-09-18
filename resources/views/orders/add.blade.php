@@ -17,20 +17,28 @@
         <div class="col-md-2">
             <label class="required">Customer phone:</label>
         </div>
+        @if(empty($customer_info))
         <div class="col-md-4" >
             <input type="text" class="input-sm form-control form-control-sm" id="customer_phone"  name="customer_phone" />
-            <input type="hidden" class="input-sm form-control form-control-sm" id="customer_id"  name="customer_id" />
+            <input type="hidden" class="input-sm form-control form-control-sm" id="customer_id" value=""  name="customer_id" />
         </div>
         <div class="col-md-1">
             <button class="btn btn-sm btn-secondary btn-search" type="button">Search</button>
         </div>
+        @else
+        <div class="col-md-4" >
+            <input type="text" disabled class="input-sm form-control form-control-sm" id="customer_phone" value="{{$customer_info->ct_business_phone}}" name="customer_phone" />
+            <input type="hidden"  class="input-sm form-control form-control-sm" id="customer_phone" value="{{$customer_info->ct_business_phone}}" name="customer_phone" />
+            <input type="hidden" class="input-sm form-control form-control-sm" id="customer_id" value="{{!empty($customer_info)?$customer_info->id:""}}"  name="customer_id" />
+        </div>
+        @endif
     </div>
     <div class="form-group col-md-12 row">
         <div class="col-md-2">
             <label class="required">Business:</label>
         </div>
         <div class="col-md-4" >
-            <input type="text" class="input-sm form-control form-control-sm" disabled id="customer_bussiness"  name=""/>
+            <input type="text" class="input-sm form-control form-control-sm" disabled id="customer_bussiness" value="{{!empty($customer_info)?$customer_info->ct_salon_name:""}}"  name=""/>
         </div>
     </div>
     <div class="form-group col-md-12 row">
@@ -38,7 +46,7 @@
             <label class="required">FullName:</label>
         </div>
         <div class="col-md-4" >
-            <input type="text" class="input-sm form-control form-control-sm" disabled id="customer_fullname"  name=""/>
+            <input type="text" class="input-sm form-control form-control-sm" value="{{!empty($customer_info)?$customer_info->ct_fullname:""}}" disabled id="customer_fullname"  name=""/>
         </div>
     </div>
     <div class="form-group col-md-12 row">
@@ -53,6 +61,15 @@
         <div class="col-md-2">
         </div>
         <div class="col-md-10 row"  id="salon_list">
+            @if(isset($place_list))
+            @foreach($place_list as $place)
+            <div class="col-md-3">
+                <label class="ml-3 text-uppercase text-dark">
+                    <input style="width:20px;height: 20px" type="radio" class="place_id"  name="place_id" value="{{$place->place_id}}"><b>{{$place->place_name}}</b>
+                </label>
+            </div>
+            @endforeach
+            @endif
         </div>
     </div>
     <hr>
@@ -140,7 +157,7 @@
         <div class="col-md-4"><input class="form-control form-control-sm" type="text" value="{{old('country')}}"  name="country"></div>   
     </div>
     <div class="col-md-12 form-group row">
-        <label class="col-md-2">Zip Code</label>
+        <label class="col-md-2">Note</label>
         <div class="col-md-4"><textarea class="form-control form-control-sm" name="note" value="{{old('note')}}"  rows="5"></textarea></div>   
     </div>
     <div class="form-group col-md-12">

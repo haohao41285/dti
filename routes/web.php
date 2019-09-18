@@ -138,11 +138,13 @@ Route::group(['middleware' => ['auth']], function () {
 
     Route::group(['prefix' => 'orders','namespace' => 'Orders'], function() {
         Route::get('/all', 'OrdersController@index');
-        Route::get('my-orders', 'OrdersController@getMyOrders');
+        Route::get('my-orders', 'OrdersController@getMyOrders')->name('my-orders');
         Route::get('sellers', 'OrdersController@getSellers');
-        Route::get('add', 'OrdersController@add');
+        Route::get('add/{customer_id?}', 'OrdersController@add')->where(['customer_id'=>'[0-9]+'])->name('add-order');
         Route::post('authorize','OrdersController@authorizeCreditCard')->name('authorize');
         Route::get('get-customer-infor', 'OrdersController@getCustomerInfor')->name('get-customer-infor');
+        Route::get('my-order-datatable', 'OrdersController@myOrderDatatable')->name('my-order-datatable');
+        Route::get('seller-order-datatable', 'OrdersController@sellerOrderDatatable')->name('seller-order-datatable');
     });
     
 });

@@ -1,5 +1,5 @@
 @extends('layouts.app')
-@section('content-title')
+@section('title')
     My Orders
 @endsection
 @section('content')
@@ -13,7 +13,7 @@
               <input type="text" class="input-sm form-control form-control-sm" id="end_date" name="end" />
             </div>
         </div>
-        <div class="col-md-2">
+       {{--  <div class="col-md-2">
             <label for="">Status</label>
             <select id="status-customer" name="status_customer" class="form-control form-control-sm">
                 <option value="">-- ALL --</option>
@@ -21,7 +21,7 @@
                     <option value="{{$key}}">{{$element}}</option>
                 @endforeach
             </select>
-        </div>
+        </div> --}}
         <div class="col-2 " style="position: relative;">
             <div style="position: absolute;top: 50%;" class="">
             <input type="button" class="btn btn-primary btn-sm" id="search-button" value="Search">
@@ -39,27 +39,9 @@
                 <th>Subtotal($)</th>
                 <th>Discount($)</th>
                 <th>Total Charged($)</th>
-                <th>Order Status</th>
-                <th>Task#</th>
+                <th>Info</th>
             </tr>
         </thead>
-        <tbody>
-            <tr>
-                <td>1</td>
-                <td>06-06-2019</td>
-                <td class="text-center">abc customer</td>
-                <td class="text-center">123 Services</td>
-                <td>1</td>                           
-                <td>1</td>                           
-                <td>1</td>                           
-                <td class="text-center">06-02-2018</td>
-                <td class="text-center">06-02-2018</td>
-                {{-- <td class="text-center nowrap">
-                    <a class="btn btn-sm btn-secondary" href="{{ route("editCustomer") }}"><i class="fas fa-edit"></i></a>
-                    <a class="btn btn-sm btn-secondary" href="#"><i class="fas fa-link"></i></a>
-                </td> --}}
-            </tr>
-        </tbody>
     </table>
 </div>
 @endsection
@@ -67,14 +49,37 @@
 <script type="text/javascript">
  $(document).ready(function() {
  	$("#created_at").datepicker({});
-    $('#dataTableAllCustomer').DataTable({      
-//       "ajax": {
-//            "url": "data.json",
-//            "data": function ( d ) {
-//                d.status = $('#filterStatus').val();
-//            }
-//        }
-    }); 
+    var table = $('#dataTableAllCustomer').DataTable({
+            order: [[ 1, "desc" ]],
+         // dom: "lBfrtip",
+            buttons: [
+            ],  
+            processing: true,
+            serverSide: true,
+        ajax:{ url:"{{ route('my-order-datatable') }}",
+
+        data: function (d) {
+            d.start_date = $("#start_date").val();
+            d.end_date = $("#end_date").val();
+            d.my_order = 1;
+            } 
+        },
+        columns: [
+
+            { data: 'id', name: 'id',class:'text-center' },
+            { data: 'order_date', name: 'order_date', class:'text-center' },
+            { data: 'customer', name: 'customer'},
+            { data: 'servivce', name: 'servivce' },
+            { data: 'subtotal', name: 'subtotal',class:'text-right' },
+            { data: 'discount', name: 'discount',class:'text-right' },
+            { data: 'total_charge', name: 'total_charge',class:'text-right' },
+            { data: 'information', name: 'information'},                
+                  // { data: 'action' , name:'action' ,orderable: false, searcheble: false ,class:'text-center'}
+        ],
+    });
+    $("#search-button").click(function(){
+        table.draw();
+    });
 });
 </script>
 @endpush

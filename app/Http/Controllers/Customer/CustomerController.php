@@ -11,6 +11,8 @@ use App\Models\MainCustomerTemplate;
 use App\Models\MainTeam;
 use App\Models\MainUser;
 use App\Models\MainComboService;
+use App\Models\MainCustomerService;
+use App\Models\PosPlace;
 use Carbon\Carbon;
 use Auth;
 use DataTables;
@@ -142,7 +144,7 @@ class CustomerController extends Controller
         $team_id = Auth::user()->user_team;
 
         $customer_list = MainCustomerTemplate::leftjoin('main_user',function($join){
-                                                $join->on('main_customer_template.updated_by','main_user.user_id');
+                                                $join->on('main_customer_template.created_by','main_user.user_id');
                                             })
                                             ->where('main_customer_template.id',$customer_id)
                                             ->select('main_customer_template.*','main_user.user_nickname')
@@ -160,11 +162,38 @@ class CustomerController extends Controller
                 $customer_status = GeneralHelper::getCustomerStatus($customer_status_arr[$customer_list->id]);
 
             $customer_list['ct_status'] = $customer_status;
-            $customer_list['ct_business_phone'] = substr($customer_list->ct_business_phone,0,3)."########";
-            $customer_list['ct_cell_phone'] = substr($customer_list->ct_cell_phone,0,3)."########";
-            // $customer_list['created_at'] = Carbon::parse($customer_list->created_at)->format('m/d/Y');
 
-            return $customer_list;
+            $place_list = MainCustomerService::join('pos_place',function($join){
+                $join->on('main_customer_service.cs_place_id','pos_place.place_id');
+                })
+                ->join('main_customer',function($join){
+                    $join->on('main_customer_service.cs_customer_id','main_customer.customer_id');
+                })
+                ->join('main_combo_service',function($join){
+                    $join->on('main_customer_service.cs_service_id','main_combo_service.id');
+                })
+                ->where('main_customer.customer_phone',$customer_list->ct_business_phone)
+                ->select('pos_place.place_name','main_combo_service.cs_name')
+                ->get();
+
+            $place_arr = [];
+            foreach ($place_list as $key => $place) {
+
+                $place_arr[$place->place_name][] = $place->cs_name;
+            }
+
+            if(!isset($request->my_customer)){
+                $customer_list['ct_business_phone'] = substr($customer_list->ct_business_phone,0,3)."########";
+                $customer_list['ct_cell_phone'] = substr($customer_list->ct_cell_phone,0,3)."########";
+            }
+            //GET PALCE, SERVICE
+
+            $customer_list['created_at'] = Carbon::parse($customer_list->created_at)->format('Y-m-d H:i:s');
+
+            $data['customer_list'] = $customer_list;
+            $data['place_arr'] = $place_arr;
+
+            return $data;
         }
     }
     public function addCustomerToMy(Request $request){
@@ -295,10 +324,10 @@ class CustomerController extends Controller
         }
         return Datatables::of($customer_arr)
                 ->editColumn('updated_at',function($row){
-                    return Carbon::parse($row['updated_at'])->format('m/d/Y')." by ".$row['user_nickname'];
+                    return Carbon::parse($row['updated_at'])->format('m/d/Y H:i:s')." by ".$row['user_nickname'];
                 })     
                 ->addColumn('action', function ($row){
-                    return '<a class="btn btn-sm btn-secondary order-service" href="'.route('order-buy',$row['id']).'">Order</a> <a class="btn btn-sm btn-secondary view" customer_id="'.$row['id'].'" href="javascript:void(0)"><i class="fas fa-eye"></i></a>';
+                    return '<a class="btn btn-sm btn-secondary order-service" href="'.route('add-order',$row['id']).'">Order</a> <a class="btn btn-sm btn-secondary view" customer_id="'.$row['id'].'" href="javascript:void(0)"><i class="fas fa-eye"></i></a>';
                 })
                 ->rawColumns(['action'])
                 ->make(true);

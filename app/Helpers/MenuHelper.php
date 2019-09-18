@@ -7,8 +7,8 @@ class MenuHelper{
 		return [
 		    ['text' => 'Dashboard', 'icon'=>'fas fa-tachometer-alt', 'link' => 'dashboard'],
 		    ['text' => 'Customers', 'icon'=>'fas fa-users', 'link' => 'customer','childrens' => [
-		        ['text' => 'New Customers', 'link'=> 'customer/customers'],
-		        ['text' => 'Merchants', 'link'=> 'customer/merchants'],
+		        ['text' => 'All Customers', 'link'=> 'customer/customers'],
+		        ['text' => 'My Customer', 'link'=> 'customer/my-customers'],
 		        ['text' => 'Create New Customer', 'link'=> 'customer/add'],
 		    ]],
 		    ['text' => 'Marketing', 'icon'=>'fas fa-lightbulb', 'link' => 'marketing','childrens' => [
