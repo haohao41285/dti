@@ -75,33 +75,59 @@ class OrdersController extends Controller
 	}
 	function authorizeCreditCard(Request $request)
 	{
-		// return $request->all();
-		$rule = [
-			'payment_amount' => 'required',
-			'credit_card_type' => 'required',
-			'credit_card_number' => 'required',
-			'experation_month' => 'required',
-			'experation_year' => 'required',
-			'cvv_number' => 'required',
-			'first_name' => 'required',
-			'last_name' => 'required',
-			'cs_id' =>'required',
-			'customer_phone' => 'required',
-			'customer_id' =>'required',
-			'place_id' => 'required'
-		];
-		$message = [
-			'payment_amount.required' => 'Enter Amount',
-			'credit_card_type.required' => 'Choose Credit card Type',
-			'credit_card_number.required' => 'Enter Card Number',
-			'experation_month.required' => 'Choose Experation Date',
-			'experation_year.required' => 'Choose Experation Date',
-			'cvv_number.required' => 'Enter svv number',
-			'cs_id.required' => 'Choose Combo Service',
-			'customer_phone.required' => 'Enter Customer Phone',
-			'customer_id.required' => 'Choose Customer',
-			'place_id.required' => 'Choose Place'
-		];
+		if($request->credit_card_type != 'E-CHECK'){
+			$rule = [
+				'payment_amount' => 'required',
+				'credit_card_type' => 'required',
+				'credit_card_number' => 'required',
+				'experation_month' => 'required',
+				'experation_year' => 'required',
+				'cvv_number' => 'required',
+				'first_name' => 'required',
+				'last_name' => 'required',
+				'cs_id' =>'required',
+				'customer_phone' => 'required',
+				'customer_id' =>'required',
+				'place_id' => 'required'
+			];
+			$message = [
+				'payment_amount.required' => 'Enter Amount',
+				'credit_card_type.required' => 'Choose Credit card Type',
+				'credit_card_number.required' => 'Enter Card Number',
+				'experation_month.required' => 'Choose Experation Date',
+				'experation_year.required' => 'Choose Experation Date',
+				'cvv_number.required' => 'Enter svv number',
+				'cs_id.required' => 'Choose Combo Service',
+				'customer_phone.required' => 'Enter Customer Phone',
+				'customer_id.required' => 'Choose Customer',
+				'place_id.required' => 'Choose Place'
+			];
+		}else{
+			$rule = [
+				'payment_amount' => 'required',
+				'credit_card_type' => 'required',
+				'routing_number' => 'required',
+				'account_number' => 'required',
+				'bank_name' => 'required',
+				'first_name' => 'required',
+				'last_name' => 'required',
+				'cs_id' =>'required',
+				'customer_phone' => 'required',
+				'customer_id' =>'required',
+				'place_id' => 'required'
+			];
+			$message = [
+				'payment_amount.required' => 'Enter Amount',
+				'credit_card_type.required' => 'Choose Credit card Type',
+				'routing_number.required' => 'Enter Routing Number',
+				'account_number.required' => 'Choose Account Number',
+				'bank_name.required' => 'Choose Bank Name',
+				'cs_id.required' => 'Choose Combo Service',
+				'customer_phone.required' => 'Enter Customer Phone',
+				'customer_id.required' => 'Choose Customer',
+				'place_id.required' => 'Choose Place'
+			];
+		}
 		$validator = Validator::make($request->all(),$rule,$message);
 		if($validator->fails())
 			// return back()->with('error' => $validator->getMessageBag()->toArray());
@@ -216,12 +242,12 @@ class OrdersController extends Controller
 				'csb_card_type' => $request->credit_card_type,
 				'csb_amount_deal' => $request->discount,
 				'csb_card_number' => $number_credit,
+				'routing_number' => $request->routing_number,
+				'account_number' => $request->account_number,
+				'bank_name' => $request->bank_name,
 				'csb_status' => 1,
 				'created_by' => Auth::user()->user_id,
 			];
-			
-			//END INSERT MAIN_COMBO_SERVICE_BOUGHT
-
 			//CREATE NEW PLACE IN POS_PLACE, NEW USER IN POS_USER IF CHOOSE NEW PLACE
 			if($request->place_id == 0){
 				//INSERT POS_PLACE

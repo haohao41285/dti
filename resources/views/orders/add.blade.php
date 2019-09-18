@@ -6,7 +6,7 @@
 <style>
     .form-group {
     margin-bottom: .5rem;
-}
+    }
 </style>
 @endpush
 @section('content')
@@ -102,7 +102,7 @@
     </div>
     <div class="col-md-12 form-group row">
         <label class="col-md-2 required">Credit Card Type</label>
-        <div class="col-md-4"><select class="form-control form-control-sm" name="credit_card_type">
+        <div class="col-md-4"><select class="form-control form-control-sm" name="credit_card_type" id="credit_card_type">
             <option value="MasterCard">MasterCard</option>
             <option value="VISA">VISA</option>
             <option value="Discover">Discover</option>
@@ -110,11 +110,23 @@
             <option value="E-CHECK">E-CHECK</option>
         </select></div>   
     </div>
-    <div class="col-md-12 form-group row">
+    <div class="col-md-12 form-group row check" style="display: none">
+        <label class="col-md-2 required">Routing Number</label>
+        <div class="col-md-4"><input class="form-control form-control-sm" type="text" name="routing_number"  value="{{old('routing_number')}}"></div>   
+    </div>
+    <div class="col-md-12 form-group row check" style="display: none">
+        <label class="col-md-2 required">Account Number</label>
+        <div class="col-md-4"><input class="form-control form-control-sm" type="text" name="account_number"  value="{{old('account_number')}}"></div>   
+    </div>
+    <div class="col-md-12 form-group row check" style="display: none">
+        <label class="col-md-2 required">Bank Name</label>
+        <div class="col-md-4"><input class="form-control form-control-sm" type="text" name="bank_name"  value="{{old('bank_name')}}"></div>   
+    </div>
+    <div class="col-md-12 form-group row credit">
         <label class="col-md-2 required">Credit Card Number</label>
         <div class="col-md-4"><input class="form-control form-control-sm" type="text" name="credit_card_number"  value="{{old('credit_card_number')}}"></div>   
     </div>
-    <div class="col-md-12 form-group row">
+    <div class="col-md-12 form-group row credit">
         <label class="col-md-2 required">Experation Date</label>
         <div class="col-md-2"><select class="form-control form-control-sm"  name="experation_month">
             @for($i=1;$i<13;$i++)
@@ -127,7 +139,7 @@
             @endfor
         </select></div>    
     </div>
-    <div class="col-md-12 form-group row">
+    <div class="col-md-12 form-group row credit">
         <label class="col-md-2 required">CVV Number</label>
         <div class="col-md-4"><input class="form-control form-control-sm" type="text"  value="{{old('cvv_number')}}" name="cvv_number"></div>   
     </div>
@@ -257,7 +269,17 @@
             console.log("error");
         });
     }
-   });   
+   });
+   $("#credit_card_type").change(function(event) {
+       var credit_card_type = $('#credit_card_type :selected').val();
+       if(credit_card_type == 'E-CHECK'){
+            $(".check").css('display', '');
+            $(".credit").css('display', 'none');
+       }else{
+            $(".check").css('display', 'none');
+            $(".credit").css('display', '');
+        }
+   }); 
 });
 </script>
 @endpush
