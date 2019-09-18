@@ -10,6 +10,9 @@ use App\Models\MainCustomer;
 use App\Models\MainCustomerTemplate;
 use App\Models\MainTeam;
 use App\Models\MainUser;
+use App\Models\MainComboService;
+use App\Models\MainCustomerService;
+use App\Models\PosPlace;
 use Carbon\Carbon;
 use Auth;
 use DataTables;
@@ -141,7 +144,7 @@ class CustomerController extends Controller
         $team_id = Auth::user()->user_team;
 
         $customer_list = MainCustomerTemplate::leftjoin('main_user',function($join){
-                                                $join->on('main_customer_template.updated_by','main_user.user_id');
+                                                $join->on('main_customer_template.created_by','main_user.user_id');
                                             })
                                             ->where('main_customer_template.id',$customer_id)
                                             ->select('main_customer_template.*','main_user.user_nickname')
@@ -159,11 +162,38 @@ class CustomerController extends Controller
                 $customer_status = GeneralHelper::getCustomerStatus($customer_status_arr[$customer_list->id]);
 
             $customer_list['ct_status'] = $customer_status;
-            $customer_list['ct_business_phone'] = substr($customer_list->ct_business_phone,0,3)."########";
-            $customer_list['ct_cell_phone'] = substr($customer_list->ct_cell_phone,0,3)."########";
-            // $customer_list['created_at'] = Carbon::parse($customer_list->created_at)->format('m/d/Y');
 
-            return $customer_list;
+            $place_list = MainCustomerService::join('pos_place',function($join){
+                $join->on('main_customer_service.cs_place_id','pos_place.place_id');
+                })
+                ->join('main_customer',function($join){
+                    $join->on('main_customer_service.cs_customer_id','main_customer.customer_id');
+                })
+                ->join('main_combo_service',function($join){
+                    $join->on('main_customer_service.cs_service_id','main_combo_service.id');
+                })
+                ->where('main_customer.customer_phone',$customer_list->ct_business_phone)
+                ->select('pos_place.place_name','main_combo_service.cs_name')
+                ->get();
+
+            $place_arr = [];
+            foreach ($place_list as $key => $place) {
+
+                $place_arr[$place->place_name][] = $place->cs_name;
+            }
+
+            if(!isset($request->my_customer)){
+                $customer_list['ct_business_phone'] = substr($customer_list->ct_business_phone,0,3)."########";
+                $customer_list['ct_cell_phone'] = substr($customer_list->ct_cell_phone,0,3)."########";
+            }
+            //GET PALCE, SERVICE
+
+            $customer_list['created_at'] = Carbon::parse($customer_list->created_at)->format('Y-m-d H:i:s');
+
+            $data['customer_list'] = $customer_list;
+            $data['place_arr'] = $place_arr;
+
+            return $data;
         }
     }
     public function addCustomerToMy(Request $request){
@@ -294,10 +324,10 @@ class CustomerController extends Controller
         }
         return Datatables::of($customer_arr)
                 ->editColumn('updated_at',function($row){
-                    return Carbon::parse($row['updated_at'])->format('m/d/Y')." by ".$row['user_nickname'];
+                    return Carbon::parse($row['updated_at'])->format('m/d/Y H:i:s')." by ".$row['user_nickname'];
                 })     
                 ->addColumn('action', function ($row){
-                    return '<a class="btn btn-sm btn-secondary view" customer_id="'.$row['id'].'" href="javascript:void(0)"><i class="fas fa-eye"></i></a>';
+                    return '<a class="btn btn-sm btn-secondary order-service" href="'.route('add-order',$row['id']).'">Order</a> <a class="btn btn-sm btn-secondary view" customer_id="'.$row['id'].'" href="javascript:void(0)"><i class="fas fa-eye"></i></a>';
                 })
                 ->rawColumns(['action'])
                 ->make(true);
@@ -424,23 +454,35 @@ class CustomerController extends Controller
                                     'status' => 'error',
                                     'message' => 'Import Error.(Busines Name, Fullname,Firstname, Lastname, Business Phone, Cell phone not empty. Check again!'
                                 ]);
+                            //CHECK PHONE NUMBER EXIST
+                            $check_phone = MainCustomerTemplate::where('ct_business_phone',$value['business_phone'])->where('ct_cell_phone',$value['cell_phone'])->count();
 
-                            $customer_arr[] = [
-                                'ct_salon_name' => $value['business_name'],
-                                'ct_fullname' => $value['fullname'],
-                                'ct_firstname' => $value['firstname'],
-                                'ct_lastname' => $value['lastname'],
-                                'ct_business_phone' => $value['business_phone'],
-                                'ct_cell_phone' => $value['cell_phone'],
-                                'ct_email' => $value['email'],
-                                'ct_address' => $value['address'],
-                                'ct_note' => $value['note'],
-                                'created_by' => Auth::user()->user_id,
-                                'updated_by' => Auth::user()->user_id
-                            ];
-                            $insert_count++;
+                            if($check_phone == 0){
+                                $customer_arr[] = [
+                                    'ct_salon_name' => $value['business_name'],
+                                    'ct_fullname' => $value['fullname'],
+                                    'ct_firstname' => $value['firstname'],
+                                    'ct_lastname' => $value['lastname'],
+                                    'ct_business_phone' => $value['business_phone'],
+                                    'ct_cell_phone' => $value['cell_phone'],
+                                    'ct_email' => $value['email'],
+                                    'ct_address' => $value['address'],
+                                    'ct_note' => $value['note'],
+                                    'created_by' => Auth::user()->user_id,
+                                    'updated_by' => Auth::user()->user_id
+                                ];
+                                $insert_count++;
+                            }
                         }
                     }
+                    if($insert_count == 0){
+                        DB::callback();
+                        return response([
+                            'status' => 'error',
+                            'message' => 'Import Error.This file had imported. Check again!'
+                        ]);
+                    }
+
                     if(isset($request->check_my_customer)){
                         $customer_id_max = MainCustomerTemplate::max('id');
                         $customer_id = $request->customer_id;
@@ -560,7 +602,19 @@ class CustomerController extends Controller
             })->download("xlsx");
         }else{
             return back()->with('error','No any customer to export!');
-            
-    }
         }
+    }
+    public function orderBuy($customer_id)
+    {
+        if(!$customer_id)
+            return back()->with('error','Error!');
+
+        $customer_info = MainCustomerTemplate::where('id',$customer_id)->first();
+
+        $combo_service_list = MainComboService::where('cs_status',1)->get();
+
+        $count = round($combo_service_list->count()/2);
+
+        return view('orders.buy-service-combo',compact('customer_info','combo_service_list','count'));
+    }
 }

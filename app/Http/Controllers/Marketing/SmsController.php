@@ -6,10 +6,11 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Models\MainSmsContentTemplate;
 use App\Models\MainSmsSend;
-use Validator;
-use Auth;
 use GuzzleHttp\Client;
 use Carbon\Carbon;
+use DataTables;
+use Validator;
+use Auth;
 
 
 class SmsController extends Controller
@@ -112,7 +113,7 @@ class SmsController extends Controller
 				'sms_send_event_enable' => 1
         	];
         	//SmsSend::create($arr);
-        	$date = now()->format('Y_m_d');
+        	$date = now()->format('Y_m_d_His');
 
             $file_name = "receiver_sms_list_".$date;
 
@@ -120,7 +121,7 @@ class SmsController extends Controller
 
                 $excel ->sheet($request->sms_send_event_title, function ($sheet) use ($receiver_total)
                 {
-                    $sheet->cell('A1', function($cell) {$cell->setValue('{p1}');   });
+                    $sheet->cell('A1', function($cell) {$cell->setValue('phone');   });
                     $sheet->cell('B1', function($cell) {$cell->setValue('{p3}');   });
                     $sheet->cell('C1', function($cell) {$cell->setValue('{p2}');   });
 
@@ -176,10 +177,12 @@ class SmsController extends Controller
             // 'timeout'  => 5.0,            
         ]);
 
-        $sms_content_template = str_replace("{name}","{p1}",$input['sms_content_template']);
-        $sms_content_template = str_replace("{phone}","{p2}",$sms_content_template);
+        $sms_content_template = str_replace("{name}","{p2}",$input['sms_content_template']);
+        // $sms_content_template = str_replace("{phone}","{p2}",$sms_content_template);
         $sms_content_template = str_replace("{birthday}","{p3}",$sms_content_template);
-        // return $url;
+
+        $date_time_send = Carbon::parse($input['sms_send_event_start_day'])->format('d-m-Y')." 00:00:00";
+        $date_time_end =  Carbon::parse($input['sms_send_event_start_day'])->format('d-m-Y')." 23:59:59";
 
         $response = $client->request('POST', $url ,[
                     'multipart' => [
@@ -197,7 +200,7 @@ class SmsController extends Controller
                             ],
                             [
                                 'name' => 'start',
-                                'contents' =>Carbon::parse($input['sms_send_event_start_day'])->format('d-m-Y'),
+                                'contents' => $date_time_send,
                             ],
                             [
                                 'name' => 'date_before',
@@ -225,12 +228,16 @@ class SmsController extends Controller
                             ],
                             [
                                 'name' => 'end',
-                                'contents' => Carbon::now()->format('d-m-Y'),
+                                'contents' => $date_time_end,
                             ],
                             [
                                 'name'     => 'upfile',
                                 'contents' => fopen($file_url,'r'),
                             ],
+                            [
+                                'name' => 'status',
+                                'contents' => 1,
+                            ]
                         
                     ],
                     'headers' => [
@@ -247,9 +254,122 @@ class SmsController extends Controller
         $resp =  (string)$response->getBody();
         //echo $resp;
         return $resp;
-
     }
+    public function trackingHistory()
+    {
+        return view('marketing.tracking-history');
+    }
+    public function trackingHistoryDatatable(Request $request)
+    {
+        $history_list = MainSmsSend::join('main_sms_content_template',function($join){
+            $join->on('main_sms_send.sms_send_event_template_id','main_sms_content_template.id');
+            })
+            ->join('main_user',function($join){
+                $join->on('main_sms_send.created_by','main_user.user_id');
+            })
+            ->select('main_sms_send.*','main_user.user_nickname','main_sms_content_template.sms_content_template');
 
+        return DataTables::of($history_list)
+            ->editColumn('created_by',function($row){
+                return Carbon::parse($row->created_at)->format('m/d/Y H:i:s')." by ".$row->user_nickname;
+            })
+            ->addColumn('action',function($row){
+                return '<a class="btn btn-sm btn-secondary view-sms" event_id="'.$row->id.'" href="javascript:void(0)"><i class="fas fa-eye"></i></a>';
+            })
+            ->rawColumns(['action','sms_content_template','sms_send_event_title'])
+            ->make(true);
+    }
+     public function eventDetail(Request $request){
 
+        $event_id = $request->event_id;
+        $data_sum = [];
 
+        if($event_id != 0){
+
+            $url_api = "history?merchant_id=1&storage_event_id=".$event_id;
+
+            $url = env("SMS_API_URL").$url_api;
+
+            $header = array('Authorization'=>'Bearer ' .env("SMS_API_KEY"));
+            $client = new Client([
+                // 'timeout'  => 5.0,            
+            ]);
+            $response = $client->get($url, array('headers' => $header));
+
+            $resp=  (string)$response->getBody();
+            // return $resp;
+
+            $data_arr = json_decode($resp);
+
+                foreach($data_arr->data as $data){
+                    $data_sum[] = [
+                        'phone' => $data->phone,
+                        'content' => $data->content,
+                        'date_time' => $data->updated_at,
+                    ];
+                }
+        }else{
+            $data_sum[] = [
+                        'phone' => "",
+                        'content' => "",
+                        'date_time' => "",
+                    ];
+        }
+        
+        return Datatables::of($data_sum)
+                           ->make(true);
+    }
+     public function calculateSms(Request $request){
+
+        $event_id = $request->event_id;
+
+        $url_api = "history?merchant_id=1&storage_event_id=".$event_id;
+
+        $url = env("SMS_API_URL").$url_api;
+        // return $url;
+
+        $header = array('Authorization'=>'Bearer ' .env("SMS_API_KEY"));
+        $client = new Client([
+            // 'timeout'  => 5.0,            
+        ]);
+        $response = $client->get($url, array('headers' => $header));
+
+        $resp=  (string)$response->getBody();
+
+        $data_arr = json_decode($resp,TRUE);
+
+        $calculate = [];
+        $success = 0;
+        $fail = 0;
+        //TOTAL SMS 
+        $sms_total = MainSmsSend::where('id',$event_id)->first()->sms_total;
+        $data_sum = [];
+
+        if(count($data_arr['data']) > 0)
+            foreach($data_arr->data as $data){
+
+                if($data->status ==1) $success++;
+                if($data->status ==0) $fail++;
+
+                $calculate = [
+
+                    'success' => $success,
+                    'fail' => $fail,
+                    'total' => $sms_total,
+                    'balance' => $sms_total - $success
+                ];
+            }
+        else
+            $calculate = [
+
+                    'success' => "",
+                    'fail' => "",
+                    'total' => $sms_total,
+                    'balance' => ""
+                ];
+        if(!isset($calculate))
+            return response(['status'=>'error','message'=>'Error!']);
+        else
+            return  response(['status'=>'success','calculate'=>$calculate]);
+    }
 }

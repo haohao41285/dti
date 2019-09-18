@@ -48,6 +48,8 @@ Route::group(['middleware' => ['auth']], function () {
          Route::post('import-customer', 'CustomerController@importCustomer')->name('import-customer');
          Route::get('export-customer', 'CustomerController@exportCustomer')->name('export-customer');
          Route::get('export-my-customer', 'CustomerController@exportMyCustomer')->name('export-my-customer');
+         Route::get('order-buy/{id}', 'CustomerController@orderBuy')->where(['id'=>'[0-9]+'])->name('order-buy');
+
     });
     
     Route::group(['prefix'=>'marketing', 'namespace'=>'Marketing'],function(){
@@ -55,7 +57,10 @@ Route::group(['middleware' => ['auth']], function () {
         Route::get('get-content-template','SmsController@getContentTemplate')->name('get-content-template');
         Route::get('download-template-file','SmsController@downloadTemplateFile')->name('download-template-file');
         Route::post('send-sms','SmsController@postSendSMS')->name('post-send-sms');
-
+        Route::get('tracking-history','SmsController@trackingHistory')->name('tracking-history');
+        Route::get('tracking-history-datatable','SmsController@trackingHistoryDatatable')->name('tracking-history-datatable');
+        Route::get('/sms/event-detail','SmsController@eventDetail')->name('event-detail');
+        Route::get('/sms/calculate-sms','SmsController@calculateSms')->name('calculate-sms');
 
     });
     
@@ -109,6 +114,11 @@ Route::group(['middleware' => ['auth']], function () {
         Route::get('change-status-team-type', 'SetupTeamController@changeStatusTeamtype')->name('change-status-team-type');
         Route::get('add-team-type', 'SetupTeamController@addTeamType')->name('add-team-type');
         Route::get('delete-team-type', 'SetupTeamController@deleteTeamType')->name('delete-team-type');
+
+        Route::get('setup-template-sms','SetupSmsController@setupTemplateSms')->name('setup-template-sms');
+        Route::get('sms-template-datatable','SetupSmsController@smsTemplateDatatable')->name('sms-template-datatable');
+        Route::post('delete-template','SetupSmsController@deleteTemplate')->name('delete-template');
+        Route::post('save-template-sms','SetupSmsController@saveTemplateSms')->name('save-template-sms');
     });
 
     Route::group(['prefix'=>'user'],function(){
@@ -128,9 +138,13 @@ Route::group(['middleware' => ['auth']], function () {
 
     Route::group(['prefix' => 'orders','namespace' => 'Orders'], function() {
         Route::get('/all', 'OrdersController@index');
-        Route::get('my-orders', 'OrdersController@getMyOrders');
+        Route::get('my-orders', 'OrdersController@getMyOrders')->name('my-orders');
         Route::get('sellers', 'OrdersController@getSellers');
-        Route::get('add', 'OrdersController@add');
+        Route::get('add/{customer_id?}', 'OrdersController@add')->where(['customer_id'=>'[0-9]+'])->name('add-order');
+        Route::post('authorize','OrdersController@authorizeCreditCard')->name('authorize');
+        Route::get('get-customer-infor', 'OrdersController@getCustomerInfor')->name('get-customer-infor');
+        Route::get('my-order-datatable', 'OrdersController@myOrderDatatable')->name('my-order-datatable');
+        Route::get('seller-order-datatable', 'OrdersController@sellerOrderDatatable')->name('seller-order-datatable');
     });
     
 });

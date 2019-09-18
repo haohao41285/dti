@@ -7,13 +7,13 @@ class MenuHelper{
 		return [
 		    ['text' => 'Dashboard', 'icon'=>'fas fa-tachometer-alt', 'link' => 'dashboard'],
 		    ['text' => 'Customers', 'icon'=>'fas fa-users', 'link' => 'customer','childrens' => [
-		        ['text' => 'New Customers', 'link'=> 'customer/customers'],
-		        ['text' => 'Merchants', 'link'=> 'customer/merchants'],
+		        ['text' => 'All Customers', 'link'=> 'customer/customers'],
+		        ['text' => 'My Customer', 'link'=> 'customer/my-customers'],
 		        ['text' => 'Create New Customer', 'link'=> 'customer/add'],
 		    ]],
 		    ['text' => 'Marketing', 'icon'=>'fas fa-lightbulb', 'link' => 'marketing','childrens' => [
 		        ['text' => 'Send SMS', 'link'=> 'marketing/sendsms'],
-		        ['text' => 'Tracking History', 'link'=> 'marketing/trackinghistory'],        
+		        ['text' => 'Tracking History', 'link'=> 'marketing/tracking-history'],        
 		    ]],
 		    ['text' => 'DataSetup', 'icon'=>'fas fa-database', 'link' => 'datasetup','childrens' => [
 		        ['text' => 'Combo', 'link'=> 'datasetup/combos'],
@@ -45,8 +45,9 @@ class MenuHelper{
 		    ['text' => 'Settings', 'icon'=>'fas fa-cog', 'link' => 'setting','childrens' => [
 		        ['text' => 'Setup Team', 'link'=> 'setting/setup-team'],
 		        ['text' => 'Setup Team Type', 'link'=> 'setting/setup-team-type'],
-		        ['text' => 'Setup Service', 'link'=> 'setting/setup-service'],
-		        ['text' => 'Setup Background Image', 'link'=> 'setting/setup-background'],	        
+		        ['text' => 'Setup Service', 'link'=> 'setting/setup-service'],        
+		        ['text' => 'Setup Template SMS', 'link'=> 'setting/setup-template-sms'],
+		        ['text' => 'Setup Background Image', 'link'=> 'setting/setup-background'],
 		    ]],
 		    ['text' => 'Recent Logs', 'icon'=>'fas fa-list-alt', 'link' => 'recentlog'],
 		];

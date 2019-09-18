@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class MainCustomerTemplate extends Model
 {
     protected $table = "main_customer_template";
-    protected $filable = [
+    protected $fillable = [
     	'ct_salon_name',
     	'ct_fullname',
         'ct_firstname',
@@ -21,4 +21,7 @@ class MainCustomerTemplate extends Model
     	'created_by',
     	'updated_by'
     ];
+    public static function getFullname(){
+        return $this->ct_firstname." ".$this->ct_lastname;
+    }
 }
