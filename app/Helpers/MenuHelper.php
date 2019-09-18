@@ -30,6 +30,7 @@ class MenuHelper{
 		     ['text' => 'IT Tools', 'icon'=>'fas fa-toolbox', 'link' => 'tools','childrens' => [
 		        ['text' => 'Clone Website', 'link'=> 'tools/clonewebsite'],
 		        ['text' => 'Update Website', 'link'=> 'tools/updatewebsite'],
+		        ['text' => 'Website theme', 'link'=> 'tools/website-themes'],
 		    ]],
 		    ['text' => 'Orders', 'icon'=>'fas fa-user-cog', 'link' => 'orders','childrens' => [
 		        ['text' => 'My Orders', 'link'=> 'orders/my-orders'],
