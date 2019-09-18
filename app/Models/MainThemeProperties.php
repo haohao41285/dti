@@ -6,23 +6,19 @@ use Illuminate\Database\Eloquent\Model;
 
 class MainTheme extends Model
 {
-    protected $table = 'main_theme';
+    protected $table = 'main_theme_properties';
+
+    protected $primaryKey = "theme_properties_id";
 
     public $timestamps = true;
 
     protected $fillable = [
+        'theme_properties_id',
         'theme_id',
-        'theme_name',
-        'theme_image',
-        'theme_url',
-        'theme_price',
-        'theme_descript',
-        'theme_name_temp',
+        'theme_properties_value',
+        'theme_properties_image',
         'created_at',
         'updated_at',
-        'created_by',
-        'updated_by',
-        'theme_status'
     ];
 
     protected $guarded = [];

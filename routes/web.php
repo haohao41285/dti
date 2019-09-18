@@ -84,9 +84,21 @@ Route::group(['middleware' => ['auth']], function () {
          Route::get('license/generate', 'LicenseController@generate')->name('generateLicenses');
     });
     
-    Route::group(['prefix'=>'tools'],function(){
+    Route::group(['prefix'=>'tools','namespace'=>'ItTools'],function(){
         Route::get('clonewebsite', 'ItToolsController@cloneWebsite')->name('cloneWebsite');
         Route::get('updatewebsite', 'ItToolsController@updateWebsite')->name('updateWebsite');
+
+        Route::group(['prefix' => 'website-themes'], function() {
+            Route::get('/', 'WebsiteThemeController@index')->name('getWebsiteThemes');
+            Route::get('/datatable','WebsiteThemeController@datatable')->name('getDatatableWebsiteThemes');
+            Route::get('/get-by-id', 'WebsiteThemeController@getById')->name('getWebsiteThemesById');
+            Route::post('/save', 'WebsiteThemeController@save')->name('saveWebsiteThemes');
+        });
+
+        Route::group(['prefix' => 'website-themes-properties'], function() {
+            Route::get('/', 'WebsiteThemePropertiesController@index')->name('getWebsiteThemesProperties');
+            Route::get('/datatable','WebsiteThemePropertiesController@datatable')->name('getDatatableWebsiteThemesProperties');
+        });
     });
     
     Route::get('recentlog', 'RecentLogController@index')->name('recentlog');

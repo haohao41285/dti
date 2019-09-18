@@ -31,6 +31,7 @@ class MenuHelper{
 		        ['text' => 'Clone Website', 'link'=> 'tools/clonewebsite'],
 		        ['text' => 'Update Website', 'link'=> 'tools/updatewebsite'],
 		        ['text' => 'Website theme', 'link'=> 'tools/website-themes'],
+		        // ['text' => 'Website theme properties', 'link'=> 'tools/website-themes-properties'],
 		    ]],
 		    ['text' => 'Orders', 'icon'=>'fas fa-user-cog', 'link' => 'orders','childrens' => [
 		        ['text' => 'My Orders', 'link'=> 'orders/my-orders'],
