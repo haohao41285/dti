@@ -48,7 +48,7 @@ Route::group(['middleware' => ['auth']], function () {
          Route::post('import-customer', 'CustomerController@importCustomer')->name('import-customer');
          Route::get('export-customer', 'CustomerController@exportCustomer')->name('export-customer');
          Route::get('export-my-customer', 'CustomerController@exportMyCustomer')->name('export-my-customer');
-         Route::get('order-buy/{id}', 'CustomerController@orderBuy')->where(['id'=>'[0-9]+'])->name('order-buy');
+         Route::post('save-my-customer', 'CustomerController@saveMyCustomer')->name('save-my-customer');
 
     });
     

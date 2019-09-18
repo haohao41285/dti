@@ -96,42 +96,43 @@
  $(document).ready(function() {
     $("#created_at").datepicker({});
     var table = $('#dataTableAllCustomer').DataTable({
-         // dom: "lBfrtip",
-             buttons: [
-                 {   
-                     text: '<i class="fas fa-download"></i> Import',
-                     className: "btn-sm import-show",
-                 },
-                 {   
-                     text: '<i class="fas fa-upload"></i> Export',
-                     className: "btn-sm",
-                     action: function ( e, dt, node, config ) {
-                        document.location.href = "{{route('export-customer')}}";
-                    }
-                 }
-             ],  
-             processing: true,
-             serverSide: true,
-         ajax:{ url:"{{ route('customersDatatable') }}",
-         data: function (d) {
-            d.start_date = $("#start_date").val();
-            d.end_date = $("#end_date").val();
-            d.address = $("#address").val();
-            d.status_customer = $("#status-customer :selected").val();
-              } 
-          },
-         columns: [
+       // dom: "lBfrtip",
+       order:[[7,'desc']],
+       buttons: [
+           {   
+               text: '<i class="fas fa-download"></i> Import',
+               className: "btn-sm import-show",
+           },
+           {   
+               text: '<i class="fas fa-upload"></i> Export',
+               className: "btn-sm",
+               action: function ( e, dt, node, config ) {
+                  document.location.href = "{{route('export-customer')}}";
+              }
+           }
+       ],  
+       processing: true,
+       serverSide: true,
+       ajax:{ url:"{{ route('customersDatatable') }}",
+       data: function (d) {
+          d.start_date = $("#start_date").val();
+          d.end_date = $("#end_date").val();
+          d.address = $("#address").val();
+          d.status_customer = $("#status-customer :selected").val();
+            } 
+        },
+       columns: [
 
-                  { data: 'id', name: 'id',class:'text-center' },
-                  { data: 'ct_salon_name', name: 'ct_salon_name' },
-                  { data: 'ct_fullname', name: 'ct_fullname'},
-                  { data: 'ct_business_phone', name: 'ct_business_phone' ,class:'text-center'},
-                  { data: 'ct_cell_phone', name: 'ct_cell_phone',class:'text-center' },
-                  { data: 'ct_note', name: 'ct_note',class:'text-center' },
-                  { data: 'ct_status', name: 'ct_status',class:'text-center' },
-                  { data: 'created_at', name: 'created_at' ,class:'text-center'},                
-                  { data: 'action' , name:'action' ,orderable: false, searcheble: false ,class:'text-center'}
-          ],       
+                { data: 'id', name: 'id',class:'text-center' },
+                { data: 'ct_salon_name', name: 'ct_salon_name' },
+                { data: 'ct_fullname', name: 'ct_fullname'},
+                { data: 'ct_business_phone', name: 'ct_business_phone' ,class:'text-center'},
+                { data: 'ct_cell_phone', name: 'ct_cell_phone',class:'text-center' },
+                { data: 'ct_note', name: 'ct_note',class:'text-center' },
+                { data: 'ct_status', name: 'ct_status',class:'text-center' },
+                { data: 'created_at', name: 'created_at' ,class:'text-center'},                
+                { data: 'action' , name:'action' ,orderable: false, searcheble: false ,class:'text-center'}
+        ],
     });
 
     $("#reset").on('click',function(e){
@@ -141,7 +142,6 @@
         e.preventDefault();
         table.ajax.reload(null, false);
     });
-
    
     $(document).on("click",".view",function(){
 
