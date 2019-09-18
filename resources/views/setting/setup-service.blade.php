@@ -1,19 +1,20 @@
 @extends('layouts.app')
 @section('title')
-Role List
+Combo/Service List
 @stop
 @section('content')
-<h5><b>Role List</b></h5>
+<h5><b>Combo/Service List</b></h5>
 <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
   <thead>
     <tr>
       <th class="text-center">ID</th>
-      <th>Service/Combo Name</th>
+      <th>Name</th>
+      <th class="text-center">Type</th>
       <th class="text-left">Price</th>
-      <th>Expiry Period (month)</th>
+      <th>Expiry(month)</th>
       <th>Service Name</th>
       <th>Description</th>
-      <th class="text-center">Type</th>
+      <th>Assign To</th>
       <th class="text-center">Status</th>
       <th class="text-center">Action</th>
     </tr>
@@ -49,11 +50,12 @@ Role List
                 columns:[
                   {data:'id', name:'id'},
                   {data:'cs_name', name:'cs_name'},
+                  {data:'cs_type', name:'cs_type',class: 'text-center'},
                   {data:'cs_price', name:'cs_price',class: 'text-right'},
                   {data:'cs_expiry_period', name:'cs_expiry_period',class: 'text-center'},
                   {data:'cs_service_id', name:'cs_service_id'},
                   {data:'cs_description', name:'cs_description'},
-                  {data:'cs_type', name:'cs_type',class: 'text-center'},
+                  {data:'cs_assign_to', name:'cs_assign_to'},
                   {data:'cs_status', name:'cs_status',class:'text-center'},
                   {data:'action', name:'action',orderable: false, searchable: false,class:'text-center'},
                 ],
@@ -146,7 +148,6 @@ Role List
       $('#add-edit-modal').modal('hide');
     }
     $(document).on('click','.edit-cs',function(){
-     
 
       var cs_id = $(this).attr('cs_id');
       var cs_type = $(this).attr('cs_type');
@@ -172,6 +173,13 @@ Role List
           var serivece_list_all = data.service_list_all;
           var content_body_html = "";
           var service_list_html = "";
+          var user_html = "";
+          var selected = "";
+
+          $.each(data.user, function(index, val) {
+            // if(cs_assign_to == val.user_id) var selected = "selected";
+            user_html += `<option `+selected+` value="`+val.user_id+`">`+val.user_nickname+`</option>`;
+          });
 
           if(cs_type == 1){
             $.each(serivece_list_all, function(index, val)
@@ -193,7 +201,14 @@ Role List
               <input type="text" name="cs_price"  class="form-control form-control-sm cs_price" value="`+cs_price+`" placeholder="">
             </div>
             <div class="form-group">
-              <h6><b>Price</b></h6>
+              <h6><b>Assign To</b></h6>
+              <select name="" id="assign_to" class="form-control form-control-sm">
+                <option value="">Choose User</option>
+                `+user_html+`
+              </select>
+            </div>
+            <div class="form-group">
+              <h6><b>Description</b></h6>
               <textarea name="cs_description" rows="3" class="form-control form-control-sm cs_description">`+cs_description+`</textarea>
             </div>
             <h6><b>Service List</b></h6>
@@ -213,7 +228,14 @@ Role List
               <input type="text" name="cs_price"  class="form-control form-control-sm cs_price" value="`+cs_price+`" placeholder="">
             </div>
             <div class="form-group">
-              <h6><b>Price</b></h6>
+              <h6><b>Assign To</b></h6>
+              <select name="" id="assign_to" class="form-control form-control-sm">
+                <option value="">Choose User</option>
+                `+user_html+`
+              </select>
+            </div>
+            <div class="form-group">
+              <h6><b>Description</b></h6>
               <textarea name="cs_description" rows="3" class="form-control form-control-sm cs_description">`+cs_description+`</textarea>
             </div>
             <h6><b>Menu List</b></h6>
@@ -346,7 +368,13 @@ Role List
               <input type="text" name="cs_price"  class="form-control form-control-sm cs_price" value="" placeholder="">
             </div>
             <div class="form-group">
-              <h6><b>Price</b></h6>
+              <h6><b>Assign To</b></h6>
+              <select name="" class="form-control form-control-sm">
+                <option value="">Nguyen Thieu</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <h6><b>Description</b></h6>
               <textarea name="cs_description" rows="3" class="form-control form-control-sm cs_description"></textarea>
             </div>
             <h6><b> List</b></h6>

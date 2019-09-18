@@ -71,29 +71,37 @@ class SmsController extends Controller
 
 	        $data = \Excel::load($path)->toArray();
 
-	                if(!empty($data)){
+                if(!empty($data)){
 
-	                    $arr = [];
-	                    $receiver_total = [];
+                    $arr = [];
+                    $receiver_total = [];
+                    $count = 0;
 
-	                    foreach($data as $key => $value){
-	                            
-	                                $receiver_total[] = [
-	                                    'name' =>$value['name'],
-	                                    'phone'=>$value['phone'],
-	                                    'birthday'=>$value['birthday'],
-	                                ];
-	                                $arr[] = $value['phone'];
-	                            }
+                    foreach($data as $key => $value){
 
-	                            $upload_list_receiver = implode(";", $arr);
+                        if($value['phone'] != ""){
+                            $receiver_total[] = [
+                                'name' =>$value['name'],
+                                'phone'=>$value['phone'],
+                                'birthday'=>$value['birthday'],
+                                'code' =>$value['code'],
+                                'time1'=>$value['time1'],
+                                'time2'=>$value['time2'],
+                            ];
+                            $arr[] = $value['phone'];
+                            $count++;
+                        }
+                    }
+                    if($count == 0)
+                        return back()->with('error','Phone number empty!');
+                    $upload_list_receiver = implode(";", $arr);
 
-	                            $sms_total = $key+1 ;
-	                }else{
-	                    $upload_list_receiver = "";
-	                    $request->session()->flash("error","Upload List Receiver Empty!");
-	                    return back();
-	                }
+                    $sms_total = $key+1 ;
+                }else{
+                    $upload_list_receiver = "";
+                    $request->session()->flash("error","Upload List Receiver Empty!");
+                    return back();
+                }
 	        }
 	        else
 	        {
@@ -122,16 +130,22 @@ class SmsController extends Controller
                 $excel ->sheet($request->sms_send_event_title, function ($sheet) use ($receiver_total)
                 {
                     $sheet->cell('A1', function($cell) {$cell->setValue('phone');   });
-                    $sheet->cell('B1', function($cell) {$cell->setValue('{p3}');   });
-                    $sheet->cell('C1', function($cell) {$cell->setValue('{p2}');   });
+                    $sheet->cell('B1', function($cell) {$cell->setValue('{p2}');   });
+                    $sheet->cell('C1', function($cell) {$cell->setValue('{p3}');   });
+                    $sheet->cell('D1', function($cell) {$cell->setValue('{p4}');   });
+                    $sheet->cell('E1', function($cell) {$cell->setValue('{p5}');   });
+                    $sheet->cell('F1', function($cell) {$cell->setValue('{p6}');   });
 
                     if (!empty($receiver_total)) {
                         foreach ($receiver_total as $key => $value) {
                             $i= $key+2;
                             if($value['phone'] != ""){
                                 $sheet->cell('A'.$i, $value['phone']);
-                                $sheet->cell('B'.$i, $value['birthday']);
-                                $sheet->cell('C'.$i, $value['name']); 
+                                $sheet->cell('B'.$i, $value['name']);
+                                $sheet->cell('C'.$i, Carbon::parse($value['birthday'])->format('d/m/Y'));
+                                $sheet->cell('D'.$i, $value['code']);
+                                $sheet->cell('E'.$i, $value['time1']);
+                                $sheet->cell('F'.$i, $value['time2']); 
                             }
                         }
                     }
@@ -177,9 +191,12 @@ class SmsController extends Controller
             // 'timeout'  => 5.0,            
         ]);
 
-        $sms_content_template = str_replace("{name}","{p2}",$input['sms_content_template']);
-        // $sms_content_template = str_replace("{phone}","{p2}",$sms_content_template);
+        $sms_content_template = str_replace("{phone}","{p1}",$input['sms_content_template']);
+        $sms_content_template = str_replace("{name}","{p2}",$sms_content_template);
         $sms_content_template = str_replace("{birthday}","{p3}",$sms_content_template);
+        $sms_content_template = str_replace("{code}","{p4}",$sms_content_template);
+        $sms_content_template = str_replace("{time1}","{p5}",$sms_content_template);
+        $sms_content_template = str_replace("{time2}","{p6}",$sms_content_template);
 
         $date_time_send = Carbon::parse($input['sms_send_event_start_day'])->format('d-m-Y')." 00:00:00";
         $date_time_end =  Carbon::parse($input['sms_send_event_start_day'])->format('d-m-Y')." 23:59:59";

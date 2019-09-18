@@ -67,9 +67,12 @@
         <div class="form-group row" >
           <label class="col-lg-4 col-form-label form-control-label">Params</label>
           <div class="col-lg-8">
-            <button type="button" id="name" class="btn btn-sm btn-primary">Name</button>
-            <button type="button" id="phone" class="btn btn-sm btn-primary">Phone</button>
-            <button type="button" id="birthday" class="btn btn-sm btn-primary">Birthday</button>
+            <button type="button" id="phone" class="btn btn-sm btn-primary mt-1">Phone</button>
+            <button type="button" id="name" class="btn btn-sm btn-primary mt-1">Name</button>
+            <button type="button" id="birthday" class="btn btn-sm btn-primary mt-1">Birthday</button>
+            <button type="button" id="code" class="btn btn-sm btn-primary mt-1">Code</button>
+            <button type="button" id="time1" class="btn btn-sm btn-primary mt-1">Time1</button>
+            <button type="button" id="time2" class="btn btn-sm btn-primary mt-1">Time2</button>
             {{-- <button type="button" id="short-link" class="btn btn-sm btn-primary">Short Link</button> --}}
           </div>
         </div>
@@ -95,14 +98,17 @@
 <script type="text/javascript">
   $(document).ready(function(){
     var template_id = 0;
-    var name="{name}";
-    var phone="{phone}";
-    var birthday="{birthday}";
+    var name = "{name}";
+    var phone = "{phone}";
+    var birthday = "{birthday}";
+    var code = "{code}";
+    var time1 = "{time1}";
+    var time2 = "{time2}";
     $(document).on("click","#name",function(){
       $('#textMessage').val(function(i, text) {
           return text + name;
       }).focus();
-    })
+    });
     $(document).on("click","#phone",function(){
       $('#textMessage').val(function(i, text) {
           return text + phone;
@@ -111,6 +117,21 @@
     $(document).on("click","#birthday",function(){
       $('#textMessage').val(function(i, text) {
           return text + birthday;
+      }).focus();
+    });
+    $(document).on("click","#code",function(){
+      $('#textMessage').val(function(i, text) {
+          return text + code;
+      }).focus();
+    });
+    $(document).on("click","#time1",function(){
+      $('#textMessage').val(function(i, text) {
+          return text + time1;
+      }).focus();
+    });
+    $(document).on("click","#time2",function(){
+      $('#textMessage').val(function(i, text) {
+          return text + time2;
       }).focus();
     });
 
