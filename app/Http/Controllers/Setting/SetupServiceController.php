@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Models\MainComboService;
 use App\Models\PosMerchantMenus;
+use App\Models\MainUser;
 use Validator;
 use DataTables;
 use DB;
@@ -19,7 +20,11 @@ class SetupServiceController extends Controller
     public function serviceDatabase(Request $request)
 	{
 		$combo_service_arr = [];
-		$service_combo_list = MainComboService::all();
+		$service_combo_list = MainComboService::leftjoin('main_user',function($join){
+			$join->on('main_combo_service.cs_assign_to','main_user.user_id');
+		})
+			->select('main_combo_service.*','main_user.user_nickname')
+			->get();
 
 		foreach ($service_combo_list as $key => $service_combo) {
 
@@ -43,6 +48,7 @@ class SetupServiceController extends Controller
 				'cs_service_id' => $service_name_arr,
 				'cs_description' => $service_combo->cs_description,
 				'cs_type' => $service_combo->cs_type,
+				'cs_assign_to' => $service_combo->user_nickname,
 				'cs_status' => $service_combo->cs_status,
 			];
 		}
@@ -88,13 +94,13 @@ class SetupServiceController extends Controller
 	}
 	public function getServiceCombo(Request $request)
 	{
-
-
 		$cs_id = $request->cs_id;
 		$cs_type = $request->cs_type;
 
 		if(!isset($cs_id))
 			return response(['status'=>'error','message'=>'Error!']);
+	    //GET ALL USER
+		$data['user'] = MainUser::where('user_status',1)->get();
 
 		if($cs_type == 1){//COMBO
 
@@ -134,8 +140,10 @@ class SetupServiceController extends Controller
 	             $menu_html .= self::getMenuSon($menu_list,$menu_parent->mer_menu_id,$menu_id_arr);
 
 			}
-			if($menu_html != "")
-				return response(['menu_html'=>$menu_html]);
+			if($menu_html != ""){
+				$data['menu_html'] = $menu_html;
+				return response($data);
+			}
 			else
 				return response(['status'=>'error','message'=>'Error!']);
 		}
@@ -172,12 +180,12 @@ class SetupServiceController extends Controller
 
 		$rule = [
             'cs_name' => 'required',
-            'service_id_arr' => 'required',
+            // 'service_id_arr' => 'required',
             'cs_price' => 'required',
         ];
         $message = [
         'cs_name.required' => 'Enter Combo Name, Please!',
-        'service_id_arr.required' => 'Check Service, Please!',
+        // 'service_id_arr.required' => 'Check Service, Please!',
         'cs_price.required' => 'Enter Price, Please!'
         ];
 
@@ -199,8 +207,10 @@ class SetupServiceController extends Controller
 			if($check > 0)
 				return response(['status'=>'error','message'=>'Error! Name has existed.']);
 
-
-			$service_id_list = implode(";", $service_id_arr);
+			if($service_id_arr != "")
+			    $service_id_list = implode(";", $service_id_arr);
+			else
+				$service_id_list = "";
 
         if($cs_type == 1){
         	if($cs_id != 0)

@@ -245,7 +245,7 @@ class OrdersController extends Controller
 				'routing_number' => $request->routing_number,
 				'account_number' => $request->account_number,
 				'bank_name' => $request->bank_name,
-				'csb_status' => 1,
+				'csb_status' => $request->credit_card_type != 'E-CHECK'?1:0,
 				'created_by' => Auth::user()->user_id,
 			];
 			//CREATE NEW PLACE IN POS_PLACE, NEW USER IN POS_USER IF CHOOSE NEW PLACE
