@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Routing\Controller;
+use App\Models\MainTheme;
+use DataTables;
 
 
 class ItToolsController extends Controller {
@@ -17,9 +19,13 @@ class ItToolsController extends Controller {
         return view('tools.clone-website');
     }
     
-     public function updateWebsite()
+    public function updateWebsite()
     {
         return view('tools.update-website');
     }
+
+    
+
+
     
 }
