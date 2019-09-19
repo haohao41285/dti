@@ -13,7 +13,7 @@
               <input type="text" class="input-sm form-control form-control-sm" id="end_date" name="end" />
             </div>
         </div>
-        <div class="col-md-2">
+        <div class="col-md-3">
             <label for="">Address</label>
             <input type="text" id="address" name="address" class="form-control form-control-sm">
         </div>
@@ -103,41 +103,42 @@
  $(document).ready(function() {
     $("#created_at").datepicker({});
     var table = $('#dataTableAllCustomer').DataTable({
-         // dom: "lBfrtip",
-             buttons: [
-                 { 
-                     text: '<i class="fas fa-download"></i> Import',
-                     className: "btn-sm import-show"
-                 },
-                 { 
-                     text: '<i class="fas fa-upload"></i> Export',
-                     className: "btn-sm export",
-                     action: function ( e, dt, node, config ) {
-                        document.location.href = "{{route('export-my-customer')}}";
-                    }
-                 }
-             ],  
-             processing: true,
-             serverSide: true,
-         ajax:{ url:"{{ route('get-my-customer') }}",
-         data: function (d) {
-            d.start_date = $("#start_date").val();
-            d.end_date = $("#end_date").val();
-            d.address = $("#address").val();
-            d.status_customer = $("#status-customer :selected").val();
-              } 
-          },
-         columns: [
+       // dom: "lBfrtip",
+       order:[[6,"desc"]],
+       processing: true,
+       serverSide: true,
+       buttons: [
+           { 
+               text: '<i class="fas fa-download"></i> Import',
+               className: "btn-sm import-show"
+           },
+           { 
+               text: '<i class="fas fa-upload"></i> Export',
+               className: "btn-sm export",
+               action: function ( e, dt, node, config ) {
+                  document.location.href = "{{route('export-my-customer')}}";
+              }
+           }
+       ],
+       ajax:{ url:"{{ route('get-my-customer') }}",
+       data: function (d) {
+          d.start_date = $("#start_date").val();
+          d.end_date = $("#end_date").val();
+          d.address = $("#address").val();
+          d.status_customer = $("#status-customer :selected").val();
+            } 
+        },
+       columns: [
 
-                  { data: 'id', name: 'id',class:'text-center' },
-                  { data: 'ct_salon_name', name: 'ct_salon_name' },
-                  { data: 'ct_fullname', name: 'ct_fullname'},
-                  { data: 'ct_business_phone', name: 'ct_business_phone' ,class:'text-center'},
-                  { data: 'ct_cell_phone', name: 'ct_cell_phone',class:'text-center' },
-                  { data: 'ct_status', name: 'ct_status',class:'text-center' },
-                  { data: 'updated_at', name: 'updated_at' ,class:'text-center'},                
-                  { data: 'action' , name:'action' ,orderable: false, searcheble: false ,class:'text-center'}
-          ],       
+                { data: 'id', name: 'id',class:'text-center' },
+                { data: 'ct_salon_name', name: 'ct_salon_name' },
+                { data: 'ct_fullname', name: 'ct_fullname'},
+                { data: 'ct_business_phone', name: 'ct_business_phone' ,class:'text-center'},
+                { data: 'ct_cell_phone', name: 'ct_cell_phone',class:'text-center' },
+                { data: 'ct_status', name: 'ct_status',class:'text-center' },
+                { data: 'updated_at', name: 'updated_at' ,class:'text-center'},                
+                { data: 'action' , name:'action' ,orderable: false, searcheble: false ,class:'text-center'}
+        ],
     });
 
     $("#reset").on('click',function(e){
@@ -198,12 +199,9 @@
                 `+content_table+`
               </tbody>
             </table>`;
-
           }
-          
-
           var button = ``;
-          if(data.customer_list.ct_status === 'Assigned')
+          if(data.customer_list.ct_status === 'Arrivals')
             button = `<button type="button" id=`+data.customer_list.id+` class="btn btn-primary btn-sm get-customer">Get</button>`;
           $("#content-customer-detail").html(`
             <div class="row pr-5 pl-5" >

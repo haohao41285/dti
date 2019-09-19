@@ -17,6 +17,7 @@ use Carbon\Carbon;
 use Auth;
 use DataTables;
 use DB;
+use Validator;
 
 class CustomerController extends Controller 
 {
@@ -616,5 +617,75 @@ class CustomerController extends Controller
         $count = round($combo_service_list->count()/2);
 
         return view('orders.buy-service-combo',compact('customer_info','combo_service_list','count'));
+    }
+    public function saveMyCustomer(Request $request)
+    {
+        $rule = [
+            'ct_firstname' => 'required',
+            'ct_lastname' => 'required',
+            'ct_salon_name' => 'required',
+            'ct_business_phone' => 'required|unique:main_customer_template,ct_business_phone|numeric|digits_between:10,15',
+            'ct_email' => 'required|email',
+            'ct_address' => 'required',
+        ];
+        $message = [
+            'ct_firstname.required' => 'Enter Firstname',
+            'ct_lastname.required' => 'Enter Lastname',
+            'ct_salon_name' => 'Enter Business Name',
+            'ct_email.required' => 'Enter Email',
+            'ct_email.email' =>'Enter a Email',
+            'ct_address.required' => 'Enter Address',
+            'ct_business_phone.required' => 'Enter Business Phone',
+            'ct_business_phone.unique' => 'Business Phone has Existed',
+            'ct_business_phone.numeric' => 'Enter Number',
+            'ct_business_phone.between' => 'Enter True Number',
+        ];
+        $validator = Validator::make($request->all(),$rule,$message);
+        if($validator->fails())
+            return back()->withErrors($validator)->withInput();
+
+        $customer_arr = [
+            'ct_firstname' => $request->ct_firstname,
+            'ct_lastname' => $request->ct_lastname,
+            'ct_fullname' => $request->ct_firstname." ".$request->ct_lastname,
+            'ct_salon_name' => $request->ct_salon_name,
+            'ct_business_phone' => $request->ct_business_phone,
+            'ct_cell_phone' => $request->ct_cell_phone,
+            'ct_email' => $request->ct_email,
+            'ct_address' => $request->ct_address,
+            'ct_website' => $request->ct_website,
+            'ct_note' => $request->ct_note,
+            'created_by' => Auth::user()->user_id,
+            'updated_by' => Auth::user()->user_id,
+            'ct_active' => 1
+        ];
+        DB::beginTransaction();
+        $customer_create = MainCustomerTemplate::create($customer_arr);
+
+        //UPDATE STATUS CUSTOMER IN OWN TEAM
+        $team_customer_status = MainTeam::where('id',Auth::user()->user_team)->first()->team_customer_status;
+        $customer_status_arr = json_decode($team_customer_status,TRUE);
+        $customer_status_arr[$customer_create->id] = 1;
+        $customer_status_list = json_encode($customer_status_arr);
+        $update_customer = MainTeam::where('id',Auth::user()->user_team)->update(['team_customer_status'=>$customer_status_list]);
+
+        //UPDATE CUSTOMER LIST IN MAIN USER
+        $user_customer_list = Auth::user()->user_customer_list;
+
+        if($user_customer_list == ""){
+            $user_customer_arr = $customer_create->id;
+        }else{
+            $user_customer_arr = $user_customer_list.";".$customer_create->id;
+        }
+        $user_update = MainUser::where('user_id',Auth::user()->user_id)->update(['user_customer_list'=>$user_customer_arr]);
+
+        if(!isset($customer_create) || !isset($update_customer) || !isset($user_update)){
+            DB::callback();
+            return back()->with(['error'=>'Create Customer Failed!']);
+        }
+        else{
+            DB::commit();
+            return redirect()->route('myCustomers')->with(['success'=>'Create Customer Successfully!']);
+        }
     }
 }

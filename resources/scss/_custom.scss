@@ -1,3 +1,28 @@
+.dropdown-item{
+    padding: 0.25rem 1rem;
+}
+.sidebar-dark .nav-item.active .nav-link{
+    background: #ffffff1a;
+}
+.sidebar .nav-item .nav-link i{
+    font-size: 1rem;
+}
+
+.sidebar .nav-item .nav-link{
+    padding: 0.65rem 0.3rem !important;
+}
+
+.sidebar .nav-item .nav-link span{
+    font-size: 0.9rem;
+}
+
+.topbar , .sidebar .sidebar-brand{
+    height: 3.5rem;
+}
+
+.sidebar-dark .sidebar-brand{
+    background-color: #fff;
+}
 .sidebar .dropdown-item{
     color: #fff;
     font-size: 0.85rem;
@@ -90,6 +115,10 @@ td.details-control {
 }
 tr.shown td.details-control {
     background: url('../images/details_close.png') no-repeat center center;
+}
+
+.table th, .table td{
+    padding: 0.5rem;
 }
 form{
     label.required{

@@ -9,7 +9,7 @@ $request_sub_url = request()->segment(2);
 
   <!-- Sidebar - Brand -->
   <a class="sidebar-brand d-flex align-items-center justify-content-center" href="{{ asset('/') }}">
-      <img style="width: 100%;" src="{{asset("images/logo169x46.png")}}" alt="logo">     
+      <img height="35px" src="{{asset("images/logo169x46.png")}}" alt="logo">     
   </a>
   @foreach($navs as $nav)
         @php $className = ($request_url == $nav["link"])?' active':'';  @endphp 
@@ -33,8 +33,13 @@ $request_sub_url = request()->segment(2);
                 <span>{{ $nav['text'] }}</span>
             </a>
         </li>
+        <hr class="sidebar-divider d-none d-md-block">
          @endif
     @endforeach
+    <!-- <hr class="sidebar-divider d-none d-md-block"> -->
+    <div class="text-center d-none d-md-inline">
+        <button class="rounded-circle border-0" id="sidebarToggle"></button>
+      </div>
 
 </ul>
 <!-- End of Sidebar -->
