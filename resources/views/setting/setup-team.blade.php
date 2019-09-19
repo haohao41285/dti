@@ -24,47 +24,63 @@ Setup Team
 </style>
 @endpush
 @section('content')
-<div class="container-fluid ">
-   <div class="row">
-      <div class="col-md-8 row" style="height: 70vh">
-                 <h5>Team List</h5>               
-               	<div class="col-12 table-responsive scroll" style="height: 50%">
-                 <table class="table table-bordered" id="team-table" width="100%" cellspacing="0">
-                    <thead>
-                       <th>ID</th>
-                       <th>Team name</th>
-                       <th>Leader</th>
-                       <th>Team type</th>
-                       <th>Action</th>
-                    </thead>
-                 </table>               
-               </div>
+<div class="row">
+  <div class="col-md-8">
+    <div class="card shadow mb-4 ">
+      <div class="card-header py-2">
+        <h6 class="m-0 font-weight-bold text-primary">Team List <button type="button" class="float-right btn btn-primary btn-sm add-team">Add Team</button></h6>
+        
+      </div>
+      <div class="card-body">
+          <table class="table table-bordered table-hover" id="team-table" width="100%" height="50%" cellspacing="0">
+            <thead>
+               <th>ID</th>
+               <th>Team name</th>
+               <th>Leader</th>
+               <th>Team type</th>
+               <th>Action</th>
+            </thead>
+         </table>   
+      </div>
+    </div>
 
-          <h5>User List</h5>              
-				<div class="col-12 table-responsive scroll" style="height: 50%">
-          <table class="table table-bordered" id="user-table" width="100%" cellspacing="0">
+    <div class="card shadow mb-4 ">
+      <div class="card-header py-2">
+        <h6 class="m-0 font-weight-bold text-primary">User List</h6>
+      </div>
+      <div class="card-body"  >
+          <table class="table table-bordered table-hover"  id="user-table" width="100%"  cellspacing="0">
             <thead>
                <th>ID</th>
                <th>Member</th>
                <th>Team</th>
             </thead>
-          </table>              
-        </div>
-       
+          </table>   
       </div>
-      <div class="col-md-4 row" style="height: 70vh">
-            <h5>Members of <b class="team-name-list"></b> Team</h5>
-          <div class="col-12 table-responsive scroll" style="height: 100%">
-             <table class="table table-bordered" id="member-table" width="100%" cellspacing="0">
-                <thead>
-                   <th>Member</th>
-                    <th>Action</th>
-                   </tr>
-                </thead>
-             </table>
-          </div>
+    </div>
+
+  </div>
+  <div class="col-md-4" >
+    <div class="card shadow mb-4 ">
+      <div class="card-header py-2">
+        <h6 class="m-0 font-weight-bold text-primary">Members of <b class="team-name-list"></b> Team</h6>
       </div>
-   </div>
+      <div class="card-body">
+        <table class="table table-bordered table-hover" id="member-table" width="100%" cellspacing="0">
+            <thead>
+               <th>Member</th>
+                <th>Action</th>
+               </tr>
+            </thead>
+         </table>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<div class="row">
+  
 </div>
 
 <div class="modal fade" id="editModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -80,7 +96,7 @@ Setup Team
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-primary btn-sm save-change">Save changes</button>
-        <button type="button" class="btn btn-danger btn-sm cancle-change" data-dismiss="modal">Cancle</button>
+        <button type="button" class="btn btn-danger btn-sm cancle-change" data-dismiss="modal">Cancel</button>
       </div>
     </div>
   </div>
@@ -90,6 +106,7 @@ Setup Team
 @push('scripts')
   <script>
     $(document).ready(function(){
+
       var team_id = 0;
       //GET TEAM LIST
       var table = $('#team-table').DataTable({
@@ -97,11 +114,8 @@ Setup Team
          searching: false,
          paging: false,
          info: false,
+         scrollY: "200px",
          buttons: [
-                 {   
-                     text: '<i class="fas fa-plus"></i>Add Team',
-                     className: "btn-sm add-team",
-                 }
              ],  
          processing: true,
          serverSide: true,
@@ -123,6 +137,7 @@ Setup Team
          searching: false,
          paging: false,
          info: false,
+         scrollY: true,
          buttons: [
          ],  
          processing: true,
@@ -142,6 +157,7 @@ Setup Team
          // dom: "lBfrtip",
          searching: false,
          paging: false,
+         scrollY: "300px",
          info: false,
          buttons: [
          ],  
@@ -278,6 +294,13 @@ Setup Team
         }
       });
       $("#team-table tbody").on('click','tr',function(){
+        if ( $(this).hasClass('selected') ) {
+            $(this).removeClass('selected');
+        }
+        else {
+            table.$('tr.selected').removeClass('selected');
+            $(this).addClass('selected');
+        }
         team_id = table.row(this).data()['id'];
         var team_name = table.row(this).data()['team_name'];
         memberTable.draw();
