@@ -169,7 +169,14 @@ class OrdersController extends Controller
 			}
 
 			$service_arr = [];
-			$number_credit =  substr($request->credit_card_number, 0,4).substr($request->credit_card_number, -4);
+			$number_credit = "";
+			$account_number = "";
+
+			if($request->credit_card_number != "")
+			    $number_credit =  substr($request->credit_card_number, 0,4)."####".substr($request->credit_card_number, -4);
+			if($request->account_number != "")
+			    $account_number =  substr($request->account_number, 0,4)."####".substr($request->account_number, -4);
+
 			$combo_service_list = implode(";",$request->cs_id);
 			$today = Carbon::today();
 
@@ -243,7 +250,7 @@ class OrdersController extends Controller
 				'csb_amount_deal' => $request->discount,
 				'csb_card_number' => $number_credit,
 				'routing_number' => $request->routing_number,
-				'account_number' => $request->account_number,
+				'account_number' => $account_number,
 				'bank_name' => $request->bank_name,
 				'csb_status' => $request->credit_card_type != 'E-CHECK'?1:0,
 				'created_by' => Auth::user()->user_id,
@@ -529,7 +536,11 @@ class OrdersController extends Controller
 
 	    foreach ($my_order_list as $key => $order) {
 
-	    	$infor = "<span>ID: ".$order->csb_trans_id."</span><br><span>Name: ".$order->csb_card_type."</span><br><span>Number: ".$order->csb_card_number."</span>";
+	    	//GET INFORMATION CARD
+	    	if($order->csb_status==1)
+	    	    $infor = "<span>ID: ".$order->csb_trans_id."</span><br><span>Name: ".$order->csb_card_type."</span><br><span>Number: ".$order->csb_card_number."</span>";
+	    	else
+	    		$infor = "<span>Account Number: ".$order->account_number."</span><br><span>Name: ".$order->routing_number."</span><br><span>Bank Name: ".$order->bank_name."</span>";
 
 	    	$services = explode(";",$order->csb_combo_service_id);
 
@@ -540,23 +551,27 @@ class OrdersController extends Controller
 	    	}
 
 	    	if(!isset($request->my_order))
-	    		$order_date = Carbon::parse($order->created_at)->format('m/d/Y H:i:s')." by ".$order->user_nickname;
+	    		$order_date = "<a href='".route('order-view',$order->id)."'>".Carbon::parse($order->created_at)->format('m/d/Y H:i:s')." by ".$order->user_nickname."</a>";
 	    	else
-	    		$order_date = Carbon::parse($order->created_at)->format('m/d/Y H:i:s');
+	    		$order_date = "<a href='".route('order-view',$order->id)."'>".Carbon::parse($order->created_at)->format('m/d/Y H:i:s')."</a>";
 
+	    	//GET CUSTOMER INFORMATION
+	    	$customer = "<span>Customer: ".$order->customer_firstname. " " .$order->customer_lastname."</span><br><span>Business Phone: ".$order->customer_phone."</span><br><span>Address: ".$order->customer_address."</span><br><span>Email: ".$order->customer_email."</span>";
+	    	
 	    	$my_order_arr[] = [
 	    		'id' => $order->id,
 	    		'order_date' => $order_date,
-	    		'customer' => $order->customer_firstname. " " .$order->customer_lastname,
+	    		'customer' => $customer,
 	    		'servivce' => $service_name,
 	    		'subtotal' => $order->csb_amount,
 	    		'discount' => $order->csb_amount_deal,
 	    		'total_charge' => $order->csb_charge,
+	    		'status' => $order->csb_status==0?"NOTPAYMEET":"PAID",
 	    		'information' => $infor,
 	    	];
 	    }
 		return  DataTables::of($my_order_arr)
-		        ->rawColumns(['servivce','information'])
+		        ->rawColumns(['servivce','information','customer','order_date'])
 				->make(true);
 	}
 	public function sellerOrderDatatable(Request $request)
@@ -621,5 +636,33 @@ class OrdersController extends Controller
 		return  DataTables::of($order_arr)
 		        ->rawColumns(['servivce','information'])
 				->make(true);
+	}
+	public function orderView($id)
+	{
+		$data['id'] = $id;
+		$data['order_info'] = MainComboServiceBought::join('main_customer',function($join){
+			$join->on('main_combo_service_bought.csb_customer_id','main_customer.customer_id');
+		})
+		->join('main_user',function($join){
+			$join->on('main_combo_service_bought.created_by','main_user.user_id');
+		})
+		->where('main_combo_service_bought.id',$id)
+		->select('main_combo_service_bought.*','main_user.user_nickname','main_user.user_email','main_customer.customer_phone','main_customer.customer_lastname','main_customer.customer_firstname')
+		->first();
+
+		$combo_service_list = $data['order_info']->csb_combo_service_id;
+		$combo_service_arr = explode(";", $combo_service_list);
+		$service_arr = [];
+
+		foreach ($combo_service_arr as $key => $value) {
+				$service_list = MainComboService::where('id',$value)->first();
+				if($service_list->cs_type == 1)
+					$service_arr = array_merge(explode(";",$service_list->cs_service_id),$service_arr);
+				else
+					$service_arr[] = $value;
+			}
+		$data['service_list'] = MainComboService::whereIn('id',$service_arr)->get();
+		
+		return view('orders.order-view',$data);
 	}
 }

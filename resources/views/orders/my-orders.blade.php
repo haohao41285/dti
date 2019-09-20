@@ -32,14 +32,15 @@
     <hr>
     <table class="table table-bordered" id="dataTableAllCustomer" width="100%" cellspacing="0">
         <thead>                
-                <th>Id</th>
-                <th>Order Date</th>
-                <th>Customer</th>
-                <th>Services</th>
-                <th>Subtotal($)</th>
-                <th>Discount($)</th>
-                <th>Total Charged($)</th>
-                <th>Info</th>
+                <th class="text-center">Id</th>
+                <th class="text-center order-date">Order Date</th>
+                <th class="text-center">Customer</th>
+                <th class="text-center">Services</th>
+                <th class="text-center">Subtotal($)</th>
+                <th class="text-center">Discount($)</th>
+                <th class="text-center">Total Charged($)</th>
+                <th class="text-center">Status</th>
+                <th class="text-center">Information Card</th>
             </tr>
         </thead>
     </table>
@@ -73,12 +74,15 @@
             { data: 'subtotal', name: 'subtotal',class:'text-right' },
             { data: 'discount', name: 'discount',class:'text-right' },
             { data: 'total_charge', name: 'total_charge',class:'text-right' },
-            { data: 'information', name: 'information'},                
-                  // { data: 'action' , name:'action' ,orderable: false, searcheble: false ,class:'text-center'}
+            { data: 'status', name: 'status',class:"text-center" },
+            { data: 'information', name: 'information'},
         ],
     });
     $("#search-button").click(function(){
         table.draw();
+    });
+    $(document).on('click','.order_date',function(){
+        
     });
 });
 </script>
