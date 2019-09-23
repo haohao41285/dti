@@ -33,7 +33,7 @@ class MenuHelper{
 		        ['text' => 'Website theme', 'link'=> 'tools/website-themes'],
 		        // ['text' => 'Website theme properties', 'link'=> 'tools/website-themes-properties'],
 		    ]],
-		    ['text' => 'Orders', 'icon'=>'fas fa-user-cog', 'link' => 'orders','childrens' => [
+		    ['text' => 'Orders', 'icon'=>'fas fa-shopping-cart', 'link' => 'orders','childrens' => [
 		        ['text' => 'My Orders', 'link'=> 'orders/my-orders'],
 		        ['text' => 'All Orders', 'link'=> 'orders/all'],
 		        ['text' => "Seller's Orders", 'link'=> 'orders/sellers'],

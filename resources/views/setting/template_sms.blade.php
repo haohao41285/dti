@@ -24,15 +24,18 @@
       
     </div>
   </div>
-<div class="container-fluid row">
+<div class="row">
   <div class="col-md-7">
     <div class="card shadow mb-4">
+    <div class="card-header py-2">
+      <h6 class="m-0 font-weight-bold text-primary">Template List</h6>
+    </div>
     <div class="card-body">
       <div class="table-responsive">
         <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
           <thead>
             <tr>
-              <th>Id</th>
+              <!-- <th>Id</th> -->
               <th>Template Title</th>
               <th>SMS Content Template</th>
               <th style="width: 80px">Action</th>
@@ -45,28 +48,28 @@
   </div>
   <div class="col-md-5">
     <div class="card shadow mb-4">
-    <div class="card-header py-3">
+    <div class="card-header py-2">
       <h6 class="m-0 font-weight-bold text-primary">SMS Template</h6>
     </div>
     <div class="card-body">
       <form action="" id="sms_template_form">
       <div class="form-group row"  >
-            <label class="col-lg-4 col-form-label form-control-label">Template title</label>
-            <div class="col-lg-8">
+            <label class="col-lg-3 col-form-label form-control-label">Template title</label>
+            <div class="col-lg-9">
                <input class="late form-control" name="template_title" id="template_title" type="text">
             </div>
             
         </div>
         <div class="form-group row"  >
-          <label class="col-lg-4 col-form-label form-control-label">SMS Content Template</label>
-            <div class="col-lg-8">
+          <label class="col-lg-3 col-form-label form-control-label">SMS Content Template</label>
+            <div class="col-lg-9">
                 <textarea class="form-control" name="sms_content" id="textMessage" rows="4" cols="50"></textarea>
                 <span class="note"><span id="length">0</span>/160 characters</span>
             </div>
         </div>
         <div class="form-group row" >
-          <label class="col-lg-4 col-form-label form-control-label">Params</label>
-          <div class="col-lg-8">
+          <label class="col-lg-3 col-form-label form-control-label">Params</label>
+          <div class="col-lg-9">
             <button type="button" id="phone" class="btn btn-sm btn-primary mt-1">Phone</button>
             <button type="button" id="name" class="btn btn-sm btn-primary mt-1">Name</button>
             <button type="button" id="birthday" class="btn btn-sm btn-primary mt-1">Birthday</button>
@@ -80,11 +83,11 @@
         </div>
 
          <div class="form-group row">
-            <label class="col-lg-4 col-form-label form-control-label"></label>
-            <div class="col-lg-8">                     
+            <label class="col-lg-3 col-form-label form-control-label"></label>
+            <div class="col-lg-9">                     
                {{-- <a href="" class="btn btn-sm btn-danger">Cancel</a> --}}
                <input type="button" value="Cancel" id="reset" class="btn btn-danger btn-sm" name="">
-               <input type="button" class="btn btn-sm btn-primary save-change" value="Save" />
+               <input type="button" class="btn btn-sm btn-primary save-change" value=" Save " />
             </div>
          </div>
       </form>
@@ -164,7 +167,7 @@
           url:" {{ route('sms-template-datatable') }}",
         },
         columns:[
-          {data:'id',name: 'id', class: 'text-center'},
+         /* {data:'id',name: 'id', class: 'text-center'},*/
           {data:'template_title',name:'template_title'},
           {data:'sms_content_template',name:'sms_content_template'},
           {data:'action',name:'action',orderable: false, searcheble: false, class: 'text-center'},        
