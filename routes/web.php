@@ -157,6 +157,7 @@ Route::group(['middleware' => ['auth']], function () {
         Route::get('get-customer-infor', 'OrdersController@getCustomerInfor')->name('get-customer-infor');
         Route::get('my-order-datatable', 'OrdersController@myOrderDatatable')->name('my-order-datatable');
         Route::get('seller-order-datatable', 'OrdersController@sellerOrderDatatable')->name('seller-order-datatable');
+        Route::get('view/{id?}', 'OrdersController@orderView')->where(['id'=>'[0-9]+'])->name('order-view');
     });
     
 });
