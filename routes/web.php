@@ -146,6 +146,11 @@ Route::group(['middleware' => ['auth']], function () {
         Route::get('my-order-datatable', 'OrdersController@myOrderDatatable')->name('my-order-datatable');
         Route::get('seller-order-datatable', 'OrdersController@sellerOrderDatatable')->name('seller-order-datatable');
         Route::get('view/{id?}', 'OrdersController@orderView')->where(['id'=>'[0-9]+'])->name('order-view');
+        Route::get('order-tracking', 'OrdersController@orderTracking')->name('order-tracking');
+    });
+    Route::group(['prefix' => 'task','namespace' => 'Task'], function() {
+        Route::get('/', 'TaskController@index');
+        Route::get('my-task-datatable', 'TaskController@myTaskDatatable')->name('my-task-datatable');
     });
     
 });

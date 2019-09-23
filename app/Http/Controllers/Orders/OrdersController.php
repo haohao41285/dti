@@ -15,6 +15,8 @@ use App\Models\PosPlace;
 use App\Models\MainCustomer;
 use App\Models\PosUser;
 use App\Models\MainUser;
+use App\Models\MainTrackingHistory;
+use App\Models\MainTask;
 use net\authorize\api\contract\v1 as AnetAPI;
 use net\authorize\api\controller as AnetController;
 use Carbon\Carbon;
@@ -325,7 +327,7 @@ class OrdersController extends Controller
 		    $team_customer_status_list = json_encode($team_customer_status_arr);
 
 			$update_team_customr_status = MainTeam::where('id',Auth::user()->user_team)->update(['team_customer_status'=>$team_customer_status_list]);
-					
+
 		if($request->credit_card_type != 'E-CHECK'){
 			/* Create a merchantAuthenticationType object with authentication details
 		       retrieved from the constants file */
@@ -412,11 +414,29 @@ class OrdersController extends Controller
 							$order_history_arr['csb_trans_id'] =  $tresponse->getTransId();
 							// return $order_history_arr;
 							//INSERT NEW ORDER
-							$insert_order = MainComboServiceBought::insert($order_history_arr);
+							$insert_order = MainComboServiceBought::create($order_history_arr);
+
+							//INSER MAIN_TASK
+							$service_arr = array_unique($service_arr);
+							$task_arr = [];
+							foreach ($service_arr as $key => $service) {
+								$service_name = MainComboService::where('id',$service)->first()->cs_name;
+								$task_arr[] = [
+									'subject' => $service_name,
+									'priority' => 2,
+									'status' => 1,
+									'order_id'=> $insert_order->id,
+									'created_by' => Auth::user()->user_id,
+									'updated_by' => Auth::user()->user_id,
+									'service_id' => $service,
+								];
+							}
+							$task_create = MainTask::insert($task_arr);
 
 							if(!isset($insert_order) 
 								|| !isset($update_team_customr_status) 
-								|| !isset($customer_service_update)){
+								|| !isset($customer_service_update)
+								|| !isset($task_create) ){
 
 								return back()->with(['error'=>'Transaction Failed. Check again!']);
 							}else{
@@ -461,6 +481,41 @@ class OrdersController extends Controller
 		        return back()->with(['error'=>'No response returned. Check again!']);
 		    }
 		}
+		else{
+			//INSERT NEW ORDER
+			$insert_order = MainComboServiceBought::create($order_history_arr);
+
+			//INSER MAIN_TASK
+			$service_arr = array_unique($service_arr);
+			$task_arr = [];
+			foreach ($service_arr as $key => $service) {
+				$service_name = MainComboService::where('id',$service)->first()->cs_name;
+				$task_arr[] = [
+					'subject' => $service_name,
+					'priority' => 2,
+					'status' => 1,
+					'order_id'=> $insert_order->id,
+					'created_by' => Auth::user()->user_id,
+					'updated_by' => Auth::user()->user_id,
+					'service_id' => $service,
+					'category' => 'ORDER'
+				];
+			}
+			$task_create = MainTask::insert($task_arr);
+
+			if(!isset($insert_order) 
+				|| !isset($update_team_customr_status) 
+				|| !isset($customer_service_update)
+				|| !isset($task_create) ){
+
+				DB::callback();
+				return back()->with(['error'=>'Transaction Failed. Check again!']);
+			}else{
+				DB::commit();
+			    return redirect()->route('my-orders')->with(['success'=>'Transaction Successfully!']);
+			}
+		}
+			
 	}
 	public function getCustomerInfor(Request$request)
 	{
@@ -661,8 +716,34 @@ class OrdersController extends Controller
 				else
 					$service_arr[] = $value;
 			}
+		$service_arr = array_unique($service_arr);
 		$data['service_list'] = MainComboService::whereIn('id',$service_arr)->get();
 		
 		return view('orders.order-view',$data);
+	}
+	public function orderTracking(Request $request){
+
+		$order_id = $request->order_id;
+		$order_id = 31;
+
+		$order_tracking = MainUser::join('main_tracking_history',function($join){
+			$join->on('main_tracking_history.created_by','main_user.user_id');
+		})
+			->where('main_tracking_history.order_id',$order_id)
+			->whereNull('main_tracking_history.subtask_id')
+			->select('main_tracking_history.*','main_user.user_firstname','main_user.user_lastname','main_user.user_team','main_user.user_nickname')->get();
+
+		return DataTables::of($order_tracking)
+
+			->addColumn('user_info',function($row){
+				return '<span>'.$row->user_nickname.'('.$row->getFullname().')</span><br>
+		                <span>'.Carbon::parse($row->created_at)->format('m/d/Y h:i A').'</span><br>
+		                <span class="badge badge-secondary">'.$row->getTeam->team_name.'</span>';
+			})
+			->addColumn('task',function($row){
+				return "<a href='' >Task#".$row->task_id."</a>";
+			})
+			->rawColumns(['user_info','task'])
+			->make(true);
 	}
 }
