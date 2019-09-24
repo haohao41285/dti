@@ -4,7 +4,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use App\Models\MainTeam;
-
+use App\Models\MainFile;
+use App\Models\MainTrackingHistory;
 
 class MainUser extends Model
 {
@@ -36,5 +37,8 @@ class MainUser extends Model
 	}
 	public function getTeam(){
 		return $this->belongsTo(MainTeam::class,'user_team','id');
+	}
+	public function getFiles(){
+		return $this->hasManyThrough(MainFile::class,MainTrackingHistory::class,'created_by','tracking_id','user_id','id');
 	}
 }

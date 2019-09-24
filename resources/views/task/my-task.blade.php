@@ -1,6 +1,6 @@
 @extends('layouts.app')
 @section('title')
-    My Orders
+    My Tasks
 @endsection
 @section('content')
 {{-- MODAL INPUT FORM --}}

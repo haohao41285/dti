@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Models\MainFile;
 
 class MainTrackingHistory extends Model
 {
@@ -15,4 +16,9 @@ class MainTrackingHistory extends Model
     	'created_at',
     	'content'
     ];
+    public $timestamps = false;
+
+    public function getFiles(){
+    	return $this->hasMany(MainFile::class,'tracking_id','id');
+    }
 }

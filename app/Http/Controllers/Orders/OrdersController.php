@@ -17,6 +17,7 @@ use App\Models\PosUser;
 use App\Models\MainUser;
 use App\Models\MainTrackingHistory;
 use App\Models\MainTask;
+use App\Models\MainFile;
 use net\authorize\api\contract\v1 as AnetAPI;
 use net\authorize\api\controller as AnetController;
 use Carbon\Carbon;
@@ -709,22 +710,33 @@ class OrdersController extends Controller
 		$combo_service_arr = explode(";", $combo_service_list);
 		$service_arr = [];
 
-		foreach ($combo_service_arr as $key => $value) {
-				$service_list = MainComboService::where('id',$value)->first();
-				if($service_list->cs_type == 1)
-					$service_arr = array_merge(explode(";",$service_list->cs_service_id),$service_arr);
-				else
-					$service_arr[] = $value;
-			}
-		$service_arr = array_unique($service_arr);
-		$data['service_list'] = MainComboService::whereIn('id',$service_arr)->get();
+		//GET SERVICE LIST
+		$data['service_list'] = MainTask::join('main_combo_service',function($join){
+			$join->on('main_task.service_id','main_combo_service.id');
+		})
+		->where('main_task.order_id',$id)
+		->select('main_combo_service.*','main_task.id')
+		->get();
+
+		//GET TASK LIST
+		$data['task_list'] = MainTask::leftjoin('main_user',function($join){
+			$join->on('main_task.updated_by','main_user.user_id');
+		})
+		->where('main_task.order_id',$id)
+		->where(function($query){
+			$query->where('main_task.created_by',Auth::user()->user_id)
+			->orWhere('main_task.assign_to',Auth::user()->user_id)
+			->orWhere('main_task.updated_by',Auth::user()->user_id);
+		})
+		->select('main_task.*','main_user.user_nickname')
+		->get();
 		
 		return view('orders.order-view',$data);
 	}
 	public function orderTracking(Request $request){
 
 		$order_id = $request->order_id;
-		$order_id = 31;
+		$order_id = 47;
 
 		$order_tracking = MainUser::join('main_tracking_history',function($join){
 			$join->on('main_tracking_history.created_by','main_user.user_id');
@@ -743,7 +755,17 @@ class OrdersController extends Controller
 			->addColumn('task',function($row){
 				return "<a href='' >Task#".$row->task_id."</a>";
 			})
-			->rawColumns(['user_info','task'])
+			->editColumn('content',function($row){
+				$file_list = MainFile::where('tracking_id',$row->id)->get();
+				$file_name = "";
+				if($file_list->count() > 0 ){
+					foreach ($file_list as $key => $file) {
+						$file_name .= '<img class="file-comment ml-2" src="'.asset($file->name).'"/>';
+					}
+				}
+				return $row->content."<br>".$file_name;
+			})
+			->rawColumns(['user_info','task','content'])
 			->make(true);
 	}
 }

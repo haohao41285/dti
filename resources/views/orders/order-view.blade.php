@@ -2,6 +2,15 @@
 @section('title')
     My Orders
 @endsection
+@push('styles')
+<style type="text/css" media="screen">
+   .file-comment{
+    max-width: 100px;
+    max-height: 100px;
+   }
+    
+</style>
+@endpush
 @section('content')
 {{-- MODAL INPUT FORM --}}
 <div class="modal fade" id="modal-input-form" role="dialog">
@@ -23,6 +32,41 @@
     </div>
   </div>
 {{-- END MODAL --}}
+{{-- MODAL FOR COMMENT --}}
+<div class="modal fade" id="add-comment-modal" role="dialog">
+    <div class="modal-dialog modal-lg">
+      <!-- Modal content-->
+      <div class="modal-content">
+        <div class="modal-header">
+          <h6 class="modal-title"><b>Add Comment</b></h6>
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+        </div>
+        <div class="modal-body">
+            <form   enctype="multipart/form-data" accept-charset="utf-8">
+                @csrf()
+                <textarea id="summernote" name="note"></textarea>
+                <input type="button" class="btn btn-sm btn-secondary mt-2" name="" value="Upload attchment's file" onclick="getFile()" placeholder="">
+                <input type="file" hidden id="file_image_list" multiple name="file_image_list[]">
+                <p>(The maximum upload file size: 100M)</p>
+                <div style="height: 10px" class="bg-info">
+                </div>
+                <hr style="border-top: 1px dotted grey;">
+                <p class="text-primary">An email notification will send to web@dataaeglobal.com</p>
+                 <div class="input-group mb-2 mr-sm-2">
+                    <div class="input-group-prepend">
+                      <div class="input-group-text">Add CC:</div>
+                    </div>
+                    <input type="text" class="form-control" name="email_list" id="email_list" placeholder="">
+                  </div>
+                <p>CC Multiple Email for example:<i> email_1@gmail.com;email_2@gmail.com</i></p>
+                <button type="botton" class="btn btn-sm btn-primary submit-comment">Submit Comment</button>
+            </form>
+        </div>
+      </div>
+      
+    </div>
+  </div>
+{{-- END MODAL COMMENT --}}
 <div class="table-responsive">
 	<h4 class="border border-info border-top-0 border-right-0 border-left-0 text-info">ORDER INFORMATON #{{$id}}</h4>
     <table class="table table-striped mt-4" id="dataTableAllCustomer" widtd="100%" cellspacing="0">
@@ -111,25 +155,27 @@
                 <th class="text-center">STATUS</th>
                 <th class="text-center">DATE START</th>
                 <th class="text-center">DATE END</th>
-                <th class="text-center">COMPLETE</th>
+                <th class="text-center">%COMPLETE</th>
                 <th class="text-center">ASSIGNEE</th>
                 <th class="text-center">LAST UPDATE</th>
                 <th class="text-center">ACTION</th>
             </tr>
         </thead>
         <tbody>
+            @foreach($task_list as $task)
             <tr class="text-center">
-                <td><a href="" title="">#43</a></td>
-                <td>Service 1</td>
-                <td>NORMAL</td>
-                <td>DONE</td>
-                <td>09/11/2019</td>
-                <td>09/11/2019</td>
-                <td>100%</td>
-                <td>thieusumo</td>
-                <td class="text-left">09/11/2019 11:20 AM by thieusumo</td>
-                <td class="text-primary">Add comment</td>
+                <td><a href="" title="">#{{$task->id}}</a></td>
+                <td>{{$task->subject}}</td>
+                <td>{{\App\Helpers\GeneralHelper::getPriorityTask()[$task->priority]}}</td>
+                <td>{{\App\Helpers\GeneralHelper::getStatusTask()[$task->priority]}}</td>
+                <td>{{\Carbon\Carbon::parse($task->date_start)->format('m/d/Y')}}</td>
+                <td>{{\Carbon\Carbon::parse($task->date_end)->format('m/d/Y')}}</td>
+                <td>{{$task->complete_percent}}</td>
+                <td>{{$task->getUser->user_nickname}}</td>
+                <td class="text-left">{{\Carbon\Carbon::parse($task->updated_at)->format('m/d/Y h:i A')}} by {{$task->user_nickname}}</td>
+                <td class="text-primary add-comment" order_id="{{$id}}" task_id="{{$task->id}}" ><a href="javascript:void(0)" title="">Add comment</a></td>
             </tr>
+            @endforeach
         </tbody>
     </table>
     <table class="table mt-4 table-bordered table-hover" id="tracking_history" width="100%" cellspacing="0">
@@ -137,8 +183,8 @@
             <tr>
                 <th hidden></th>
                 <th style="width:20%">TRACKING HISTORY</th>
-                <th style="width:20%"></th>
-                <th style="width:60%"></th>
+                <th style="width:10%"></th>
+                <th style="width:70%"></th>
             </tr>
         </thead>
     </table>
@@ -147,7 +193,30 @@
 @endsection
 @push('scripts')
 <script type="text/javascript">
+    function getFile(){
+            $("#file_image_list").click();
+        }
     $(document).ready(function() {
+        var task_id = 0;
+        var order_id = 0;
+
+          $('#summernote').summernote({
+            toolbar: [
+                ['style', ['bold', 'italic', 'underline', 'clear','fontname']],
+                ['color', ['color']],
+                ['fontsize', ['fontsize']],
+                ['height', ['height']],
+                ['style', ['style']],
+                ['para', ['ul', 'ol']],  
+                ['misc', ['fullscreen','undo','redo']],
+                ['table', ['table']]
+            ]
+          });
+
+          $("#datepicker").datepicker({
+          todayHighlight: true,
+          setDate: new Date(),
+        });
 
         var table = $('#tracking_history').DataTable({
        // dom: "lBfrtip",
@@ -159,6 +228,7 @@
        serverSide: true,
        ajax:{ url:"{{ route('order-tracking') }}",
        data: function (d) {
+        d.order_id = '{{$id}}'
             } 
         },
        columns: [
@@ -166,13 +236,56 @@
                 { data: 'user_info', name: 'user_info' },
                 { data: 'task', name: 'task',class: 'text-center' },
                 { data: 'content', name: 'content'},
-        ],
-    });
-
-        $("#datepicker").datepicker({
-          todayHighlight: true,
-          setDate: new Date(),
+            ],
         });
+
+        // $(".submit-comment").click(function(e){
+        $('body').on('click', '.submit-comment', function(e){
+            e.preventDefault();
+
+            var note = $("#summernote").val();
+            if(note == ""){
+                toastr.error('Enter Comment');
+                return;
+            }
+            var formData = new FormData($(this).parents('form')[0]);
+            formData.append('order_id',order_id);
+            formData.append('task_id',task_id);
+
+            $.ajax({
+                url: '{{route('post-comment')}}',
+                type: 'POST',
+                data: formData,
+                cache: false,
+                contentType: false,
+                processData: false,
+                async: true,
+                xhr: function() {
+                    var myXhr = $.ajaxSettings.xhr();
+                    return myXhr;
+                },
+                success: function (data) {
+                    console.log(data);
+                    // return;
+                    // data = JSON.parse(data);
+                    if(data.status == 'error'){
+                        toastr.error(data.message);
+                    }else{
+                        toastr.success(data.message);
+                        clearView();
+                        table.draw();
+                    }
+                },
+
+            });
+            return false;
+        });
+        function clearView(){
+            order_id = 0;
+            task_id = 0;
+            $("#add-comment-modal").modal('hide');
+        }
+
         $(".input-form").click(function(){
 
             var input_form_type = $(this).attr('form_type_id');
@@ -323,6 +436,13 @@
             }
             $(".modal-body").html(content_html);
             $("#modal-input-form").modal('show');
+        });
+        $(".add-comment").click(function(){
+
+            task_id = $(this).attr('task_id');
+            order_id = $(this).attr('order_id');
+
+            $("#add-comment-modal").modal('show');
         });
     });
 </script>

@@ -25,4 +25,7 @@ class MainTask extends Model
     	'content',
     	'category'
     ];
+    public function getUser(){
+    	return $this->belongsTo(MainUser::class,'assign_to','user_id');
+    }
 }

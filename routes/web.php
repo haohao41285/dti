@@ -151,6 +151,7 @@ Route::group(['middleware' => ['auth']], function () {
     Route::group(['prefix' => 'task','namespace' => 'Task'], function() {
         Route::get('/', 'TaskController@index');
         Route::get('my-task-datatable', 'TaskController@myTaskDatatable')->name('my-task-datatable');
+        Route::post('post-comment', 'TaskController@postComment')->name('post-comment');
     });
     
 });

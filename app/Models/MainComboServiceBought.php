@@ -19,6 +19,11 @@ class MainComboServiceBought extends Model
     	'csb_amount_deal',
     	'csb_card_number',
     	'csb_status',
-        'csb_note'
+        'csb_note',
+        'created_by',
+        'updated_by',
+        'bank_name',
+        'account_number',
+        'routing_number'
     ];
 }
