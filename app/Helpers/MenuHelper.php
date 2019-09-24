@@ -6,6 +6,7 @@ class MenuHelper{
 	public static function getMenuList(){
 		return [
 		    ['text' => 'Dashboard', 'icon'=>'fas fa-tachometer-alt', 'link' => 'dashboard'],
+		    ['text' => 'Task', 'icon'=>'fas fa-tachometer-alt', 'link' => 'task'],
 		    ['text' => 'Customers', 'icon'=>'fas fa-users', 'link' => 'customer','childrens' => [
 		        ['text' => 'All Customers', 'link'=> 'customer/customers'],
 		        ['text' => 'My Customer', 'link'=> 'customer/my-customers'],

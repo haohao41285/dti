@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Models\MainTeam;
 
 
 class MainUser extends Model
@@ -32,5 +33,8 @@ class MainUser extends Model
 
 	public function getFullname(){
 		return $this->user_firstname." ".$this->user_lastname;
+	}
+	public function getTeam(){
+		return $this->belongsTo(MainTeam::class,'user_team','id');
 	}
 }
