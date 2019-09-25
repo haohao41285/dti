@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Helpers\Option;
 use App\Helpers\GeneralHelper;
+use App\Helpers\ImagesHelper;
 use App\Models\MainCustomerTemplate;
 use App\Models\MainComboService;
 use App\Models\MainComboServiceBought;
@@ -26,6 +27,7 @@ use Validator;
 use Auth;
 use DB;
 use Hash;
+use ZipArchive;
 
 class OrdersController extends Controller 
 {
@@ -710,14 +712,6 @@ class OrdersController extends Controller
 		$combo_service_arr = explode(";", $combo_service_list);
 		$service_arr = [];
 
-		//GET SERVICE LIST
-		$data['service_list'] = MainTask::join('main_combo_service',function($join){
-			$join->on('main_task.service_id','main_combo_service.id');
-		})
-		->where('main_task.order_id',$id)
-		->select('main_combo_service.*','main_task.id')
-		->get();
-
 		//GET TASK LIST
 		$data['task_list'] = MainTask::leftjoin('main_user',function($join){
 			$join->on('main_task.updated_by','main_user.user_id');
@@ -736,7 +730,6 @@ class OrdersController extends Controller
 	public function orderTracking(Request $request){
 
 		$order_id = $request->order_id;
-		$order_id = 47;
 
 		$order_tracking = MainUser::join('main_tracking_history',function($join){
 			$join->on('main_tracking_history.created_by','main_user.user_id');
@@ -757,15 +750,134 @@ class OrdersController extends Controller
 			})
 			->editColumn('content',function($row){
 				$file_list = MainFile::where('tracking_id',$row->id)->get();
-				$file_name = "";
+				$file_name = "<div class='row '>";
 				if($file_list->count() > 0 ){
+
 					foreach ($file_list as $key => $file) {
-						$file_name .= '<img class="file-comment ml-2" src="'.asset($file->name).'"/>';
+						$zip = new ZipArchive();
+
+						if ($zip->open($file->name, ZipArchive::CREATE) !== TRUE) {
+							$file_name .= '<form action="'.route('down-image').'" method="POST"><input type="hidden" value="'.csrf_token().'" name="_token" /><input type="hidden" value="'.$file->name.'" name="src" /><img class="file-comment ml-2" src="'.asset($file->name).'"/></form>';
+						}else{
+							$file_name .= '<form action="'.route('down-image').'" method="POST"><input type="hidden" value="'.csrf_token().'" name="_token" /><input type="hidden" value="'.$file->name.'" name="src" /><a href="javascript:void(0)" class="file-comment ml-2" /><i class="fas fa-file-archive"></i>'.$file->name_origin.'</a></form>';
+						}
 					}
 				}
+				$file_name .= "</div>";
 				return $row->content."<br>".$file_name;
 			})
 			->rawColumns(['user_info','task','content'])
 			->make(true);
+	}
+	public function orderService(Request $request){
+
+		$order_id = $request->order_id;
+		$order_id = 47;
+
+		$service_list = MainTask::join('main_combo_service',function($join){
+			$join->on('main_task.service_id','main_combo_service.id');
+		})
+		->where('main_task.order_id',$order_id)
+		->select('main_combo_service.*','main_task.id','main_combo_service.id as csb_id','main_task.note','main_task.content');
+
+		return DataTables::of($service_list)
+			->addColumn('action',function($row){
+				return '<button type="button" form_type_id="'.$row->cs_form_type.'" task_id="'.$row->id.'" class="btn btn-sm btn-secondary input-form">INPUT FORM</button>';
+			})
+			->addColumn('infor',function($row){
+
+				//GET FILES
+				$file_name = "<div class='row'";
+				$file_list = $row->getFiles;
+				foreach ($file_list as $key => $file) {
+					$zip = new ZipArchive();
+
+				    if ($zip->open($file->name, ZipArchive::CREATE) !== TRUE) {
+						$file_name .= '<form action="'.route('down-image').'" method="POST"><input type="hidden" value="'.csrf_token().'" name="_token" /><input type="hidden" value="'.$file->name.'" name="src" /><img class="file-comment ml-2" src="'.asset($file->name).'"/></form>';
+					}else{
+						$file_name .= '<form action="'.route('down-image').'" method="POST"><input type="hidden" value="'.csrf_token().'" name="_token" /><input type="hidden" value="'.$file->name.'" name="src" /><a href="javascript:void(0)" class="file-comment ml-2" /><i class="fas fa-file-archive"></i>'.$file->name_origin.'</a></form>';
+					}
+
+				}
+				$file_name .= "</div>";
+
+				$content = '';
+
+				if($row->content != NULL){
+					$content_arr = json_decode($row->content,TRUE);
+
+					$content = '<span>Google Link: <b>'.$content_arr['google_link'].'</b></span><br>
+                    <span>Tên thợ nails: '.$content_arr['worker_name'].'</span><br>
+                    <div class="row">
+                        <span class="col-md-6">Number of starts: <b>'.$content_arr['star'].'</b></span>
+                        <span class="col-md-6">Số review hiện tại: <b>'.$content_arr['current_review'].'</b></span>
+                        <span class="col-md-6">Conplete date: <b>'.$content_arr['complete_date'].'</b></span>
+                        <span class="col-md-6">Số review yêu cầu: <b>'.$content_arr['order_review'].'</b></span>
+                    </div>
+                    <span></span>
+                    <span>Note: <b>'.$row->note.'</span>
+                    <a href="javascript:void(0)">'.$file_name.'</a>';
+				}
+				return $content;
+			})
+			->rawColumns(['action','infor'])
+			->make(true);
+	}
+	public function submitInfoTask(Request $request){
+
+		$input = $request->all();
+		$current_month = Carbon::now()->format('m');
+		$tracking_arr = [];
+
+		unset($input['list_file']);
+		unset($input['_token']);
+		unset($input['list_file']);
+		unset($input['task_id']);
+		unset($input['note']);
+
+		$content = json_encode($input);
+
+		DB::beginTransaction();
+		//ADD TRACKING HISTORY
+    	$tracking_arr = [
+    		'order_id' => $request->order_id,
+    		'task_id' => $request->task_id,
+    		'content' => $request->note,
+    		'created_by' => Auth::user()->user_id,
+    	];
+    	$tracking_create = MainTrackingHistory::create($tracking_arr);
+
+    	//UPDATE TASK
+    	$task_update = MainTask::where('id',$request->task_id)->update(['content'=>$content,'note'=>$request->note]);
+
+		//UPDATE FILE
+		if($request->list_file != ""){
+			foreach ($request->list_file as $key => $file) {
+
+                $file_name = ImagesHelper::uploadImage2($file,$current_month);
+                $file_arr[] = [
+                    'name' => $file_name,
+                    'name_origin' => $file->getClientOriginalName(),
+                    'tracking_id' => $tracking_create->id,
+                    'task_id' => $request->task_id
+                ];
+            }
+            $file_create = MainFile::insert($file_arr);
+            if(!isset($file_create) || !isset($task_update) || !isset($tracking_create)){
+            	DB::callback();
+            	return response(['status'=>'error','message'=>'Failed!']);
+            }else{
+            	DB::commit();
+            	return response(['status'=>'success','message'=>'Successfully']);
+            }
+		}
+
+		if( !isset($task_update) || !isset($tracking_create)){
+        	DB::callback();
+        	return response(['status'=>'error','message'=>'Failed!']);
+        }else{
+        	DB::commit();
+        	return response(['status'=>'success','message'=>'Successfully']);
+        }
 	}
 }

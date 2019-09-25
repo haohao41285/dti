@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Models\MainFile;
 
 class MainTask extends Model
 {
@@ -23,9 +24,14 @@ class MainTask extends Model
     	'updated_at',
     	'service_id',
     	'content',
-    	'category'
+    	'category',
+        'desription',
+        'note'
     ];
     public function getUser(){
     	return $this->belongsTo(MainUser::class,'assign_to','user_id');
+    }
+    public function getFiles(){
+        return $this->hasMany(MainFile::class,'task_id','id');
     }
 }

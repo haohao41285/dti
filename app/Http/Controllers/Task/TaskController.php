@@ -63,10 +63,12 @@ class TaskController extends Controller
     	// $name = $request->file_image_list[1]->getClientOriginalName();
     	// return $name;
     	$rule = [
-    		'order_id' => 'required'
+    		'order_id' => 'required',
+            'note' => 'required'
     	];
     	$message = [
-    		'order_id.required' => 'Order not exist!'
+    		'order_id.required' => 'Order not exist!',
+            'note.required' => 'Comment Empty!'
     	];
     	$validator = Validator::make($request->all(),$rule,$message);
     	if($validator->fails())
@@ -84,35 +86,65 @@ class TaskController extends Controller
 
     	$tracking_arr = [
     		'order_id' => $order_id,
-    		'task_id' => $task_id,
+    		'task_id' => $task_id==0?NULL:$task_id,
     		'content' => $content,
     		'created_by' => Auth::user()->user_id,
     	];
     	DB::beginTransaction();
     	$tracking_create = MainTrackingHistory::create($tracking_arr);
 
-    	foreach ($file_list as $key => $file) {
+        if($file_list != ""){
+            //CHECK SIZE IMAGE
+            $size_total = 0;
+            foreach ($file_list as $key => $file){
+                $size_total += $file->getSize();
+            }
+            $size_total = number_format($size_total / 1048576, 2); //Convert KB to MB
+            if($size_total > 100){
+                return response(['status'=>'error','message'=>'Total Size Image maximum 100M!']);
+            }
+            //Upload Image
+            foreach ($file_list as $key => $file) {
 
-    		$file_name = ImagesHelper::uploadImage2($file,$current_month);
-    		$file_arr[] = [
-    			'name' => $file_name,
-    			'tracking_id' => $tracking_create->id
-    		];
+                $file_name = ImagesHelper::uploadImage2($file,$current_month);
+                $file_arr[] = [
+                    'name' => $file_name,
+                    'name_origin' => $file->getClientOriginalName(),
+                    'tracking_id' => $tracking_create->id,
+                ];
+            }
+            $file_create = MainFile::insert($file_arr);
 
-    	}
-    	$file_create = MainFile::insert($file_arr);
+            if(!isset($tracking_create) || !isset($file_create))
+            {
+                DB::callback();
+                return response(['status'=>'error', 'message'=> 'Failed!']);
+            }
+            else{
+                DB::commit();
+                return response(['status'=> 'success','message'=>'Successly!']);
+            }
+        }
+        if(!isset($tracking_create))
+        {
+            DB::callback();
+            return response(['status'=>'error', 'message'=> 'Failed!']);
+        }
+        else{
+            DB::commit();
+            return response(['status'=> 'success','message'=>'Successly!']);
+        }
+        
+    	
+    }
+    public function downImage(Request $request){
 
+        $src_image = $request->src;
 
-
-    	if(!isset($tracking_create) || !isset($file_create))
-    	{
-    		DB::callback();
-    		return response(['status'=>'error', 'message'=> 'Failed!']);
-    	}
-    	else{
-    		DB::commit();
-    		return response(['status'=> 'success','message'=>'Successly!']);
-    	}
-
+        if(file_exists($src_image)){
+            return response()->download($src_image);            
+        }
+        else 
+            return back()->with(['error'=>"Download Failed"]);
     }
 }

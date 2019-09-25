@@ -32,8 +32,8 @@ class SmsController extends Controller
     public function downloadTemplateFile(Request $request){
     	if(file_exists('file/add_receivers_template.xlsx')){
             return response()->download('file/add_receivers_template.xlsx');            
-            }
-            else 
+        }
+        else 
             return "Error download template";
     }
 
