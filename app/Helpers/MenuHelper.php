@@ -6,6 +6,7 @@ class MenuHelper{
 	public static function getMenuList(){
 		return [
 		    ['text' => 'Dashboard', 'icon'=>'fas fa-tachometer-alt', 'link' => 'dashboard'],
+		    ['text' => 'Task', 'icon'=>'fas fa-tachometer-alt', 'link' => 'task'],
 		    ['text' => 'Customers', 'icon'=>'fas fa-users', 'link' => 'customer','childrens' => [
 		        ['text' => 'All Customers', 'link'=> 'customer/customers'],
 		        ['text' => 'My Customer', 'link'=> 'customer/my-customers'],
@@ -33,7 +34,7 @@ class MenuHelper{
 		        ['text' => 'Website theme', 'link'=> 'tools/website-themes'],
 		        // ['text' => 'Website theme properties', 'link'=> 'tools/website-themes-properties'],
 		    ]],
-		    ['text' => 'Orders', 'icon'=>'fas fa-user-cog', 'link' => 'orders','childrens' => [
+		    ['text' => 'Orders', 'icon'=>'fas fa-shopping-cart', 'link' => 'orders','childrens' => [
 		        ['text' => 'My Orders', 'link'=> 'orders/my-orders'],
 		        ['text' => 'All Orders', 'link'=> 'orders/all'],
 		        ['text' => "Seller's Orders", 'link'=> 'orders/sellers'],

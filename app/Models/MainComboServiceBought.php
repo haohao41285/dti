@@ -18,6 +18,7 @@ class MainComboServiceBought extends Model
     	'csb_card_type',
     	'csb_amount_deal',
     	'csb_card_number',
-    	'csb_status'
+    	'csb_status',
+        'csb_note'
     ];
 }

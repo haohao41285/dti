@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Models\MainComboService;
 use App\Models\PosMerchantMenus;
+use App\Models\MainUser;
 use Validator;
 use DataTables;
 use DB;
@@ -19,7 +20,11 @@ class SetupServiceController extends Controller
     public function serviceDatabase(Request $request)
 	{
 		$combo_service_arr = [];
-		$service_combo_list = MainComboService::all();
+		$service_combo_list = MainComboService::leftjoin('main_user',function($join){
+			$join->on('main_combo_service.cs_assign_to','main_user.user_id');
+		})
+			->select('main_combo_service.*','main_user.user_nickname','main_user.user_id')
+			->get();
 
 		foreach ($service_combo_list as $key => $service_combo) {
 
@@ -43,6 +48,8 @@ class SetupServiceController extends Controller
 				'cs_service_id' => $service_name_arr,
 				'cs_description' => $service_combo->cs_description,
 				'cs_type' => $service_combo->cs_type,
+				'cs_assign_to' => $service_combo->user_nickname,
+				'cs_assign_id' => $service_combo->user_id,
 				'cs_status' => $service_combo->cs_status,
 			];
 		}
@@ -61,7 +68,7 @@ class SetupServiceController extends Controller
 				return '<input type="checkbox" cs_id="'.$row['id'].'" cs_status="'.$row['cs_status'].'" class="js-switch"'.$checked.'/>';
 			})
 			->addColumn('action',function($row){
-				return '<a class="btn btn-sm btn-secondary edit-cs" cs_price='.$row['cs_price'].' cs_description="'.$row['cs_description'].'" cs_type='.$row['cs_type'].' cs_name="'.$row['cs_name'].'" cs_id="'.$row['id'].'"  title="Edit" href="javascript:void(0)"><i class="fas fa-edit"></i></a>
+				return '<a class="btn btn-sm btn-secondary edit-cs" cs_price='.$row['cs_price'].' cs_description="'.$row['cs_description'].'" cs_type='.$row['cs_type'].' cs_name="'.$row['cs_name'].'" cs_id="'.$row['id'].'"  title="Edit" href="javascript:void(0)" cs_assign_id="'.$row['cs_assign_id'].'"><i class="fas fa-edit"></i></a>
                 <a class="btn btn-sm btn-secondary delete-team" title="Delete" href="javascript:void(0)"><i class="fas fa-trash"></i></a>';
 			})
 			->rawColumns(['cs_status','action','cs_service_id'])
@@ -88,13 +95,13 @@ class SetupServiceController extends Controller
 	}
 	public function getServiceCombo(Request $request)
 	{
-
-
 		$cs_id = $request->cs_id;
 		$cs_type = $request->cs_type;
 
 		if(!isset($cs_id))
 			return response(['status'=>'error','message'=>'Error!']);
+	    //GET ALL USER
+		$data['user'] = MainUser::where('user_status',1)->get();
 
 		if($cs_type == 1){//COMBO
 
@@ -134,8 +141,10 @@ class SetupServiceController extends Controller
 	             $menu_html .= self::getMenuSon($menu_list,$menu_parent->mer_menu_id,$menu_id_arr);
 
 			}
-			if($menu_html != "")
-				return response(['menu_html'=>$menu_html]);
+			if($menu_html != ""){
+				$data['menu_html'] = $menu_html;
+				return response($data);
+			}
 			else
 				return response(['status'=>'error','message'=>'Error!']);
 		}
@@ -169,15 +178,16 @@ class SetupServiceController extends Controller
 		$cs_price = $request->cs_price;
 		$cs_description = $request->cs_description;
 		$service_id_arr = $request->service_id_arr;
+		$cs_assign_to = $request->cs_assign_to;
 
 		$rule = [
             'cs_name' => 'required',
-            'service_id_arr' => 'required',
+            // 'service_id_arr' => 'required',
             'cs_price' => 'required',
         ];
         $message = [
         'cs_name.required' => 'Enter Combo Name, Please!',
-        'service_id_arr.required' => 'Check Service, Please!',
+        // 'service_id_arr.required' => 'Check Service, Please!',
         'cs_price.required' => 'Enter Price, Please!'
         ];
 
@@ -199,20 +209,22 @@ class SetupServiceController extends Controller
 			if($check > 0)
 				return response(['status'=>'error','message'=>'Error! Name has existed.']);
 
-
-			$service_id_list = implode(";", $service_id_arr);
+			if($service_id_arr != "")
+			    $service_id_list = implode(";", $service_id_arr);
+			else
+				$service_id_list = "";
 
         if($cs_type == 1){
         	if($cs_id != 0)
-			    $cs_update = MainComboService::where('id',$cs_id)->update(['cs_name'=>$cs_name,'cs_service_id'=>$service_id_list,'cs_description'=>$cs_description]);
+			    $cs_update = MainComboService::where('id',$cs_id)->update(['cs_name'=>$cs_name,'cs_service_id'=>$service_id_list,'cs_description'=>$cs_description,'cs_assign_to'=>$cs_assign_to]);
 			else
-				$cs_update = MainComboService::insert(['cs_name'=>$cs_name,'cs_service_id'=>$service_id_list,'cs_price'=>$cs_price,'cs_type'=>1,'cs_status'=>1,'cs_description'=>$cs_description]);
+				$cs_update = MainComboService::insert(['cs_name'=>$cs_name,'cs_service_id'=>$service_id_list,'cs_price'=>$cs_price,'cs_type'=>1,'cs_status'=>1,'cs_description'=>$cs_description,'cs_assign_to'=>$cs_assign_to]);
         }
         else{
         	if($cs_id != 0){
-        		$cs_update = MainComboService::where('id',$cs_id)->update(['cs_name'=>$cs_name,'cs_menu_id'=>$service_id_list,'cs_description'=>$cs_description]);
+        		$cs_update = MainComboService::where('id',$cs_id)->update(['cs_name'=>$cs_name,'cs_menu_id'=>$service_id_list,'cs_description'=>$cs_description,'cs_assign_to'=>$cs_assign_to]);
         	}else
-        	    $cs_update = MainComboService::insert(['cs_name'=>$cs_name,'cs_service_id'=>$service_id_list,'cs_price'=>$cs_price,'cs_type'=>2,'cs_status'=>1,'cs_description'=>$cs_description]);
+        	    $cs_update = MainComboService::insert(['cs_name'=>$cs_name,'cs_service_id'=>$service_id_list,'cs_price'=>$cs_price,'cs_type'=>2,'cs_status'=>1,'cs_description'=>$cs_description,'cs_assign_to'=>$cs_assign_to]);
 			
         }
 
@@ -225,13 +237,15 @@ class SetupServiceController extends Controller
 	{
 		$cs_type = $request->cs_type;
 
-		if($cs_type == 1){
-			$cs_list = MainComboService::where('cs_type',2)->where('cs_status',1)->get();
+		$data['user'] = MainUser::where('user_status',1)->get();
 
-			if(!isset($cs_list))
+		if($cs_type == 1){
+			$data['cs_list'] = MainComboService::where('cs_type',2)->where('cs_status',1)->get();
+
+			if(!isset($data['cs_list']))
 			return response(['status'=>'error','message'=>'Error']);
 		else
-			return $cs_list;
+			return response($data);
 		}else{
 			$menu_html = "";
 			$menu_list = PosMerchantMenus::orderBy('mer_menu_index','asc')->get();
@@ -250,7 +264,9 @@ class SetupServiceController extends Controller
 	                </div>';
 	             $menu_html .= self::getMenuSon($menu_list,$menu_parent->mer_menu_id,$menu_id_arr);
 			}
-			return response(['menu_html'=>$menu_html]);
+			$data['menu_html'] = $menu_html;
+
+			return response($data);
 		}
 		
 	}

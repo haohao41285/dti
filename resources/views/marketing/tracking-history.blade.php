@@ -36,21 +36,26 @@
     </div>
   </div>
 {{-- END MODAL --}}
-<div class="row">
-   <div class="card shadow mb-4 col-lg-12">
-    <div class="card-body">
-      <div class="table-responsive">
-        <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
-          <thead>
-            <tr>
-              <th>Id</th>
-              <th>Template Title</th>
-              <th>SMS Content Template</th>
-              <th>Created at</th>
-              <th style="width: 80px">Action</th>
-            </tr>
-          </thead>  
-        </table>
+<div class="row ">
+  <div class="col-lg-12">
+     <div class="card shadow mb-4 ">
+      <div class="card-header py-3">
+        <h6 class="m-0 font-weight-bold text-primary">Tracking History</h6>
+      </div>
+      <div class="card-body">
+        <div class="table-responsive">
+          <table class="table table-bordered" id="dataTable" style="width: 100%" cellspacing="0">
+            <thead>
+              <tr>
+                <th>Id</th>
+                <th>Template Title</th>
+                <th>SMS Content Template</th>
+                <th>Created at</th>
+                <th style="width: 80px">Action</th>
+              </tr>
+            </thead>  
+          </table>
+        </div>
       </div>
     </div>
   </div>

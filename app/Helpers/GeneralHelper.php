@@ -103,4 +103,29 @@ class GeneralHelper{
             'Notpayment',
         ];
     }
+    public static function getFormOrder()
+    {
+        return [
+            1 => 'Google',
+            2 => 'Website',
+            3 => 'Facebook',
+            4 => 'Domain'
+        ];
+    }
+    public static function getPriorityTask(){
+        return [
+            1 => 'LOW',
+            2 => 'NORMAL',
+            3 => 'HIGH',
+            4 => 'URGENT',
+            5 => 'IMMEDIATE'
+        ];
+    }
+    public static function getStatusTask(){
+        return [
+            1 => 'NEW',
+            2 =>'PROCESSING',
+            3 => 'DONE'
+        ];
+    }
 }

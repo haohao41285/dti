@@ -6,8 +6,8 @@
 @section('content')
 
 <div class="row">
-
-  <div class="card shadow mb-4 col-lg-12">
+  <div class="col-md-12">
+  <div class="card shadow mb-4 ">
     <div class="card-header py-3">
       <h6 class="m-0 font-weight-bold text-primary">Send SMS</h6>
     </div>
@@ -52,13 +52,18 @@
           <label class="col-lg-2 col-form-label form-control-label">Receiver list</label>
           <div class="col-lg-6">
             <div class="custom-file">
-            <input type="file" name="upload_list_receiver" style="border: 1px solid #d1d3e2;" required class="custom-file-input" id="customFile">
-            <label class="custom-file-label" for="customFile">Choose file</label>
+              <input type="file" name="upload_list_receiver" style="border: 1px solid #d1d3e2;" required class="custom-file-input" id="customFile">
+              <label class="custom-file-label" for="customFile">Choose file</label>
 
-            <div class="note"><a href="{{route('download-template-file')}}">Download template file</a></div>
-        </div>
-      </div>
+              
+            </div>
+          </div>
          </div>
+
+        <div class="form-group row">
+          <label class="col-lg-2 col-form-label form-control-label"></label>
+          <div class="note "><a href="{{route('download-template-file')}}">Download template file</a></div>
+        </div>
          <div class="form-group row">
             <label class="col-lg-2 col-form-label form-control-label"></label>
             <div class="col-lg-9">                     
@@ -69,7 +74,7 @@
     </form>
     </div>
   </div>
-
+  </div>
 </div>
 
 @endsection

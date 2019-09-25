@@ -2,10 +2,10 @@
 <nav id="topbar" class="navbar navbar-expand navbar-light bg-white topbar mb-3 static-top shadow">
 
   <!-- Sidebar Toggle (Topbar) -->
-  <!-- <button class="btn btn-link order-1 order-sm-0" id="sidebarToggle" href="#">
+  <button class="btn btn-link d-md-none rounded-circle mr-3" id="sidebarToggleTop" href="#">
       <i class="fas fa-bars"></i>
-  </button> -->
-  <div class="topbar-divider d-none d-sm-block"></div>
+  </button>
+  
   <!-- Topbar Search -->
   <form class="d-none d-sm-inline-block form-inline mr-auto ml-md-3 my-2 my-md-0 mw-100 navbar-search">
     <div class="input-group">

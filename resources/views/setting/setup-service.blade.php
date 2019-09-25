@@ -1,19 +1,20 @@
 @extends('layouts.app')
 @section('title')
-Role List
+Combo/Service List
 @stop
 @section('content')
-<h5><b>Role List</b></h5>
+<h5><b>Combo/Service List</b></h5>
 <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
   <thead>
     <tr>
       <th class="text-center">ID</th>
-      <th>Service/Combo Name</th>
+      <th>Name</th>
+      <th class="text-center">Type</th>
       <th class="text-left">Price</th>
-      <th>Expiry Period (month)</th>
+      <th>Expiry(month)</th>
       <th>Service Name</th>
       <th>Description</th>
-      <th class="text-center">Type</th>
+      <th>Assign To</th>
       <th class="text-center">Status</th>
       <th class="text-center">Action</th>
     </tr>
@@ -33,7 +34,8 @@ Role List
 @push('scripts')
 <script type="text/javascript">
   //DEFINE VAR
-  var gu_id = 0;
+  var cs_assign_id = 0;
+
   $(document).ready(function($) {
     dataTable = $("#dataTable").DataTable({
             processing: true,
@@ -49,11 +51,12 @@ Role List
                 columns:[
                   {data:'id', name:'id'},
                   {data:'cs_name', name:'cs_name'},
+                  {data:'cs_type', name:'cs_type',class: 'text-center'},
                   {data:'cs_price', name:'cs_price',class: 'text-right'},
                   {data:'cs_expiry_period', name:'cs_expiry_period',class: 'text-center'},
                   {data:'cs_service_id', name:'cs_service_id'},
                   {data:'cs_description', name:'cs_description'},
-                  {data:'cs_type', name:'cs_type',class: 'text-center'},
+                  {data:'cs_assign_to', name:'cs_assign_to'},
                   {data:'cs_status', name:'cs_status',class:'text-center'},
                   {data:'action', name:'action',orderable: false, searchable: false,class:'text-center'},
                 ],
@@ -106,53 +109,20 @@ Role List
       gu_id = dataTable.row(this).data()['gu_id'];
 
     });
-    $(document).on('click','.submit-role',function(){
-
-      var gu_descript = $("#gu_descript").val();
-      var gu_name = $("#gu_name").val();
-
-      if(gu_descript != "" && gu_name != ""){
-        $.ajax({
-          url: '{{route('add-role')}}',
-          type: 'GET',
-          dataType: 'html',
-          data: {
-            gu_descript: gu_descript,
-            gu_name: gu_name,
-            gu_id: gu_id
-          },
-        })
-        .done(function(data) {
-          console.log(data);
-          if(data == 0){
-            alert('Error!');
-          }else{
-              clearView();
-            dataTable.draw();
-          }
-          console.log(data);
-        })
-      .fail(function(xhr, ajaxOptions, thrownError) {
-                alert('Error!');
-                console.log(thrownError + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText);
-          });
-      }
-    });
-    $(".cancel-role").click(function(){
-      clearView();
-    });
+    
     function clearView(){
+      cs_assign_to = 0;
       $("#body-add-edit").html("");
       $('#add-edit-modal').modal('hide');
     }
     $(document).on('click','.edit-cs',function(){
-     
 
       var cs_id = $(this).attr('cs_id');
       var cs_type = $(this).attr('cs_type');
       var cs_name = $(this).attr('cs_name');
       var cs_price = $(this).attr('cs_price');
       var cs_description = $(this).attr('cs_description');
+      cs_assign_id = $(this).attr('cs_assign_id');
 
       $.ajax({
         url: '{{route('get-service-combo')}}',
@@ -172,6 +142,13 @@ Role List
           var serivece_list_all = data.service_list_all;
           var content_body_html = "";
           var service_list_html = "";
+          var user_html = "";
+          var selected = "";
+
+          $.each(data.user, function(index, val) {
+            if(cs_assign_id == val.user_id) var selected = "selected";
+            user_html += `<option `+selected+` value="`+val.user_id+`">`+val.user_nickname+`</option>`;
+          });
 
           if(cs_type == 1){
             $.each(serivece_list_all, function(index, val)
@@ -193,7 +170,14 @@ Role List
               <input type="text" name="cs_price"  class="form-control form-control-sm cs_price" value="`+cs_price+`" placeholder="">
             </div>
             <div class="form-group">
-              <h6><b>Price</b></h6>
+              <h6><b>Assign To</b></h6>
+              <select name="" id="assign_to" class="form-control form-control-sm">
+                <option value="">Choose User</option>
+                `+user_html+`
+              </select>
+            </div>
+            <div class="form-group">
+              <h6><b>Description</b></h6>
               <textarea name="cs_description" rows="3" class="form-control form-control-sm cs_description">`+cs_description+`</textarea>
             </div>
             <h6><b>Service List</b></h6>
@@ -213,7 +197,14 @@ Role List
               <input type="text" name="cs_price"  class="form-control form-control-sm cs_price" value="`+cs_price+`" placeholder="">
             </div>
             <div class="form-group">
-              <h6><b>Price</b></h6>
+              <h6><b>Assign To</b></h6>
+              <select name="" id="assign_to" class="form-control form-control-sm">
+                <option value="">Choose User</option>
+                `+user_html+`
+              </select>
+            </div>
+            <div class="form-group">
+              <h6><b>Description</b></h6>
               <textarea name="cs_description" rows="3" class="form-control form-control-sm cs_description">`+cs_description+`</textarea>
             </div>
             <h6><b>Menu List</b></h6>
@@ -240,6 +231,7 @@ Role List
       var cs_type = $(".cs_name").attr('cs_type');
       var cs_price = $(".cs_price").val();
       var cs_description = $(".cs_description").val();
+      var cs_assign_to = $("#assign_to :selected").val();
       var service_id_arr = [];
 
       $('.service_id:checked').each(function() {
@@ -255,7 +247,8 @@ Role List
           cs_name: cs_name,
           cs_type: cs_type,
           cs_description: cs_description,
-          service_id_arr: service_id_arr
+          service_id_arr: service_id_arr,
+          cs_assign_to: cs_assign_to
         },
       })
       .done(function(data) {
@@ -319,9 +312,15 @@ Role List
         if(data.status == 'error')
           toastr.error(data.message);
         else{
-          var cs_list = data;
+          var cs_list = data.cs_list;
           var content_body_html = "";
           var service_list_html = "";
+          var user_html = "";
+
+          $.each(data.user, function(index, val) {
+            if(cs_assign_id == val.user_id) var selected = "selected";
+            user_html += `<option `+selected+` value="`+val.user_id+`">`+val.user_nickname+`</option>`;
+          });
 
           if(cs_type == 1){
             $.each(cs_list, function(index, val)
@@ -346,7 +345,14 @@ Role List
               <input type="text" name="cs_price"  class="form-control form-control-sm cs_price" value="" placeholder="">
             </div>
             <div class="form-group">
-              <h6><b>Price</b></h6>
+              <h6><b>Assign To</b></h6>
+              <select name="" id="assign_to" class="form-control form-control-sm">
+                <option value="">Choose User</option>
+                `+user_html+`
+              </select>
+            </div>
+            <div class="form-group">
+              <h6><b>Description</b></h6>
               <textarea name="cs_description" rows="3" class="form-control form-control-sm cs_description"></textarea>
             </div>
             <h6><b> List</b></h6>
@@ -380,10 +386,11 @@ Role List
       })
       .done(function(data) {
         data = JSON.parse(data);
+        console.log(data);
         if(data.status == 'error')
           toastr.error(data.message);
         else{
-          var cs_list = data;
+          var cs_list = data.cs_list;
           var content_body_html = "";
           var service_list_html = "";
 
