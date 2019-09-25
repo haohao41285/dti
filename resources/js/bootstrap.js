@@ -1,3 +1,5 @@
+window.toastr = require('bootstrap-toggle')
+
 window.toastr = require('toastr')
 
 window._ = require('lodash');

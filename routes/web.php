@@ -93,6 +93,8 @@ Route::group(['middleware' => ['auth']], function () {
             Route::get('/datatable','WebsiteThemeController@datatable')->name('getDatatableWebsiteThemes');
             Route::get('/get-by-id', 'WebsiteThemeController@getById')->name('getWebsiteThemesById');
             Route::post('/save', 'WebsiteThemeController@save')->name('saveWebsiteThemes');
+            Route::get('/delete', 'WebsiteThemeController@delete')->name('deleteThemes');
+            Route::get('/change-status', 'WebsiteThemeController@changeStatusThemes')->name('changeStatusThemes');
         });
 
         Route::group(['prefix' => 'website-themes-properties'], function() {

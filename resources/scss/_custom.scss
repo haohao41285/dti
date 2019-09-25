@@ -133,3 +133,20 @@ form{
 .nowrap{
     white-space: nowrap;
 }
+
+/* -----------------------------------------*/
+/*custom */
+table>tbody>tr>td>span.switchery>small{
+    top:-1px;
+}
+ul.toggled>li>div.show{
+    border-radius: 5px;
+    padding: 10px;
+    background: rgb(59, 97, 209);
+}
+/*custom image upload*/
+.previewImage>img{
+    width: 17rem;
+    border: black solid;
+    cursor: pointer;
+}

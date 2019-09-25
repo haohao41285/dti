@@ -3,48 +3,70 @@ namespace App\Helpers;
 
 class ImagesHelper
 {
+    /**
+     * upload image local
+     */
 	public static function uploadImage($checkImage, $requestImage, $nameImageDB){
 		if($checkImage){ 
             $img = $requestImage;
             $img_name = time()."-".$img->getClientOriginalName();
-            // if(!empty($nameImageDB)){
-            // 	if(file_exists(env('PATH_UPLOAD_IMAGE').'/'.$nameImageDB)){
-            //    	 	unlink(env('PATH_UPLOAD_IMAGE').'/'.$nameImageDB);
-            // 	}
-            // }
+            
             $img->move(env('PATH_UPLOAD_IMAGE'),$img_name);
             return $img_name;
         }
 	}
+    //==========================================
     /**
-     * Auto upload image to SummerNote 
-     * @param  $description is SummerNote content
-     * @return $description 
+     * send post request upload Image to a different server
+     * @return string image name
      */
-    public static function uploadImageSummerNote($description){
-        $dom = new \DomDocument();
-        $dom->loadHtml('<?xml encoding="utf-8" ?>' .$description);   
-        $images = $dom->getElementsByTagName('img');
+    private static function sendRequestToApi($tmpUpload,$name,$path){
+      try {
+        $data = [
+          "fileUpload" => fopen($tmpUpload, 'r'), 
+          "name" => $name,
+          "pathImage" => $path,
+        ];
 
-        foreach($images as $k => $img){
-            $data = $img->getAttribute('src');
-            if($data){
-                try {
-                    list($type, $data) = explode(';', $data);
-                    list(, $data)      = explode(',', $data);
-                    $data = base64_decode($data);
-                    $image_name= "/upload/summer_note/" . time().$k.'.png';
-                    $path = public_path() . $image_name;
-                    file_put_contents($path, $data);
-                    $img->removeAttribute('src');
-                    $img->setAttribute('src', $image_name);
-                } catch (\Exception $e) {
-                    continue;
-                }
-                
-            }            
-        }
-        $description = $dom->saveHTML();
-        return $description;
+        $curl = curl_init("http://localhost:8000/upload/images/");
+
+        curl_setopt($curl, CURLOPT_CUSTOMREQUEST, "POST");
+        curl_setopt($curl, CURLOPT_POSTFIELDS, $data);
+        curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($curl, CURLOPT_HTTPHEADER, array(
+            'Content-Type: multipart/form-data',
+            'Content-Type: application/json',
+            // 'Content-Length: ' . strlen($data_string)
+          )
+        );
+dd($curl);
+
+        $result = curl_exec($curl);
+        curl_close($curl);
+
+        return $result;
+
+      } catch (\Exception $e) {
+        \Log::info($e);
+        dd('falsdf');
+        return "error";
+      }
     }
+
+    public static function uploadImageToAPI($file, $folder_upload) { 
+        $name = $file->getClientOriginalName();
+        $name = str_replace(" ", "-", $name);
+        $pathImage = '/images/place/' . $folder_upload . '/';
+        $filename = strtotime('now') .'-'. strtolower($name);
+       
+        $file->move("tmp-upload", $filename);
+        $tmpUpload = "tmp-upload/".$filename;
+
+        self::sendRequestToApi($tmpUpload,$filename,$pathImage);
+        unlink("tmp-upload/".$filename);
+
+        return $pathImage . $filename;
+    }
+
+    
 }

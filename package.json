@@ -39,6 +39,7 @@
     },
     "dependencies": {
         "bootstrap-timepicker": "^0.5.2",
+        "bootstrap-toggle": "^2.2.2",
         "eonasdan-bootstrap-datetimepicker": "^4.17.47",
         "gulp": "^4.0.2",
         "toastr": "^2.1.4"
