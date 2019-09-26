@@ -4,7 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class MainTheme extends Model
+class MainThemeProperties extends Model
 {
     protected $table = 'main_theme_properties';
 

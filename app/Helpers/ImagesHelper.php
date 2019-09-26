@@ -1,5 +1,6 @@
 <?php
 namespace App\Helpers;
+use GuzzleHttp\Client;
 
 class ImagesHelper
 {
@@ -22,33 +23,32 @@ class ImagesHelper
      */
     private static function sendRequestToApi($tmpUpload,$name,$path){
       try {
-        $data = [
-          "fileUpload" => fopen($tmpUpload, 'r'), 
-          "name" => $name,
-          "pathImage" => $path,
-        ];
-
-        $curl = curl_init("http://localhost:8000/upload/images/");
-
-        curl_setopt($curl, CURLOPT_CUSTOMREQUEST, "POST");
-        curl_setopt($curl, CURLOPT_POSTFIELDS, $data);
-        curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($curl, CURLOPT_HTTPHEADER, array(
-            'Content-Type: multipart/form-data',
-            'Content-Type: application/json',
-            // 'Content-Length: ' . strlen($data_string)
-          )
-        );
-dd($curl);
-
-        $result = curl_exec($curl);
-        curl_close($curl);
-
-        return $result;
+        $client = new Client;
+        $response = $client->request('POST', env('URL_FILE_WRITE'), 
+          [                
+                'multipart' => [
+                      [
+                          'name'     => 'name',
+                          'contents' => $name,
+                      ],                    
+                      [
+                          'name'     => 'fileUpload',
+                          'contents' => fopen($tmpUpload, 'r'),
+                      ],
+                      [
+                          'name'     => 'pathImage',
+                          'contents' => $path,
+                      ]
+                  ],
+                  'headers' => [
+                      'Authorization' => 'Bearer '.env('UPLOAD_IMAGE_API_KEY'),
+                  ],
+          ]); 
+        $body = (string)$response->getBody();
+        // echo ($body);
 
       } catch (\Exception $e) {
         \Log::info($e);
-        dd('falsdf');
         return "error";
       }
     }

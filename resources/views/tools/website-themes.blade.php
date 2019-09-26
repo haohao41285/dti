@@ -135,7 +135,7 @@ Theme Management
             </div>
             <div class="modal-body row">
                 <div class="col-2">
-                    <form action="" method="POST" role="form">
+                    <form action="" method="POST" role="form" id="setup-properties">
                         <div class="form-group">
                             <label >Image</label>
                             <div class="previewImage">
@@ -144,6 +144,8 @@ Theme Management
                             </div>
                         </div>
                         <button type="submit" class="btn btn-primary btn-sm">Add New Property </button>
+                        <input type="hidden" name="action" value="Create">
+                        <input type="hidden" name="theme_id">
                     </form>
                 </div>
                 <div class="col-5 ">
@@ -159,13 +161,13 @@ Theme Management
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr>
+                               {{--  <tr>
                                     <td>1</td>
                                     <td>abc</td>
                                     <td><a class="btn btn-sm btn-secondary editProperties"  href="#"><i class="fas fa-edit"></i></a>
                                         <a class="btn btn-sm btn-secondary deleteProperties"  href="#"><i class="fas fa-trash"></i></a>
                                     </td>
-                                </tr>
+                                </tr> --}}
                             </tbody>
                         </table>
                     </div>
@@ -367,6 +369,7 @@ Theme Management
 			    processData: false,
 			    success:function(data){
 			    	if(data.status == 1){
+                        $("#themeModal").modal("hide");
 			    		toastr.success("Saved successfully!");
 			    	}
 			    },
@@ -377,10 +380,7 @@ Theme Management
 			});
     
     
-    		$(document).on('click',".setup-properties",function(e){
-    			e.preventDefault();
-    			$("#setupPropertiesModal").modal("show");
-    		});
+    		
     
     		
      
@@ -398,6 +398,69 @@ Theme Management
      });
     
    
+    });
+</script>
+{{-- setup-properties --}}
+<script>
+    function listThemePropertiesByThemeId(theme_id){
+        $.ajax({
+            url:"{{ route('listThemePropertiesByThemeId') }}",
+            method:"get",
+            dataType:"json",
+            success:function(data){
+                if(data.status == 1){
+                    var html = '';
+                    for(var i = 0; i < data.data.length; i++){
+                            html    +='<tr>'
+                                    +'<td>'+data.data[i].theme_properties_id+'</td>'
+                                    +'<td>abc</td>'
+                                    +'<td><a class="btn btn-sm btn-secondary editProperties" properties-id='+data.data[i].theme_properties_id+' href="#"><i class="fas fa-edit"></i></a>'
+                                    +'<a class="btn btn-sm btn-secondary deleteProperties" properties-id='+data.data[i].theme_properties_id+' href="#"><i class="fas fa-trash"></i></a>'
+                                    +'</td>'
+                                    +'</tr>'
+                    }
+
+                    $("#themeProperties tbody").html(html);
+                }
+            }, 
+            error:function(){
+                toastr.error("Failed to load Properties!");
+            }
+        });
+    }
+    $(document).ready(function(){
+        $(document).on('click',".setup-properties",function(e){
+                e.preventDefault();
+                var theme_id = $(this).attr('data');
+                $("#setup-properties").find("input[name='theme_id']").val(theme_id);
+                listThemePropertiesByThemeId(theme_id)
+                $("#setupPropertiesModal").modal("show");
+            });
+
+
+
+        $("#setup-properties").on('submit',function(e){
+            e.preventDefault();
+            var form = $(this)[0];
+            var form_data = new FormData(form);
+              $.ajax({
+                url:"{{ route('saveWebsiteThemesProperty') }}",
+                method:"post",
+                data: form_data,
+                cache:false,
+                contentType: false,
+                processData: false,
+                success:function(data){
+                    if(data.status == 1){
+                        toastr.success("Saved successfully!");
+                    }
+                },
+                error:function(){
+                    toastr.error("Failed to save!");
+                }
+              });
+        });
+
     });
 </script>
 @endpush

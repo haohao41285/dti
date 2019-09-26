@@ -98,8 +98,9 @@ Route::group(['middleware' => ['auth']], function () {
         });
 
         Route::group(['prefix' => 'website-themes-properties'], function() {
-            Route::get('/', 'WebsiteThemePropertiesController@index')->name('getWebsiteThemesProperties');
-            Route::get('/datatable','WebsiteThemePropertiesController@datatable')->name('getDatatableWebsiteThemesProperties');
+            // Route::get('/', 'WebsiteThemePropertiesController@index')->name('getWebsiteThemesProperties');
+            Route::get('/list-theme-properties','WebsiteThemePropertiesController@listThemePropertiesByThemeId')->name('listThemePropertiesByThemeId');
+            Route::post('save', "WebsiteThemePropertiesController@save")->name('saveWebsiteThemesProperty');
         });
     });
     
