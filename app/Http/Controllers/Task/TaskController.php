@@ -9,11 +9,13 @@ use App\Helpers\ImagesHelper;
 use App\Models\MainTask;
 use App\Models\MainTrackingHistory;
 use App\Models\MainFile;
+use App\Models\MainUser;
 use Carbon\Carbon;
 use DataTables;
 use Auth;
 use Validator;
 use DB;
+use ZipArchive;
 
 class TaskController extends Controller
 {
@@ -32,7 +34,7 @@ class TaskController extends Controller
     			return GeneralHelper::getStatusTask()[$row->status];
     		})
     		->addColumn('task',function($row){
-    			return '<a href="">#'.$row->id.'</a>';
+    			return '<a href="'.route('task-detail',$row->id).'">#'.$row->id.'</a>';
     		})
     		->editColumn('order_id',function($row){
     			return '<a href="'.route('order-view',$row->order_id).'">#'.$row->order_id.'</a>';
@@ -146,5 +148,58 @@ class TaskController extends Controller
         }
         else 
             return back()->with(['error'=>"Download Failed"]);
+    }
+    public function taskDetail($id){
+
+        $data['task_info'] = MainTask::find($id);
+        $data['id'] = $id;
+        return view('task.task-detail',$data);
+    }
+   
+    public function taskTracking(Request $request){
+
+        $task_id = $request->task_id;
+
+        $order_tracking = MainUser::join('main_tracking_history',function($join){
+            $join->on('main_tracking_history.created_by','main_user.user_id');
+        })
+            ->where('main_tracking_history.task_id',$task_id)
+            ->whereNull('main_tracking_history.subtask_id')
+            ->select('main_tracking_history.*','main_user.user_firstname','main_user.user_lastname','main_user.user_team','main_user.user_nickname')->get();
+
+        return DataTables::of($order_tracking)
+
+            ->addColumn('user_info',function($row){
+                return '<span>'.$row->user_nickname.'('.$row->getFullname().')</span><br>
+                        <span>'.Carbon::parse($row->created_at)->format('m/d/Y h:i A').'</span><br>
+                        <span class="badge badge-secondary">'.$row->getTeam->team_name.'</span>';
+            })
+            ->addColumn('task',function($row){
+                return "<a href='' >Task#".$row->task_id."</a>";
+            })
+            ->editColumn('content',function($row){
+                $file_list = MainFile::where('tracking_id',$row->id)->get();
+                $file_name = "<div class='row '>";
+                if($file_list->count() > 0 ){
+
+                    foreach ($file_list as $key => $file) {
+                        $zip = new ZipArchive();
+
+                        if ($zip->open($file->name, ZipArchive::CREATE) !== TRUE) {
+                            $file_name .= '<form action="'.route('down-image').'" method="POST"><input type="hidden" value="'.csrf_token().'" name="_token" /><input type="hidden" value="'.$file->name.'" name="src" /><img class="file-comment ml-2" src="'.asset($file->name).'"/></form>';
+                        }else{
+                            $file_name .= '<form action="'.route('down-image').'" method="POST"><input type="hidden" value="'.csrf_token().'" name="_token" /><input type="hidden" value="'.$file->name.'" name="src" /><a href="javascript:void(0)" class="file-comment ml-2" /><i class="fas fa-file-archive"></i>'.$file->name_origin.'</a></form>';
+                        }
+                    }
+                }
+                $file_name .= "</div>";
+                return $row->content."<br>".$file_name;
+            })
+            ->rawColumns(['user_info','task','content'])
+            ->make(true);
+    }
+    public function taskAdd($id = 0){
+        $data['user_list'] = MainUser::where('user_id',"!=",Auth::user()->user_id)->get();
+        return view('task.add-task',$data);
     }
 }

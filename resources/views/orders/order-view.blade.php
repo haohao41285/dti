@@ -5,11 +5,11 @@
 @push('styles')
 <style type="text/css" media="screen">
    .file-comment{
-    max-width: 100px;
-    max-height: 100px;
-   }
+        max-width: 100px;
+        max-height: 100px;
+    }
    .note-popover.popover {
-    display: none;
+        display: none;
    }
     
 </style>
@@ -74,7 +74,7 @@
 {{-- END MODAL COMMENT --}}
 <div class="table-responsive">
 	<h4 class="border border-info border-top-0 border-right-0 border-left-0 text-info">ORDER INFORMATON #{{$id}}</h4>
-    <table class="table table-striped mt-4" id="dataTableAllCustomer" widtd="100%" cellspacing="0">
+    <table class="table table-striped mt-4 table-bordered" id="dataTableAllCustomer" widtd="100%" cellspacing="0">
         <tbody>
             <tr>
                 <td>ORDER</td>
@@ -158,15 +158,15 @@
         <tbody>
             @foreach($task_list as $task)
             <tr class="text-center">
-                <td><a href="" title="">#{{$task->id}}</a></td>
+                <td><a href="{{route('task-detail',$task->id)}}" title="">#{{$task->id}}</a></td>
                 <td>{{$task->subject}}</td>
                 <td>{{\App\Helpers\GeneralHelper::getPriorityTask()[$task->priority]}}</td>
                 <td>{{\App\Helpers\GeneralHelper::getStatusTask()[$task->status]}}</td>
-                <td>{{$task->date_start!=""?\Carbon\Carbon::parse($task->date_start)->format('m/d/Y'):""}}</td>
-                <td>{{$task->date_end!=""?\Carbon\Carbon::parse($task->date_end)->format('m/d/Y'):""}}</td>
+                <td>{{$task->date_start!=""?format_date($task->date_start):""}}</td>
+                <td>{{$task->date_end!=""?format_date($task->date_end):""}}</td>
                 <td>{{$task->complete_percent}}</td>
                 <td>{{$task->getUser->user_nickname}}</td>
-                <td class="text-left">{{\Carbon\Carbon::parse($task->updated_at)->format('m/d/Y h:i A')}} by {{$task->user_nickname}}</td>
+                <td class="text-left">{{format_datetime($task->updated_at)}} by {{$task->user_nickname}}</td>
                 <td class="text-primary add-comment" order_id="{{$id}}" task_id="{{$task->id}}" ><a href="javascript:void(0)" title="">Add comment</a></td>
             </tr>
             @endforeach
@@ -198,7 +198,7 @@
         <div class="input-group-prepend">
           <div class="input-group-text">Add CC:</div>
         </div>
-        <input type="text" class="form-control" name="email_list" id="email_list" placeholder="">
+        <input type="text" class="form-control" name="email_list" id="email_list_2" placeholder="">
       </div>
     <p>CC Multiple Email for example:<i> email_1@gmail.com;email_2@gmail.com</i></p>
     <button type="botton" class="btn btn-sm btn-primary submit-comment">Submit Comment</button>
@@ -269,11 +269,6 @@
 
         $('body').on('click', '.submit-comment', function(e){
             e.preventDefault();
-            // var note = $("#summernote").val();
-            // if(note == ""){
-            //     toastr.error('Enter Comment');
-            //     return;
-            // }
             var formData = new FormData($(this).parents('form')[0]);
             formData.append('order_id',order_id);
             formData.append('task_id',task_id);
@@ -312,7 +307,9 @@
         function clearView(){
             task_id = 0;
             $("#email_list").val("");
+            $("#email_list_2").val("");
             $("#summernote").val("");
+            $("#summernote2").val("");
             $("#add-comment-modal").modal('hide');
         }
 
@@ -372,18 +369,21 @@
                 <label for="product_name">Tên sản phẩm</label>
                 <input type="text" class="form-control form-control-sm" id="product_name" name="product_name" value="" placeholder="">
                 <label for="main_color">Màu chủ đạo</label>
-                <input type="text" class="form-control form-control-sm" id="main_color" name="product_name" value="" placeholder="">
+                <input type="text" class="form-control form-control-sm" id="main_color" name="main_color" value="" placeholder="">
                 <label for="kind_of">Thể loại hoặc phong cách khách hàng hướng đến</label>
-                <input type="text" class="form-control form-control-sm" id="kind_of" name="style" value="" placeholder="">
+                <input type="text" class="form-control form-control-sm" id="kind_of" name="style_customer" value="" placeholder="">
                 <label for="facebook_link">Facebook Link</label>
-                <input type="text" class="form-control form-control-sm" id="facebook_link" name="product_name" value="" placeholder="">
+                <input type="text" class="form-control form-control-sm" id="facebook_link" name="link" value="" placeholder="">
                 <label for="website">Website</label>
-                <input type="text" class="form-control form-control-sm" id="website" name="product_name" value="" placeholder="">
+                <input type="text" class="form-control form-control-sm" id="website" name="website" value="" placeholder="">
                 <div class="border border-secondary p-2 rounded">
                     <p>Upload Logo images or file</p>
-                    <button class="btn btn-sm btn-secondary">Upload attachment</button><br><br>
-                    <input type="file" hidden id="file"  name="">
-                    <input type="text" class="form-control form-control-sm" id="file_name" name="">
+                    <input type="button" class="btn btn-sm btn-secondary" onclick="uploadFile()" value="Upload attachment files" name="">
+                    <input type="file" id="upload_file" hidden class="" value="" name="list_file[]" multiple>
+                </div>
+                <div class="form-group">
+                    <label for="note">Notes</label>
+                    <textarea class="form-control form-control-sm" name="note" rows="3"></textarea>
                 </div>
                 `;
             }
@@ -391,79 +391,80 @@
                 content_html = `
                 <div class="form-group">
                 <label for="facebook-link">Facebook Link</label>
-                <input type="text" class="form-control form-control-sm"  id="facebook-link" name="" value="">
+                <input type="text" class="form-control form-control-sm"  id="facebook-link" name="link" value="">
                 </div>
                 <div class="form-group">
                     <label for="worker-name">Promotion</label>
-                    <input type="text" class="form-control form-control-sm"  id="promotion" name="" value="">
+                    <input type="text" class="form-control form-control-sm"  id="promotion" name="promotion" value="">
                 </div>
                 <div class="col-md-12 row">
                     <div class="col-md-6">
                         <div class="form-group row">
                             <label for="number_of_stars" class="col-md-6">Số lượng bài viết</label>
-                            <input type="text" class="form-control form-control-sm col-md-6"  id="number_of_stars" name="" value="">
+                            <input type="text" class="form-control form-control-sm col-md-6"  id="number_of_stars" name="number" value="">
                         </div>
                         <div class="form-group row">
                             <label for="add_admin" class="col-md-6">Đã add admin chưa?</label>
-                            <input type="checkbox" class="col-md-6"  id="add_admin" name="" value="">
+                            <input type="checkbox" class="col-md-6"  id="add_admin" name="admin" value="1">
                         </div>
                         <div class="form-group row">
                             <label for="facebook_username" class="col-md-6">Facebook Username</label>
-                            <input type="text" class="form-control form-control-sm col-md-6"  id="facebook_username" name="" value="">
+                            <input type="text" class="form-control form-control-sm col-md-6"  id="facebook_username" name="user" value="">
                         </div>
                         <div class="form-group row">
                             <label class="col-md-6" for="facebook_password">Facebook Password</label>
-                            <input type="text" class="form-control form-control-sm col-md-6" id="facebook_password" name="" value="">
+                            <input type="text" class="form-control form-control-sm col-md-6" id="facebook_password" name="password" value="">
                         </div>
                        <div class="form-group row">
-                            <label for="add_admin" class="col-md-6">Có lấy được hình ảnh?</label>
-                            <input type="checkbox" class="col-md-6"  id="add_admin" name="" value="">
+                            <label for="image" class="col-md-6">Có lấy được hình ảnh?</label>
+                            <input type="checkbox" class="col-md-6"  id="image" name="image" value="1">
                         </div>
                     </div>
                     <div class="col-md-1" style="border-right: .5px dashed grey">
                         
                     </div>
                     <div class="col-md-5">
-                        <input type="file" hidden id="file" name="" value="">
-                        <input type="button" class="btn btn-sm btn-secondary" value="Upload attachment files" name="">
+                        <input type="button" class="btn btn-sm btn-secondary" onclick="uploadFile()" value="Upload attachment files" name="">
+                        <input type="file" id="upload_file" hidden class="" value="" name="list_file[]" multiple>
                     </div>
                 </div>
                 <div class="form-group">
                     <label for="note">Notes</label>
-                    <textarea class="form-control form-control-sm" name="" rows="3"></textarea>
+                    <textarea class="form-control form-control-sm" name="note" rows="3"></textarea>
                 </div>
                 `;
             }
             if(input_form_type == 4){
                 content_html = `
                 <label for="domain">Domain</label>
-                <input type="text" id="domain" class="form-control form-control-sm" name="">
+                <input type="text" id="domain" class="form-control form-control-sm" name="domain">
                 <div class="col-md-12 row mt-2">
                     <div class="col-md-6 row pr-3" style="border-right: .5px dashed grey">
                         <label class="col-md-2" for="theme">Theme</label>
-                        <input type="text" id="theme" class="form-control form-control-sm col-md-10" name="">
-                        <input type="checkbox" class="col-md-2 mt-1" id="show_price" name="">
+                        <input type="text" id="theme" class="form-control form-control-sm col-md-10" name="theme">
+                        <input type="checkbox" class="col-md-2 mt-1" id="show_price" name="show_price" value="1">
                         <label for="show_price" class="col-md-10 mt-1">Is show Service Price?</label>
                     </div>
                     <div class="col-md-6 pl-3">
-                        <button type="button" id="file_name" class="btn btn-sm btn-secondary">Upload attachment files</button>
-                        <input type="file" hidden id="file" name="">
-                        <input type="text" id="file_name" class="form-control form-control-sm mt-1" name="">
+                        <input type="button" class="btn btn-sm btn-secondary" onclick="uploadFile()" value="Upload attachment files" name="">
+                        <input type="file" id="upload_file" hidden class="" value="" name="list_file[]" multiple>
                     </div>
                 </div>
                 <h5><b>BUSINESS INFO</b></h5>
                 <div class="col-md-12 row">
                     <label class="col-md-3" for="business_name">Business Name</label>
-                    <input type="text" class="col-md-3 form-control form-control-sm" id="business_name" name="">
+                    <input type="text" class="col-md-3 form-control form-control-sm" id="business_name" name="business_name">
                     <label class="col-md-3" for="business_phone">Business Phone</label>
-                    <input type="number" class="col-md-3 form-control form-control-sm" id="business_phone" name="">
+                    <input type="number" class="col-md-3 form-control form-control-sm" id="business_phone" name="business_phone">
                     <label for="email" class="col-md-3">Email</label>
-                    <input type="email" id="email" class="col-md-3 form-control form-control-sm" name="">
+                    <input type="email" id="email" class="col-md-3 form-control form-control-sm" name="email">
                     <label for="address" class="col-md-3">Address</label>
-                    <input type="email" id="address" class="col-md-3 form-control form-control-sm" name="">
+                    <input type="email" id="address" class="col-md-3 form-control form-control-sm" name="address">
                 </div>
-                <label for="" for="note">Note</label>
-                <textarea name="" id="note" rows="3" class="form-control form-control-sm"></textarea>
+                <div class="form-group">
+                    <label for="note">Notes</label>
+                    <textarea class="form-control form-control-sm" name="note" rows="3"></textarea>
+                </div>
                 `;
             }
             $("#content-form").html(content_html);
@@ -505,6 +506,9 @@
                 data:formData,
             })
             .done(function(data) {
+                // console.log(data);
+                // return;
+
                 data = JSON.parse(data);
                 if(data.status == 'error'){
                     toasrt.error(data.message);
@@ -512,9 +516,9 @@
                     toastr.success(data.message);
                     $("#content-form").html("");
                     $("#modal-input-form").modal('hide');
-
+                    service_table.draw();
+                    table.draw();
                 }
-                console.log(data);
             })
             .fail(function() {
                 console.log("error");

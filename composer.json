@@ -45,6 +45,10 @@
         "classmap": [
             "database/seeds",
             "database/factories"
+        ],
+        "files":[
+            "App/Helpers/DateTimeHelper.php",
+            "App/Helpers/FunctionHelper.php"
         ]
     },
     "autoload-dev": {

@@ -26,12 +26,25 @@ class MainTask extends Model
     	'content',
     	'category',
         'desription',
-        'note'
+        'note',
+        'place_id'
     ];
     public function getUser(){
     	return $this->belongsTo(MainUser::class,'assign_to','user_id');
     }
+    public function getCreatedBy(){
+        return $this->belongsTo(MainUser::class,'created_by','user_id');
+    }
+    public function getUpdatedBy(){
+        return $this->belongsTo(MainUser::class,'updated_by','user_id');
+    }
     public function getFiles(){
         return $this->hasMany(MainFile::class,'task_id','id');
+    }
+    public function getService(){
+        return $this->belongsTo(MainComboService::class,'service_id','id');
+    }
+    public function getPlace(){
+        return $this->belongsTo(PosPlace::class,'place_id','place_id');
     }
 }

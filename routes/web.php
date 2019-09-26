@@ -155,6 +155,9 @@ Route::group(['middleware' => ['auth']], function () {
         Route::get('my-task-datatable', 'TaskController@myTaskDatatable')->name('my-task-datatable');
         Route::post('post-comment', 'TaskController@postComment')->name('post-comment');
         Route::post('down-image', 'TaskController@downImage')->name('down-image');
+        Route::get('task-detail/{id}', 'TaskController@taskDetail')->where(['id'=>'[0-9]+'])->name('task-detail');
+        Route::get('task-tracking', 'TaskController@taskTracking')->name('task-tracking');
+        Route::get('add', 'TaskController@taskAdd')->name('task-add');
     });
     
 });

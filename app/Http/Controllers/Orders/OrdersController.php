@@ -772,7 +772,6 @@ class OrdersController extends Controller
 	public function orderService(Request $request){
 
 		$order_id = $request->order_id;
-		$order_id = 47;
 
 		$service_list = MainTask::join('main_combo_service',function($join){
 			$join->on('main_task.service_id','main_combo_service.id');
@@ -787,7 +786,7 @@ class OrdersController extends Controller
 			->addColumn('infor',function($row){
 
 				//GET FILES
-				$file_name = "<div class='row'";
+				$file_name = "<div class='row'>";
 				$file_list = $row->getFiles;
 				foreach ($file_list as $key => $file) {
 					$zip = new ZipArchive();
@@ -806,17 +805,61 @@ class OrdersController extends Controller
 				if($row->content != NULL){
 					$content_arr = json_decode($row->content,TRUE);
 
-					$content = '<span>Google Link: <b>'.$content_arr['google_link'].'</b></span><br>
-                    <span>Tên thợ nails: '.$content_arr['worker_name'].'</span><br>
-                    <div class="row">
-                        <span class="col-md-6">Number of starts: <b>'.$content_arr['star'].'</b></span>
-                        <span class="col-md-6">Số review hiện tại: <b>'.$content_arr['current_review'].'</b></span>
-                        <span class="col-md-6">Conplete date: <b>'.$content_arr['complete_date'].'</b></span>
-                        <span class="col-md-6">Số review yêu cầu: <b>'.$content_arr['order_review'].'</b></span>
-                    </div>
-                    <span></span>
-                    <span>Note: <b>'.$row->note.'</span>
-                    <a href="javascript:void(0)">'.$file_name.'</a>';
+					if($row->cs_form_type == 1){
+						$content = '<span>Google Link: <b>'.$content_arr['google_link'].'</b></span><br>
+	                    <span>Tên thợ nails: '.$content_arr['worker_name'].'</span><br>
+	                    <div class="row">
+	                        <span class="col-md-6">Number of starts: <b>'.$content_arr['star'].'</b></span>
+	                        <span class="col-md-6">Số review hiện tại: <b>'.$content_arr['current_review'].'</b></span>
+	                        <span class="col-md-6">Conplete date: <b>'.$content_arr['complete_date'].'</b></span>
+	                        <span class="col-md-6">Số review yêu cầu: <b>'.$content_arr['order_review'].'</b></span>
+	                    </div>
+	                    <span>Note: <b>'.$row->note.'</span>
+	                    <a href="javascript:void(0)">'.$file_name.'</a>';
+					}
+					if($row->cs_form_type == 2){
+						$content = '<span>Tên sản phẩm: <b>'.$content_arr['product_name'].'</b></span><br>
+	                    <span>Màu chủ đạo: <b>'.$content_arr['main_color'].'</b></span><br>
+	                    <span>Thể loại hoặc phong cách khách hàng: <b>'.$content_arr['style_customer'].'</b></span><br>
+	                    <span>Facebook Link: <b>'.$content_arr['link'].'</b></span><br>
+	                    <span>Website: <b>'.$content_arr['website'].'</b></span><br>
+	                    <span>Note: <b>'.$row->note.'</span>
+	                    <a href="javascript:void(0)">'.$file_name.'</a>';
+					}
+					if($row->cs_form_type == 3){
+						if(isset($content_arr['admin']) ) $admin = "YES";
+						else $admin = "NO";
+						if(isset($content_arr['image']) ) $image = "YES";
+						else $image = "NO";
+						$content = '<span>Facebook Link: <b>'.$content_arr['link'].'</b></span><br>
+	                    <span>Promotion: <b>'.$content_arr['promotion'].'</b></span><br>
+	                    <span>Số lượng bài viết: <b>'.$content_arr['number'].'</b></span><br>
+	                    <div class="row">
+	                        <span class="col-md-6">Đã có admin chưa: <b>'.$admin.'</b></span>
+	                        <span class="col-md-6">Username: <b>'.$content_arr['user'].'</b></span>
+	                        <span class="col-md-6">Có lấy được hình ảnh: <b>'.$image.'</b></span>
+	                        <span class="col-md-6">Password: <b>'.$content_arr['password'].'</b></span>
+	                    </div>
+	                    <span>Note: <b>'.$row->note.'</span>
+	                    <a href="javascript:void(0)">'.$file_name.'</a>';
+					}
+					if($row->cs_form_type == 4){
+
+						if(isset($content_arr['show_price']) ) $show_price = "YES";
+						else $show_price = "NO";
+
+						$content = '<span>Domain: <b>'.$content_arr['domain'].'</b></span><br>
+	                    <div class="row">
+	                        <span class="col-md-6">Theme: <b>'.$content_arr['theme'].'</b></span>
+	                        <span class="col-md-6">Show Price: <b>'.$show_price.'</b></span>
+	                        <span class="col-md-6">Business Name: <b>'.$content_arr['business_name'].'</b></span>
+	                        <span class="col-md-6">Business Phone: <b>'.$content_arr['business_phone'].'</b></span>
+	                        <span class="col-md-6">Email: <b>'.$content_arr['email'].'</b></span>
+	                        <span class="col-md-6">Address: <b>'.$content_arr['address'].'</b></span>
+	                    </div>
+	                    <span>Note: <b>'.$row->note.'</span>
+	                    <a href="javascript:void(0)">'.$file_name.'</a>';
+					}
 				}
 				return $content;
 			})
@@ -824,6 +867,7 @@ class OrdersController extends Controller
 			->make(true);
 	}
 	public function submitInfoTask(Request $request){
+		// return $request->all();
 
 		$input = $request->all();
 		$current_month = Carbon::now()->format('m');
@@ -842,13 +886,16 @@ class OrdersController extends Controller
     	$tracking_arr = [
     		'order_id' => $request->order_id,
     		'task_id' => $request->task_id,
-    		'content' => $request->note,
+    		'desription' => $request->note,
     		'created_by' => Auth::user()->user_id,
     	];
     	$tracking_create = MainTrackingHistory::create($tracking_arr);
 
     	//UPDATE TASK
     	$task_update = MainTask::where('id',$request->task_id)->update(['content'=>$content,'note'=>$request->note]);
+
+        //DELETE OLD FILE
+        $file_delete = MainFile::where('task_id',$request->task_id)->delete();
 
 		//UPDATE FILE
 		if($request->list_file != ""){
@@ -862,8 +909,9 @@ class OrdersController extends Controller
                     'task_id' => $request->task_id
                 ];
             }
+            //INSERT NEW FILE
             $file_create = MainFile::insert($file_arr);
-            if(!isset($file_create) || !isset($task_update) || !isset($tracking_create)){
+            if(!isset($file_create) || !isset($task_update) || !isset($tracking_create) || !isset($file_delete)){
             	DB::callback();
             	return response(['status'=>'error','message'=>'Failed!']);
             }else{
