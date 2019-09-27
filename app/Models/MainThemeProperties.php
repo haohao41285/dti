@@ -15,6 +15,7 @@ class MainThemeProperties extends Model
     protected $fillable = [
         'theme_properties_id',
         'theme_id',
+        'theme_properties_name',
         'theme_properties_value',
         'theme_properties_image',
         'created_at',

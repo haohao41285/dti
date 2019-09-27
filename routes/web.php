@@ -100,7 +100,11 @@ Route::group(['middleware' => ['auth']], function () {
         Route::group(['prefix' => 'website-themes-properties'], function() {
             // Route::get('/', 'WebsiteThemePropertiesController@index')->name('getWebsiteThemesProperties');
             Route::get('/list-theme-properties','WebsiteThemePropertiesController@listThemePropertiesByThemeId')->name('listThemePropertiesByThemeId');
+            Route::get('/list-value-properties','WebsiteThemePropertiesController@listValueProperties')->name('listValueProperties');
             Route::post('save', "WebsiteThemePropertiesController@save")->name('saveWebsiteThemesProperty');
+            Route::post('save-value-property', "WebsiteThemePropertiesController@saveValueProperties")->name('saveValueProperties');
+            Route::get('edit', "WebsiteThemePropertiesController@edit")->name('editWebsiteThemesProperty');
+            Route::post('delete', "WebsiteThemePropertiesController@delete")->name('deleteWebsiteThemesProperty');
         });
     });
     

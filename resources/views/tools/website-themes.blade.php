@@ -2,6 +2,9 @@
 @section('content-title')
 Theme Management
 @endsection
+@push('scripts')
+
+@endpush
 @section('content')
 <div class="card shadow mb-4 ">
     <div class="card-header py-2">
@@ -11,6 +14,7 @@ Theme Management
         <div class="table-responsive">
             <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
                 <thead>
+                    <th>#</th>
                     <th>Theme Name</th>
                     <th>Theme Code</th>
                     <th>Price($)</th>
@@ -135,8 +139,15 @@ Theme Management
             </div>
             <div class="modal-body row">
                 <div class="col-2">
-                    <form action="" method="POST" role="form" id="setup-properties">
+                    <button class="btn btn-sm btn-warning" id="resetAddProperty">Reset Add</button>
+                    <form action="" method="POST" role="form" id="setup-properties" enctype="multipart/form-data">
+                        @csrf
                         <div class="form-group">
+                            <label>Name</label>
+                            <input type="text" name="theme_properties_name" class="form-control-sm form-control">
+                        </div>
+                        <div class="form-group">
+
                             <label >Image</label>
                             <div class="previewImage">
                                 <img id="previewImageSetupProperties" src="{{ asset("images/no-image.png")}}" >
@@ -146,47 +157,76 @@ Theme Management
                         <button type="submit" class="btn btn-primary btn-sm">Add New Property </button>
                         <input type="hidden" name="action" value="Create">
                         <input type="hidden" name="theme_id">
+                        <input type="hidden" name="theme_properties_id">
                     </form>
                 </div>
                 <div class="col-5 ">
-                    <br>
-                    <br>
-                    <div class="table-responsive">
-                        <table class="table table-bordered" id="themeProperties" width="100%" cellspacing="0">
-                            <thead>
-                                <tr>
-                                    <th>ID</th>
-                                    <th>Image</th>
-                                    <th>Action</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                               {{--  <tr>
-                                    <td>1</td>
-                                    <td>abc</td>
-                                    <td><a class="btn btn-sm btn-secondary editProperties"  href="#"><i class="fas fa-edit"></i></a>
-                                        <a class="btn btn-sm btn-secondary deleteProperties"  href="#"><i class="fas fa-trash"></i></a>
-                                    </td>
-                                </tr> --}}
-                            </tbody>
-                        </table>
+                    {{-- <br><br> --}}
+                    <div class="card shadow mb-4 ">
+                        <div class="card-header py-2">
+                            <h6 class="m-0 font-weight-bold text-primary">Properties List </h6>
+                        </div>
+                        <div class="card-body">
+                        <div class="table-responsive dataTables_scrollBody dataTables_scroll" style="position: relative; overflow: auto; height: 70vh; width: 100%;">
+                            <table class="table table-bordered table-hover dataTable" id="themeProperties" width="100%" cellspacing="0">
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Name</th>
+                                        <th>Image</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                   {{--  <tr>
+                                        <td>1</td>
+                                        <td>abc</td>
+                                        <td><a class="btn btn-sm btn-secondary editProperties"  href="#"><i class="fas fa-edit"></i></a>
+                                            <a class="btn btn-sm btn-secondary deleteProperties"  href="#"><i class="fas fa-trash"></i></a>
+                                        </td>
+                                    </tr> --}}
+                                </tbody>
+                            </table>
+                        </div>
+                        </div>
                     </div>
                 </div>
                 <div class="col-5">
+                    {{-- <br><br><br> --}}
                     <div class="form-group">
-                        <div class="col-12 form-inline">
-                            <label class="col-sm-1 ">Name</label>
-                            <div class="col-sm-4 input-group">
-                                <input type="text" class="form-control-sm form-control">
-                            </div>
-                            <label class="col-sm-1 ">Value</label>
-                            <div class="col-sm-4 input-group">
-                                <input type="text" class="form-control-sm form-control">
-                            </div>
-                            <input type="submit" class="btn btn-sm btn-secondary" value="Add">
+                        <button class="btn-sm btn-warning btn show" id="addText">Add Text</button>
+                        <button class="btn-sm btn-danger btn show" id="addImage">Add Image</button>
+                        <button class="btn-sm btn-success btn" id="hide">Hide</button>
+                    </div>
+                    <div id="toggleAdd">
+                    <form id="formSaveValueProperties" method="post" enctype="multipart/form-data">
+                        @csrf()
+                        <div class="form-group">
+                            <label >Name</label>
+                            <input type="text" class="form-control-sm form-control" name="name">
                         </div>
+                        <div class="form-group">
+                            <div class="addText data">
+                                <label>Value</label>                            
+                                <input type="text" class="form-control-sm form-control" name="value">
+                            </div>
+                            <div class="addImage data">
+                                <label >Image</label>
+                                <div class="previewImage">
+                                    <img id="previewImageValue" src="{{ asset("images/no-image.png")}}" >
+                                    <input type="file" class="custom-file-input" name="image" previewImageId="previewImageValue" style="display: none">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <input type="submit" class="btn-sm btn btn-primary" value="Save">
+                            <input type="hidden" name="action" value="Create">
+                            <input type="hidden" name="propertyId">
+                        </div>
+                    </form>
                     </div>
                     <div class="table-responsive">
+                        <div class="dataTables_scrollHead">
                         <table class="table table-bordered" id="" width="100%" cellspacing="0">
                             <thead>
                                 <tr>
@@ -195,6 +235,9 @@ Theme Management
                                     <th>Action</th>
                                 </tr>
                             </thead>
+                        </table>
+                        </div>
+                        <table class="table table-bordered" id="listValueProperties" width="100%" cellspacing="0">
                             <tbody>
                                 <tr>
                                     <td>1</td>
@@ -208,12 +251,6 @@ Theme Management
                     </div>
                 </div>
             </div>
-            {{-- 
-            <div class="modal-footer">
-                <button type="button" class="btn btn-primary btn-sm">Save changes</button>
-                <button type="button" class="btn btn-secondary btn-sm" data-dismiss="modal">Close</button>        
-            </div>
-            --}}
         </div>
     </div>
 </div>
@@ -226,9 +263,10 @@ Theme Management
     	$("input[name='price']").val('');
     	$("input[name='url']").val('');
     	$("input[name='license']").val('');
-    	$("input[name='theme_id']").val('');
+    	// $("input[name='theme_id']").val('');
     	$("textarea[name='description']").text('');
-    	$("#previewImage").attr('src','{{asset('images/no-image.png')}}');
+    	$(".previewImage img").attr('src','{{asset('images/no-image.png')}}');
+        $("#setup-properties").find("input[name='theme_properties_name']").val("");
     }
     
      $(document).ready(function() {
@@ -237,6 +275,7 @@ Theme Management
     				 serverSide: true,
     				 ajax:{ url:"{{ route('getDatatableWebsiteThemes') }}",},
     				 columns: [
+                            { data: 'theme_id', name: 'theme_id' },
     						{ data: 'theme_name', name: 'theme_name' },
     						{ data: 'theme_name_temp', name: 'theme_name_temp' },
     						{ data: 'theme_price', name: 'theme_price' },
@@ -346,7 +385,7 @@ Theme Management
     						}
     						
     						$("input[name='description']").text(data.data.theme_descript);
-    						$("#previewImage").attr('src',data.data.theme_image);
+    						$(".previewImage img").attr('src',"{{env('URL_FILE_VIEW')}}"+data.data.theme_image);
     						$("#themeModal").modal("show");
     					}
     				}
@@ -370,7 +409,8 @@ Theme Management
 			    success:function(data){
 			    	if(data.status == 1){
                         $("#themeModal").modal("hide");
-			    		toastr.success("Saved successfully!");
+			    		toastr.success(data.msg);
+                        table.ajax.reload(null, false);
 			    	}
 			    },
 			    error:function(){
@@ -378,11 +418,6 @@ Theme Management
 			    }
 			  });
 			});
-    
-    
-    		
-    
-    		
      
     	});
 </script>
@@ -407,14 +442,16 @@ Theme Management
             url:"{{ route('listThemePropertiesByThemeId') }}",
             method:"get",
             dataType:"json",
+            data:{theme_id},
             success:function(data){
                 if(data.status == 1){
                     var html = '';
                     for(var i = 0; i < data.data.length; i++){
-                            html    +='<tr>'
+                            html    +='<tr properties-id='+data.data[i].theme_properties_id+'>'
                                     +'<td>'+data.data[i].theme_properties_id+'</td>'
-                                    +'<td>abc</td>'
-                                    +'<td><a class="btn btn-sm btn-secondary editProperties" properties-id='+data.data[i].theme_properties_id+' href="#"><i class="fas fa-edit"></i></a>'
+                                    +'<td>'+data.data[i].theme_properties_name +'</td>'
+                                    +'<td><img style="height: 5rem;" src="'+"{{env('URL_FILE_VIEW')}}" + data.data[i].theme_properties_image+'" /></td>'
+                                    +'<td><a style="margin-right: 5px;" class="btn btn-sm btn-secondary editProperties" properties-id='+data.data[i].theme_properties_id+' href="#"><i class="fas fa-edit"></i></a>'
                                     +'<a class="btn btn-sm btn-secondary deleteProperties" properties-id='+data.data[i].theme_properties_id+' href="#"><i class="fas fa-trash"></i></a>'
                                     +'</td>'
                                     +'</tr>'
@@ -428,13 +465,61 @@ Theme Management
             }
         });
     }
+
+    function listValueProperties(propertyId){
+        $.ajax({
+            url:"{{ route('listValueProperties') }}",
+            method:"get",
+            dataType:"json",
+            data:{propertyId},
+            success:function(data){
+                if(data.status == 1){
+
+                    try {
+                        var count = Object.keys(data.data).length;
+                    } catch(err) {
+                        var count = 0;
+                    }
+                    if(count == 0){
+                        // toastr.error('Failed to get list data!');
+                        $("#listValueProperties tbody").html("");
+                        return false;
+                    }
+                    
+                    // console.log(count);
+                    var html = '';
+                    for(var i = 0; i < count; i++){
+                        console.log(data[i]);
+                            html    +='<tr>'
+                                    +'<td>key</td>'
+                                    +'<td>value</td>'
+                                    +'<td><a style="margin-right: 5px;" class="btn btn-sm btn-secondary editProperties"  href="#"><i class="fas fa-edit"></i></a>'
+                                    +'<a class="btn btn-sm btn-secondary deleteProperties"  href="#"><i class="fas fa-trash"></i></a>'
+                                    +'</td>'
+                                    +'</tr>'
+                    }
+
+                    $("#listValueProperties tbody").html(html);
+                }
+            },
+            error:function(){
+                toastr.error("Failed to load data!");
+            }
+        })
+    }
     $(document).ready(function(){
+        var theme_id = null;
+        var propertyId = null;
         $(document).on('click',".setup-properties",function(e){
                 e.preventDefault();
-                var theme_id = $(this).attr('data');
+                clear();
+                theme_id = $(this).attr('data');
                 $("#setup-properties").find("input[name='theme_id']").val(theme_id);
-                listThemePropertiesByThemeId(theme_id)
+                // $("#setup-properties").find("input[name='theme_properties_name']").val(theme_properties_name);
+                listThemePropertiesByThemeId(theme_id);
                 $("#setupPropertiesModal").modal("show");
+                $("#resetAddProperty").trigger('click');
+                $("#hide").trigger('click');
             });
 
 
@@ -452,7 +537,10 @@ Theme Management
                 processData: false,
                 success:function(data){
                     if(data.status == 1){
-                        toastr.success("Saved successfully!");
+                        toastr.success(data.msg);
+                        listThemePropertiesByThemeId(theme_id);
+                        clear();
+                        $("#resetAddProperty").trigger('click');
                     }
                 },
                 error:function(){
@@ -460,6 +548,106 @@ Theme Management
                 }
               });
         });
+        $("#resetAddProperty").on('click',function(){
+            clear();
+            $("#setup-properties").find("button").text("Create Property");
+            $("#setup-properties").find("input[name='action']").val("Create");
+            $("#setup-properties").find("input[name='theme_properties_id']").val("");
+        });
+
+        $(document).on('click',".editProperties",function(e){
+            e.preventDefault();
+            var properties_id = $(this).attr('properties-id');
+             $.ajax({
+                    url:"{{ route('editWebsiteThemesProperty') }}",
+                    data:{
+                        properties_id,
+                    },
+                    method:"get",
+                    success:function(data){
+                        clear();
+                        $("#setup-properties").find(".previewImage img").attr('src',"{{env('URL_FILE_VIEW')}}"+data.data.theme_properties_image);
+                        $("#setup-properties").find("button").text("Update Property");
+                        $("#setup-properties").find("input[name='action']").val("Update");
+                        $("#setup-properties").find("input[name='theme_properties_id']").val(properties_id);
+                        $("#setup-properties").find("input[name='theme_properties_name']").val(data.data.theme_properties_name);
+                    },
+                    error:function(){
+                        toastr.error("Failed to get data!");
+                    }
+                });
+        });
+        $(document).on('click',".deleteProperties",function(e){
+            e.preventDefault();
+            var properties_id = $(this).attr('properties-id');
+            if(confirm("Are you sure do you want to delete this data?")){
+                $.ajax({
+                    url:"{{ route('deleteWebsiteThemesProperty') }}",
+                    data:{
+                        _token:"{{csrf_token()}}",
+                        properties_id,
+                    },
+                    method:"post",
+                    success:function(){
+                        toastr.success("Deleted successfully!");
+                        clear();
+                        listThemePropertiesByThemeId(theme_id);
+                    },
+                    error:function(){
+                        toastr.error("Failed to delete data!");
+                    }
+                });
+            }
+        });
+
+        $("#themeProperties tbody").on('click',"tr",function(){
+            $('#themeProperties tbody tr.selected').removeClass('selected');
+            $(this).addClass('selected');
+            propertyId = $(this).attr('properties-id');
+            // console.log(propertyId);
+            $("input[name='propertyId']").val(propertyId);
+            listValueProperties(propertyId);
+        });
+
+        $("#hide").on('click',function(){
+            $("#toggleAdd").hide(200);
+        });
+
+        $(".show").on('click',function(){
+            $("#toggleAdd").show(200);
+            var id = $(this).attr('id');
+
+            $("#toggleAdd .data").hide();
+            $("#toggleAdd .data input").attr('disabled',true);
+            $("."+id+"").show(200);
+            $("."+id+"").find("input").removeAttr("disabled");
+        });
+
+        $("#formSaveValueProperties").on('submit',function(e){
+            e.preventDefault();
+            var form = $(this)[0];
+            var form_data = new FormData(form);
+            $.ajax({
+                url:"{{ route('saveValueProperties') }}",
+                method:"post",
+                data: form_data,
+                cache:false,
+                contentType: false,
+                processData: false,
+                success:function(data){
+                    if(data.status == 1){
+                        toastr.success(data.msg);
+                        listValueProperties(propertyId);
+                        clear();
+                        $("#hide").trigger('click');
+                    }
+                },
+                error:function(){
+                    toastr.error("Failed to save!");
+                }
+              });
+        });
+
 
     });
 </script>
