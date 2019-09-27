@@ -4,18 +4,23 @@ namespace App\Http\Controllers\Task;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\Exception;
 use App\Helpers\GeneralHelper;
 use App\Helpers\ImagesHelper;
 use App\Models\MainTask;
 use App\Models\MainTrackingHistory;
 use App\Models\MainFile;
 use App\Models\MainUser;
+use App\Models\MainTeam;
 use Carbon\Carbon;
+use App\Jobs\SendNotification;
 use DataTables;
 use Auth;
 use Validator;
 use DB;
 use ZipArchive;
+use Mail;
 
 class TaskController extends Controller
 {
@@ -28,10 +33,10 @@ class TaskController extends Controller
 
     	return DataTables::of($task_list)
     		->editColumn('priority',function($row){
-    			return GeneralHelper::getPriorityTask()[$row->priority];
+    			return getPriorityTask()[$row->priority];
     		})
     		->editColumn('status',function($row){
-    			return GeneralHelper::getStatusTask()[$row->status];
+    			return getStatusTask()[$row->status];
     		})
     		->addColumn('task',function($row){
     			return '<a href="'.route('task-detail',$row->id).'">#'.$row->id.'</a>';
@@ -47,6 +52,9 @@ class TaskController extends Controller
 
     			return $date_start;
     		})
+            ->editColumn('category',function($row){
+                return getCategory()[$row->category];
+            })
     		->editColumn('date_end',function($row){
     			if($row->date_end != "")
     				$date_end = Carbon::parse($row->date_end)->format('m/d/Y');
@@ -153,6 +161,8 @@ class TaskController extends Controller
 
         $data['task_info'] = MainTask::find($id);
         $data['id'] = $id;
+        $data['team'] = MainTeam::all();
+
         return view('task.task-detail',$data);
     }
    
@@ -171,7 +181,7 @@ class TaskController extends Controller
 
             ->addColumn('user_info',function($row){
                 return '<span>'.$row->user_nickname.'('.$row->getFullname().')</span><br>
-                        <span>'.Carbon::parse($row->created_at)->format('m/d/Y h:i A').'</span><br>
+                        <span>'.format_datetime($row->created_at).'</span><br>
                         <span class="badge badge-secondary">'.$row->getTeam->team_name.'</span>';
             })
             ->addColumn('task',function($row){
@@ -199,7 +209,166 @@ class TaskController extends Controller
             ->make(true);
     }
     public function taskAdd($id = 0){
+
         $data['user_list'] = MainUser::where('user_id',"!=",Auth::user()->user_id)->get();
+        $data['task_parent_id'] = $id;
+         $data['task_name'] = "";
+
+        if($id>0){
+            $data['task_name'] = MainTask::find($id)->subject;
+        }
         return view('task.add-task',$data);
+    }
+    public function getTask(Request $request){
+
+        $task_parent_id = $request->task_parent_id;
+
+        $task_name = MainTask::find($task_parent_id);
+        if(!isset($task_name))
+            return response(['status'=>'error','message'=>'ID Task Correctly!']);
+        else{
+            if($task_name == "")
+                return response(['status'=>'error','message'=>'ID Task Correctly!']);
+            else{
+                $task_name = strtoupper($task_name->subject);
+                return response(['task_name'=>$task_name]);
+            }
+        }
+    }
+    public function saveTask(Request $request){
+        // return $request->all();
+
+        $subject = $request->subject;
+
+        if($subject == ""){
+            return back()->with(['error'=>'Enter Subject, Please!']);
+        }
+
+        $input =  $request->all();
+
+        if(!isset($request->id)){
+
+            $input['created_by'] = Auth::user()->user_id;
+            $input['updated_by'] = Auth::user()->user_id;
+            $task_save = MainTask::create($input);
+
+        }else{
+            //UPDATE TASK
+            $input['updated_by'] = Auth::user()->user_id;
+            $task_info = MainTask::find($request->id);
+            $task_save = $task_info->update($input);
+
+            //ADD TRACKING HISTORY
+            $task_tracking = [
+                'order_id' => $task_info->order_id,
+                'task_id' => $request->id,
+                'created_by' => Auth::user()->user_id,
+                'content' => $request->note,
+            ];
+            $tracking_history = MainTrackingHistory::find($task_info->order_id)->create($task_tracking);
+
+            if(!isset($task_save) || !isset($tracking_history))
+                return back()->with(['error'=>'Save Error. Check Again, Please!']);
+            else
+                return redirect()->route('my-task');
+        }
+
+        if(!isset($task_save))
+            return back()->with(['error'=>'Save Error. Check Again, Please!']);
+        else
+            return redirect()->route('my-task');
+    }
+    public function getSubtask(Request $request){
+
+        $task_id = $request->task_id;
+
+        $subtask_list = MainTask::where('task_parent_id',$task_id);
+
+        return DataTables::of($subtask_list)
+            ->editColumn('priority',function($row){
+                return getPriorityTask()[$row->priority];
+            })
+            ->editColumn('status',function($row){
+                return getStatusTask()[$row->status];
+            })
+            ->addColumn('task',function($row){
+                return '<a href="'.route('task-detail',$row->id).'">#'.$row->id.'</a>';
+            })
+            ->editColumn('order_id',function($row){
+                return '<a href="'.route('order-view',$row->order_id).'">#'.$row->order_id.'</a>';
+            })
+            ->editColumn('date_start',function($row){
+                if($row->date_start != "")
+                    $date_start = format_date($row->date_start);
+                else
+                    $date_start = "";
+
+                return $date_start;
+            })
+            ->editColumn('assign_to',function($row){
+                return $row->getUser->user_nickname;
+            })
+            ->editColumn('date_end',function($row){
+                if($row->date_end != "")
+                    $date_end = format_date($row->date_end);
+                else
+                    $date_end = "";
+
+                return $date_end;
+            })
+            ->editColumn('updated_at',function($row){
+                return format_datetime($row->updated_at)." by ".$row->getUpdatedBy->user_nickname;
+            })
+            ->rawColumns(['order_id','task'])
+            ->make(true);
+    }
+    public function editTask($id){
+
+        $data['user_list'] = MainUser::all();
+
+        $data['task_info'] = MainTask::find($id);
+
+        $data['id'] = $id;
+
+        $data['task_name'] = $data['task_info']->subject;
+        
+        return view('task.edit-task',$data);
+    }
+    public function sendMailNotification(Request $request){
+        // return public_path('invoice9267054355559.pdf');
+
+        $rule = [
+            'subject' => 'required',
+            'message' => 'required',
+        ];
+        $message = [
+            'subject.required' => 'Type Subject',
+            'message.required' => 'Type Message',
+        ];
+        $validator = Validator::make($request->all(),$rule,$message);
+        if($validator->fails())
+            return response([
+                'status' => 'error',
+                'message' => $validator->getMessageBag()->toArray()
+            ]);
+        //GET EMAIL TEAM
+        $team_email = MainTeam::find($request->team)->team_email;
+
+
+        if(!isset($team_email))
+            return response(['status'=>'error','message'=>'Get Email Team Error!']);
+        else{
+            if($team_email == "")
+                return response(['status'=>'error','message'=>'Get Email Team Error!']);
+            else{
+                // $input =  MainTeam::find($request->team);
+                $input['team_email'] = $team_email;
+                $input['subject'] = $request->subject;
+                $input['message'] = $request->message;
+                $input['attachment'] = public_path('invoice9267054355559.pdf');
+                dispatch(new SendNotification($input));
+                return response(['status'=>'success','message'=>'Message has been sent']);
+            }
+        }
     }
 }

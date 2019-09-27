@@ -84,8 +84,13 @@
             </tr>
             <tr>
                 <th>#{{$id}}</th>
-                <th>{{($order_info->csb_status==0?"NOTPAYMENT":"PAID")}}</th>
-                <th>{{$order_info->created_at}}</th>
+                <th class="status">
+                    {{($order_info->csb_status==0?"NOTPAYMENT":"PAID")}} 
+                    @if($order_info->csb_status == 0)
+                    <a href="javascript:void(0)" id="change-status"> <i class="fas fa-edit"></i><span>Change Status</span></a>
+                    @endif
+                </th>
+                <th>{{format_datetime($order_info->created_at)}}</th>
                 <th>{{$order_info->user_nickname}} ({{$order_info->user_email}})</th>
             </tr>
             <tr>
@@ -122,8 +127,8 @@
             <tr>
                 <td colspan="2">ORDER NOTES: {{$order_info->csb_note}}</td>
                 <td>
-                    <button class="btn btn-sm btn-info">PRINT INVOICE</button>
-                    <button class="btn btn-sm btn-info">RESEND INVOICE</button>
+                    <button class="btn btn-sm btn-info"><i class="fas fa-file-pdf text-danger"></i> PRINT INVOICE</button>
+                    <button class="btn btn-sm btn-info"><i class="fas fa-envelope text-danger"></i> RESEND INVOICE</button>
                 </td>
                 <td class="align-left"><i class="text-primary">Last sent invoice:</i></td>
             </tr>
@@ -229,7 +234,7 @@
             info: false,
             buttons: [
             ],  
-            processing: true,
+            // processing: true,
             serverSide: true,
             ajax:{ url:"{{ route('order-tracking') }}",
             data: function (d) {
@@ -523,9 +528,33 @@
             .fail(function() {
                 console.log("error");
             });
+        });
+        $("#change-status").click(function(){
+            $.ajax({
+                url: '{{route('change-status-order')}}',
+                type: 'POST',
+                dataType: 'html',
+                data: {
+                    order_id: '{{$id}}',
+                    _token: '{{csrf_token()}}'
+                },
+            })
+            .done(function(data) {
+                // console.log(data);
+                // return;
+                data = JSON.parse(data);
+                if(data.status == 'error')
+                    toatr.error(data.mesage);
+                else{
+                    toastr.success(data.message);
+                    $(".status").text("PAID");
+                }
+            })
+            .fail(function() {
+                console.log("error");
+            });
             
-
-        })
+        });
     });
 </script>
 @endpush

@@ -149,15 +149,21 @@ Route::group(['middleware' => ['auth']], function () {
         Route::get('order-tracking', 'OrdersController@orderTracking')->name('order-tracking');
         Route::get('order-service', 'OrdersController@orderService')->name('order-service');
         Route::post('submit-info-task', 'OrdersController@submitInfoTask')->name('submit-info-task');
+        Route::post('change-status-order', 'OrdersController@changeStatusOrder')->name('change-status-order');
     });
     Route::group(['prefix' => 'task','namespace' => 'Task'], function() {
-        Route::get('/', 'TaskController@index');
+        Route::get('/', 'TaskController@index')->name('my-task');
         Route::get('my-task-datatable', 'TaskController@myTaskDatatable')->name('my-task-datatable');
         Route::post('post-comment', 'TaskController@postComment')->name('post-comment');
         Route::post('down-image', 'TaskController@downImage')->name('down-image');
         Route::get('task-detail/{id}', 'TaskController@taskDetail')->where(['id'=>'[0-9]+'])->name('task-detail');
         Route::get('task-tracking', 'TaskController@taskTracking')->name('task-tracking');
-        Route::get('add', 'TaskController@taskAdd')->name('task-add');
+        Route::get('add/{id}', 'TaskController@taskAdd')->name('task-add');
+        Route::post('save-task', 'TaskController@saveTask')->name('save-task');
+        Route::get('get-task', 'TaskController@getTask')->name('get-task');
+        Route::get('get-subtask', 'TaskController@getSubtask')->name('get-subtask');
+        Route::get('edit-task/{id}', 'TaskController@editTask')->where(['id'=>'[0-9]+'])->name('edit-task');
+        Route::post('send-mail-notification', 'TaskController@sendMailNotification')->name('send-mail-notification');
     });
     
 });

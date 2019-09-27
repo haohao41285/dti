@@ -19,7 +19,7 @@ class MainTask extends Model
     	'task_parent_id',
     	'order_id',
     	'created_by',
-    	'update_by',
+    	'updated_by',
     	'created_at',
     	'updated_at',
     	'service_id',

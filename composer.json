@@ -15,6 +15,7 @@
         "laravel/framework": "5.7.*",
         "laravel/tinker": "^1.0",
         "laravelcollective/html": "^5.7",
+        "phpmailer/phpmailer": "^6.0",
         "laravelcollective/remote": "^5.7",
         "maatwebsite/excel": "~2.1.0",
         "phpmailer/phpmailer": "~6.0",
@@ -47,8 +48,8 @@
             "database/factories"
         ],
         "files":[
-            "App/Helpers/DateTimeHelper.php",
-            "App/Helpers/FunctionHelper.php"
+            "app/Helpers/DateTimeHelper.php",
+            "app/Helpers/FuntionHelper.php"
         ]
     },
     "autoload-dev": {

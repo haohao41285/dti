@@ -14,6 +14,37 @@
 </style>
 @endpush
 @section('content')
+{{-- MODAL SEND MAIL --}}
+<div class="modal fade" id="form-notification" role="dialog">
+    <div class="modal-dialog modal-lg">
+      <!-- Modal content-->
+      <div class="modal-content">
+        <div class="modal-header">
+          <h6 class="modal-title"><b>Send Email & Notification to CSR</b></h6>
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+        </div>
+        <form action="" method="get" accept-charset="utf-8">
+            <div class="modal-body">
+                    <label for="subject" class="required">Subject</label>
+                    <input type="text" name="subject" id="subject" required class="form-control form-control-sm">
+                    <label for="message" class="required">Message</label>
+                    <textarea name="message" id="message" rows="3" class="form-control form-control-sm"></textarea>
+                    <label for="team">CSR TECHNICAL TEAM</label>
+                    <select name="team" id="team" class="form-control form-control-sm">
+                        @foreach($team as $t)
+                        <option value="{{$t->id}}">{{$t->team_name}} - {{$t->team_email}}</option>
+                        @endforeach
+                    </select>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-danger btn-sm cancel" data-dismiss="modal">Cancel</button>
+              <button type="button" class="btn btn-sm btn-primary submit">Submit</button>
+            </div>
+        </form>
+      </div>
+    </div>
+</div>
+{{-- END MODAL --}}
 <div class="table-responsive">
 	<h4 class="border border-info border-top-0 border-right-0 border-left-0 text-info text-uppercase">TASK #{{$id}} - {{$task_info->getService->cs_name}}</h4>
     <table class="table table-striped mt-4 table-bordered" id="dataTableAllCustomer" widtd="100%" cellspacing="0">
@@ -49,7 +80,7 @@
                 <th>{{$task_info->complete_percent}}</th>
                 <th>{{format_datetime($task_info->updated_at)}}</th>
                 <th class="text-capitalize">{{$task_info->getUpdatedBy->user_firstname}} {{$task_info->getUpdatedBy->user_lastname}}</th>
-                <th colspan="2"><i class=" fas fa-edit"></i><span class="text-info">Edit Task</span> <i class="fas fa-bell"></i><span class="text-info ">Send Email & Notification to CSR</span></th>
+                <th colspan="2"><a href="{{route('edit-task',$id)}}"><i class=" fas fa-edit"></i><span class="text-info">Edit Task</span></a> <a href="javascript:void(0)" id="send-notification"><i class="fas fa-bell"></i><span class="text-info ">Send Email & Notification to CSR</span></a></th>
             </tr>
             <tr>
                 <td colspan="2">ORDER#</td>
@@ -121,7 +152,7 @@
             		@endif
             		<p><b>Notes:</b></p>
         		    <div class="ml-5">
-        		    	{{$task_info->note}}
+        		    	{!!$task_info->note!!}
         		    </div>
             	</td>
             </tr>
@@ -131,7 +162,7 @@
             <tr>
             	<td colspan="7">
             		<div class="ml-5">
-        		    	{{$task_info->desription}}
+        		    	{!!$task_info->desription!!}
         		    </div>
             	</td>
             </tr>
@@ -153,24 +184,8 @@
 	                <th class="text-info">LAST UPDATE</th>
 	            </tr>
 	        </thead>
-	        <tbody>
-	        	<tr>
-	        		<td>5</td>
-		        	<td>5</td>
-		        	<td>5</td>
-		        	<td>5</td>
-		        	<td>5</td>
-		        	<td>5</td>
-		        	<td>5</td>
-		        	<td>5</td>
-		        	<td>5</td>
-	        	</tr>
-		        	
-	        </tbody>
 	    </table>
     </div>
-	    
-
     <table class="table table-bordered table-hover" id="tracking_history" width="100%" cellspacing="0">
         <thead  class="thead-light">
             <tr>
@@ -211,12 +226,40 @@
 
         $('#summernote2').summernote();
 
+        var table = $('#subtask-datatable').DataTable({
+            // dom: "lBfrtip",
+            paging: false,
+            info:false,
+            searching: false,
+            order:[[0,'desc']],
+            buttons: [
+            ],  
+            // processing: true,
+            serverSide: true,
+            ajax:{ url:"{{ route('get-subtask') }}",
+            data: function (d) {
+                d.task_id = '{{$id}}'
+            } 
+        },
+           columns: [
+                    { data: 'task', name: 'task',class:'text-center' },
+                    { data: 'subject', name: 'subject',class:'text-center' },
+                    { data: 'priority', name: 'priority',class:'text-center' },
+                    { data: 'status', name: 'status',class:'text-center' },
+                    { data: 'date_start', name: 'date_start',class:'text-center' },
+                    { data: 'date_end', name: 'date_end',class:'text-center' },
+                    { data: 'complete_percent', name: 'complete_percent',class: 'text-center' },
+                    { data: 'assign_to', name: 'assign_to',class: 'text-center' },
+                    { data: 'updated_at', name: 'updated_at',class: 'text-center'},
+                ],
+        });
+
 		var table = $('#tracking_history').DataTable({
             // dom: "lBfrtip",
             order:[[0,'desc']],
             buttons: [
             ],  
-            processing: true,
+            // processing: true,
             serverSide: true,
             ajax:{ url:"{{ route('task-tracking') }}",
             data: function (d) {
@@ -224,11 +267,13 @@
             } 
         },
            columns: [
+                    
                     { data: 'created_at', name: 'created_at',class:'d-none' },
                     { data: 'user_info', name: 'user_info' },
                     { data: 'content', name: 'content'},
                 ],
         });
+
         $(document).on("click",".file-comment",function(){
             $(this).parent('form').submit();
         });
@@ -272,6 +317,69 @@
             $("#email_list_2").val("");
             $("#summernote2").val("");
         }
+        $("#send-notification").click(function(){
+            $("#form-notification").modal('show');
+        });
+        function clearViewNotification(){
+            $("#subject").val("");
+            $("#message").val("");
+            $("#form-notification").modal('hide');
+        }
+        $(".cancel").click(function(){
+            clearViewNotification();
+        });
+        $(".close").click(function(){
+            clearViewNotification();
+        });
+        $(".submit").click(function(e){
+
+            var subject = $("#subject").val();
+            var message = $("message").val();
+            if(subject == ""){
+                toastr.error('Type Subject');
+                return;
+                e.preventDefault();
+            }
+            if(message == ""){
+                toastr.error('Type Message');
+                return;
+                e.preventDefault();
+            }
+
+            var formData = new FormData($(this).parents('form')[0]);
+            formData.append('_token','{{csrf_token()}}');
+            // console.log(formData);
+            // return;
+
+            $.ajax({
+                url: '{{route('send-mail-notification')}}',
+                type: 'POST',
+                dataType: 'html',
+                cache: false,
+                contentType: false,
+                processData: false,
+                async: true,
+                xhr: function() {
+                    var myXhr = $.ajaxSettings.xhr();
+                    return myXhr;
+                },
+                data: formData,
+            })
+            .done(function(data) {
+                // console.log(data);
+                // return;
+                data = JSON.parse(data);
+                if(data.status == 'error'){
+                    toastr.error(data.message);
+                }else{
+                    toastr.success(data.message);
+                    clearViewNotification();
+                }
+            })
+            .fail(function() {
+                console.log("error");
+            });
+        })
 	});
 </script>
 @endpush

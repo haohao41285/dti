@@ -432,6 +432,9 @@ class OrdersController extends Controller
 									'created_by' => Auth::user()->user_id,
 									'updated_by' => Auth::user()->user_id,
 									'service_id' => $service,
+									'place_id' => $place_id,
+									'category' => 1,
+									'assign_to' => $service->cs_assign_to
 								];
 							}
 							$task_create = MainTask::insert($task_arr);
@@ -501,7 +504,9 @@ class OrdersController extends Controller
 					'created_by' => Auth::user()->user_id,
 					'updated_by' => Auth::user()->user_id,
 					'service_id' => $service,
-					'category' => 'ORDER'
+					'category' => 1,
+					'place_id' => $place_id,
+					'assign_to' => $service->cs_assign_to
 				];
 			}
 			$task_create = MainTask::insert($task_arr);
@@ -581,11 +586,11 @@ class OrdersController extends Controller
 			$my_order_list = $my_order_list->where('main_combo_service_bought.created_by',Auth::user()->user_id);
 		}
 		if($start_date != ""){
-			$start_date = Carbon::parse($request->start_date)->format('Y-m-d');
+			$start_date = format_date_db($request->start_date);
 			$my_order_list = $my_order_list->whereDate('main_combo_service_bought.created_at','>=',$start_date);
 		}
 		if($end_date != ""){
-			$end_date = Carbon::parse($request->end_date)->format('Y-m-d');
+			$end_date = format_date_db($request->end_date);
 			$my_order_list = $my_order_list->whereDate('main_combo_service_bought.created_at','<=',$end_date);
 		}
 
@@ -647,11 +652,11 @@ class OrdersController extends Controller
 		    ->where('main_user.user_team',$team_id);
 
 		if($start_date != ""){
-			$start_date = Carbon::parse($start_date)->format('Y-m-d');
+			$start_date = format_date_db($start_date);
 			$order_list = $order_list->whereDate('main_combo_service_bought.created_at','>=',$start_date);
 		}
 		if($end_date != ""){
-			$end_date = Carbon::parse($end_date)->format('Y-m-d');
+			$end_date = format_date_db($end_date);
 			$order_list = $order_list->whereDate('main_combo_service_bought.created_at','<=',$end_date);
 		}
 		if($user_id != ""){
@@ -742,7 +747,7 @@ class OrdersController extends Controller
 
 			->addColumn('user_info',function($row){
 				return '<span>'.$row->user_nickname.'('.$row->getFullname().')</span><br>
-		                <span>'.Carbon::parse($row->created_at)->format('m/d/Y h:i A').'</span><br>
+		                <span>'.format_datetime($row->created_at).'</span><br>
 		                <span class="badge badge-secondary">'.$row->getTeam->team_name.'</span>';
 			})
 			->addColumn('task',function($row){
@@ -927,5 +932,16 @@ class OrdersController extends Controller
         	DB::commit();
         	return response(['status'=>'success','message'=>'Successfully']);
         }
+	}
+	public function changeStatusOrder(Request $request){
+
+		$order_id = $request->order_id;
+
+		$order_update = MainComboServiceBought::find($order_id)->update(['csb_status'=>'1']);
+
+		if(!isset($order_update))
+			return response(['status'=>'error','message'=>'Failed!']);
+		else
+			return response(['status'=>'success','message'=>'Successfully']);
 	}
 }

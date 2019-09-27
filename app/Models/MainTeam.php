@@ -12,6 +12,7 @@ class MainTeam extends Model
     	'team_leader',
     	'team_status',
     	'team_customer_status',
-    	'team_type'
+    	'team_type',
+    	'team_email'
     ];
 }

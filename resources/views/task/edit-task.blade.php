@@ -11,7 +11,7 @@
 @endpush
 @section('content')
 	<div class="table-responsive">
-	<h4 class="border border-info border-top-0 border-right-0 border-left-0 text-info">ADD NEW TASK</h4>
+	<h4 class="border border-info border-top-0 border-right-0 border-left-0 text-info">EDIT TASK #{{$id}} - {{$task_info->getService->cs_name}}</h4>
     <form action="{{route('save-task')}}" id="form-task" method="post" accept-charset="utf-8">
         @csrf()
         <table class="table table-striped mt-4 table-bordered" id="dataTableAllCustomer" widtd="100%" cellspacing="0">
@@ -22,7 +22,8 @@
                 </tr>
                 <tr>
                     <th colspan="7">
-                        <input type="text" id="subject" required class="form-control form-control-sm" name="subject">
+                        <input type="text" id="subject" required class="form-control form-control-sm" name="subject" value="{{$task_info->subject}}">
+                        <input type="hidden"  name="id" value="{{$id}}">
                     </th>
                 </tr>
                 <tr>
@@ -38,37 +39,37 @@
                     <th>
                         <select name="category" class="form-control form-control-sm">
                             @foreach(getCategory() as $key => $category)
-                            <option value="{{$key}}">{{$category}}</option>
+                            <option {{$task_info->category==$key?"selected":""}} value="{{$key}}">{{$category}}</option>
                             @endforeach
                         </select>
                     </th>
                     <th>
                         <select name="priority" class="form-control form-control-sm">
-                            @foreach(getPriorityTask() as $key => $category)
-                            <option {{$key==2?"selected":""}}  value="{{$key}}">{{$category}}</option>
+                            @foreach(getPriorityTask() as $key => $priority)
+                            <option {{$task_info->priority==$key?"selected":""}}  value="{{$key}}">{{$priority}}</option>
                             @endforeach
                         </select>
                     </th>
                     <th>
                         <select name="status" class="form-control form-control-sm">
-                            @foreach(getStatusTask() as $key => $category)
-                            <option value="{{$key}}">{{$category}}</option>
+                            @foreach(getStatusTask() as $key => $status)
+                            <option {{$task_info->status==$key?"selected":""}} value="{{$key}}">{{$status}}</option>
                             @endforeach
                         </select>
                     </th>
                     <th>
-                        <input type="text" id="date_start" class="form-control form-control-sm" name="date_start">
+                        <input type="text" id="date_start" class="form-control form-control-sm" value="{{$task_info->date_start}}" name="date_start">
                     </th>
                     <th>
-                        <input type="text" id="date_end" class="form-control form-control-sm" name="date_end">
+                        <input type="text" id="date_end" class="form-control form-control-sm" name="date_end" value="{{$task_info->date_end}}">
                     </th>
                     <th>
-                        <input type="number" id="complete_percent" class="form-control form-control-sm" name="complete_percent">
+                        <input type="number" id="complete_percent" class="form-control form-control-sm" value="{{$task_info->complete_percent}}" name="complete_percent">
                     </th>
                     <th>
                         <select name="assign_to" class="form-control form-control-sm text-capitalize">
                             @foreach($user_list as $key => $user)
-                            <option value="{{$user->user_id}}" >{{$user->user_nickname}}({{$user->getFullname()}})</option>
+                            <option {{$task_info->status==$user->user_id?"selected":""}} value="{{$user->user_id}}" >{{$user->user_nickname}}({{$user->getFullname()}})</option>
                             @endforeach
                         </select>
                     </th>
@@ -78,16 +79,18 @@
                 </tr>
                 <tr>
                     <td colspan="7">
-                        <textarea class="fom-control form-control-sm" name="description" id="description"></textarea>
+                        <textarea class="fom-control form-control-sm" name="desription" id="desription">{!!$task_info->desription!!}</textarea>
                     </td>
                 </tr>
                 <tr>
-                    <td>PARENT TASK</td>
-                    <td>
-                        <input type="number" class="form-control form-control-sm" id="task_parent_id" name="task_parent_id" value="{{$task_parent_id>0?$task_parent_id:""}}">
-                    </td>
-                    <th colspan="5" id="task_name" class="text-uppercase">{{$task_name}}</th>
+                    <td colspan="7">NOTE CHANGES</td>
                 </tr>
+                <tr>
+                    <td colspan="7">
+                        <textarea class="fom-control form-control-sm" name="note" id="note">{!!$task_info->note!!}</textarea>
+                    </td>
+                </tr>
+                
             </tbody>
         </table>
         <div class="form-group">
@@ -100,15 +103,11 @@
 @push('scripts')
 <script>
 	$(document).ready(function() {
-		$("#date_start").datepicker({
+		$("#date_start,#date_end").datepicker({
             todayHighlight: true,
             setDate: new Date(),
         });
-        $("#date_end").datepicker({
-            todayHighlight: true,
-            setDate: new Date(),
-        });
-        $('#description').summernote({
+        $('#desription,#note').summernote({
         	toolbar: [
 			    // [groupName, [list of button]]
 			    ['style', ['bold', 'italic', 'underline', 'clear']],
@@ -119,6 +118,7 @@
 			    ['height', ['height']]
 			  ]
         });
+
         $("#task_parent_id").keyup(function(event) {
 
             var task_parent_id = $(this).val();
