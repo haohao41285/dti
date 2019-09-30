@@ -105,6 +105,7 @@ Route::group(['middleware' => ['auth']], function () {
             Route::post('save-value-property', "WebsiteThemePropertiesController@saveValueProperties")->name('saveValueProperties');
             Route::get('edit', "WebsiteThemePropertiesController@edit")->name('editWebsiteThemesProperty');
             Route::post('delete', "WebsiteThemePropertiesController@delete")->name('deleteWebsiteThemesProperty');
+            Route::post('delete-value-properties', "WebsiteThemePropertiesController@deleteValueProperties")->name('deleteValueProperties');
         });
     });
     

@@ -81,8 +81,8 @@ Class WebsiteThemePropertiesController extends Controller
                     ->where('theme_properties_id',$request->propertyId)
                     ->first();
 
-            $result = json_decode($value->theme_properties_value,true);   
-
+            $result = json_decode($value->theme_properties_value,true);  
+ 
             return response()->json(['status'=>1,'data'=>$result]);
         }
     }
@@ -94,18 +94,50 @@ Class WebsiteThemePropertiesController extends Controller
      * @return json
      */
     public function saveValueProperties(Request $request){
-        if($request->hasFile('image')){
-            $value = ImagesHelper::uploadImageToAPI($request->image,'value_properties');
-        } else {
-            $value = $request->value;
-        }
 
+        if($request->hasFile('image')){
+            $valueRequest = ImagesHelper::uploadImageToAPI($request->image,'value_properties');
+        } else {
+            $valueRequest = $request->value;
+        }
+        // dd( $value);
         $property = MainThemeProperties::where('theme_properties_id',$request->propertyId)
                     ->first();
 
-        $arrValue = json_decode($property->theme_properties_value,true);
+        $arrValue = json_decode($property->theme_properties_value,true) ?? []; 
 
-        $arrValue[$request->name] = $request->value;
+        $countArr = end($arrValue)['id']; 
+
+        $check = 0;
+
+        if($countArr > 0){
+            foreach ($arrValue as $key => $value) {
+                // if($value['name'] == $request->name){
+                //     if($value['id'] == $request->idValue)
+                //         continue;
+                //     return response()->json(['status'=>0,'msg'=>'Variable already exist!']); 
+                // }
+                if($value['id'] == $request->idValue){
+                    $arrValue[$key] = [
+                        'id' => $value['id'],
+                        'name' => $request->name,
+                        'value' => $valueRequest,
+                    ];
+                $check = 1;
+                }
+            }
+        }
+
+        
+
+        if($check == 0){
+            $arrValue[] = [
+                'id' => $countArr + 1,
+                'name' => $request->name,
+                'value' => $valueRequest,
+            ];
+        }
+        
 
         $jsonValue = json_encode($arrValue);
 
@@ -114,6 +146,34 @@ Class WebsiteThemePropertiesController extends Controller
         $property->save();
         
         return response()->json(['status'=>1,'msg'=>'Saved successfully!']);
+    }
+
+    public function deleteValueProperties(Request $request){
+        if($request->idValue){
+            $property = MainThemeProperties::where('theme_properties_id',$request->propertyId)
+                    ->first();
+
+            $arrValue = json_decode($property->theme_properties_value,true) ?? []; 
+
+            $countArr = count($arrValue); 
+
+            if($countArr > 0){
+                foreach ($arrValue as $key => $value) {
+                    if($value['id'] == $request->idValue){
+                        unset($arrValue[$key]);
+                    }
+                }
+            }
+            $arrValue = array_values($arrValue);
+            // $arrValue = array_map('array_values', $arrValue);
+
+            $jsonValue = json_encode($arrValue);
+
+            $property->theme_properties_value = $jsonValue;
+
+            $property->save();
+        return response()->json(['status'=>1,'msg'=>'Deleted successfully!']);   
+        }
     }
 
 }

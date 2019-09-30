@@ -139,7 +139,7 @@ Theme Management
             </div>
             <div class="modal-body row">
                 <div class="col-2">
-                    <button class="btn btn-sm btn-warning" id="resetAddProperty">Reset Add</button>
+                    <button class="btn btn-sm btn-warning resetAddProperty" >Reset Add</button>
                     <form action="" method="POST" role="form" id="setup-properties" enctype="multipart/form-data">
                         @csrf
                         <div class="form-group">
@@ -193,10 +193,11 @@ Theme Management
                 </div>
                 <div class="col-5">
                     {{-- <br><br><br> --}}
-                    <div class="form-group">
-                        <button class="btn-sm btn-warning btn show" id="addText">Add Text</button>
+                    <div class="form-group" id="buttonSetupProperties">
+                        <button class="btn-sm btn-primary btn show" id="addText">Add Text</button>
                         <button class="btn-sm btn-danger btn show" id="addImage">Add Image</button>
                         <button class="btn-sm btn-success btn" id="hide">Hide</button>
+                        <button class="btn btn-sm btn-warning resetAddProperty" >Reset Add</button>
                     </div>
                     <div id="toggleAdd">
                     <form id="formSaveValueProperties" method="post" enctype="multipart/form-data">
@@ -222,32 +223,38 @@ Theme Management
                             <input type="submit" class="btn-sm btn btn-primary" value="Save">
                             <input type="hidden" name="action" value="Create">
                             <input type="hidden" name="propertyId">
+                            <input type="hidden" name="idValue">
                         </div>
                     </form>
                     </div>
                     <div class="table-responsive">
-                        <div class="dataTables_scrollHead">
-                        <table class="table table-bordered" id="" width="100%" cellspacing="0">
-                            <thead>
+                        <div class="card shadow mb-4 ">
+                        <div class="card-header py-2">
+                            <h6 class="m-0 font-weight-bold text-primary">Value List </h6>
+                        </div>
+                        <div class="card-body">
+                        <div class="table-responsive dataTables_scrollBody dataTables_scroll" style="position: relative; overflow: auto; max-height: 65vh; width: 100%;">
+                        <table class="table table-bordered" id="listValueProperties" width="100%" cellspacing="0">
+                             <thead>
                                 <tr>
+                                    <th>Variable name</th>
                                     <th>Value</th>
-                                    <th>Name</th>
                                     <th>Action</th>
                                 </tr>
                             </thead>
-                        </table>
-                        </div>
-                        <table class="table table-bordered" id="listValueProperties" width="100%" cellspacing="0">
                             <tbody>
-                                <tr>
+                               {{--  <tr>
                                     <td>1</td>
                                     <td>abc</td>
                                     <td><a class="btn btn-sm btn-secondary editValue"  href="#"><i class="fas fa-edit"></i></a>
                                         <a class="btn btn-sm btn-secondary deleteValue"  href="#"><i class="fas fa-trash"></i></a>
                                     </td>
-                                </tr>
+                                </tr> --}}
                             </tbody>
                         </table>
+                        </div>
+                        </div>
+                    </div>
                     </div>
                 </div>
             </div>
@@ -262,7 +269,10 @@ Theme Management
     	$("input[name='code']").val('');
     	$("input[name='price']").val('');
     	$("input[name='url']").val('');
-    	$("input[name='license']").val('');
+        $("input[name='license']").val('');
+        $("input[name='value']").val('');
+    	$("input[name='idValue']").val('');
+
     	// $("input[name='theme_id']").val('');
     	$("textarea[name='description']").text('');
     	$(".previewImage img").attr('src','{{asset('images/no-image.png')}}');
@@ -474,29 +484,31 @@ Theme Management
             data:{propertyId},
             success:function(data){
                 if(data.status == 1){
-
-                    try {
-                        var count = Object.keys(data.data).length;
-                    } catch(err) {
-                        var count = 0;
-                    }
-                    if(count == 0){
+                    if(!data.data){
                         // toastr.error('Failed to get list data!');
                         $("#listValueProperties tbody").html("");
                         return false;
                     }
-                    
                     // console.log(count);
                     var html = '';
-                    for(var i = 0; i < count; i++){
-                        console.log(data[i]);
-                            html    +='<tr>'
-                                    +'<td>key</td>'
-                                    +'<td>value</td>'
-                                    +'<td><a style="margin-right: 5px;" class="btn btn-sm btn-secondary editProperties"  href="#"><i class="fas fa-edit"></i></a>'
-                                    +'<a class="btn btn-sm btn-secondary deleteProperties"  href="#"><i class="fas fa-trash"></i></a>'
-                                    +'</td>'
-                                    +'</tr>'
+                    var name = '';
+                    var value = '';
+                    for(var i = 0; i < data.data.length; i++){
+                        name = data.data[i].name;
+                        
+                        if(checkURL("{{env('URL_FILE_VIEW')}}"+data.data[i].value) == true){
+                            value = "<img style='height: 5rem;' src= '{{env('URL_FILE_VIEW')}} "+data.data[i].value+"'/>";
+                        } else {
+                            value = data.data[i].value;
+                        }
+                          
+                        html    +='<tr>'
+                                +'<td class="name">'+name+'</td>'
+                                +'<td class="value">'+value+'</td>'
+                                +'<td data-id="'+data.data[i].id+'"><a style="margin-right: 5px;" class="btn btn-sm btn-secondary editValueProperties"  href="#"><i class="fas fa-edit"></i></a>'
+                                +'<a class="btn btn-sm btn-secondary deleteValueProperties"  href="#"><i class="fas fa-trash"></i></a>'
+                                +'</td>'
+                                +'</tr>'
                     }
 
                     $("#listValueProperties tbody").html(html);
@@ -506,6 +518,9 @@ Theme Management
                 toastr.error("Failed to load data!");
             }
         })
+    }
+    function checkURL(url) {
+        return(url.match(/\.(jpeg|jpg|gif|png)$/) != null);
     }
     $(document).ready(function(){
         var theme_id = null;
@@ -518,7 +533,7 @@ Theme Management
                 // $("#setup-properties").find("input[name='theme_properties_name']").val(theme_properties_name);
                 listThemePropertiesByThemeId(theme_id);
                 $("#setupPropertiesModal").modal("show");
-                $("#resetAddProperty").trigger('click');
+                $(".resetAddProperty").trigger('click');
                 $("#hide").trigger('click');
             });
 
@@ -540,7 +555,7 @@ Theme Management
                         toastr.success(data.msg);
                         listThemePropertiesByThemeId(theme_id);
                         clear();
-                        $("#resetAddProperty").trigger('click');
+                        $(".resetAddProperty").trigger('click');
                     }
                 },
                 error:function(){
@@ -548,7 +563,7 @@ Theme Management
                 }
               });
         });
-        $("#resetAddProperty").on('click',function(){
+        $(".resetAddProperty").on('click',function(){
             clear();
             $("#setup-properties").find("button").text("Create Property");
             $("#setup-properties").find("input[name='action']").val("Create");
@@ -614,6 +629,12 @@ Theme Management
         });
 
         $(".show").on('click',function(){
+            var checkSelected = $('#themeProperties tbody').find("tr.selected");
+            if(checkSelected.length == 0){
+                toastr.error("Please choose properties list!");
+                return false;
+            }
+
             $("#toggleAdd").show(200);
             var id = $(this).attr('id');
 
@@ -640,12 +661,59 @@ Theme Management
                         listValueProperties(propertyId);
                         clear();
                         $("#hide").trigger('click');
+                    } else {
+                        toastr.error(data.msg);
                     }
                 },
                 error:function(){
                     toastr.error("Failed to save!");
                 }
               });
+        });
+
+        $(document).on('click',".editValueProperties",function(e){
+            e.preventDefault();
+            var getName = $(this).parent().parent().find(".name").text();
+            var getValue = $(this).parent().parent().find(".value").text();
+            var getImage = $(this).parent().parent().find(".value").children().attr('src');
+            var getIdValue = $(this).parent().attr('data-id');
+
+            if(!getValue){
+                $("#addImage").trigger('click');
+                $("#formSaveValueProperties").find(".previewImage img").attr("src",getImage);
+            } else {
+                $("#addText").trigger('click');
+                $("#formSaveValueProperties").find("input[name='value']").val(getValue);
+            }
+            $("#formSaveValueProperties").find("input[name='name']").val(getName);
+            $("#formSaveValueProperties").find("input[name='idValue']").val(getIdValue);
+        });
+        $(document).on('click',".deleteValueProperties",function(e){
+            e.preventDefault();
+            if(confirm("Are you sure do you want delete this data!")){
+                idValue = $(this).parent().attr('data-id');
+                $.ajax({
+                    url:"{{ route('deleteValueProperties') }}",
+                    data:{
+                        _token:"{{csrf_token()}}",
+                        idValue,
+                        propertyId,
+                    },
+                    method:"post",
+                    dataType:"json",
+                    success:function(data){
+                        if(data.status == 1){
+                            listValueProperties(propertyId);
+                            clear();
+                            toastr.success("Deleted successfully!");
+                        }
+                    },
+                    error:function(){
+                        toastr.error("Failed to delete!");
+                    }
+
+                });
+            }
         });
 
 
