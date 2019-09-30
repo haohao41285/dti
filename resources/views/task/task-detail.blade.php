@@ -148,7 +148,7 @@
 	            			<span class="col-md-6">Business Phone: <b>{{$content_arr['address']}}</b></span>
 	            		</div>
 	            		@endif
-	            		
+
             		@endif
             		<p><b>Notes:</b></p>
         		    <div class="ml-5">
@@ -233,13 +233,13 @@
             searching: false,
             order:[[0,'desc']],
             buttons: [
-            ],  
+            ],
             // processing: true,
             serverSide: true,
             ajax:{ url:"{{ route('get-subtask') }}",
             data: function (d) {
                 d.task_id = '{{$id}}'
-            } 
+            }
         },
            columns: [
                     { data: 'task', name: 'task',class:'text-center' },
@@ -258,16 +258,16 @@
             // dom: "lBfrtip",
             order:[[0,'desc']],
             buttons: [
-            ],  
+            ],
             // processing: true,
             serverSide: true,
             ajax:{ url:"{{ route('task-tracking') }}",
             data: function (d) {
             	d.task_id = '{{$id}}'
-            } 
+            }
         },
            columns: [
-                    
+
                     { data: 'created_at', name: 'created_at',class:'d-none' },
                     { data: 'user_info', name: 'user_info' },
                     { data: 'content', name: 'content'},

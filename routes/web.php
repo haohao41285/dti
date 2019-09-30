@@ -21,7 +21,7 @@ Route::post('password/email', 'Auth\ForgotPasswordController@sendResetLinkEmail'
 Route::get('password/reset/{token}', 'Auth\ResetPasswordController@showResetForm');
 Route::post('password/reset', 'Auth\ResetPasswordController@reset');
 
-Route::group(['middleware' => ['auth']], function () {  
+Route::group(['middleware' => ['auth']], function () {
     Route::get('/edit-profile', 'UserController@editProfile')->name('editProfile');
     Route::post('/edit-profile', 'UserController@edit');
 
@@ -32,7 +32,7 @@ Route::group(['middleware' => ['auth']], function () {
     Route::get('/', 'DashboardController@index')->name('dashboard');
     Route::get('dashboard', 'DashboardController@index')->name('dashboard');
     Route::get('logout', 'Auth\LoginController@logout')->name('logout');
-    
+
     Route::group(['prefix'=>'customer', 'namespace'=>'Customer'],function(){
          Route::get('my-customers', 'CustomerController@listMyCustomer')->name('myCustomers');
          Route::get('customers', 'CustomerController@listCustomer')->name('customers');
@@ -51,7 +51,7 @@ Route::group(['middleware' => ['auth']], function () {
          Route::post('save-my-customer', 'CustomerController@saveMyCustomer')->name('save-my-customer');
 
     });
-    
+
     Route::group(['prefix'=>'marketing', 'namespace'=>'Marketing'],function(){
         Route::get('sendsms','SmsController@view');
         Route::get('get-content-template','SmsController@getContentTemplate')->name('get-content-template');
@@ -63,9 +63,9 @@ Route::group(['middleware' => ['auth']], function () {
         Route::get('/sms/calculate-sms','SmsController@calculateSms')->name('calculate-sms');
 
     });
-    
+
     Route::group(['prefix'=>'statistics', 'namespace'=>'Statistics'],function(){
-         
+
     });
    Route::group(['prefix'=>'datasetup', 'namespace'=>'DataSetup'],function(){
          Route::get('combos', 'ComboController@index')->name('listCombo');
@@ -83,14 +83,14 @@ Route::group(['middleware' => ['auth']], function () {
          Route::get('licenses', 'LicenseController@index')->name('listLicenses');
          Route::get('license/generate', 'LicenseController@generate')->name('generateLicenses');
     });
-    
+
     Route::group(['prefix'=>'tools'],function(){
         Route::get('clonewebsite', 'ItToolsController@cloneWebsite')->name('cloneWebsite');
         Route::get('updatewebsite', 'ItToolsController@updateWebsite')->name('updateWebsite');
     });
-    
+
     Route::get('recentlog', 'RecentLogController@index')->name('recentlog');
-    
+
     Route::group(['prefix' => 'setting','namespace' => 'Setting'], function() {
         Route::get('setup-team', 'SetupTeamController@index')->name('setupTeam');
         Route::get('setup-background', 'SetupBackground@index')->name('setupBackground');
@@ -150,6 +150,8 @@ Route::group(['middleware' => ['auth']], function () {
         Route::get('order-service', 'OrdersController@orderService')->name('order-service');
         Route::post('submit-info-task', 'OrdersController@submitInfoTask')->name('submit-info-task');
         Route::post('change-status-order', 'OrdersController@changeStatusOrder')->name('change-status-order');
+        Route::post('resend-invoice', 'OrdersController@resendInvoice')->name('resend-invoice');
+        Route::get('dowload-invoice/{id}', 'OrdersController@dowloadInvoice')->name('dowload-invoice');
     });
     Route::group(['prefix' => 'task','namespace' => 'Task'], function() {
         Route::get('/', 'TaskController@index')->name('my-task');
@@ -164,6 +166,6 @@ Route::group(['middleware' => ['auth']], function () {
         Route::get('get-subtask', 'TaskController@getSubtask')->name('get-subtask');
         Route::get('edit-task/{id}', 'TaskController@editTask')->where(['id'=>'[0-9]+'])->name('edit-task');
         Route::post('send-mail-notification', 'TaskController@sendMailNotification')->name('send-mail-notification');
+        Route::get('theme-mail', 'TaskController@themeMail')->name('theme-mail');
     });
-    
 });

@@ -21,6 +21,8 @@ use App\Models\MainTask;
 use App\Models\MainFile;
 use net\authorize\api\contract\v1 as AnetAPI;
 use net\authorize\api\controller as AnetController;
+use App\Jobs\SendNotification;
+use Laracasts\Presenter\PresentableTrait;
 use Carbon\Carbon;
 use DataTables;
 use Validator;
@@ -28,9 +30,12 @@ use Auth;
 use DB;
 use Hash;
 use ZipArchive;
+use Dompdf\Dompdf;
 
-class OrdersController extends Controller 
+class OrdersController extends Controller
 {
+    use PresentableTrait;
+    protected $presenter = 'App\\Presenters\\ThemeMailPresenter';
 	/**
 	 * get all orders
 	 * return
@@ -71,7 +76,7 @@ class OrdersController extends Controller
 					->select('pos_place.place_id','pos_place.place_name')
 			        ->get();
         }
-       
+
         $data['combo_service_list'] = MainComboService::where('cs_status',1)->orderBy('cs_type','asc')->get();
 
         $data['count'] = round($data['combo_service_list']->count()/2);
@@ -205,7 +210,7 @@ class OrdersController extends Controller
 			foreach ($service_arr as $key => $service) {
 				//GET EXPIRY PERIOD OF SERVICE
 				$service_expiry_period = MainComboService::where('id',$service)->first()->cs_expiry_period;
-				//CHECK CUSTOMER SERVICE EXIST 
+				//CHECK CUSTOMER SERVICE EXIST
 				$check = MainCustomerService::where('cs_place_id',$place_id)
 											->where('cs_customer_id',$customer_id)
 											->where('cs_service_id',$service)
@@ -239,7 +244,7 @@ class OrdersController extends Controller
 					$customer_service_update = MainCustomerService::insert($order_arr);
 					$cs_id++;
 				}
-				
+
 			}
 			//END UPDATE MAIN_CUSTOMER_SERVICE
 
@@ -337,7 +342,7 @@ class OrdersController extends Controller
 		    $merchantAuthentication = new AnetAPI\MerchantAuthenticationType();
 		    $merchantAuthentication->setName(env('MERCHANT_LOGIN_ID'));
 		    $merchantAuthentication->setTransactionKey(env('MERCHANT_TRANSACTION_KEY'));
-		    
+
 		    // Set the transaction's refId
 		    $refId = 'ref' . time();
 		    $experation_date = $request->experation_year."-".$request->experation_month;
@@ -383,7 +388,7 @@ class OrdersController extends Controller
 		    $merchantDefinedField2->setValue("blue");
 		    // Create a TransactionRequestType object and add the previous objects to it
 		    $transactionRequestType = new AnetAPI\TransactionRequestType();
-		    $transactionRequestType->setTransactionType("authOnlyTransaction"); 
+		    $transactionRequestType->setTransactionType("authOnlyTransaction");
 		    $transactionRequestType->setAmount($request->payment_amount);
 		    $transactionRequestType->setOrder($order);
 		    $transactionRequestType->setPayment($paymentOne);
@@ -406,7 +411,7 @@ class OrdersController extends Controller
 		            // Since the API request was successful, look for a transaction response
 		            // and parse it to display the results of authorizing the card
 		            $tresponse = $response->getTransactionResponse();
-		        
+
 		            if ($tresponse != null && $tresponse->getMessages() != null) {
 		            	if(!isset($update_team_customr_status) || !isset($customer_service_update) ){
 							DB::callback();
@@ -439,8 +444,8 @@ class OrdersController extends Controller
 							}
 							$task_create = MainTask::insert($task_arr);
 
-							if(!isset($insert_order) 
-								|| !isset($update_team_customr_status) 
+							if(!isset($insert_order)
+								|| !isset($update_team_customr_status)
 								|| !isset($customer_service_update)
 								|| !isset($task_create) ){
 
@@ -472,7 +477,7 @@ class OrdersController extends Controller
 
 		            // echo "Transaction Failed \n";
 		            // $tresponse = $response->getTransactionResponse();
-		        
+
 		            // if ($tresponse != null && $tresponse->getErrors() != null) {
 		            //     echo " Error Code  : " . $tresponse->getErrors()[0]->getErrorCode() . "\n";
 		            //     echo " Error Message : " . $tresponse->getErrors()[0]->getErrorText() . "\n";
@@ -480,7 +485,7 @@ class OrdersController extends Controller
 		            //     echo " Error Code  : " . $response->getMessages()->getMessage()[0]->getCode() . "\n";
 		            //     echo " Error Message : " . $response->getMessages()->getMessage()[0]->getText() . "\n";
 		            // }
-		        }      
+		        }
 		    } else {
 		        // echo  "No response returned \n";
 				DB::callback();
@@ -511,8 +516,8 @@ class OrdersController extends Controller
 			}
 			$task_create = MainTask::insert($task_arr);
 
-			if(!isset($insert_order) 
-				|| !isset($update_team_customr_status) 
+			if(!isset($insert_order)
+				|| !isset($update_team_customr_status)
 				|| !isset($customer_service_update)
 				|| !isset($task_create) ){
 
@@ -523,7 +528,7 @@ class OrdersController extends Controller
 			    return redirect()->route('my-orders')->with(['success'=>'Transaction Successfully!']);
 			}
 		}
-			
+
 	}
 	public function getCustomerInfor(Request$request)
 	{
@@ -620,7 +625,7 @@ class OrdersController extends Controller
 
 	    	//GET CUSTOMER INFORMATION
 	    	$customer = "<span>Customer: ".$order->customer_firstname. " " .$order->customer_lastname."</span><br><span>Business Phone: ".$order->customer_phone."</span><br><span>Address: ".$order->customer_address."</span><br><span>Email: ".$order->customer_email."</span>";
-	    	
+
 	    	$my_order_arr[] = [
 	    		'id' => $order->id,
 	    		'order_date' => $order_date,
@@ -729,7 +734,7 @@ class OrdersController extends Controller
 		})
 		->select('main_task.*','main_user.user_nickname')
 		->get();
-		
+
 		return view('orders.order-view',$data);
 	}
 	public function orderTracking(Request $request){
@@ -944,4 +949,45 @@ class OrdersController extends Controller
 		else
 			return response(['status'=>'success','message'=>'Successfully']);
 	}
+	public function resendInvoice(Request $request){
+
+	     $order_id = $request->order_id;
+	     $input = [];
+
+	     $order_info = MainComboServiceBought::find($order_id);
+
+         $service_list = $order_info->csb_combo_service_id;
+         $service_arrray = explode(";",$service_list);
+         $order_info['combo_service_list'] = MainComboService::whereIn('id',$service_arrray)->get();
+
+	     $content = $order_info->present()->getThemeMail;
+
+	     $input['subject'] = 'INVOICE';
+	     $input['email'] = 'nguyenthieupro93@gmail.com';
+	     $input['name'] = 'test';
+         $input['message'] = $content;
+
+	     dispatch(new SendNotification($input));
+
+	     return response(['status'=>'success','message'=>'Send Mail Successfully!']);
+    }
+    public function dowloadInvoice($order_id){
+
+	    $order_info = MainComboServiceBought::find($order_id);
+	    $service_list = $order_info->csb_combo_service_id;
+	    $service_arrray = explode(";",$service_list);
+	    $order_info['combo_service_list'] = MainComboService::whereIn('id',$service_arrray)->get();
+
+	    $content = $order_info->present()->getThemeMail;
+
+        $dompdf = new Dompdf();
+
+        $dompdf->loadHtml($content);
+        // (Optional) Setup the paper size and orientation
+        $dompdf->setPaper('A4', 'landscape');
+        // Render the HTML as PDF
+        $dompdf->render();
+        // Output the generated PDF to Browser
+        $dompdf->stream();
+    }
 }

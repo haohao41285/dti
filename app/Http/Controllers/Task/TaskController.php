@@ -20,10 +20,12 @@ use Auth;
 use Validator;
 use DB;
 use ZipArchive;
-use Mail;
+use Laracasts\Presenter\PresentableTrait;
 
 class TaskController extends Controller
 {
+    use PresentableTrait;
+    protected $presenter = 'App\\Presenters\\ThemeMailPresenter';
     public function index(){
     	return view('task.my-task');
     }
@@ -144,17 +146,17 @@ class TaskController extends Controller
             DB::commit();
             return response(['status'=> 'success','message'=>'Successly!']);
         }
-        
-    	
+
+
     }
     public function downImage(Request $request){
 
         $src_image = $request->src;
 
         if(file_exists($src_image)){
-            return response()->download($src_image);            
+            return response()->download($src_image);
         }
-        else 
+        else
             return back()->with(['error'=>"Download Failed"]);
     }
     public function taskDetail($id){
@@ -165,7 +167,7 @@ class TaskController extends Controller
 
         return view('task.task-detail',$data);
     }
-   
+
     public function taskTracking(Request $request){
 
         $task_id = $request->task_id;
@@ -331,7 +333,7 @@ class TaskController extends Controller
         $data['id'] = $id;
 
         $data['task_name'] = $data['task_info']->subject;
-        
+
         return view('task.edit-task',$data);
     }
     public function sendMailNotification(Request $request){
@@ -352,7 +354,9 @@ class TaskController extends Controller
                 'message' => $validator->getMessageBag()->toArray()
             ]);
         //GET EMAIL TEAM
-        $team_email = MainTeam::find($request->team)->team_email;
+        $team_info =  MainTeam::find($request->team);
+        $team_email = $team_info->team_email;
+        $team_name = $team_info->team_name;
 
 
         if(!isset($team_email))
@@ -362,13 +366,16 @@ class TaskController extends Controller
                 return response(['status'=>'error','message'=>'Get Email Team Error!']);
             else{
                 // $input =  MainTeam::find($request->team);
-                $input['team_email'] = $team_email;
+                $input['email'] = $team_email;
+                $input['name'] = $team_name;
                 $input['subject'] = $request->subject;
                 $input['message'] = $request->message;
-                $input['attachment'] = public_path('invoice9267054355559.pdf');
                 dispatch(new SendNotification($input));
                 return response(['status'=>'success','message'=>'Message has been sent']);
             }
         }
+    }
+    public function themeMail(){
+        return $this->present()->getThemeMail;
     }
 }

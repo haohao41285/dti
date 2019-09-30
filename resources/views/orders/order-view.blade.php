@@ -11,7 +11,7 @@
    .note-popover.popover {
         display: none;
    }
-    
+
 </style>
 @endpush
 @section('content')
@@ -33,7 +33,7 @@
         </div>
         </form>
       </div>
-      
+
     </div>
   </div>
 {{-- END MODAL --}}
@@ -68,7 +68,7 @@
             </form>
         </div>
       </div>
-      
+
     </div>
   </div>
 {{-- END MODAL COMMENT --}}
@@ -85,7 +85,7 @@
             <tr>
                 <th>#{{$id}}</th>
                 <th class="status">
-                    {{($order_info->csb_status==0?"NOTPAYMENT":"PAID")}} 
+                    {{($order_info->csb_status==0?"NOTPAYMENT":"PAID")}}
                     @if($order_info->csb_status == 0)
                     <a href="javascript:void(0)" id="change-status"> <i class="fas fa-edit"></i><span>Change Status</span></a>
                     @endif
@@ -127,8 +127,8 @@
             <tr>
                 <td colspan="2">ORDER NOTES: {{$order_info->csb_note}}</td>
                 <td>
-                    <button class="btn btn-sm btn-info"><i class="fas fa-file-pdf text-danger"></i> PRINT INVOICE</button>
-                    <button class="btn btn-sm btn-info"><i class="fas fa-envelope text-danger"></i> RESEND INVOICE</button>
+                    <a href="{{route('dowload-invoice',$id)}}"><button class="btn btn-sm btn-info"><i class="fas fa-file-pdf text-danger"></i> PRINT INVOICE</button></a>
+                    <button class="btn btn-sm btn-info resend-invoice"><i class="fas fa-envelope text-danger"></i> RESEND INVOICE</button>
                 </td>
                 <td class="align-left"><i class="text-primary">Last sent invoice:</i></td>
             </tr>
@@ -143,7 +143,7 @@
                 <th style="width: 70%">SERVICE ORDER FORM</th>
             </tr>
         </thead>
-        
+
     </table>
     <table class="table mt-4 table-hover table-bordered" id="" widtd="100%" cellspacing="0">
         <thead  class="thead-light">
@@ -233,13 +233,13 @@
             order:[[0,'desc']],
             info: false,
             buttons: [
-            ],  
+            ],
             // processing: true,
             serverSide: true,
             ajax:{ url:"{{ route('order-tracking') }}",
             data: function (d) {
                 d.order_id = '{{$id}}'
-            } 
+            }
         },
            columns: [
                     { data: 'created_at', name: 'created_at',class:'d-none' },
@@ -256,13 +256,13 @@
             info: false,
 
             buttons: [
-            ],  
+            ],
             processing: true,
             serverSide: true,
             ajax:{ url:"{{ route('order-service') }}",
             data: function (d) {
                 d.order_id = '{{$id}}'
-            } 
+            }
         },
            columns: [
                     { data: 'cs_name', name: 'cs_name'},
@@ -308,7 +308,7 @@
             });
             return false;
         });
-       
+
         function clearView(){
             task_id = 0;
             $("#email_list").val("");
@@ -354,14 +354,14 @@
                         </div>
                     </div>
                     <div class="col-md-1" style="border-right: .5px dashed grey">
-                        
+
                     </div>
                     <div class="col-md-5">
                         <input type="file" hidden id="file" name="" value="">
                         <input type="button" class="btn btn-sm btn-secondary" onclick="uploadFile()" value="Upload attachment files" name="">
                         <input type="file" id="upload_file" hidden class="" value="" name="list_file[]" multiple>
                     </div>
-                        
+
                 </div>
                 <div class="form-group">
                     <label for="note">Notes</label>
@@ -426,7 +426,7 @@
                         </div>
                     </div>
                     <div class="col-md-1" style="border-right: .5px dashed grey">
-                        
+
                     </div>
                     <div class="col-md-5">
                         <input type="button" class="btn btn-sm btn-secondary" onclick="uploadFile()" value="Upload attachment files" name="">
@@ -553,8 +553,31 @@
             .fail(function() {
                 console.log("error");
             });
-            
         });
+        $(".resend-invoice").click(function(){
+            var order_id = '{{$id}}';
+            $.ajax({
+                url: '{{route('resend-invoice')}}',
+                type: 'POST',
+                dataType: 'html',
+                data: {
+                    order_id:order_id,
+                    _token: '{{csrf_token()}}'
+                },
+            })
+                .done(function(data) {
+                    data = JSON.parse(data);
+                    if(data.status == 'error'){
+                        toastr.error(data.message);
+                    }else{
+                        toastr.success(data.message);
+                    }
+                    console.log(data);
+                })
+                .fail(function() {
+                    console.log("error");
+                });
+        })
     });
 </script>
 @endpush

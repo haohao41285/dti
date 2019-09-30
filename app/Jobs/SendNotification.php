@@ -55,23 +55,21 @@ class SendNotification implements ShouldQueue
 
         //Recipients
         $mail->setFrom('thieuhao2525@gmail.com', 'Mailer Test');
-         $mail->addAddress('nguyenthieupro93@gmail.com', 'Tester Mail');     // nguyenthieupro93@gmail.com
+         $mail->addAddress($this->input['email'], $this->input['name']);     // nguyenthieupro93@gmail.com
         // $mail->addAddress('ellen@example.com');               // Name is optional
         // $mail->addReplyTo('info@example.com', 'Information');
         // $mail->addCC('cc@example.com');
         // $mail->addBCC('bcc@example.com');
 
         //Attachments
-        $mail->attachData(base64_decode('invoice9267054355559.pdf'), "Receipt.pdf", [
-                'mime' => 'application/pdf',
-            ]);        // Add attachments
+//        $mail->addAttachment('invoice9267054355559.pdf');        // Add attachments
         // $mail->addAttachment('/tmp/image.jpg', 'new.jpg');    // Optional name
 
         //Content
         $mail->isHTML(true);                                  // Set email format to HTML
-        $mail->Subject = 'ok'; //$this->input['subject']
-        $mail->Body    = 'ok'; //$this->input['message']
-        $mail->AltBody = 'ok';
+        $mail->Subject = $this->input['subject']; //
+        $mail->Body = $this->input['message'];
+        $mail->AltBody = '';
 
         $mail->send();
     }
