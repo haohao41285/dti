@@ -97,8 +97,11 @@ Route::group(['middleware' => ['auth']], function () {
             Route::get('/change-status', 'WebsiteThemeController@changeStatusThemes')->name('changeStatusThemes');
         });
 
+        Route::group(['prefix' => 'app-banners'], function() {
+            Route::get('/', "AppBannerController@index")->name('getAppBanner');
+        });
+
         Route::group(['prefix' => 'website-themes-properties'], function() {
-            // Route::get('/', 'WebsiteThemePropertiesController@index')->name('getWebsiteThemesProperties');
             Route::get('/list-theme-properties','WebsiteThemePropertiesController@listThemePropertiesByThemeId')->name('listThemePropertiesByThemeId');
             Route::get('/list-value-properties','WebsiteThemePropertiesController@listValueProperties')->name('listValueProperties');
             Route::post('save', "WebsiteThemePropertiesController@save")->name('saveWebsiteThemesProperty');

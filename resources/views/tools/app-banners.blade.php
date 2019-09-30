@@ -1,144 +1,13 @@
 @extends('layouts.app')
 @section('content-title')
-Theme Management
+App Banners 
 @endsection
 @push('scripts')
 
 @endpush
 @section('content')
-<div class="card shadow mb-4 ">
-    <div class="card-header py-2">
-        <h6 class="m-0 font-weight-bold text-primary " >Website themes </h6>
-    </div>
-    <div class="card-body">
-        <div class="table-responsive">
-            <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
-                <thead>
-                    <th>#</th>
-                    <th>Theme Name</th>
-                    <th>Theme Code</th>
-                    <th>Price($)</th>
-                    <th>Image</th>
-                    <th>Status</th>
-                    <th>Last Update</th>
-                    <th >Action</th>
-                    </tr>
-                </thead>
-            </table>
-        </div>
-    </div>
-</div>
-<!-- themeModal -->
-<div class="modal fade" id="themeModal" tabindex="-1" role="dialog" aria-hidden="true">
-    <form class="sb-form" id="formTheme" enctype="multipart/form-data">
-        @csrf
-        <div class="modal-dialog" role="document" style="max-width: 95%;">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="titleModalTheme">Add Theme</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <div class="form-group">
-                        <div class="col-md-7 form-inline">
-                            <label class="col-sm-4 required">Theme Name</label>
-                            <div class="col-sm-8">            
-                                <input required="" type='text' value="" name="name" class="form-control form-control-sm" /> 
-                            </div>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <div class="col-md-7 form-inline">
-                            <label class="col-sm-4 required">Theme Code</label>
-                            <div class="col-sm-8">
-                                <input required="" type='text' value="" name="code" class="form-control form-control-sm" /> 
-                            </div>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <div class="col-md-7 form-inline">
-                            <label class="col-sm-4 required">Price</label>
-                            <div class="col-sm-8 input-group">
-                                <div class="input-group-prepend">
-                                    <span class="input-group-text">$</span>
-                                </div>
-                                <input required="" type="text" class="form-control" name="price">
-                            </div>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <div class="col-md-7 form-inline">
-                            <label class="col-sm-4 required">URL</label>
-                            <div class="col-sm-8">
-                                <input required="" type='text' name="url"  class="form-control form-control-sm" /> 
-                            </div>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <div class="col-md-7 form-inline">
-                            <label class="col-sm-4">License</label>
-                            <div class="col-sm-8">
-                                <input type='text' name="license"  class="form-control form-control-sm" /> 
-                            </div>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <div class="col-md-7 form-inline">
-                            <label class="col-sm-4 required">Status</label>
-                            <div class="col-sm-8">
-                                <input type="checkbox" name="status" value="1" class="toggleButton">
-                            </div>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <div class="col-md-7 form-inline">
-                            <label class="col-sm-4">Description</label>
-                            <div class="col-sm-8">
-                                <textarea name="description" class="form-control form-control-sm"></textarea> 
-                            </div>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <div class="col-md-7 form-inline">
-                            <label class="col-sm-4 align-self-baseline">Image</label>
-                            <div class="col-sm-8">
-                                {{-- 
-                                <div class="custom-file">
-                                    <label class="custom-file-label" for="customFile" style="display: none">Choose image file</label>
-                                </div>
-                                --}}  
-                                <div class="previewImage">
-                                    <img id="previewImageTheme" src="{{ asset("images/no-image.png")}}"  />
-                                    <input type="file" name="image" class="custom-file-input"  previewImageId="previewImageTheme" style="display: none">
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                	<input type="hidden" name="theme_id">
-                    <input type="hidden" name="action">
-                    <button type="submit" class="btn btn-primary btn-sm">Save changes</button>
-                    <button type="button" class="btn btn-secondary btn-sm" data-dismiss="modal">Close</button>        
-                </div>
-            </div>
-        </div>
-    </form>
-</div>
-<!-- setupPropertiesModal -->
-<div class="modal fade" id="setupPropertiesModal" tabindex="-1" role="dialog" aria-hidden="true">
-    <div class="modal-dialog" role="document" style="max-width: 95%;">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLabel">Setup Properties</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body row">
-                <div class="col-2">
+    <div class="row">
+                {{-- <div class="col-2">
                     <button class="btn btn-sm btn-warning resetAddProperty" >Reset Add</button>
                     <form action="" method="POST" role="form" id="setup-properties" enctype="multipart/form-data">
                         @csrf
@@ -159,7 +28,7 @@ Theme Management
                         <input type="hidden" name="theme_id">
                         <input type="hidden" name="theme_properties_id">
                     </form>
-                </div>
+                </div> --}}
                 <div class="col-5 ">
                     {{-- <br><br> --}}
                     <div class="card shadow mb-4 ">
@@ -257,10 +126,8 @@ Theme Management
                     </div>
                     </div>
                 </div>
-            </div>
-        </div>
-    </div>
 </div>
+
 @endsection
 @push('scripts')
 <script type="text/javascript">
