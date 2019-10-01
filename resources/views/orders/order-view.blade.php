@@ -188,26 +188,6 @@
         </thead>
     </table>
 </div>
-<h4 class="border border-info border-top-0 border-right-0 border-left-0 text-info">ADD NEW COMMENT</h4>
-<form  enctype="multipart/form-data" accept-charset="utf-8">
-    @csrf()
-    <textarea  id="summernote2" class="form-control form-control-sm"  name="note"></textarea>
-    <input type="button" class="btn btn-sm btn-secondary mt-2" name="" value="Upload attchment's file" onclick="getFile2()" placeholder="">
-    <input type="file" hidden id="file_image_list_2" multiple name="file_image_list[]">
-    <p>(The maximum upload file size: 100M)</p>
-    <div style="height: 10px" class="bg-info">
-    </div>
-    <hr style="border-top: 1px dotted grey;">
-    <p class="text-primary">An email notification will send to web@dataaeglobal.com</p>
-     <div class="input-group mb-2 mr-sm-2">
-        <div class="input-group-prepend">
-          <div class="input-group-text">Add CC:</div>
-        </div>
-        <input type="text" class="form-control" name="email_list" id="email_list_2" placeholder="">
-      </div>
-    <p>CC Multiple Email for example:<i> email_1@gmail.com;email_2@gmail.com</i></p>
-    <button type="botton" class="btn btn-sm btn-primary submit-comment">Submit Comment</button>
-</form>
 
 @endsection
 @push('scripts')
@@ -313,7 +293,7 @@
             task_id = 0;
             $("#email_list").val("");
             $("#email_list_2").val("");
-            $("#summernote").val("");
+            $(".note-editable p").html("");
             $("#summernote2").val("");
             $("#add-comment-modal").modal('hide');
         }

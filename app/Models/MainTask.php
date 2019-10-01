@@ -47,4 +47,7 @@ class MainTask extends Model
     public function getPlace(){
         return $this->belongsTo(PosPlace::class,'place_id','place_id');
     }
+    public function getAssignTo(){
+        return $this->belongsTo(MainUser::class,'assign_to','user_id');
+    }
 }

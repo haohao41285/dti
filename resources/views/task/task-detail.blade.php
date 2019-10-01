@@ -46,7 +46,7 @@
 </div>
 {{-- END MODAL --}}
 <div class="table-responsive">
-	<h4 class="border border-info border-top-0 border-right-0 border-left-0 text-info text-uppercase">TASK #{{$id}} - {{$task_info->getService->cs_name}}</h4>
+	<h4 class="border border-info border-top-0 border-right-0 border-left-0 text-info text-uppercase">TASK #{{$id}} - {{$task_info->subject}}</h4>
     <table class="table table-striped mt-4 table-bordered" id="dataTableAllCustomer" widtd="100%" cellspacing="0">
         <tbody>
             <tr>
@@ -82,80 +82,82 @@
                 <th class="text-capitalize">{{$task_info->getUpdatedBy->user_firstname}} {{$task_info->getUpdatedBy->user_lastname}}</th>
                 <th colspan="2"><a href="{{route('edit-task',$id)}}"><i class=" fas fa-edit"></i><span class="text-info">Edit Task</span></a> <a href="javascript:void(0)" id="send-notification"><i class="fas fa-bell"></i><span class="text-info ">Send Email & Notification to CSR</span></a></th>
             </tr>
-            <tr>
-                <td colspan="2">ORDER#</td>
-                <td>ORDER STATUS</td>
-                <td>ORDER DATE</td>
-                <td>SELLER</td>
-                <td colspan="2">CUSTOMER BUSINESS NAME</td>
-            </tr>
-            <tr>
-                <th class="text-info" colspan="2"><a href="{{route('order-view',$task_info->order_id)}}" title="Go To Order">#{{$task_info->order_id}}</a></th>
-                <th class="text-info">DONE</th>
-                <th>{{format_datetime($task_info->created_at)}}</th>
-                <th class="text-capitalize">{{$task_info->getCreatedBy->user_firstname}} {{$task_info->getCreatedBy->user_lastname}}</th>
-                <th colspan="2" class="text-capitalize">{{$task_info->getPlace->place_name}}</th>
-            </tr>
-            <tr>
-                <td colspan="7">ORDER FORM DATA</td>
-            </tr>
-            <tr>
-            	<td colspan="7">
-            		@if($task_info != "")
-	            		@php
-	            			$content_arr = json_decode($task_info->content,TRUE);
-	            		@endphp
-	            		{{-- Google --}}
-	            		@if($task_info->getService->cs_form_type == 1)
-	            		    <span>Google Link: <b>{{$content_arr['google_link']}}</b></span><br>
-		                    <span>Tên thợ nails: {{$content_arr['worker_name']}}</span><br>
-		                    <div class="row">
-		                        <span class="col-md-6">Number of starts: <b>{{$content_arr['star']}}</b></span>
-		                        <span class="col-md-6">Số review hiện tại: <b>{{$content_arr['current_review']}}</b></span>
-		                        <span class="col-md-6">Conplete date: <b>{{$content_arr['complete_date']}}</b></span>
-		                        <span class="col-md-6">Số review yêu cầu: <b>{{$content_arr['order_review']}}</b></span>
-		                    </div>
-	            		@endif
-	            		{{-- Website --}}
-	            		@if($task_info->getService->cs_form_type == 2)
-	            		    <span>Tên sản phẩm: <b>{{$content_arr['product_name']}}</b></span><br>
-		                    <span>Màu chủ đạo: <b>{{$content_arr['main_color']}}</b></span><br>
-		                    <span>Thể loại hoặc phong cách khách hàng: <b>{{$content_arr['style_customer']}}</b></span><br>
-		                    <span>Facebook Link: <b>{{$content_arr['link']}}</b></span><br>
-		                    <span>Website: <b>{{$content_arr['website']}}</b></span><br>
-	            		@endif
-	            		{{-- Facebook --}}
-	            		@if($task_info->getService->cs_form_type == 3)
-	            		    <span>Facebook Link: <b>{{$content_arr['link']}}</b></span><br>
-		                    <span>Promotion: <b>{{$content_arr['promotion']}}</b></span><br>
-		                    <span>Số lượng bài viết: <b>{{$content_arr['number']}}</b></span><br>
-		                    <div class="row">
-		                        <span class="col-md-6">Đã có admin chưa: <b>{{isset($admin)?"YES":"NO"}}</b></span>
-		                        <span class="col-md-6">Username: <b>{{$content_arr['user']}}</b></span>
-		                        <span class="col-md-6">Có lấy được hình ảnh: <b>{{isset($image)?"YES":"NO"}}</b></span>
-		                        <span class="col-md-6">Password: <b>{{$content_arr['password']}}</b></span>
-		                    </div>
-	            		@endif
-	            		{{-- Domain --}}
-	            		@if($task_info->getService->cs_form_type == 4)
-	            		<span>Domain:<b>{{$content_arr['domain']}}</b></span>
-	            		<div class="row">
-	            			<span class="col-md-6">Is Show Service Price: <b>Yes</b></span>
-	            			<span class="col-md-6">Themes: <b>{{$content_arr['theme']}}</b></span>
-	            			<span class="col-md-6">Business Name: <b>{{$content_arr['business_name']}}</b></span>
-	            			<span class="col-md-6">Business Phone: <b>{{$content_arr['business_phone']}}</b></span>
-	            			<span class="col-md-6">Business Email: <b>{{$content_arr['email']}}</b></span>
-	            			<span class="col-md-6">Business Phone: <b>{{$content_arr['address']}}</b></span>
-	            		</div>
-	            		@endif
+            @if($task_info->order_id != "")
+                <tr>
+                    <td colspan="2">ORDER#</td>
+                    <td>ORDER STATUS</td>
+                    <td>ORDER DATE</td>
+                    <td>SELLER</td>
+                    <td colspan="2">CUSTOMER BUSINESS NAME</td>
+                </tr>
+                <tr>
+                    <th class="text-info" colspan="2"><a href="{{route('order-view',$task_info->order_id)}}" title="Go To Order">#{{$task_info->order_id}}</a></th>
+                    <th class="text-info">DONE</th>
+                    <th>{{format_datetime($task_info->created_at)}}</th>
+                    <th class="text-capitalize">{{$task_info->getCreatedBy->user_firstname}} {{$task_info->getCreatedBy->user_lastname}}</th>
+                    <th colspan="2" class="text-capitalize">{{$task_info->getPlace->place_name}}</th>
+                </tr>
+                <tr>
+                    <td colspan="7">ORDER FORM DATA</td>
+                </tr>
+                <tr>
+                    <td colspan="7">
+                        @if($task_info != "")
+                            @php
+                                $content_arr = json_decode($task_info->content,TRUE);
+                            @endphp
+                            {{-- Google --}}
+                            @if($task_info->getService->cs_form_type == 1)
+                                <span>Google Link: <b>{{$content_arr['google_link']}}</b></span><br>
+                                <span>Tên thợ nails: {{$content_arr['worker_name']}}</span><br>
+                                <div class="row">
+                                    <span class="col-md-6">Number of starts: <b>{{$content_arr['star']}}</b></span>
+                                    <span class="col-md-6">Số review hiện tại: <b>{{$content_arr['current_review']}}</b></span>
+                                    <span class="col-md-6">Conplete date: <b>{{$content_arr['complete_date']}}</b></span>
+                                    <span class="col-md-6">Số review yêu cầu: <b>{{$content_arr['order_review']}}</b></span>
+                                </div>
+                            @endif
+                            {{-- Website --}}
+                            @if($task_info->getService->cs_form_type == 2)
+                                <span>Tên sản phẩm: <b>{{$content_arr['product_name']}}</b></span><br>
+                                <span>Màu chủ đạo: <b>{{$content_arr['main_color']}}</b></span><br>
+                                <span>Thể loại hoặc phong cách khách hàng: <b>{{$content_arr['style_customer']}}</b></span><br>
+                                <span>Facebook Link: <b>{{$content_arr['link']}}</b></span><br>
+                                <span>Website: <b>{{$content_arr['website']}}</b></span><br>
+                            @endif
+                            {{-- Facebook --}}
+                            @if($task_info->getService->cs_form_type == 3)
+                                <span>Facebook Link: <b>{{$content_arr['link']}}</b></span><br>
+                                <span>Promotion: <b>{{$content_arr['promotion']}}</b></span><br>
+                                <span>Số lượng bài viết: <b>{{$content_arr['number']}}</b></span><br>
+                                <div class="row">
+                                    <span class="col-md-6">Đã có admin chưa: <b>{{isset($admin)?"YES":"NO"}}</b></span>
+                                    <span class="col-md-6">Username: <b>{{$content_arr['user']}}</b></span>
+                                    <span class="col-md-6">Có lấy được hình ảnh: <b>{{isset($image)?"YES":"NO"}}</b></span>
+                                    <span class="col-md-6">Password: <b>{{$content_arr['password']}}</b></span>
+                                </div>
+                            @endif
+                            {{-- Domain --}}
+                            @if($task_info->getService->cs_form_type == 4)
+                                <span>Domain:<b>{{$content_arr['domain']}}</b></span>
+                                <div class="row">
+                                    <span class="col-md-6">Is Show Service Price: <b>Yes</b></span>
+                                    <span class="col-md-6">Themes: <b>{{$content_arr['theme']}}</b></span>
+                                    <span class="col-md-6">Business Name: <b>{{$content_arr['business_name']}}</b></span>
+                                    <span class="col-md-6">Business Phone: <b>{{$content_arr['business_phone']}}</b></span>
+                                    <span class="col-md-6">Business Email: <b>{{$content_arr['email']}}</b></span>
+                                    <span class="col-md-6">Business Phone: <b>{{$content_arr['address']}}</b></span>
+                                </div>
+                            @endif
 
-            		@endif
-            		<p><b>Notes:</b></p>
-        		    <div class="ml-5">
-        		    	{!!$task_info->note!!}
-        		    </div>
-            	</td>
-            </tr>
+                        @endif
+                        <p><b>Notes:</b></p>
+                        <div class="ml-5">
+                            {!!$task_info->note!!}
+                        </div>
+                    </td>
+                </tr>
+            @endif
             <tr>
                 <td colspan="7">TASK DESCRIPTION</td>
             </tr>
@@ -206,7 +208,7 @@
     <div style="height: 10px" class="bg-info">
     </div>
     <hr style="border-top: 1px dotted grey;">
-    <p class="text-primary">An email notification will send to web@dataaeglobal.com</p>
+    <p class="text-primary">An email notification will send to {{\Auth::user()->user_email}}</p>
      <div class="input-group mb-2 mr-sm-2">
         <div class="input-group-prepend">
           <div class="input-group-text">Add CC:</div>

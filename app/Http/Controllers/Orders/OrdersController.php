@@ -420,7 +420,7 @@ class OrdersController extends Controller
 						else{
 
 							$order_history_arr['csb_trans_id'] =  $tresponse->getTransId();
-							// return $order_history_arr;
+                            $order_history_arr['csb_place_id'] =  $place_id;
 							//INSERT NEW ORDER
 							$insert_order = MainComboServiceBought::create($order_history_arr);
 
@@ -494,15 +494,16 @@ class OrdersController extends Controller
 		}
 		else{
 			//INSERT NEW ORDER
+            $order_history_arr['csb_place_id'] =  $place_id;
 			$insert_order = MainComboServiceBought::create($order_history_arr);
 
-			//INSER MAIN_TASK
+			//INSERT MAIN_TASK
 			$service_arr = array_unique($service_arr);
 			$task_arr = [];
 			foreach ($service_arr as $key => $service) {
-				$service_name = MainComboService::where('id',$service)->first()->cs_name;
+				$service_info = MainComboService::find($service);
 				$task_arr[] = [
-					'subject' => $service_name,
+					'subject' => $service_info->cs_name,
 					'priority' => 2,
 					'status' => 1,
 					'order_id'=> $insert_order->id,
@@ -511,7 +512,7 @@ class OrdersController extends Controller
 					'service_id' => $service,
 					'category' => 1,
 					'place_id' => $place_id,
-					'assign_to' => $service->cs_assign_to
+					'assign_to' => $service_info->cs_assign_to
 				];
 			}
 			$task_create = MainTask::insert($task_arr);
@@ -877,7 +878,6 @@ class OrdersController extends Controller
 			->make(true);
 	}
 	public function submitInfoTask(Request $request){
-		// return $request->all();
 
 		$input = $request->all();
 		$current_month = Carbon::now()->format('m');
@@ -902,7 +902,7 @@ class OrdersController extends Controller
     	$tracking_create = MainTrackingHistory::create($tracking_arr);
 
     	//UPDATE TASK
-    	$task_update = MainTask::where('id',$request->task_id)->update(['content'=>$content,'note'=>$request->note]);
+    	$task_update = MainTask::where('id',$request->task_id)->update(['content'=>$content,'note'=>$request->note,'updated_by'=>Auth::user()->user_id]);
 
         //DELETE OLD FILE
         $file_delete = MainFile::where('task_id',$request->task_id)->delete();
@@ -926,6 +926,21 @@ class OrdersController extends Controller
             	return response(['status'=>'error','message'=>'Failed!']);
             }else{
             	DB::commit();
+
+            	$task_info = MainTask::find($request->task_id);
+            	$name_created = $task_info->getUpdatedBy->user_nickname;
+                $content = "Dear Sir/Madam,<br>";
+                $content .= $name_created." have just input order form on order#".$task_info->order_id."Service: ".$task_info->getService->cs_name."<hr>";
+                $content .= "<a href='".route('order-view',$task_info->order_id)."'  style='color:#e83e8c'>Click here to view ticket detail</a><br>";
+                $content .= "WEB MASTER (DTI SYSTEM)";
+
+                $input['subject'] = 'INPUT ORDER FORM';
+                $input['email'] = $task_info->getAssignTo->user_email;
+                $input['name'] = $task_info->getAssignTo->user_firstname." ".$task_info->getAssignTo->user_lastname;
+                $input['email_arr'][] = $task_info->getUpdatedBy->user_email;
+                $input['message'] = $content;
+                dispatch(new SendNotification($input))->delay(now()->addSecond(3));
+
             	return response(['status'=>'success','message'=>'Successfully']);
             }
 		}
@@ -935,6 +950,21 @@ class OrdersController extends Controller
         	return response(['status'=>'error','message'=>'Failed!']);
         }else{
         	DB::commit();
+
+            $task_info = MainTask::find($request->task_id);
+            $name_created = $task_info->getUpdatedBy->user_nickname;
+            $content = "Dear Sir/Madam,<br>";
+            $content .= $name_created." have just input order form on order#".$task_info->order_id."Service: ".$task_info->getService->cs_name."<hr>";
+            $content .= "<a href='".route('order-view',$task_info->order_id)."'  style='color:#e83e8c'>Click here to view ticket detail</a><br>";
+            $content .= "WEB MASTER (DTI SYSTEM)";
+
+            $input['subject'] = 'INPUT ORDER FORM';
+            $input['email'] = $task_info->getAssignTo->user_email;
+            $input['name'] = $task_info->getAssignTo->user_firstname." ".$task_info->getAssignTo->user_lastname;
+            $input['email_arr'][] = $task_info->getUpdatedBy->user_email;
+            $input['message'] = $content;
+            dispatch(new SendNotification($input))->delay(now()->addSecond(3));
+
         	return response(['status'=>'success','message'=>'Successfully']);
         }
 	}
@@ -956,6 +986,10 @@ class OrdersController extends Controller
 
 	     $order_info = MainComboServiceBought::find($order_id);
 
+         $customer_email = $order_info->getCustomer->customer_email;
+         if($customer_email == ""){
+             return response(['status'=>'error','message'=>'Send Mail Failed!']);
+         }
          $service_list = $order_info->csb_combo_service_id;
          $service_arrray = explode(";",$service_list);
          $order_info['combo_service_list'] = MainComboService::whereIn('id',$service_arrray)->get();
@@ -963,8 +997,8 @@ class OrdersController extends Controller
 	     $content = $order_info->present()->getThemeMail;
 
 	     $input['subject'] = 'INVOICE';
-	     $input['email'] = 'nguyenthieupro93@gmail.com';
-	     $input['name'] = 'test';
+	     $input['email'] = $customer_email;
+	     $input['name'] = $order_info->getCustomer->customer_firstname. " ".$order_info->getCustomer->customer_lastname;
          $input['message'] = $content;
 
 	     dispatch(new SendNotification($input));

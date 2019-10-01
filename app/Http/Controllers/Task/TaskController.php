@@ -72,8 +72,6 @@ class TaskController extends Controller
     		->make(true);
     }
     public function postComment(Request $request){
-    	// $name = $request->file_image_list[1]->getClientOriginalName();
-    	// return $name;
     	$rule = [
     		'order_id' => 'required',
             'note' => 'required'
@@ -101,6 +99,7 @@ class TaskController extends Controller
     		'task_id' => $task_id==0?NULL:$task_id,
     		'content' => $content,
     		'created_by' => Auth::user()->user_id,
+            'email_list' => $request->email_list
     	];
     	DB::beginTransaction();
     	$tracking_create = MainTrackingHistory::create($tracking_arr);
@@ -212,7 +211,7 @@ class TaskController extends Controller
     }
     public function taskAdd($id = 0){
 
-        $data['user_list'] = MainUser::where('user_id',"!=",Auth::user()->user_id)->get();
+        $data['user_list'] = MainUser::all();
         $data['task_parent_id'] = $id;
          $data['task_name'] = "";
 

@@ -78,7 +78,7 @@
                 </tr>
                 <tr>
                     <td colspan="7">
-                        <textarea class="fom-control form-control-sm" name="description" id="description"></textarea>
+                        <textarea class="fom-control form-control-sm" name="desription" id="description"></textarea>
                     </td>
                 </tr>
                 <tr>
