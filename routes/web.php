@@ -117,6 +117,11 @@ Route::group(['middleware' => ['auth']], function () {
             Route::post('delete', "WebsiteThemePropertiesController@delete")->name('deleteWebsiteThemesProperty');
             Route::post('delete-value-properties', "WebsiteThemePropertiesController@deleteValueProperties")->name('deleteValueProperties');
         });
+
+        Route::group(['prefix' => 'places'], function() {
+            Route::get('/', 'PlaceController@index')->name('getPlaces');
+            Route::get('/datatable', 'PlaceController@datatable')->name('getPlacesDatatable');
+        });
     });
     
     Route::get('recentlog', 'RecentLogController@index')->name('recentlog');
