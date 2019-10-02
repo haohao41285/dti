@@ -436,11 +436,7 @@ Theme Management
     $(document).ready(function() {
      perviewImage();
      $('.toggleButton').bootstrapToggle();
-    
-     $(".previewImage img").on('click',function(){
-     		var id = $(this).attr("id");
-    		$("input[previewImageId='"+id+"']").trigger('click');
-     });
+
     
    
     });

@@ -1,4 +1,5 @@
-window.toastr = require('bootstrap-toggle')
+
+window.bootstrapToggle = require('bootstrap-toggle')
 
 window.toastr = require('toastr')
 

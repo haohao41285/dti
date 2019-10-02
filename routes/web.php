@@ -99,6 +99,13 @@ Route::group(['middleware' => ['auth']], function () {
 
         Route::group(['prefix' => 'app-banners'], function() {
             Route::get('/', "AppBannerController@index")->name('getAppBanner');
+            Route::get('/app-datatable', "AppBannerController@appDataTable")->name('appDataTable');
+            Route::get('/app-banner-datatable', "AppBannerController@appBannerDataTable")->name('appBannerDataTable');
+            Route::post('/save-app', "AppBannerController@saveApp")->name('saveApp');
+            Route::post('/save-app-banner', "AppBannerController@saveAppBanner")->name('saveAppBanner');
+            Route::post('/delete-app', "AppBannerController@deleteApp")->name('deleteApp');
+            Route::post('/delete-app-banner', "AppBannerController@deleteAppBanner")->name('deleteAppBanner');
+
         });
 
         Route::group(['prefix' => 'website-themes-properties'], function() {
