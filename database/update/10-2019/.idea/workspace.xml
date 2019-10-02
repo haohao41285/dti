@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ChangeListManager">
+    <list default="true" id="d12a9ee4-9605-4364-a1ca-0798febf6be3" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/../../../app/Presenters/MainCustomerPresenter.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../../../app/Presenters/MainCustomerTemplatePresenter.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../../../resources/views/customer/customer-detail.blade.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../app/Http/Controllers/Customer/CustomerController.php" beforeDir="false" afterPath="$PROJECT_DIR$/../../../app/Http/Controllers/Customer/CustomerController.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../app/Http/Controllers/Orders/OrdersController.php" beforeDir="false" afterPath="$PROJECT_DIR$/../../../app/Http/Controllers/Orders/OrdersController.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../app/Http/Controllers/Task/TaskController.php" beforeDir="false" afterPath="$PROJECT_DIR$/../../../app/Http/Controllers/Task/TaskController.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../app/Models/MainComboServiceBought.php" beforeDir="false" afterPath="$PROJECT_DIR$/../../../app/Models/MainComboServiceBought.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../app/Models/MainCustomer.php" beforeDir="false" afterPath="$PROJECT_DIR$/../../../app/Models/MainCustomer.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../app/Models/MainCustomerTemplate.php" beforeDir="false" afterPath="$PROJECT_DIR$/../../../app/Models/MainCustomerTemplate.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../app/Models/MainTrackingHistory.php" beforeDir="false" afterPath="$PROJECT_DIR$/../../../app/Models/MainTrackingHistory.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../app/Models/MainUser.php" beforeDir="false" afterPath="$PROJECT_DIR$/../../../app/Models/MainUser.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../app/Observers/OrderObserver.php" beforeDir="false" afterPath="$PROJECT_DIR$/../../../app/Observers/OrderObserver.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../app/Presenters/ThemeMailPresenter.php" beforeDir="false" afterPath="$PROJECT_DIR$/../../../app/Presenters/ThemeMailPresenter.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../resources/views/customer/my-customers.blade.php" beforeDir="false" afterPath="$PROJECT_DIR$/../../../resources/views/customer/my-customers.blade.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../resources/views/task/task-detail.blade.php" beforeDir="false" afterPath="$PROJECT_DIR$/../../../resources/views/task/task-detail.blade.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../routes/web.php" beforeDir="false" afterPath="$PROJECT_DIR$/../../../routes/web.php" afterDir="false" />
+    </list>
+    <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="ComposerSettings">
+    <execution>
+      <executable />
+    </execution>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/../../.." />
+  </component>
+  <component name="ProjectId" id="1RdwSXVxDdqZBbn3tZHaWaXcJcm" />
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
+  <component name="PropertiesComponent">
+    <property name="WebServerToolWindowFactoryState" value="false" />
+  </component>
+  <component name="RunDashboard">
+    <option name="ruleStates">
+      <list>
+        <RuleState>
+          <option name="name" value="ConfigurationTypeDashboardGroupingRule" />
+        </RuleState>
+        <RuleState>
+          <option name="name" value="StatusDashboardGroupingRule" />
+        </RuleState>
+      </list>
+    </option>
+  </component>
+  <component name="SvnConfiguration">
+    <configuration />
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="d12a9ee4-9605-4364-a1ca-0798febf6be3" name="Default Changelist" comment="" />
+      <created>1570010280863</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1570010280863</updated>
+      <workItem from="1570010284579" duration="3000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="1" />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+</project>

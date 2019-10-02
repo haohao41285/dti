@@ -49,6 +49,10 @@ Route::group(['middleware' => ['auth']], function () {
          Route::get('export-customer', 'CustomerController@exportCustomer')->name('export-customer');
          Route::get('export-my-customer', 'CustomerController@exportMyCustomer')->name('export-my-customer');
          Route::post('save-my-customer', 'CustomerController@saveMyCustomer')->name('save-my-customer');
+         Route::get('customer-detail', 'CustomerController@customerDetail')->name('customer-detail');
+        Route::get('customer-tracking', 'CustomerController@customerTracking')->name('customer-tracking');
+        Route::post('post-comment-customer', 'CustomerController@postCommentCustomer')->name('post-comment-customer');
+        Route::get('get-seller', 'CustomerController@getSeller')->name('get-seller');
 
     });
 

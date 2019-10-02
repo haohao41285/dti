@@ -350,9 +350,6 @@
 
             var formData = new FormData($(this).parents('form')[0]);
             formData.append('_token','{{csrf_token()}}');
-            // console.log(formData);
-            // return;
-
             $.ajax({
                 url: '{{route('send-mail-notification')}}',
                 type: 'POST',

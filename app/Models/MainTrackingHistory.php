@@ -16,7 +16,8 @@ class MainTrackingHistory extends Model
     	'created_by',
     	'created_at',
     	'content',
-        'email_list'
+        'email_list',
+        'customer_id'
     ];
     public $timestamps = false;
 

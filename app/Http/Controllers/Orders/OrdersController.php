@@ -174,6 +174,7 @@ class OrdersController extends Controller
 					'customer_city' => "",
 					'customer_zip' => "",
 					'customer_state' => 1,
+                    'customer_customer_template_id'=> $customer_info->id
 				];
 				MainCustomer::create($main_customer_arr);
 			}

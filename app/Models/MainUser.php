@@ -14,7 +14,7 @@ class MainUser extends Model
 	public $timestamps = true;
 
 	protected $primaryKey = 'user_id';
-		
+
 	protected $fillable = [
 		'user_id',
 		'user_nickname',
@@ -41,4 +41,7 @@ class MainUser extends Model
 	public function getFiles(){
 		return $this->hasManyThrough(MainFile::class,MainTrackingHistory::class,'created_by','tracking_id','user_id','id');
 	}
+	public function getUserGroup(){
+	    return $this->hasOne(MainGroupUser::class,'user_group_id','gu_id');
+    }
 }

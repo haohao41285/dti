@@ -33,7 +33,7 @@ class ThemeMailPresenter extends Presenter{
             <span style=\"float: right\"><b>INVOICE</b></span>
         </div>
         <div>
-            <span style=\"width: 50%\">
+            <span style=\"width: 50%;float:left\">
                 10161 Bolsa Ave, Ste 207A<br>
                 Westminster, CA 92683<br>
                 Email: info@dataeglobal.com<br>
@@ -57,12 +57,12 @@ class ThemeMailPresenter extends Presenter{
                     <td style=\"border: 1px solid black;text-align: center\">
                         ".$this->getPlace->place_name."<br>
                         ".$this->getPlace->place_address."<br>
-                        <b>".$this->getCustomer->customer_firstname." ".$this->getCustomer->customer_lastname."</b>
+                        <b>Attn:".$this->getCustomer->customer_firstname." ".$this->getCustomer->customer_lastname."</b>
                     </td>
                     <td style=\"border: 1px solid black;text-align: center\">
                         ".$this->getPlace->place_name."<br>
                         ".$this->getPlace->place_address."<br>
-                        <b>".$this->getCustomer->customer_firstname." ".$this->getCustomer->customer_lastname."</b>
+                        <b>Attn:".$this->getCustomer->customer_firstname." ".$this->getCustomer->customer_lastname."</b>
                     </td>
                 </tr>
                 </tbody>
@@ -97,7 +97,7 @@ class ThemeMailPresenter extends Presenter{
         </div>
         <div style =\"clear: both;\"></div>
         <div style=\"margin-top: 30px;\">
-            <span style=\"width: 40%;float: left;margin-left: 50px;\" >Payment made by:<b>".$this->getCreatedBy->user_firstname." ".$this->getCreatedBy->user_lastname."</b></span>
+            <span style=\"width: 40%;float: left;\" >Payment made by:<b>".$this->getCreatedBy->user_firstname." ".$this->getCreatedBy->user_lastname."</b></span>
             <span style=\"width: 30%;\" >".$image_check_1."Credit Cards End <b>#".$this->csb_card_number."</b></span>
             <span style=\"width: 30%;float: right\" >".$image_check_2."Check <b>#".$this->routing_number."</b></span>
         </div>

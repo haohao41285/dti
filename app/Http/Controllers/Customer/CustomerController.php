@@ -2,6 +2,9 @@
 
 namespace App\Http\Controllers\Customer;
 
+use App\Helpers\ImagesHelper;
+use App\Models\MainFile;
+use App\Models\MainTrackingHistory;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Helpers\Option;
@@ -18,8 +21,9 @@ use Auth;
 use DataTables;
 use DB;
 use Validator;
+use ZipArchive;
 
-class CustomerController extends Controller 
+class CustomerController extends Controller
 {
     public function listCustomer()
     {
@@ -27,17 +31,17 @@ class CustomerController extends Controller
         $data['status'] = GeneralHelper::getCustomerStatusList();
         return view('customer.all-customers',$data);
     }
-    
+
     public function listMerchant()
     {
         return view('customer.all-merchants');
     }
-    
+
     public function addCustomer()
     {
         return view('customer.customer-add');
     }
-    
+
     // public function editCustomer()
     // {
     //     return view('customer.customer-edit');
@@ -77,7 +81,7 @@ class CustomerController extends Controller
                         ->select('main_user.user_nickname','main_customer_template.*')
                         ->get();
 
-        //GET LIST TEAM CUSTOMER LIST 
+        //GET LIST TEAM CUSTOMER LIST
         $team_customer_status = MainTeam::where('id',$team_id)->first()->team_customer_status;
 
         $customer_status_arr = json_decode($team_customer_status,TRUE);
@@ -121,13 +125,13 @@ class CustomerController extends Controller
         return Datatables::of($customer_arr)
             ->editColumn('created_at',function($row){
                 return Carbon::parse($row['created_at'])->format('m/d/Y H:i:s')." by ".$row['user_nickname'];
-            }) 
+            })
             ->editColumn('ct_business_phone',function($row){
                 return substr($row['ct_business_phone'],0,3)."########";
-            }) 
+            })
             ->editColumn('ct_cell_phone',function($row){
                 return substr($row['ct_cell_phone'],0,3)."########";
-            })     
+            })
             ->addColumn('action', function ($row){
                 if($row['ct_status'] == 'Disabled')
                     return '<a class="btn btn-sm btn-secondary view" customer_id="'.$row['id'].'" href="javascript:void(0)"><i class="fas fa-eye"></i></a> <a class="btn btn-sm btn-secondary edit-customer" customer_id="'.$row['id'].'" href="javascript:void(0)"><i class="fas fa-edit"></i></a>
@@ -270,7 +274,7 @@ class CustomerController extends Controller
 
             $customer_list = $customer_list->select('main_customer_template.*','main_user.user_nickname')->get();
 
-            //GET LIST TEAM CUSTOMER LIST 
+            //GET LIST TEAM CUSTOMER LIST
             $team_customer_status = MainTeam::where('id',$team_id)->first()->team_customer_status;
 
             $customer_status_arr = json_decode($team_customer_status,TRUE);
@@ -326,7 +330,7 @@ class CustomerController extends Controller
         return Datatables::of($customer_arr)
                 ->editColumn('updated_at',function($row){
                     return Carbon::parse($row['updated_at'])->format('m/d/Y H:i:s')." by ".$row['user_nickname'];
-                })     
+                })
                 ->addColumn('action', function ($row){
                     return '<a class="btn btn-sm btn-secondary order-service" href="'.route('add-order',$row['id']).'">Order</a> <a class="btn btn-sm btn-secondary view" customer_id="'.$row['id'].'" href="javascript:void(0)"><i class="fas fa-eye"></i></a>';
                 })
@@ -414,8 +418,8 @@ class CustomerController extends Controller
                 if (!empty($customer_list)) {
                     foreach ($customer_list as $key => $value) {
                         $i=$key+2;
-                        $sheet->cell('A'.$i, $value['ct_salon_name']); 
-                        $sheet->cell('B'.$i, $value['ct_business_phone']); 
+                        $sheet->cell('A'.$i, $value['ct_salon_name']);
+                        $sheet->cell('B'.$i, $value['ct_business_phone']);
                         $sheet->cell('C'.$i, $value['ct_cell_phone']);
                         $sheet->cell('D'.$i, $value['ct_fullname']);
                         $sheet->cell('E'.$i, $value['ct_firstname']);
@@ -495,7 +499,7 @@ class CustomerController extends Controller
                         //UPDATE CUSTOMER STATUS LIST
                         $team_customer_status = MainTeam::where('id',$team_id)->first()->team_customer_status;
                         $customer_status_arr = json_decode($team_customer_status,TRUE);
-                        for ($i=$customer_id_max+1; $i < $customer_id_max+$insert_count+1; $i++) { 
+                        for ($i=$customer_id_max+1; $i < $customer_id_max+$insert_count+1; $i++) {
                             $customer_status_arr[$i] = 1;
                             $my_customer[] = $i;
                         }
@@ -524,7 +528,7 @@ class CustomerController extends Controller
                                 'message' => 'Import Error.File Empty. Check again!'
                             ]);
                         }
-                            
+
                         else{
                             DB::commit();
                              return response([
@@ -541,7 +545,7 @@ class CustomerController extends Controller
                             'message' => 'Import Error.File Empty. Check again!'
                         ]);
                     }
-                        
+
                     else{
                         DB::commit();
                          return response([
@@ -588,8 +592,8 @@ class CustomerController extends Controller
                     if (!empty($customer_list)) {
                         foreach ($customer_list as $key => $value) {
                             $i=$key+2;
-                            $sheet->cell('A'.$i, $value['ct_salon_name']); 
-                            $sheet->cell('B'.$i, $value['ct_business_phone']); 
+                            $sheet->cell('A'.$i, $value['ct_salon_name']);
+                            $sheet->cell('B'.$i, $value['ct_business_phone']);
                             $sheet->cell('C'.$i, $value['ct_cell_phone']);
                             $sheet->cell('D'.$i, $value['ct_fullname']);
                             $sheet->cell('E'.$i, $value['ct_firstname']);
@@ -686,6 +690,129 @@ class CustomerController extends Controller
         else{
             DB::commit();
             return redirect()->route('myCustomers')->with(['success'=>'Create Customer Successfully!']);
+        }
+    }
+    public function customerDetail(){
+        $customer_id = 619;
+        $data['main_customer_info'] = MainCustomer::where('customer_id',$customer_id)->first();
+        $data['template_customer_info'] = MainCustomerTemplate::find($data['main_customer_info']->customer_customer_template_id);
+        $data['id'] = $customer_id;
+        return view('customer.customer-detail',$data);
+    }
+    public function customerTracking(Request $request){
+
+        $customer_id = $request->customer_id;
+
+        $tracking_history = MainTrackingHistory::where('customer_id',$customer_id)->get();
+        return DataTables::of($tracking_history)
+            ->editColumn('created_by',function ($row){
+                return $row->getUserCreated->user_nickname
+                    ."(<span class='text-capitalize'>".$row->getUserCreated->user_firstname." "
+                    .$row->getUserCreated->user_lastname."</span>)<br>"
+                    .format_datetime($row->created_at)."<br>";
+            })
+            ->editColumn('content',function($row){
+                $file_list =$row->getFiles;
+                $file_name = "<div class='row '>";
+
+                    foreach ($file_list as $key => $file) {
+                        $zip = new ZipArchive();
+
+                        if ($zip->open($file->name, ZipArchive::CREATE) !== TRUE) {
+                            $file_name .= '<form action="'.route('down-image').'" method="POST"><input type="hidden" value="'.csrf_token().'" name="_token" /><input type="hidden" value="'.$file->name.'" name="src" /><img class="file-comment ml-2" src="'.asset($file->name).'"/></form>';
+                        }else{
+                            $file_name .= '<form action="'.route('down-image').'" method="POST"><input type="hidden" value="'.csrf_token().'" name="_token" /><input type="hidden" value="'.$file->name.'" name="src" /><a href="javascript:void(0)" class="file-comment ml-2" /><i class="fas fa-file-archive"></i>'.$file->name_origin.'</a></form>';
+                        }
+                    }
+                $file_name .= "</div>";
+                return $row->content."<br>".$file_name;
+            })
+            ->rawColumns(['content','created_by'])
+            ->make(true);
+    }
+    public function postCommentCustomer(Request $request){
+        $rule = [
+            'note' => 'required'
+        ];
+        $message = [
+            'note.required' => 'Comment Empty!'
+        ];
+        $validator = Validator::make($request->all(),$rule,$message);
+        if($validator->fails())
+            return response([
+                'status'=>'error',
+                'message' => $validator->getMessageBag()->toArray()
+            ]);
+        $customer_id = $request->customer_id;
+        $content = $request->note;
+        $file_list = $request->file_image_list;
+        $current_month = Carbon::now()->format('m');
+        $file_arr = [];
+
+        $tracking_arr = [
+            'customer_id' => $customer_id,
+            'content' => $content,
+            'created_by' => Auth::user()->user_id,
+            'email_list' => $request->email_list
+        ];
+        DB::beginTransaction();
+        $tracking_create = MainTrackingHistory::create($tracking_arr);
+
+        if($file_list != ""){
+            //CHECK SIZE IMAGE
+            $size_total = 0;
+            foreach ($file_list as $key => $file){
+                $size_total += $file->getSize();
+            }
+            $size_total = number_format($size_total / 1048576, 2); //Convert KB to MB
+            if($size_total > 100){
+                return response(['status'=>'error','message'=>'Total Size Image maximum 100M!']);
+            }
+            //Upload Image
+            foreach ($file_list as $key => $file) {
+
+                $file_name = ImagesHelper::uploadImage2($file,$current_month);
+                $file_arr[] = [
+                    'name' => $file_name,
+                    'name_origin' => $file->getClientOriginalName(),
+                    'tracking_id' => $tracking_create->id,
+                ];
+            }
+            $file_create = MainFile::insert($file_arr);
+
+            if(!isset($tracking_create) || !isset($file_create))
+            {
+                DB::callback();
+                return response(['status'=>'error', 'message'=> 'Failed!']);
+            }
+            else{
+                DB::commit();
+                return response(['status'=> 'success','message'=>'Successly!']);
+            }
+        }
+        if(!isset($tracking_create))
+        {
+            DB::callback();
+            return response(['status'=>'error', 'message'=> 'Failed!']);
+        }
+        else{
+            DB::commit();
+            return response(['status'=> 'success','message'=>'Successly!']);
+        }
+    }
+    public function getSeller(Request $request){
+
+        $seller_id = $request->seller_id;
+
+        $seller_info = MainUser::where('user_id',$seller_id)->first();
+
+        if(!isset($seller_info)){
+            return response(['status'=>'error','message'=>'Get Seller Failed!']);
+        }else{
+            return response([
+                'fullname'=>strtoupper($seller_info->user_firstname). " ".strtoupper($seller_info->user_lastname),
+                'email'=>$seller_info->user_email
+            ]);
         }
     }
 }

@@ -21,7 +21,7 @@
             <label for="">Status</label>
             <select id="status-customer" name="status_customer" class="form-control form-control-sm">
                 <option value="">-- ALL --</option>
-                @foreach ($status as $key =>  $element)                    
+                @foreach ($status as $key =>  $element)
                     <option value="{{$key}}">{{$element}}</option>
                 @endforeach
             </select>
@@ -31,11 +31,11 @@
             <input type="button" class="btn btn-primary btn-sm" id="search-button" value="Search">
             <input type="button" class="btn btn-secondary btn-sm" id="reset" value="Reset">
             </div>
-        </div>  
+        </div>
     </div>
     <hr>
     <table class="table table-bordered" id="dataTableAllCustomer" width="100%" cellspacing="0">
-        <thead>                
+        <thead>
                 <th>ID</th>
                 <th>Nail Shop</th>
                 <th>Contact Name</th>
@@ -60,7 +60,7 @@
         </button>
       </div>
       <div class="modal-body" id="content-customer-detail">
-        
+
       </div>
     </div>
   </div>
@@ -75,21 +75,21 @@
                 <div class="row col-md-12">
                   <a href="" class="blue">Download an import template spreadsheet</a>
                 </div>
-                <div class="row col-md-12">    
+                <div class="row col-md-12">
                   <input type="file" class="btn btn-sm" id="file" name="file">
                 </div>
                 <div class="row col-md-12">
                   <label class="col-md-6">Begin Row Index</label>
                   <input type='number' name="begin_row" id="begin_row" class="form-control form-control-sm col-md-6" value="0"/>
-                </div> 
+                </div>
                 <div class="row col-md-12">
                   <label class="col-md-6">End Row Index</label>
                   <input type='number' name="end_row" id="end_row" class="form-control form-control-sm col-md-6" value="1000"/>
                 </div>
-                <div class="row col-md-12 ">   
-                     <button type="button" class="btn btn-danger btn-sm float-right cancle-import" >Cancle</button>   
-                     <button type="button" class="btn btn-primary btn-sm ml-2 float-right submit-form" >Submit</button>               
-                </div>   
+                <div class="row col-md-12 ">
+                     <button type="button" class="btn btn-danger btn-sm float-right cancle-import" >Cancle</button>
+                     <button type="button" class="btn btn-primary btn-sm ml-2 float-right submit-form" >Submit</button>
+                </div>
             </div>
         </form>
         </div>
@@ -108,11 +108,11 @@
        processing: true,
        serverSide: true,
        buttons: [
-           { 
+           {
                text: '<i class="fas fa-download"></i> Import',
                className: "btn-sm import-show"
            },
-           { 
+           {
                text: '<i class="fas fa-upload"></i> Export',
                className: "btn-sm export",
                action: function ( e, dt, node, config ) {
@@ -126,7 +126,7 @@
           d.end_date = $("#end_date").val();
           d.address = $("#address").val();
           d.status_customer = $("#status-customer :selected").val();
-            } 
+            }
         },
        columns: [
 
@@ -136,7 +136,7 @@
                 { data: 'ct_business_phone', name: 'ct_business_phone' ,class:'text-center'},
                 { data: 'ct_cell_phone', name: 'ct_cell_phone',class:'text-center' },
                 { data: 'ct_status', name: 'ct_status',class:'text-center' },
-                { data: 'updated_at', name: 'updated_at' ,class:'text-center'},                
+                { data: 'updated_at', name: 'updated_at' ,class:'text-center'},
                 { data: 'action' , name:'action' ,orderable: false, searcheble: false ,class:'text-center'}
         ],
     });
@@ -146,7 +146,7 @@
         table.ajax.reload(null, false);
     });
 
-   
+
     $(document).on("click",".view",function(){
 
       var customer_id = $(this).attr('customer_id');
@@ -248,7 +248,7 @@
                 <span class="col-md-4">Status:</span>
                 <p class="col-md-8"><b>`+data.customer_list.ct_status+`</b></p>
               </div>
-              
+
             </div>
             `+place_service+`
             <div class="col-md-12">
@@ -261,9 +261,6 @@
             `);
           $("#viewModal").modal('show');
         }
-
-      
-        console.log(data);
       })
       .fail(function() {
         console.log("error");

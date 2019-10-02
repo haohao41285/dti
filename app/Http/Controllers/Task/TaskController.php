@@ -189,9 +189,8 @@ class TaskController extends Controller
                 return "<a href='' >Task#".$row->task_id."</a>";
             })
             ->editColumn('content',function($row){
-                $file_list = MainFile::where('tracking_id',$row->id)->get();
+                $file_list = $row->getFiles;
                 $file_name = "<div class='row '>";
-                if($file_list->count() > 0 ){
 
                     foreach ($file_list as $key => $file) {
                         $zip = new ZipArchive();
@@ -202,7 +201,7 @@ class TaskController extends Controller
                             $file_name .= '<form action="'.route('down-image').'" method="POST"><input type="hidden" value="'.csrf_token().'" name="_token" /><input type="hidden" value="'.$file->name.'" name="src" /><a href="javascript:void(0)" class="file-comment ml-2" /><i class="fas fa-file-archive"></i>'.$file->name_origin.'</a></form>';
                         }
                     }
-                }
+
                 $file_name .= "</div>";
                 return $row->content."<br>".$file_name;
             })

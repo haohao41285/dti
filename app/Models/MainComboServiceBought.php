@@ -40,5 +40,8 @@ class MainComboServiceBought extends Model
     public function getCreatedBy(){
         return $this->belongsTo(MainUser::class,'created_by','user_id');
     }
+    public function getTasks(){
+        return $this->hasMany(MainTask::class,'order_id','id');
+    }
 
 }
