@@ -87,13 +87,10 @@ Route::group(['middleware' => ['auth']], function () {
          Route::get('licenses', 'LicenseController@index')->name('listLicenses');
          Route::get('license/generate', 'LicenseController@generate')->name('generateLicenses');
     });
-<<<<<<< HEAD
-    
-    Route::group(['prefix'=>'tools','namespace'=>'ItTools'],function(){
-=======
 
-    Route::group(['prefix'=>'tools'],function(){
->>>>>>> origin/thieu
+   
+    Route::group(['prefix'=>'tools','namespace'=>'ItTools'],function(){
+
         Route::get('clonewebsite', 'ItToolsController@cloneWebsite')->name('cloneWebsite');
         Route::get('updatewebsite', 'ItToolsController@updateWebsite')->name('updateWebsite');
 
