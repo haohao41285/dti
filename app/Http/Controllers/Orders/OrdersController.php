@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Helpers\Option;
 use App\Helpers\GeneralHelper;
+use App\Helpers\ImagesHelper;
 use App\Models\MainCustomerTemplate;
 use App\Models\MainComboService;
 use App\Models\MainComboServiceBought;
@@ -17,17 +18,24 @@ use App\Models\PosUser;
 use App\Models\MainUser;
 use App\Models\MainTrackingHistory;
 use App\Models\MainTask;
+use App\Models\MainFile;
 use net\authorize\api\contract\v1 as AnetAPI;
 use net\authorize\api\controller as AnetController;
+use App\Jobs\SendNotification;
+use Laracasts\Presenter\PresentableTrait;
 use Carbon\Carbon;
 use DataTables;
 use Validator;
 use Auth;
 use DB;
 use Hash;
+use ZipArchive;
+use Dompdf\Dompdf;
 
-class OrdersController extends Controller 
+class OrdersController extends Controller
 {
+    use PresentableTrait;
+    protected $presenter = 'App\\Presenters\\ThemeMailPresenter';
 	/**
 	 * get all orders
 	 * return
@@ -68,7 +76,7 @@ class OrdersController extends Controller
 					->select('pos_place.place_id','pos_place.place_name')
 			        ->get();
         }
-       
+
         $data['combo_service_list'] = MainComboService::where('cs_status',1)->orderBy('cs_type','asc')->get();
 
         $data['count'] = round($data['combo_service_list']->count()/2);
@@ -166,6 +174,7 @@ class OrdersController extends Controller
 					'customer_city' => "",
 					'customer_zip' => "",
 					'customer_state' => 1,
+                    'customer_customer_template_id'=> $customer_info->id
 				];
 				MainCustomer::create($main_customer_arr);
 			}
@@ -202,7 +211,7 @@ class OrdersController extends Controller
 			foreach ($service_arr as $key => $service) {
 				//GET EXPIRY PERIOD OF SERVICE
 				$service_expiry_period = MainComboService::where('id',$service)->first()->cs_expiry_period;
-				//CHECK CUSTOMER SERVICE EXIST 
+				//CHECK CUSTOMER SERVICE EXIST
 				$check = MainCustomerService::where('cs_place_id',$place_id)
 											->where('cs_customer_id',$customer_id)
 											->where('cs_service_id',$service)
@@ -236,7 +245,7 @@ class OrdersController extends Controller
 					$customer_service_update = MainCustomerService::insert($order_arr);
 					$cs_id++;
 				}
-				
+
 			}
 			//END UPDATE MAIN_CUSTOMER_SERVICE
 
@@ -334,7 +343,7 @@ class OrdersController extends Controller
 		    $merchantAuthentication = new AnetAPI\MerchantAuthenticationType();
 		    $merchantAuthentication->setName(env('MERCHANT_LOGIN_ID'));
 		    $merchantAuthentication->setTransactionKey(env('MERCHANT_TRANSACTION_KEY'));
-		    
+
 		    // Set the transaction's refId
 		    $refId = 'ref' . time();
 		    $experation_date = $request->experation_year."-".$request->experation_month;
@@ -380,7 +389,7 @@ class OrdersController extends Controller
 		    $merchantDefinedField2->setValue("blue");
 		    // Create a TransactionRequestType object and add the previous objects to it
 		    $transactionRequestType = new AnetAPI\TransactionRequestType();
-		    $transactionRequestType->setTransactionType("authOnlyTransaction"); 
+		    $transactionRequestType->setTransactionType("authOnlyTransaction");
 		    $transactionRequestType->setAmount($request->payment_amount);
 		    $transactionRequestType->setOrder($order);
 		    $transactionRequestType->setPayment($paymentOne);
@@ -403,7 +412,7 @@ class OrdersController extends Controller
 		            // Since the API request was successful, look for a transaction response
 		            // and parse it to display the results of authorizing the card
 		            $tresponse = $response->getTransactionResponse();
-		        
+
 		            if ($tresponse != null && $tresponse->getMessages() != null) {
 		            	if(!isset($update_team_customr_status) || !isset($customer_service_update) ){
 							DB::callback();
@@ -412,7 +421,7 @@ class OrdersController extends Controller
 						else{
 
 							$order_history_arr['csb_trans_id'] =  $tresponse->getTransId();
-							// return $order_history_arr;
+                            $order_history_arr['csb_place_id'] =  $place_id;
 							//INSERT NEW ORDER
 							$insert_order = MainComboServiceBought::create($order_history_arr);
 
@@ -429,12 +438,15 @@ class OrdersController extends Controller
 									'created_by' => Auth::user()->user_id,
 									'updated_by' => Auth::user()->user_id,
 									'service_id' => $service,
+									'place_id' => $place_id,
+									'category' => 1,
+									'assign_to' => $service->cs_assign_to
 								];
 							}
 							$task_create = MainTask::insert($task_arr);
 
-							if(!isset($insert_order) 
-								|| !isset($update_team_customr_status) 
+							if(!isset($insert_order)
+								|| !isset($update_team_customr_status)
 								|| !isset($customer_service_update)
 								|| !isset($task_create) ){
 
@@ -466,7 +478,7 @@ class OrdersController extends Controller
 
 		            // echo "Transaction Failed \n";
 		            // $tresponse = $response->getTransactionResponse();
-		        
+
 		            // if ($tresponse != null && $tresponse->getErrors() != null) {
 		            //     echo " Error Code  : " . $tresponse->getErrors()[0]->getErrorCode() . "\n";
 		            //     echo " Error Message : " . $tresponse->getErrors()[0]->getErrorText() . "\n";
@@ -474,7 +486,7 @@ class OrdersController extends Controller
 		            //     echo " Error Code  : " . $response->getMessages()->getMessage()[0]->getCode() . "\n";
 		            //     echo " Error Message : " . $response->getMessages()->getMessage()[0]->getText() . "\n";
 		            // }
-		        }      
+		        }
 		    } else {
 		        // echo  "No response returned \n";
 				DB::callback();
@@ -483,28 +495,31 @@ class OrdersController extends Controller
 		}
 		else{
 			//INSERT NEW ORDER
+            $order_history_arr['csb_place_id'] =  $place_id;
 			$insert_order = MainComboServiceBought::create($order_history_arr);
 
-			//INSER MAIN_TASK
+			//INSERT MAIN_TASK
 			$service_arr = array_unique($service_arr);
 			$task_arr = [];
 			foreach ($service_arr as $key => $service) {
-				$service_name = MainComboService::where('id',$service)->first()->cs_name;
+				$service_info = MainComboService::find($service);
 				$task_arr[] = [
-					'subject' => $service_name,
+					'subject' => $service_info->cs_name,
 					'priority' => 2,
 					'status' => 1,
 					'order_id'=> $insert_order->id,
 					'created_by' => Auth::user()->user_id,
 					'updated_by' => Auth::user()->user_id,
 					'service_id' => $service,
-					'category' => 'ORDER'
+					'category' => 1,
+					'place_id' => $place_id,
+					'assign_to' => $service_info->cs_assign_to
 				];
 			}
 			$task_create = MainTask::insert($task_arr);
 
-			if(!isset($insert_order) 
-				|| !isset($update_team_customr_status) 
+			if(!isset($insert_order)
+				|| !isset($update_team_customr_status)
 				|| !isset($customer_service_update)
 				|| !isset($task_create) ){
 
@@ -515,7 +530,7 @@ class OrdersController extends Controller
 			    return redirect()->route('my-orders')->with(['success'=>'Transaction Successfully!']);
 			}
 		}
-			
+
 	}
 	public function getCustomerInfor(Request$request)
 	{
@@ -578,11 +593,11 @@ class OrdersController extends Controller
 			$my_order_list = $my_order_list->where('main_combo_service_bought.created_by',Auth::user()->user_id);
 		}
 		if($start_date != ""){
-			$start_date = Carbon::parse($request->start_date)->format('Y-m-d');
+			$start_date = format_date_db($request->start_date);
 			$my_order_list = $my_order_list->whereDate('main_combo_service_bought.created_at','>=',$start_date);
 		}
 		if($end_date != ""){
-			$end_date = Carbon::parse($request->end_date)->format('Y-m-d');
+			$end_date = format_date_db($request->end_date);
 			$my_order_list = $my_order_list->whereDate('main_combo_service_bought.created_at','<=',$end_date);
 		}
 
@@ -612,7 +627,7 @@ class OrdersController extends Controller
 
 	    	//GET CUSTOMER INFORMATION
 	    	$customer = "<span>Customer: ".$order->customer_firstname. " " .$order->customer_lastname."</span><br><span>Business Phone: ".$order->customer_phone."</span><br><span>Address: ".$order->customer_address."</span><br><span>Email: ".$order->customer_email."</span>";
-	    	
+
 	    	$my_order_arr[] = [
 	    		'id' => $order->id,
 	    		'order_date' => $order_date,
@@ -644,11 +659,11 @@ class OrdersController extends Controller
 		    ->where('main_user.user_team',$team_id);
 
 		if($start_date != ""){
-			$start_date = Carbon::parse($start_date)->format('Y-m-d');
+			$start_date = format_date_db($start_date);
 			$order_list = $order_list->whereDate('main_combo_service_bought.created_at','>=',$start_date);
 		}
 		if($end_date != ""){
-			$end_date = Carbon::parse($end_date)->format('Y-m-d');
+			$end_date = format_date_db($end_date);
 			$order_list = $order_list->whereDate('main_combo_service_bought.created_at','<=',$end_date);
 		}
 		if($user_id != ""){
@@ -709,22 +724,24 @@ class OrdersController extends Controller
 		$combo_service_arr = explode(";", $combo_service_list);
 		$service_arr = [];
 
-		foreach ($combo_service_arr as $key => $value) {
-				$service_list = MainComboService::where('id',$value)->first();
-				if($service_list->cs_type == 1)
-					$service_arr = array_merge(explode(";",$service_list->cs_service_id),$service_arr);
-				else
-					$service_arr[] = $value;
-			}
-		$service_arr = array_unique($service_arr);
-		$data['service_list'] = MainComboService::whereIn('id',$service_arr)->get();
-		
+		//GET TASK LIST
+		$data['task_list'] = MainTask::leftjoin('main_user',function($join){
+			$join->on('main_task.updated_by','main_user.user_id');
+		})
+		->where('main_task.order_id',$id)
+		->where(function($query){
+			$query->where('main_task.created_by',Auth::user()->user_id)
+			->orWhere('main_task.assign_to',Auth::user()->user_id)
+			->orWhere('main_task.updated_by',Auth::user()->user_id);
+		})
+		->select('main_task.*','main_user.user_nickname')
+		->get();
+
 		return view('orders.order-view',$data);
 	}
 	public function orderTracking(Request $request){
 
 		$order_id = $request->order_id;
-		$order_id = 31;
 
 		$order_tracking = MainUser::join('main_tracking_history',function($join){
 			$join->on('main_tracking_history.created_by','main_user.user_id');
@@ -737,13 +754,275 @@ class OrdersController extends Controller
 
 			->addColumn('user_info',function($row){
 				return '<span>'.$row->user_nickname.'('.$row->getFullname().')</span><br>
-		                <span>'.Carbon::parse($row->created_at)->format('m/d/Y h:i A').'</span><br>
+		                <span>'.format_datetime($row->created_at).'</span><br>
 		                <span class="badge badge-secondary">'.$row->getTeam->team_name.'</span>';
 			})
 			->addColumn('task',function($row){
 				return "<a href='' >Task#".$row->task_id."</a>";
 			})
-			->rawColumns(['user_info','task'])
+			->editColumn('content',function($row){
+				$file_list = MainFile::where('tracking_id',$row->id)->get();
+				$file_name = "<div class='row '>";
+				if($file_list->count() > 0 ){
+
+					foreach ($file_list as $key => $file) {
+						$zip = new ZipArchive();
+
+						if ($zip->open($file->name, ZipArchive::CREATE) !== TRUE) {
+							$file_name .= '<form action="'.route('down-image').'" method="POST"><input type="hidden" value="'.csrf_token().'" name="_token" /><input type="hidden" value="'.$file->name.'" name="src" /><img class="file-comment ml-2" src="'.asset($file->name).'"/></form>';
+						}else{
+							$file_name .= '<form action="'.route('down-image').'" method="POST"><input type="hidden" value="'.csrf_token().'" name="_token" /><input type="hidden" value="'.$file->name.'" name="src" /><a href="javascript:void(0)" class="file-comment ml-2" /><i class="fas fa-file-archive"></i>'.$file->name_origin.'</a></form>';
+						}
+					}
+				}
+				$file_name .= "</div>";
+				return $row->content."<br>".$file_name;
+			})
+			->rawColumns(['user_info','task','content'])
 			->make(true);
 	}
+	public function orderService(Request $request){
+
+		$order_id = $request->order_id;
+
+		$service_list = MainTask::join('main_combo_service',function($join){
+			$join->on('main_task.service_id','main_combo_service.id');
+		})
+		->where('main_task.order_id',$order_id)
+		->select('main_combo_service.*','main_task.id','main_combo_service.id as csb_id','main_task.note','main_task.content');
+
+		return DataTables::of($service_list)
+			->addColumn('action',function($row){
+				return '<button type="button" form_type_id="'.$row->cs_form_type.'" task_id="'.$row->id.'" class="btn btn-sm btn-secondary input-form">INPUT FORM</button>';
+			})
+			->addColumn('infor',function($row){
+
+				//GET FILES
+				$file_name = "<div class='row'>";
+				$file_list = $row->getFiles;
+				foreach ($file_list as $key => $file) {
+					$zip = new ZipArchive();
+
+				    if ($zip->open($file->name, ZipArchive::CREATE) !== TRUE) {
+						$file_name .= '<form action="'.route('down-image').'" method="POST"><input type="hidden" value="'.csrf_token().'" name="_token" /><input type="hidden" value="'.$file->name.'" name="src" /><img class="file-comment ml-2" src="'.asset($file->name).'"/></form>';
+					}else{
+						$file_name .= '<form action="'.route('down-image').'" method="POST"><input type="hidden" value="'.csrf_token().'" name="_token" /><input type="hidden" value="'.$file->name.'" name="src" /><a href="javascript:void(0)" class="file-comment ml-2" /><i class="fas fa-file-archive"></i>'.$file->name_origin.'</a></form>';
+					}
+
+				}
+				$file_name .= "</div>";
+
+				$content = '';
+
+				if($row->content != NULL){
+					$content_arr = json_decode($row->content,TRUE);
+
+					if($row->cs_form_type == 1){
+						$content = '<span>Google Link: <b>'.$content_arr['google_link'].'</b></span><br>
+	                    <span>Tên thợ nails: '.$content_arr['worker_name'].'</span><br>
+	                    <div class="row">
+	                        <span class="col-md-6">Number of starts: <b>'.$content_arr['star'].'</b></span>
+	                        <span class="col-md-6">Số review hiện tại: <b>'.$content_arr['current_review'].'</b></span>
+	                        <span class="col-md-6">Conplete date: <b>'.$content_arr['complete_date'].'</b></span>
+	                        <span class="col-md-6">Số review yêu cầu: <b>'.$content_arr['order_review'].'</b></span>
+	                    </div>
+	                    <span>Note: <b>'.$row->note.'</span>
+	                    <a href="javascript:void(0)">'.$file_name.'</a>';
+					}
+					if($row->cs_form_type == 2){
+						$content = '<span>Tên sản phẩm: <b>'.$content_arr['product_name'].'</b></span><br>
+	                    <span>Màu chủ đạo: <b>'.$content_arr['main_color'].'</b></span><br>
+	                    <span>Thể loại hoặc phong cách khách hàng: <b>'.$content_arr['style_customer'].'</b></span><br>
+	                    <span>Facebook Link: <b>'.$content_arr['link'].'</b></span><br>
+	                    <span>Website: <b>'.$content_arr['website'].'</b></span><br>
+	                    <span>Note: <b>'.$row->note.'</span>
+	                    <a href="javascript:void(0)">'.$file_name.'</a>';
+					}
+					if($row->cs_form_type == 3){
+						if(isset($content_arr['admin']) ) $admin = "YES";
+						else $admin = "NO";
+						if(isset($content_arr['image']) ) $image = "YES";
+						else $image = "NO";
+						$content = '<span>Facebook Link: <b>'.$content_arr['link'].'</b></span><br>
+	                    <span>Promotion: <b>'.$content_arr['promotion'].'</b></span><br>
+	                    <span>Số lượng bài viết: <b>'.$content_arr['number'].'</b></span><br>
+	                    <div class="row">
+	                        <span class="col-md-6">Đã có admin chưa: <b>'.$admin.'</b></span>
+	                        <span class="col-md-6">Username: <b>'.$content_arr['user'].'</b></span>
+	                        <span class="col-md-6">Có lấy được hình ảnh: <b>'.$image.'</b></span>
+	                        <span class="col-md-6">Password: <b>'.$content_arr['password'].'</b></span>
+	                    </div>
+	                    <span>Note: <b>'.$row->note.'</span>
+	                    <a href="javascript:void(0)">'.$file_name.'</a>';
+					}
+					if($row->cs_form_type == 4){
+
+						if(isset($content_arr['show_price']) ) $show_price = "YES";
+						else $show_price = "NO";
+
+						$content = '<span>Domain: <b>'.$content_arr['domain'].'</b></span><br>
+	                    <div class="row">
+	                        <span class="col-md-6">Theme: <b>'.$content_arr['theme'].'</b></span>
+	                        <span class="col-md-6">Show Price: <b>'.$show_price.'</b></span>
+	                        <span class="col-md-6">Business Name: <b>'.$content_arr['business_name'].'</b></span>
+	                        <span class="col-md-6">Business Phone: <b>'.$content_arr['business_phone'].'</b></span>
+	                        <span class="col-md-6">Email: <b>'.$content_arr['email'].'</b></span>
+	                        <span class="col-md-6">Address: <b>'.$content_arr['address'].'</b></span>
+	                    </div>
+	                    <span>Note: <b>'.$row->note.'</span>
+	                    <a href="javascript:void(0)">'.$file_name.'</a>';
+					}
+				}
+				return $content;
+			})
+			->rawColumns(['action','infor'])
+			->make(true);
+	}
+	public function submitInfoTask(Request $request){
+
+		$input = $request->all();
+		$current_month = Carbon::now()->format('m');
+		$tracking_arr = [];
+
+		unset($input['list_file']);
+		unset($input['_token']);
+		unset($input['list_file']);
+		unset($input['task_id']);
+		unset($input['note']);
+
+		$content = json_encode($input);
+
+		DB::beginTransaction();
+		//ADD TRACKING HISTORY
+    	$tracking_arr = [
+    		'order_id' => $request->order_id,
+    		'task_id' => $request->task_id,
+    		'desription' => $request->note,
+    		'created_by' => Auth::user()->user_id,
+    	];
+    	$tracking_create = MainTrackingHistory::create($tracking_arr);
+
+    	//UPDATE TASK
+    	$task_update = MainTask::where('id',$request->task_id)->update(['content'=>$content,'note'=>$request->note,'updated_by'=>Auth::user()->user_id]);
+
+        //DELETE OLD FILE
+        $file_delete = MainFile::where('task_id',$request->task_id)->delete();
+
+		//UPDATE FILE
+		if($request->list_file != ""){
+			foreach ($request->list_file as $key => $file) {
+
+                $file_name = ImagesHelper::uploadImage2($file,$current_month);
+                $file_arr[] = [
+                    'name' => $file_name,
+                    'name_origin' => $file->getClientOriginalName(),
+                    'tracking_id' => $tracking_create->id,
+                    'task_id' => $request->task_id
+                ];
+            }
+            //INSERT NEW FILE
+            $file_create = MainFile::insert($file_arr);
+            if(!isset($file_create) || !isset($task_update) || !isset($tracking_create) || !isset($file_delete)){
+            	DB::callback();
+            	return response(['status'=>'error','message'=>'Failed!']);
+            }else{
+            	DB::commit();
+
+            	$task_info = MainTask::find($request->task_id);
+            	$name_created = $task_info->getUpdatedBy->user_nickname;
+                $content = "Dear Sir/Madam,<br>";
+                $content .= $name_created." have just input order form on order#".$task_info->order_id."Service: ".$task_info->getService->cs_name."<hr>";
+                $content .= "<a href='".route('order-view',$task_info->order_id)."'  style='color:#e83e8c'>Click here to view ticket detail</a><br>";
+                $content .= "WEB MASTER (DTI SYSTEM)";
+
+                $input['subject'] = 'INPUT ORDER FORM';
+                $input['email'] = $task_info->getAssignTo->user_email;
+                $input['name'] = $task_info->getAssignTo->user_firstname." ".$task_info->getAssignTo->user_lastname;
+                $input['email_arr'][] = $task_info->getUpdatedBy->user_email;
+                $input['message'] = $content;
+                dispatch(new SendNotification($input))->delay(now()->addSecond(3));
+
+            	return response(['status'=>'success','message'=>'Successfully']);
+            }
+		}
+
+		if( !isset($task_update) || !isset($tracking_create)){
+        	DB::callback();
+        	return response(['status'=>'error','message'=>'Failed!']);
+        }else{
+        	DB::commit();
+
+            $task_info = MainTask::find($request->task_id);
+            $name_created = $task_info->getUpdatedBy->user_nickname;
+            $content = "Dear Sir/Madam,<br>";
+            $content .= $name_created." have just input order form on order#".$task_info->order_id."Service: ".$task_info->getService->cs_name."<hr>";
+            $content .= "<a href='".route('order-view',$task_info->order_id)."'  style='color:#e83e8c'>Click here to view ticket detail</a><br>";
+            $content .= "WEB MASTER (DTI SYSTEM)";
+
+            $input['subject'] = 'INPUT ORDER FORM';
+            $input['email'] = $task_info->getAssignTo->user_email;
+            $input['name'] = $task_info->getAssignTo->user_firstname." ".$task_info->getAssignTo->user_lastname;
+            $input['email_arr'][] = $task_info->getUpdatedBy->user_email;
+            $input['message'] = $content;
+            dispatch(new SendNotification($input))->delay(now()->addSecond(3));
+
+        	return response(['status'=>'success','message'=>'Successfully']);
+        }
+	}
+	public function changeStatusOrder(Request $request){
+
+		$order_id = $request->order_id;
+
+		$order_update = MainComboServiceBought::find($order_id)->update(['csb_status'=>'1']);
+
+		if(!isset($order_update))
+			return response(['status'=>'error','message'=>'Failed!']);
+		else
+			return response(['status'=>'success','message'=>'Successfully']);
+	}
+	public function resendInvoice(Request $request){
+
+	     $order_id = $request->order_id;
+	     $input = [];
+
+	     $order_info = MainComboServiceBought::find($order_id);
+
+         $customer_email = $order_info->getCustomer->customer_email;
+         if($customer_email == ""){
+             return response(['status'=>'error','message'=>'Send Mail Failed!']);
+         }
+         $service_list = $order_info->csb_combo_service_id;
+         $service_arrray = explode(";",$service_list);
+         $order_info['combo_service_list'] = MainComboService::whereIn('id',$service_arrray)->get();
+
+	     $content = $order_info->present()->getThemeMail;
+
+	     $input['subject'] = 'INVOICE';
+	     $input['email'] = $customer_email;
+	     $input['name'] = $order_info->getCustomer->customer_firstname. " ".$order_info->getCustomer->customer_lastname;
+         $input['message'] = $content;
+
+	     dispatch(new SendNotification($input));
+
+	     return response(['status'=>'success','message'=>'Send Mail Successfully!']);
+    }
+    public function dowloadInvoice($order_id){
+
+	    $order_info = MainComboServiceBought::find($order_id);
+	    $service_list = $order_info->csb_combo_service_id;
+	    $service_arrray = explode(";",$service_list);
+	    $order_info['combo_service_list'] = MainComboService::whereIn('id',$service_arrray)->get();
+
+	    $content = $order_info->present()->getThemeMail;
+
+        $dompdf = new Dompdf();
+
+        $dompdf->loadHtml($content);
+        // (Optional) Setup the paper size and orientation
+        $dompdf->setPaper('A4', 'landscape');
+        // Render the HTML as PDF
+        $dompdf->render();
+        // Output the generated PDF to Browser
+        $dompdf->stream();
+    }
 }

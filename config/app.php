@@ -233,4 +233,13 @@ return [
         'Excel' => Maatwebsite\Excel\Facades\Excel::class,
     ],
 
+    /*
+     * File URL to view
+     */
+    'url_file_view' => env( 'URL_FILE_VIEW', 'C:/xampp/htdocs/upload'),    
+    /*
+     * URL Path to save file
+     */
+    'url_file_write' => env( 'URL_FILE_WRITE', 'C:/xampp/htdocs/upload/'),
+
 ];

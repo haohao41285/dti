@@ -21,7 +21,7 @@ class MainCustomerTemplate extends Model
     	'created_by',
     	'updated_by'
     ];
-    public static function getFullname(){
+    public function getFullname(){
         return $this->ct_firstname." ".$this->ct_lastname;
     }
 }

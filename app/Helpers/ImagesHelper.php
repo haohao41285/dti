@@ -16,6 +16,26 @@ class ImagesHelper
             return $img_name;
         }
 	}
+    public static function uploadImage2($file, $current_month) {
+
+        // $pathFile = config('app.url_file_write');
+        $name = $file->getClientOriginalName();
+        $name = str_replace(" ", "-", $name);
+        $pathImage = 'images/comment/'.$current_month.'/';
+        $filename = strtotime('now') . strtolower($name);
+        // //dd(config('app.url_file_write'));
+        // if (!file_exists($pathImage)) {
+        //     mkdir($pathImage, 0777, true);
+        // }
+        $file->move('images/comment/'.$current_month, $filename);
+        // $tmpUpload = "tmp-upload/".$filename;
+
+        // self::sendRequestToApi($tmpUpload,$filename,$pathImage);
+        // unlink("tmp-upload/".$filename);
+
+        // die();
+        return $pathImage. $filename;
+    }
     /**
      * Auto upload image to SummerNote 
      * @param  $description is SummerNote content
