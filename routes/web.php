@@ -102,11 +102,34 @@ Route::group(['middleware' => ['auth']], function () {
             Route::get('/datatable','WebsiteThemeController@datatable')->name('getDatatableWebsiteThemes');
             Route::get('/get-by-id', 'WebsiteThemeController@getById')->name('getWebsiteThemesById');
             Route::post('/save', 'WebsiteThemeController@save')->name('saveWebsiteThemes');
+            Route::get('/delete', 'WebsiteThemeController@delete')->name('deleteThemes');
+            Route::get('/change-status', 'WebsiteThemeController@changeStatusThemes')->name('changeStatusThemes');
+        });
+
+        Route::group(['prefix' => 'app-banners'], function() {
+            Route::get('/', "AppBannerController@index")->name('getAppBanner');
+            Route::get('/app-datatable', "AppBannerController@appDataTable")->name('appDataTable');
+            Route::get('/app-banner-datatable', "AppBannerController@appBannerDataTable")->name('appBannerDataTable');
+            Route::post('/save-app', "AppBannerController@saveApp")->name('saveApp');
+            Route::post('/save-app-banner', "AppBannerController@saveAppBanner")->name('saveAppBanner');
+            Route::post('/delete-app', "AppBannerController@deleteApp")->name('deleteApp');
+            Route::post('/delete-app-banner', "AppBannerController@deleteAppBanner")->name('deleteAppBanner');
+
         });
 
         Route::group(['prefix' => 'website-themes-properties'], function() {
-            Route::get('/', 'WebsiteThemePropertiesController@index')->name('getWebsiteThemesProperties');
-            Route::get('/datatable','WebsiteThemePropertiesController@datatable')->name('getDatatableWebsiteThemesProperties');
+            Route::get('/list-theme-properties','WebsiteThemePropertiesController@listThemePropertiesByThemeId')->name('listThemePropertiesByThemeId');
+            Route::get('/list-value-properties','WebsiteThemePropertiesController@listValueProperties')->name('listValueProperties');
+            Route::post('save', "WebsiteThemePropertiesController@save")->name('saveWebsiteThemesProperty');
+            Route::post('save-value-property', "WebsiteThemePropertiesController@saveValueProperties")->name('saveValueProperties');
+            Route::get('edit', "WebsiteThemePropertiesController@edit")->name('editWebsiteThemesProperty');
+            Route::post('delete', "WebsiteThemePropertiesController@delete")->name('deleteWebsiteThemesProperty');
+            Route::post('delete-value-properties', "WebsiteThemePropertiesController@deleteValueProperties")->name('deleteValueProperties');
+        });
+
+        Route::group(['prefix' => 'places'], function() {
+            Route::get('/', 'PlaceController@index')->name('getPlaces');
+            Route::get('/datatable', 'PlaceController@datatable')->name('getPlacesDatatable');
         });
     });
 

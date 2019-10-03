@@ -8,6 +8,8 @@ class MainTheme extends Model
 {
     protected $table = 'main_theme';
 
+    protected $primaryKey = 'theme_id';
+
     public $timestamps = true;
 
     protected $fillable = [
@@ -22,7 +24,8 @@ class MainTheme extends Model
         'updated_at',
         'created_by',
         'updated_by',
-        'theme_status'
+        'theme_status',
+        'theme_license',
     ];
 
     protected $guarded = [];
