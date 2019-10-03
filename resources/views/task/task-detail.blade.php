@@ -56,7 +56,11 @@
                 <td>CREATED DATE</td>
                 <td>CREATED BY</td>
                 <td>ASSIGN TO</td>
-                <td class="float-right"><a href="{{route('task-add',$id)}}" title=""><button class="btn btn-sm btn-info"><i class="fas fa-plus">ADD SUBTASK</i></button></a></td>
+                <td class="float-right">
+                    @if($task_info->task_parent_id == "")
+                    <a href="{{route('task-add',$id)}}" title=""><button class="btn btn-sm btn-info"><i class="fas fa-plus">ADD SUBTASK</i></button></a>
+                    @endif
+                </td>
             </tr>
             <tr>
                 <th>{{$task_info->category}}</th>
@@ -92,7 +96,26 @@
                 </tr>
                 <tr>
                     <th class="text-info" colspan="2"><a href="{{route('order-view',$task_info->order_id)}}" title="Go To Order">#{{$task_info->order_id}}</a></th>
-                    <th class="text-info">DONE</th>
+                    <th class="text-info">
+                        @php
+                            $count = 0;
+                            $task_status = 0;
+
+                            $order_info = \App\Models\MainComboServiceBought::find($task_info->order_id);
+                            foreach($order_info->getTasks as $task){
+                                $count++;
+                                $task_status = intval($task->status);
+                            }
+                            $order_status = $task_status/$count;
+                        if($order_status == 0)
+                            $status = 'NEW';
+                        elseif($order_status > 0 && $order_status < 1)
+                            $status = 'PROCESSING';
+                        else
+                            $status = 'DONE';
+                        @endphp
+                        {{$status}}
+                    </th>
                     <th>{{format_datetime($task_info->created_at)}}</th>
                     <th class="text-capitalize">{{$task_info->getCreatedBy->user_firstname}} {{$task_info->getCreatedBy->user_lastname}}</th>
                     <th colspan="2" class="text-capitalize">{{$task_info->getPlace->place_name}}</th>
@@ -149,12 +172,27 @@
                                     <span class="col-md-6">Business Phone: <b>{{$content_arr['address']}}</b></span>
                                 </div>
                             @endif
-
                         @endif
                         <p><b>Notes:</b></p>
                         <div class="ml-5">
                             {!!$task_info->note!!}
                         </div>
+                        {{-- get file--}}
+                        @php
+                            $file_list = $task_info->getFiles;
+                            $file_name = "<div class='row '>";
+
+                            foreach ($file_list as $key => $file) {
+                                $zip = new ZipArchive();
+                                if ($zip->open($file->name, ZipArchive::CREATE) !== TRUE) {
+                                    $file_name .= '<form action="'.route('down-image').'" method="POST"><input type="hidden" value="'.csrf_token().'" name="_token" /><input type="hidden" value="'.$file->name.'" name="src" /><img class="file-comment ml-2" src="'.asset($file->name).'"/></form>';
+                                 }else{
+                                   $file_name .= '<form action="'.route('down-image').'" method="POST"><input type="hidden" value="'.csrf_token().'" name="_token" /><input type="hidden" value="'.$file->name.'" name="src" /><a href="javascript:void(0)" class="file-comment ml-2" /><i class="fas fa-file-archive"></i>'.$file->name_origin.'</a></form>';
+                                }
+                            }
+                                $file_name .= "</div>";
+                        @endphp
+                        {!! $file_name !!}
                     </td>
                 </tr>
             @endif
@@ -171,6 +209,7 @@
 
         </tbody>
     </table>
+    @if(count($task_info->getSubTask))
     <div class="border border-info mb-4">
     	<table class="table table-bordered table-hover mb-0" id="subtask-datatable" width="100%" cellspacing="0">
 	        <thead  class="thead-light">
@@ -188,6 +227,7 @@
 	        </thead>
 	    </table>
     </div>
+    @endif
     <table class="table table-bordered table-hover" id="tracking_history" width="100%" cellspacing="0">
         <thead  class="thead-light">
             <tr>

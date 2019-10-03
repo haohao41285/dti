@@ -123,6 +123,12 @@ class CustomerController extends Controller
             }
         }
         return Datatables::of($customer_arr)
+            ->editColumn('id',function ($row){
+                if($row['ct_status'] == 'Serviced')
+                    return '<a href="'.route('customer-detail',$row['id']).'">'.$row['id'].'</a>';
+                else
+                    return '<a href="javascript:void(0)">'.$row['id'].'</a>';
+            })
             ->editColumn('created_at',function($row){
                 return Carbon::parse($row['created_at'])->format('m/d/Y H:i:s')." by ".$row['user_nickname'];
             })
@@ -140,7 +146,7 @@ class CustomerController extends Controller
                     return '<a class="btn btn-sm btn-secondary view" customer_id="'.$row['id'].'" href="javascript:void(0)"><i class="fas fa-eye"></i></a> <a class="btn btn-sm btn-secondary edit-customer" customer_id="'.$row['id'].'" href="javascript:void(0)"><i class="fas fa-edit"></i></a>
                         <a class="btn btn-sm btn-secondary delete-customer" customer_id="'.$row['id'].'" href="javascript:void(0)"><i class="fas fa-trash"></i></a>';
             })
-            ->rawColumns(['action'])
+            ->rawColumns(['action','id'])
             ->make(true);
     }
     public function getCustomerDetail(Request $request){
@@ -328,13 +334,19 @@ class CustomerController extends Controller
                 ];
         }
         return Datatables::of($customer_arr)
+                ->editColumn('id',function ($row){
+                    if($row['ct_status'] == 'Serviced')
+                        return '<a href="'.route('customer-detail',$row['id']).'">'.$row['id'].'</a>';
+                    else
+                        return '<a href="javascript:void(0)">'.$row['id'].'</a>';
+                })
                 ->editColumn('updated_at',function($row){
                     return Carbon::parse($row['updated_at'])->format('m/d/Y H:i:s')." by ".$row['user_nickname'];
                 })
                 ->addColumn('action', function ($row){
                     return '<a class="btn btn-sm btn-secondary order-service" href="'.route('add-order',$row['id']).'">Order</a> <a class="btn btn-sm btn-secondary view" customer_id="'.$row['id'].'" href="javascript:void(0)"><i class="fas fa-eye"></i></a>';
                 })
-                ->rawColumns(['action'])
+                ->rawColumns(['action','id'])
                 ->make(true);
     }
     public function editCustomer(Request $request){
@@ -692,10 +704,17 @@ class CustomerController extends Controller
             return redirect()->route('myCustomers')->with(['success'=>'Create Customer Successfully!']);
         }
     }
-    public function customerDetail(){
-        $customer_id = 619;
+    public function customerDetail($customer_id){
+
+        $data['template_customer_info'] = MainCustomerTemplate::find($customer_id);
+        try{
+            $customer_id = $data['template_customer_info']->getMainCustomer->customer_id;
+        }catch(\Exception $e){
+            \Log::info($e);
+            return redirect()->route('customers')->with(['error'=>'Failed! Get information failed!']);
+        }
+
         $data['main_customer_info'] = MainCustomer::where('customer_id',$customer_id)->first();
-        $data['template_customer_info'] = MainCustomerTemplate::find($data['main_customer_info']->customer_customer_template_id);
         $data['id'] = $customer_id;
         return view('customer.customer-detail',$data);
     }
@@ -743,18 +762,24 @@ class CustomerController extends Controller
                 'status'=>'error',
                 'message' => $validator->getMessageBag()->toArray()
             ]);
+        $email_seller = $request->email_seller;
         $customer_id = $request->customer_id;
         $content = $request->note;
         $file_list = $request->file_image_list;
         $current_month = Carbon::now()->format('m');
+        if($request->email_list == "")
+            $email_list = $email_seller;
+        else
+            $email_list = $request->email_list.";".$email_seller;
         $file_arr = [];
 
         $tracking_arr = [
             'customer_id' => $customer_id,
             'content' => $content,
             'created_by' => Auth::user()->user_id,
-            'email_list' => $request->email_list
+            'email_list' => $email_list
         ];
+
         DB::beginTransaction();
         $tracking_create = MainTrackingHistory::create($tracking_arr);
 

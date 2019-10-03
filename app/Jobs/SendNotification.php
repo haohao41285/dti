@@ -46,15 +46,15 @@ class SendNotification implements ShouldQueue
         //Server settings
         $mail->SMTPDebug = 0;                                 // Enable verbose debug output
         $mail->isSMTP();                                      // Set mailer to use SMTP
-        $mail->Host = 'smtp.gmail.com';  // Specify main and backup SMTP servers
+        $mail->Host = env('MAIL_HOST');  // Specify main and backup SMTP servers
         $mail->SMTPAuth = true;                               // Enable SMTP authentication
-        $mail->Username = 'thieuhao2525@gmail.com';                 // SMTP username
-        $mail->Password = 'smnhhmadztqrkspw';                           // SMTP password
-        $mail->SMTPSecure = 'tls';                            // Enable TLS encryption, `ssl` also accepted
-        $mail->Port = 587;                                    // TCP port to connect to
+        $mail->Username = env('MAIL_USERNAME');                 // SMTP username
+        $mail->Password = env('MAIL_PASSWORD');                           // SMTP password
+        $mail->SMTPSecure = env('MAIL_ENCRYPTION');                            // Enable TLS encryption, `ssl` also accepted
+        $mail->Port = env('MAIL_PORT');                                    // TCP port to connect to
 
         //Recipients
-        $mail->setFrom('thieuhao2525@gmail.com', 'Mailer Test');
+        $mail->setFrom(env('MAIL_USERNAME'), 'DataeGlobal Web Master');
          $mail->addAddress($this->input['email'], $this->input['name']);     // nguyenthieupro93@gmail.com
         if(isset($this->input['email_arr'])){
             foreach($this->input['email_arr'] as $email){

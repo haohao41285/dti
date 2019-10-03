@@ -41,4 +41,5 @@ class MainCustomer extends Model
     public function getOrder(){
         return $this->hasMany(MainComboServiceBought::class,'csb_customer_id','customer_id');
     }
+
 }

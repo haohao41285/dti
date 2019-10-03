@@ -717,8 +717,17 @@ class OrdersController extends Controller
 			$join->on('main_combo_service_bought.created_by','main_user.user_id');
 		})
 		->where('main_combo_service_bought.id',$id)
-		->select('main_combo_service_bought.*','main_user.user_nickname','main_user.user_email','main_customer.customer_phone','main_customer.customer_lastname','main_customer.customer_firstname')
+		->select('main_combo_service_bought.*',
+            'main_user.user_nickname',
+            'main_user.user_email',
+            'main_customer.customer_phone',
+            'main_customer.customer_lastname',
+            'main_customer.customer_firstname',
+            'main_customer.customer_id'
+        )
 		->first();
+
+		$data['customer_id'] = MainCustomer::where('customer_id',$data['order_info']->customer_id)->first()->customer_customer_template_id;
 
 		$combo_service_list = $data['order_info']->csb_combo_service_id;
 		$combo_service_arr = explode(";", $combo_service_list);
