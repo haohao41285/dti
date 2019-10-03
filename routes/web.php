@@ -120,7 +120,10 @@ Route::group(['middleware' => ['auth']], function () {
 
         Route::group(['prefix' => 'places'], function() {
             Route::get('/', 'PlaceController@index')->name('getPlaces');
-            Route::get('/datatable', 'PlaceController@datatable')->name('getPlacesDatatable');
+            Route::get('/places-datatable', 'PlaceController@getPlacesDatatable')->name('getPlacesDatatable');
+            Route::get('/users-datatable', 'PlaceController@getUsersDatatable')->name('getUsersDatatable');
+            Route::post('/change-password', 'PlaceController@changeNewPassword')->name('changeNewPassword');
+            Route::get('/get-detail', 'PlaceController@getDetailPlace')->name('getDetailPlace');
         });
     });
     
