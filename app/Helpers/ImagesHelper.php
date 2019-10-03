@@ -16,7 +16,7 @@ class ImagesHelper
             return $img_name;
         }
 	}
-<<<<<<< HEAD
+
     public static function uploadImage2($file, $current_month) {
 
         // $pathFile = config('app.url_file_write');
@@ -37,9 +37,9 @@ class ImagesHelper
         // die();
         return $pathImage. $filename;
     }
-=======
+
     //==========================================
->>>>>>> origin/hieu
+
     /**
      * send post request upload Image to a different server
      * @return string image name
