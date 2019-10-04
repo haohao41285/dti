@@ -131,7 +131,6 @@ Route::group(['middleware' => ['auth']], function () {
     
     Route::group(['prefix' => 'setting','namespace' => 'Setting'], function() {
         Route::get('setup-team', 'SetupTeamController@index')->name('setupTeam');
-        Route::get('setup-background', 'SetupBackground@index')->name('setupBackground');
         Route::get('get-team-list', 'SetupTeamController@getTemDatatable')->name('get-team-list');
         Route::get('edit-team', 'SetupTeamController@editTeam')->name('edit-team');
         Route::get('save-team', 'SetupTeamController@saveTeam')->name('save-team');
@@ -157,6 +156,13 @@ Route::group(['middleware' => ['auth']], function () {
         Route::get('sms-template-datatable','SetupSmsController@smsTemplateDatatable')->name('sms-template-datatable');
         Route::post('delete-template','SetupSmsController@deleteTemplate')->name('delete-template');
         Route::post('save-template-sms','SetupSmsController@saveTemplateSms')->name('save-template-sms');
+
+        Route::group(['prefix' => 'login-background'], function() {
+            Route::get('/', 'SetupLoginBackground@index')->name('loginBackground');
+            Route::get('/datatable', "SetupLoginBackground@datatable")->name('datatableLoginBackground');
+            Route::post('/save', "SetupLoginBackground@save")->name('saveLoginBackground');
+            Route::post('/delete', "SetupLoginBackground@delete")->name('deleteLoginBackground');
+        });
     });
 
     Route::group(['prefix'=>'user'],function(){

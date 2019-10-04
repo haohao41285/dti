@@ -86,11 +86,18 @@ class PlaceController extends Controller
      * @return json
      */
     public function getDetailPlace(Request $request){
-        $place = PosPlace::select('place_name','place_address','place_taxcode','place_email','place_amount','place_description','place_actiondate')
+        $place = PosPlace::select(
+                                    'place_name','place_address','place_taxcode',
+                                    'place_email','place_amount','place_description',
+                                    'place_actiondate','place_logo','place_favicon',
+                                    'hide_service_price','place_worker_mark_bonus',
+                                    'place_interest','place_website','place_phone'
+                                )
                 ->where('place_id',$request->placeId)
                 ->where('place_status',1)
                 ->first();
         $place_actiondate = json_decode($place->place_actiondate,true);
+
 
         $result = [
             'place' =>$place,
