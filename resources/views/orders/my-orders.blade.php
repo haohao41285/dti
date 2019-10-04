@@ -3,6 +3,7 @@
     My Orders
 @endsection
 @section('content')
+<h4 class="border border-info border-top-0 mb-3 border-right-0 border-left-0 text-info">MY ORDER</h4>
 <div class="table-responsive">
 	<div class="form-group col-md-12 row">
         <div class="col-md-4">
@@ -17,7 +18,7 @@
             <label for="">Status</label>
             <select id="status-customer" name="status_customer" class="form-control form-control-sm">
                 <option value="">-- ALL --</option>
-                @foreach ($status as $key =>  $element)                    
+                @foreach ($status as $key =>  $element)
                     <option value="{{$key}}">{{$element}}</option>
                 @endforeach
             </select>
@@ -27,11 +28,11 @@
             <input type="button" class="btn btn-primary btn-sm" id="search-button" value="Search">
             <input type="button" class="btn btn-secondary btn-sm" id="reset" value="Reset">
             </div>
-        </div>  
+        </div>
     </div>
     <hr>
     <table class="table table-bordered" id="dataTableAllCustomer" width="100%" cellspacing="0">
-        <thead>                
+        <thead>
                 <th class="text-center">Id</th>
                 <th class="text-center order-date">Order Date</th>
                 <th class="text-center">Customer</th>
@@ -54,7 +55,7 @@
             order: [[ 1, "desc" ]],
          // dom: "lBfrtip",
             buttons: [
-            ],  
+            ],
             processing: true,
             serverSide: true,
         ajax:{ url:"{{ route('my-order-datatable') }}",
@@ -63,7 +64,7 @@
             d.start_date = $("#start_date").val();
             d.end_date = $("#end_date").val();
             d.my_order = 1;
-            } 
+            }
         },
         columns: [
 
@@ -82,7 +83,7 @@
         table.draw();
     });
     $(document).on('click','.order_date',function(){
-        
+
     });
 });
 </script>

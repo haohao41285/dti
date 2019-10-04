@@ -29,9 +29,15 @@ class MainCustomerService extends Model
 	];
 
 	protected $guarded = [];
-	
+
 	public function getComboService(){
 		return $this->belongsTo(MainComboService::class,'cs_service_id','id');
 	}
+	public function getPlace(){
+	    return $this->belongsTo(PosPlace::class,'cs_place_id','place_id');
+    }
+    public function getCreatedBy(){
+	    return $this->belongsTo(MainUser::class,'created_by','user_id');
+    }
 
 }

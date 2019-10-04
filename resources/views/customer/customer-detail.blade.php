@@ -26,8 +26,8 @@
             <span class="col-md-8">{{$main_customer_info->customer_phone}}</span><br>
             <span class="col-md-4"><b>Business Name:</b></span>
             <span class="col-md-8">
-                @foreach($main_customer_info->getPlaces as $place)
-                    <button class="btn btn-sm btn-secondary">{{$place->place_name}}</button>
+                @foreach($main_customer_info->getPlaces as $key => $place)
+                    <span class="text-uppercase text-info">{{$place->place_name}}{{$key>0?",":""}}</span>
                 @endforeach
             </span><br>
         </div>
@@ -39,7 +39,7 @@
         </div>
         <div class="col-md-12">
             <span class="col-md-12"><b>Note:</b></span><br>
-            <div class="col-md-12" style="padding-left: 50px;"></div>
+            <div class="col-md-12" style="padding-left: 50px;">{{$template_customer_info->ct_note}}</div>
         </div>
     </div>
 
@@ -111,52 +111,34 @@
             <table class="table table-hover table-bordered" id="place-order-datatable" widtd="100%" cellspacing="0">
                 <thead  class="thead-light">
                 <tr class="text-center">
-                    <th>ORDER ID</th>
-                    <th>ORDER DATE</th>
-                    <th>Services</th>
-                    <th>Subtotal($)</th>
-                    <th>Discount(&)</th>
-                    <th>Charge</th>
-                    <th>Tasks</th>
-                    <th>Status</th>
+                    <th>Place Name</th>
+                    <th>Serivce Name</th>
+                    <th>Expired date</th>
+                    <th>Created At</th>
+                    <th></th>
                 </tr>
                 </thead>
                 <tbody>
-                @foreach($main_customer_info->getOrder as $order)
-                    @php
-                        $cs_list = "";
-                        $task_list = "";
-                        $status = 0;
-                        $count = 0;
-                        $order_status = 0;
-
-                        $combo_service_arr = explode(";",$order->csb_combo_service_id);
-                        $order_detail_list = \App\Models\MainComboService::whereIn('id',$combo_service_arr)->get();
-                        foreach ($order_detail_list as $order_detail){
-                            $cs_list .= '<span class="text-info">'.$order_detail->cs_name." - $".$order_detail->cs_price.'</span><br>';
-                        }
-                         foreach($order->getTasks as $task_detail){
-                                $task_list .= "<a href='".route('task-detail',$task_detail->id)."'><span>#".$task_detail->id."-".$task_detail->subject."<span></a><br>";
-                                $status += $task_detail->status;
-                                $count++;
-                            }
-                         $seller_id = $order->created_by;
-                         if($count != 0)
-                            $order_status= $status/$count;
-
-                    @endphp
-                    @if($order_status == 1 ||$order_status == 2)
-                        <tr>
-                            <td class="text-center"><a href="{{route('order-view',$order->id)}}">#{{$order->id}}</a></td>
-                            <td class="text-center">{{format_datetime($order->created_at)}}</td>
-                            <td>{!! $cs_list !!}</td>
-                            <td class="text-right">${{$order->csb_amount?$order->csb_amount:0}}</td>
-                            <td class="text-right">${{$order->csb_amount_deal!=""?$order->csb_amount_deal:0}}</td>
-                            <td class="text-right">${{$order->csb_charge!=""?$order->csb_charge:0}}</td>
-                            <td>{!! $task_list !!}</td>
-                            <td class="text-center">{{$order_status==1?"NEW":"PROCESSING"}}</td>
-                        </tr>
-                    @endif
+                @foreach($place_service as $key => $places)
+                    <tr>
+                        <td class="text-uppercase">{{\App\Models\PosPlace::where('place_id',$key)->first()->place_name}}</td>
+                        <td class="">
+                            @foreach($places as $place)
+                                {{$place->getComboService->cs_name}}<br>
+                            @endforeach
+                        </td>
+                        <td class="text-center">
+                            @foreach($places as $place)
+                                {{format_date($place->cs_date_expire)}}<br>
+                            @endforeach
+                        </td>
+                        <td class="text-center">
+                            @foreach($places as $place)
+                                {{format_datetime($place->created_at)." by ".$place->getCreatedBy->user_nickname}}<br>
+                            @endforeach
+                        </td>
+                        <td class="text-center"><a href="{{route('add-order',$id)}}"><button class="btn btn-sm btn-secondary">Order</button></a></td>
+                    </tr>
                 @endforeach
                 </tbody>
             </table>
