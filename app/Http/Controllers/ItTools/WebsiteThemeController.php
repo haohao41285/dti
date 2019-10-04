@@ -31,10 +31,10 @@ Class WebsiteThemeController extends Controller
             return '<input type="checkbox" class="checkboxToggleDatatable changeStatus" '.$checked.' data="'.$data->theme_id.'" />';
         })
         ->addColumn('action', function ($data){
-                    return '<a class="btn btn-sm btn-secondary" target="_blank" href="'.$data->theme_url.'"><i class="fas fa-link"></i> DEMO</a>
-                    <a class="btn btn-sm btn-secondary edit" data="'.$data->theme_id.'" href="#"><i class="fas fa-edit"></i></a>
-                    <a class="btn btn-sm btn-secondary delete" data="'.$data->theme_id.'" href="#"><i class="fas fa-trash"></i></a>
-                    <a class="btn btn-sm btn-secondary setup-properties" data="'.$data->theme_id.'" href="#"><i class="fas fa-link"></i> Setup Properties</a>';
+                    return '<a class="btn btn-sm btn-secondary" target="_blank" href="'.$data->theme_url.'" data-toggle="tooltip" title="Demo"><i class="fas fa-link"></i></a>
+                    <a class="btn btn-sm btn-secondary edit" data="'.$data->theme_id.'" href="#" data-toggle="tooltip" title="Edit"><i   class="fas fa-edit"></i></a>
+                    <a class="btn btn-sm btn-secondary delete" data="'.$data->theme_id.'" href="#" data-toggle="tooltip" ><i  title="Delete" class="fas fa-trash"></i></a>
+                    <a class="btn btn-sm btn-secondary setup-properties" data="'.$data->theme_id.'" href="#" data-toggle="tooltip" title="Setup properties"><i   class="fas fa-cogs"></i> </a>';
             })
         ->rawColumns(['theme_image','theme_status','action'])
         ->make(true);

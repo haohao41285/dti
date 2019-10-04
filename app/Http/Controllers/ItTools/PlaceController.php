@@ -24,9 +24,9 @@ class PlaceController extends Controller
 
         return DataTables::of($places)
         ->editColumn('action',function($places){
-            return '<a class="btn btn-sm btn-secondary view" data-id="'.$places->place_id.'" href="#"><i class="fas fa-user-cog"></i></a>
-            <a class="btn btn-sm btn-secondary detail" data-id="'.$places->place_id.'" href="#"><i class="fas fa-eye"></i></a>
-            <a class="btn btn-sm btn-secondary setting" data-license="'.$places->place_ip_license.'" href="#"><i class="fas fa-cogs"></i></a>';
+            return '<a class="btn btn-sm btn-secondary view" data-id="'.$places->place_id.'" href="#" data-toggle="tooltip" title="View users"><i class="fas fa-user-cog"></i></a>
+            <a class="btn btn-sm btn-secondary detail" data-id="'.$places->place_id.'" href="#" data-toggle="tooltip" title="Detail"><i class="fas fa-eye"></i></a>
+            <a class="btn btn-sm btn-secondary setting" data-license="'.$places->place_ip_license.'" href="#" data-toggle="tooltip" title="Setting place theme"><i class="fas fa-cogs"></i></a>';
         })
         ->editColumn('created_at',function($places){
             return format_datetime($places->created_at);
