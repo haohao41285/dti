@@ -1,4 +1,5 @@
 @import "variables";
+@import "custom";
 
 // Import Bootstrap
 @import "../../node_modules/bootstrap/scss/bootstrap.scss";
@@ -33,12 +34,7 @@
 // SB Admin 2
 @import "../../node_modules/startbootstrap-sb-admin-2/css/sb-admin-2";
 
-// Import Custom css
-@import "error";
-@import "custom";
 
 // Import toastr
 @import "~toastr/toastr.scss";
 
-// Import bootstrap toggle
-@import "../../node_modules/bootstrap-toggle/css/bootstrap-toggle.min.css";

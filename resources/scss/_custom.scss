@@ -114,13 +114,6 @@ form.sb-form .form-inline{
     float:right !important;    
     padding-left:5px;
 }
-td.details-control {
-    background: url('../images/details_open.png') no-repeat center center;
-    cursor: pointer;
-}
-tr.shown td.details-control {
-    background: url('../images/details_close.png') no-repeat center center;
-}
 
 .table th, .table td{
     padding: 0.5rem;
@@ -154,4 +147,12 @@ ul.toggled>li>div.show{
     width: 17rem;
     border: black solid;
     cursor: pointer;
+}
+
+td.details-control {
+    background: url('../images/details_open.png') no-repeat center center;
+    cursor: pointer;
+}
+tr.shown td.details-control {
+    background: url('../images/details_close.png') no-repeat center center;
 }
