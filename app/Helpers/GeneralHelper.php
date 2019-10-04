@@ -128,4 +128,11 @@ class GeneralHelper{
             3 => 'DONE'
         ];
     }
+    public static function convertGender($gender){
+        if($gender ==1)
+                return "Male";
+        elseif($gender ==2)
+                return "Female";
+        else return "Chirld";
+    }
 }

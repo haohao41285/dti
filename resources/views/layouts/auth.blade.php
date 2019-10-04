@@ -1,5 +1,6 @@
 @php
-	$backgroundUrl = "https://source.unsplash.com/oWTW-jNGl9I/600x800";
+	$image = \App\Models\MainLoginBackground::all()->random()->image;
+	$backgroundUrl = env('PATH_VIEW_IMAGE').$image;
 @endphp
 <!DOCTYPE html>
 <html lang="en">

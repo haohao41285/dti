@@ -325,7 +325,8 @@ App Banners
           var form_data = new FormData(form);
           var url = "{{ route('saveAppBanner') }}";
           save(form_data,url);
-          appBannerTable.draw();
+          appBannerTable.ajax.reload(null,false);
+          // appBannerTable.ajax.reload(null,false);
           $("#app-banner-modal").modal("hide");
         });
         //load app banner list by app id
