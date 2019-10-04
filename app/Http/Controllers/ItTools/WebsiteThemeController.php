@@ -28,7 +28,7 @@ Class WebsiteThemeController extends Controller
             $checked = null;
             if($data->theme_status == 1)
                 $checked = "checked";
-            return '<input type="checkbox" class="checkboxToggleDatatable changeStatus" '.$checked.' data="'.$data->theme_id.'" />';
+            return '<input type="checkbox" class="js-switch-datatable changeStatus" '.$checked.' data="'.$data->theme_id.'" />';
         })
         ->addColumn('action', function ($data){
                     return '<a class="btn btn-sm btn-secondary" target="_blank" href="'.$data->theme_url.'" data-toggle="tooltip" title="Demo"><i class="fas fa-link"></i></a>
@@ -61,7 +61,13 @@ Class WebsiteThemeController extends Controller
     public function changeStatusThemes(Request $request){
         $mainTheme = MainTheme::where('theme_id',$request->id)->first();
 
-        $mainTheme->update(['theme_status'=>$request->check]);
+        if($mainTheme->theme_status == 1){
+            $status = 0;
+        } else {
+            $status = 1;
+        }
+
+        $mainTheme->update(['theme_status'=>$status]);
 
         return "success";
     }
