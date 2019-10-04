@@ -17,6 +17,7 @@ class TrackingHistoryObserver
     {
         $name_created = $mainTrackingHistory->getUserCreated->user_nickname;
         $email_list = $mainTrackingHistory->email_list;
+
         $email_arr = [];
         if($email_list != ""){
             $email_arr = explode(";",$email_list);
@@ -28,12 +29,21 @@ class TrackingHistoryObserver
         if($mainTrackingHistory->subtask_id != "")
             $task_id = $mainTrackingHistory->subtask_id;
 
-        if($task_id != "" && $mainTrackingHistory->getUserCreated->user_email != ""){
-            $content = "Dear Sir/Madam,<br>";
-            $content .= $name_created." have just created a comment on task#".$task_id."<hr>".$mainTrackingHistory->content;
-            $content .= "<hr>";
-            $content .= "<a href='".route('task-detail',$task_id)."'  style='color:#e83e8c'>Click here to view ticket detail</a><br>";
-            $content .= "WEB MASTER (DTI SYSTEM)";
+        if($mainTrackingHistory->getUserCreated->user_email != ""){
+            if($task_id != "") {
+                $content = "Dear Sir/Madam,<br>";
+                $content .= $name_created . " have just created a comment on task#" . $task_id . "<hr>" . $mainTrackingHistory->content;
+                $content .= "<hr>";
+                $content .= "<a href='" . route('task-detail', $task_id) . "'  style='color:#e83e8c'>Click here to view ticket detail</a><br>";
+                $content .= "WEB MASTER (DTI SYSTEM)";
+            }
+            else{
+                $content = "Dear Sir/Madam,<br>";
+                $content .= $name_created . " have just created a comment on customer#" . $mainTrackingHistory->customer_id . "<hr>" . $mainTrackingHistory->content;
+                $content .= "<hr>";
+                $content .= "<a href='" . route('customer-detail',$mainTrackingHistory->customer_id) . "'  style='color:#e83e8c'>Click here to view customer detail</a><br>";
+                $content .= "WEB MASTER (DTI SYSTEM)";
+            }
 
             $input['subject'] = 'New Comment';
             $input['email'] = $mainTrackingHistory->getUserCreated->user_email;
@@ -43,7 +53,6 @@ class TrackingHistoryObserver
 
             dispatch(new SendNotification($input));
         }
-
     }
 
     /**

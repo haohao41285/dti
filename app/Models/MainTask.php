@@ -50,4 +50,7 @@ class MainTask extends Model
     public function getAssignTo(){
         return $this->belongsTo(MainUser::class,'assign_to','user_id');
     }
+    public function getSubTask(){
+        return $this->hasMany(MainTask::class,'task_parent_id','id');
+    }
 }

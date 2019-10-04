@@ -113,7 +113,7 @@
                 </th>
             </tr>
             <tr>
-                <td>CUSTOMER(View Detail)</td>
+                <td>CUSTOMER(<a href="{{route('customer-detail',$customer_id)}}">View Detail</a>)</td>
                 <td>CELL PHONE</td>
                 <td>BUSINESS NAME</td>
                 <td>BUSINESS PHONE</td>

@@ -41,7 +41,11 @@ class TaskController extends Controller
     			return getStatusTask()[$row->status];
     		})
     		->addColumn('task',function($row){
-    			return '<a href="'.route('task-detail',$row->id).'">#'.$row->id.'</a>';
+    		    if(count($row->getSubTask) >0){
+    		        $detail_button = "<i class=\"fas fa-plus-circle details-control text-danger\" id='".$row->id."'></i>";
+                }else $detail_button = "";
+
+    			return $detail_button.'<a href="'.route('task-detail',$row->id).'"> #'.$row->id.'</a>';
     		})
     		->editColumn('order_id',function($row){
     			return '<a href="'.route('order-view',$row->order_id).'">#'.$row->order_id.'</a>';
@@ -297,6 +301,12 @@ class TaskController extends Controller
             ->editColumn('order_id',function($row){
                 return '<a href="'.route('order-view',$row->order_id).'">#'.$row->order_id.'</a>';
             })
+            ->addColumn('assign_to',function ($row){
+                return $row->getAssignTo->user_nickname;
+            })
+            ->editColumn('category',function($row){
+                return getCategory()[$row->category];
+            })
             ->editColumn('date_start',function($row){
                 if($row->date_start != "")
                     $date_start = format_date($row->date_start);
@@ -373,7 +383,5 @@ class TaskController extends Controller
             }
         }
     }
-    public function themeMail(){
-        return $this->present()->getThemeMail;
-    }
+
 }

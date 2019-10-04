@@ -39,12 +39,22 @@
         </div>
         <div class="col-md-12">
             <span class="col-md-12"><b>Note:</b></span><br>
-            <div class="col-md-12" style="padding-left: 50px;">KHACH HANG SU DUNG DICH VU 1K LIKE</div>
+            <div class="col-md-12" style="padding-left: 50px;"></div>
         </div>
     </div>
+
 <div class="table-responsive mt-5">
-    <h4><b>SERVICE ORDERS</b></h4>
-    <table class="table table-hover table-bordered" id="task-datatable" widtd="100%" cellspacing="0">
+    <ul class="nav nav-tabs" id="myTab" role="tablist">
+        <li class="nav-item">
+            <a class="nav-link active text-info" id="home-tab" data-toggle="tab" href="#home" role="tab" aria-controls="home" aria-selected="true">SERVICE ORDERS</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link text-info" id="profile-tab" data-toggle="tab" href="#profile" role="tab" aria-controls="profile" aria-selected="false">PLACE ORDERS</a>
+        </li>
+    </ul>
+    <div class="tab-content" id="myTabContent">
+        <div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">
+            <table class="table table-hover table-bordered" id="task-datatable" widtd="100%" cellspacing="0">
         <thead  class="thead-light">
             <tr class="text-center">
                 <th>ORDER ID</th>
@@ -83,12 +93,12 @@
             @endphp
             @if($order_status == 1 ||$order_status == 2)
             <tr>
-                <td class="text-center"><a href="{{route('order-view',$order_detail->id)}}">#{{$order->id}}</a></td>
+                <td class="text-center"><a href="{{route('order-view',$order->id)}}">#{{$order->id}}</a></td>
                 <td class="text-center">{{format_datetime($order->created_at)}}</td>
                 <td>{!! $cs_list !!}</td>
-                <td class="text-right">{{'$'.$order->csb_amount}}</td>
-                <td class="text-right">{{'$'.$order->csb_amount_deal}}</td>
-                <td class="text-right">{{'$'.$order->csb_charge}}</td>
+                <td class="text-right">${{$order->csb_amount?$order->csb_amount:0}}</td>
+                <td class="text-right">${{$order->csb_amount_deal!=""?$order->csb_amount_deal:0}}</td>
+                <td class="text-right">${{$order->csb_charge!=""?$order->csb_charge:0}}</td>
                 <td>{!! $task_list !!}</td>
                 <td class="text-center">{{$order_status==1?"NEW":"PROCESSING"}}</td>
             </tr>
@@ -96,6 +106,62 @@
         @endforeach
         </tbody>
     </table>
+        </div>
+        <div class="tab-pane fade" id="profile" role="tabpanel" aria-labelledby="profile-tab">
+            <table class="table table-hover table-bordered" id="place-order-datatable" widtd="100%" cellspacing="0">
+                <thead  class="thead-light">
+                <tr class="text-center">
+                    <th>ORDER ID</th>
+                    <th>ORDER DATE</th>
+                    <th>Services</th>
+                    <th>Subtotal($)</th>
+                    <th>Discount(&)</th>
+                    <th>Charge</th>
+                    <th>Tasks</th>
+                    <th>Status</th>
+                </tr>
+                </thead>
+                <tbody>
+                @foreach($main_customer_info->getOrder as $order)
+                    @php
+                        $cs_list = "";
+                        $task_list = "";
+                        $status = 0;
+                        $count = 0;
+                        $order_status = 0;
+
+                        $combo_service_arr = explode(";",$order->csb_combo_service_id);
+                        $order_detail_list = \App\Models\MainComboService::whereIn('id',$combo_service_arr)->get();
+                        foreach ($order_detail_list as $order_detail){
+                            $cs_list .= '<span class="text-info">'.$order_detail->cs_name." - $".$order_detail->cs_price.'</span><br>';
+                        }
+                         foreach($order->getTasks as $task_detail){
+                                $task_list .= "<a href='".route('task-detail',$task_detail->id)."'><span>#".$task_detail->id."-".$task_detail->subject."<span></a><br>";
+                                $status += $task_detail->status;
+                                $count++;
+                            }
+                         $seller_id = $order->created_by;
+                         if($count != 0)
+                            $order_status= $status/$count;
+
+                    @endphp
+                    @if($order_status == 1 ||$order_status == 2)
+                        <tr>
+                            <td class="text-center"><a href="{{route('order-view',$order->id)}}">#{{$order->id}}</a></td>
+                            <td class="text-center">{{format_datetime($order->created_at)}}</td>
+                            <td>{!! $cs_list !!}</td>
+                            <td class="text-right">${{$order->csb_amount?$order->csb_amount:0}}</td>
+                            <td class="text-right">${{$order->csb_amount_deal!=""?$order->csb_amount_deal:0}}</td>
+                            <td class="text-right">${{$order->csb_charge!=""?$order->csb_charge:0}}</td>
+                            <td>{!! $task_list !!}</td>
+                            <td class="text-center">{{$order_status==1?"NEW":"PROCESSING"}}</td>
+                        </tr>
+                    @endif
+                @endforeach
+                </tbody>
+            </table>
+        </div>
+    </div>
 </div>
 <div class="table-responsive">
     <table class="table mt-4 table-hover table-bordered" id="tracking-datatable" widtd="100%" cellspacing="0">
@@ -114,6 +180,7 @@
     <textarea  id="summernote2" class="form-control form-control-sm"  name="note"></textarea>
     <input type="button" class="btn btn-sm btn-secondary mt-2" name="" value="Upload attchment's file" onclick="getFile2()" placeholder="">
     <input type="file" hidden id="file_image_list_2" multiple name="file_image_list[]">
+    <input type="hidden" id="email_seller" name="email_seller" value="">
     <p>(The maximum upload file size: 100M)</p>
     <div style="height: 10px" class="bg-info">
     </div>
@@ -174,6 +241,8 @@
                         return myXhr;
                     },
                     success: function (data) {
+                        // console.log(data);
+                        // return;
 
                         let message = "";
                         if(data.status == 'success'){
@@ -221,6 +290,7 @@
                     }else{
                         $(".email_seller").text(" ("+data.email+")");
                         $(".fullname_seller").text(data.fullname);
+                        $("#email_seller").val(data.email);
                     }
                 })
                 .fail(function() {
