@@ -1,6 +1,6 @@
 @extends('layouts.app')
 @section('content-title')
-Places
+{{-- Places --}}
 @endsection
 @push('styles')
     <style>
@@ -70,7 +70,7 @@ Places
             <div class="col-4">
                <div class="card shadow mb-4 ">
                   <div class="card-header py-2">
-                     <h6 class="m-0 font-weight-bold text-primary">Change password</h6>
+                     <h6 class="m-0 font-weight-bold text-primary " id="user_nickname">Change password </h6>
                   </div>
                   <div class="card-body">
                      <form method="post" id="change-password-form">
@@ -405,16 +405,95 @@ Places
       </div>
    </div>
 </div>
+{{-- setting modal --}}
+<div class="modal fade" id="setting" tabindex="-1" role="dialog">
+   <div style="max-width: 70%" class="modal-dialog" role="document">
+      <div class="modal-content">
+         <div class="modal-header">
+            <h5 class="modal-title">Setting place theme</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+            </button>
+         </div>
+         <div class="modal-body row">
+            <div class="col-6">
+               <div class="card shadow mb-4">
+                   <div class="card-header py-2">
+                       <h6 class="m-0 font-weight-bold text-primary " >Website themes </h6>
+                   </div>
+                   <div class="card-body">
+                       <div class="table-responsive">
+                           <table class="table table-bordered table-hover" id="themes-dataTable" width="100%" cellspacing="0">
+                               <thead>
+                                   <th>#</th>
+                                   <th>Theme Code</th>
+                                   <th>Image</th>
+                                   </tr>
+                               </thead>
+                           </table>
+                       </div>
+                   </div>
+               </div>
+               </div>
+      
+               <div class="col-6">
+               <div class="card shadow mb-4">
+                   <div class="card-header py-2">
+                       <h6 class="m-0 font-weight-bold text-primary " >Setting </h6>
+                   </div>
+                   <div class="card-body">
+                      <form method="post" id="setting-form">
+                        @csrf
+                        <div class="form-group row">
+                            <label class="col-2">License</label>
+                            <label id="get-license"><b>837ec5754f503cfaaee0929fd48974e7</b></label>
+                         </div>
+                         <div class="form-group row">
+                            <label class="col-2">Website</label>
+                            <input class="col-10 form-control-sm form-control" type="text" name="website">
+                         </div>
+                         <div class="form-group row">
+                            <label class="col-2">Branch</label>
+                            <input class="col-10 form-control-sm form-control" type="text" name="branch">
+                         </div>
+                         <div class="form-group row">
+                            <label class="col-2">Theme</label>
+                            <label id="get-code"><b>demo 10</b></label>
+                         </div>
+                         <div class="form-group row">
+                            <label class="col-2"></label>
+                            <input class="btn-sm btn btn-primary" type="submit" value="Update">
+                         </div>
+                      </form>
+                   </div>
+               </div>
+         </div>
+         </div>
+         
+         <div class="modal-footer">
+            {{-- <button type="button" class="btn-sm btn btn-primary">Update</button> --}}
+            <button type="button" class="btn-sm btn btn-secondary" data-dismiss="modal">Close</button>
+         </div>
+        
+      </div>
+   </div>
+</div>
 @endsection
 @push('scripts')
 <script type="text/javascript">
    function clear(){
      $("#change-password-form")[0].reset();
+     $("#setting-form")[0].reset();
+     $("#user_nickname").html("Change password");
+     $("label#get-code b").text("");
+     $('#themes-datatable tbody tr.selected').removeClass('selected');
    }
    
    $(document).ready(function() {
      var placeId = null;
      var userId = null;
+     var license = null;
+     var themeId = null;
    
      var placeTable = $('#places-datatable').DataTable({
           // dom: "lfrtip",    
@@ -450,7 +529,7 @@ Places
           columns: [
    
                    { data: 'user_id', name: 'user_id',class:'text-center' },
-                   { data: 'user_nickname', name: 'user_nickname' },
+                   { data: 'user_nickname', name: 'user_nickname', class:'user_nickname' },
                    { data: 'user_phone', name: 'user_phone',class:'text-center' },
                    { data: 'user_email', name: 'user_email' },
                    { data: 'created_at', name: 'created_at' ,class:'text-center'},                
@@ -460,7 +539,24 @@ Places
    
                ],      
      });
-   
+      
+
+      var themesTable = $('#themes-dataTable').DataTable({
+                processing: true,
+                serverSide: true,
+                ajax:{ url:"{{ route('getDatatableWebsiteThemes') }}",},
+                columns: [
+                     { data: 'theme_id', name: 'theme_id' ,class:"id"},
+                     { data: 'theme_name_temp', name: 'theme_name_temp' ,class:"code"},
+                     { data: 'theme_image', name: 'theme_image' },
+    
+               ],       
+                buttons: [
+
+                  ],
+         });
+
+
      $(document).on('click','.view',function(e){
        e.preventDefault();
        placeId = $(this).attr('data-id');
@@ -473,6 +569,9 @@ Places
          $('#user-datatable tbody tr.selected').removeClass('selected');
          $(this).addClass('selected');
          userId = $(this).find("td.sorting_1").text();
+         var user_nickname = $(this).find("td.user_nickname").text();
+
+         $("#user_nickname").html("Change password of <b>"+user_nickname+"</b>");
      });
    
      $("#change-password-form").on('submit',function(e){
@@ -641,6 +740,21 @@ Places
      });
 
      
+     $(document).on('click','.setting',function(e){
+         e.preventDefault();
+         $("#setting").modal("show");
+         license = $(this).attr("data-license");
+         $("label#get-license b").text(license);
+         clear();
+     });
+
+     $("#themes-datatable tbody").on('click',"tr",function(){
+            $('#themes-datatable tbody tr.selected').removeClass('selected');
+            $(this).addClass('selected');
+            themeId = $(this).find("td.id").text();
+            var code = $(this).find("td.code").text();
+            $("label#get-code b").text(code);
+      });
    
    
    });
