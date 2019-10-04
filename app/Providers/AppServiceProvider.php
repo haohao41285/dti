@@ -2,7 +2,13 @@
 
 namespace App\Providers;
 
+use App\Models\MainTask;
+use App\Observers\TaskObserver;
 use Illuminate\Support\ServiceProvider;
+use App\Models\MainComboServiceBought;
+use App\Observers\OrderObserver;
+use App\Observers\TrackingHistoryObserver;
+use App\Models\MainTrackingHistory;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -23,6 +29,8 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        //
+        MainComboServiceBought::observe(OrderObserver::class);
+        MainTrackingHistory::observe(TrackingHistoryObserver::class);
+        MainTask::observe(TaskObserver::class);
     }
 }

@@ -1,7 +1,13 @@
 @import "variables";
+@import "custom";
 
 // Import Bootstrap
 @import "../../node_modules/bootstrap/scss/bootstrap.scss";
+
+// Summer Note
+@import "../../node_modules/summernote/src/less/summernote-bs4.scss";
+@import "../../node_modules/summernote/src/less/summernote.scss";
+@import "../../node_modules/summernote/src/less/elements.scss";
 
 // MetisMenu
 @import "../../node_modules/metismenu/dist/metisMenu";
@@ -28,12 +34,7 @@
 // SB Admin 2
 @import "../../node_modules/startbootstrap-sb-admin-2/css/sb-admin-2";
 
-// Import Custom css
-@import "error";
-@import "custom";
 
 // Import toastr
 @import "~toastr/toastr.scss";
 
-// Import bootstrap toggle
-@import "../../node_modules/bootstrap-toggle/css/bootstrap-toggle.min.css";

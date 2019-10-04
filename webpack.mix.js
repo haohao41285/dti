@@ -19,7 +19,7 @@ mix.copy('resources/file', 'public/file');
 
 mix.js('resources/js/app.js', 'public/js').extract([
     'lodash', 'popper.js', 'jquery', 'bootstrap',
-    'bootstrap-datepicker', 'bootstrap-timepicker',
+    'summernote','bootstrap-datepicker', 'bootstrap-timepicker',
     'datatables.net-bs4','datatables.net-buttons-bs4','datatables.net-fixedcolumns-bs4',
     'datatables.net-fixedheader-bs4','datatables.net-keytable-bs4','datatables.net-responsive-bs4',
     'datatables.net-rowgroup-bs4','datatables.net-select-bs4',
