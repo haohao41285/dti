@@ -19,7 +19,7 @@ Class WebsiteThemeController extends Controller
 
         return DataTables::of($data)
         ->editColumn('theme_image',function($data){
-            return "<img style='height: 5rem;' src='".env('URL_FILE_VIEW').$data->theme_image."' alt=''>";
+            return "<img style='height: 4rem;' src='".env('URL_FILE_VIEW').$data->theme_image."' alt=''>";
         })
         ->editColumn('created_at',function($data){
             return format_datetime($data->created_at);

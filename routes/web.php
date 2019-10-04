@@ -130,6 +130,7 @@ Route::group(['middleware' => ['auth']], function () {
             Route::get('/users-datatable', 'PlaceController@getUsersDatatable')->name('getUsersDatatable');
             Route::post('/change-password', 'PlaceController@changeNewPassword')->name('changeNewPassword');
             Route::get('/get-detail', 'PlaceController@getDetailPlace')->name('getDetailPlace');
+            Route::get('/get-themes-datatable', 'PlaceController@getThemeDatatable')->name('getThemeDatatable');
         });
     });
 
