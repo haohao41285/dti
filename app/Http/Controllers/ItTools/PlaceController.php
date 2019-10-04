@@ -15,10 +15,6 @@ use App\Http\Controllers\ItTools\WebsiteThemeController;
 
 class PlaceController extends Controller
 {
-    function __construct(){
-        RunShFileHelper::updateTheme();
-    }
-
     public function index(){
         return view('tools.place');
     }
