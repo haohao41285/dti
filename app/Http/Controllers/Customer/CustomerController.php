@@ -287,6 +287,14 @@ class CustomerController extends Controller
             $customer_status_arr = json_decode($team_customer_status,TRUE);
 
             foreach ($customer_list as $key => $customer) {
+                //GET CUSTOMER NOTE
+                $customer_note_info = MainCustomerNote::where([
+                                    ['customer_id',$customer->id],
+                                    ['user_id',$user_id],
+                                    ['team_id',$team_id]]
+                                )->first();
+                if(isset($customer_note_info)) $customer_note = $customer_note_info->content;
+                else $customer_note = "";
 
                 if(!isset($customer_status_arr[$customer->id])){
                     $customer_status_arr[$customer->id] = 1;
@@ -303,6 +311,7 @@ class CustomerController extends Controller
                         'ct_business_phone' => $customer->ct_business_phone,
                         'ct_cell_phone' => $customer->ct_cell_phone,
                         'ct_status' => $ct_status,
+                        'note' => $customer_note,
                         'updated_at' => $customer->updated_at,
                         'user_nickname' => $customer->user_nickname
                     ];
@@ -315,6 +324,7 @@ class CustomerController extends Controller
                         'ct_business_phone' => $customer->ct_business_phone,
                         'ct_cell_phone' => $customer->ct_cell_phone,
                         'ct_status' => $ct_status,
+                        'note' => $customer_note,
                         'updated_at' => $customer->updated_at,
                         'user_nickname' => $customer->user_nickname
                     ];
@@ -330,6 +340,7 @@ class CustomerController extends Controller
                     'ct_business_phone' => "",
                     'ct_cell_phone' => "",
                     'ct_status' => "",
+                    'note' => '',
                     'updated_at' => "",
                     'user_nickname' => ""
                 ];
@@ -346,10 +357,10 @@ class CustomerController extends Controller
                 })
                 ->addColumn('action', function ($row){
                     return '
-                          <a class="btn btn-sm btn-secondary add-note"  contact_name="'.$row['ct_fullname'].'" customer_id="'.$row['id'].'" href="javascript:void(0)">Note</a> 
-                          <a class="btn btn-sm btn-secondary move-customer" contact_name="'.$row['ct_fullname'].'" customer_id="'.$row['id'].'" href="javascript:void(0)">Move</a> 
-                          <a class="btn btn-sm btn-secondary order-service" href="'.route('add-order',$row['id']).'">Order</a>
-                          <a class="btn btn-sm btn-secondary view" customer_id="'.$row['id'].'" href="javascript:void(0)">View</a>';
+                          <a class="btn btn-sm btn-secondary add-note"  contact_name="'.$row['ct_fullname'].'" customer_id="'.$row['id'].'" href="javascript:void(0)" title="Add Customer Note"><i class="far fa-sticky-note"></i></a> 
+                          <a class="btn btn-sm btn-secondary view" customer_id="'.$row['id'].'" href="javascript:void(0)" title="View Customer"><i class="fas fa-eye"></i></a>
+                    <a class="btn btn-sm btn-secondary order-service" href="'.route('add-order',$row['id']).'" title="Go To Order"><i class="fas fa-shopping-cart"></i></a>
+                    <a class="btn btn-sm btn-secondary move-customer" contact_name="'.$row['ct_fullname'].'" customer_id="'.$row['id'].'" href="javascript:void(0)" title="Move Customer To User"><i class="fas fa-exchange-alt"></i></a>';
                 })
                 ->rawColumns(['action','id'])
                 ->make(true);
