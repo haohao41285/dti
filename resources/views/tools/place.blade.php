@@ -23,11 +23,11 @@
                      <th>ID</th>
                      <th>Name</th>
                      <th>Address</th>
-                     <th>Email</th>
+                     {{-- <th>Email</th> --}}
                      <th>Phone</th>
                      <th>License</th>
                      <th>Created Date</th>
-                     <th>Action</th>
+                     <th width="150">Action</th>
                   </tr>
                </thead>
             </table>
@@ -505,7 +505,7 @@
                    { data: 'place_id', name: 'place_id',class:'text-center' },
                    { data: 'place_name', name: 'place_name' },
                    { data: 'place_address', name: 'place_address'},
-                   { data: 'place_email', name: 'place_email' },
+                   // { data: 'place_email', name: 'place_email' },
                    { data: 'place_phone', name: 'place_phone',class:'text-center' },
                    { data: 'place_ip_license', name: 'place_ip_license' },
                    { data: 'created_at', name: 'created_at' ,class:'text-center'},                

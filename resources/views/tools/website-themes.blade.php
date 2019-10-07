@@ -88,7 +88,7 @@ Theme Management
                         <div class="col-md-7 form-inline">
                             <label class="col-sm-4 required">Status</label>
                             <div class="col-sm-8">
-                                <input type="checkbox" name="status" value="1" class="toggleButton">
+                                <input type="checkbox" name="status" value="1" class="js-switch">
                             </div>
                         </div>
                     </div>
@@ -309,24 +309,25 @@ Theme Management
     							// }
     					],
     					fnDrawCallback:function (oSettings) {
-    										$('.checkboxToggleDatatable').bootstrapToggle();
+    										var elems = Array.prototype.slice.call(document.querySelectorAll('.js-switch-datatable'));
+                                            elems.forEach(function (html) {
+                                                var switchery = new Switchery(html, {
+                                                    color: '#0874e8',
+                                                    className : 'switchery switchery-small changeStatus'                
+                                                });
+                                            });
     								},
     		});
     
-    		$(document).on('change','.changeStatus',function(e){
+    		$(document).on('click','.changeStatus',function(e){
     			e.preventDefault();
-    			var id = $(this).attr('data');
-    			var check = $(this).is(':checked'); 
-    			if(check == true) {
-    				check = 1;
-    			} else {
-    				check = 0;
-    			}
+    			var id = $(this).siblings('input').attr('data');
+
     			$.ajax({
     				url:"{{ route('changeStatusThemes') }}",
     				method:"get",
     				data:{
-    					id,check,
+    					id,
     				},
     				success:function(data){
     					if(data){

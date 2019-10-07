@@ -32,8 +32,8 @@ class MenuHelper{
 		        ['text' => 'Website', 'link'=> 'statistic/website'],        
 		    ]],
 		     ['text' => 'IT Tools', 'icon'=>'fas fa-toolbox', 'link' => 'tools','childrens' => [
-		        ['text' => 'Clone Website', 'link'=> 'tools/clonewebsite'],
-		        ['text' => 'Update Website', 'link'=> 'tools/updatewebsite'],
+		        // ['text' => 'Clone Website', 'link'=> 'tools/clonewebsite'],
+		        // ['text' => 'Update Website', 'link'=> 'tools/updatewebsite'],
 		        ['text' => 'Website theme', 'link'=> 'tools/website-themes'],
 		        ['text' => 'App banners', 'link'=> 'tools/app-banners'],
 		        ['text' => 'Places', 'link'=> 'tools/places'],
