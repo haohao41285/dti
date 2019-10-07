@@ -2,10 +2,9 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
+use App\Models\BaseModel;
 
-
-class MainLoginBackground extends Model
+class MainLoginBackground extends BaseModel
 {
     protected $table = 'main_login_background';
 
@@ -17,6 +16,9 @@ class MainLoginBackground extends Model
     ];
 
     protected $guarded = [];
+
+    protected $created_by = false;
+    protected $updated_by = false;
 
         
 }

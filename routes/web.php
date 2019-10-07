@@ -10,7 +10,6 @@
 | contains the "web" middleware group. Now create something great!
 |
 */
-
  // Authentication Routes...
 Route::get('login', 'Auth\LoginController@showLoginForm')->name('login');
 Route::post('login', 'Auth\LoginController@postLogin');
@@ -134,7 +133,11 @@ Route::group(['middleware' => ['auth']], function () {
         });
     });
 
-    Route::get('recentlog', 'RecentLogController@index')->name('recentlog');
+    Route::group(['prefix' => 'recentlog'], function() {
+        Route::get('/', 'RecentLogController@index')->name('recentlog');
+        Route::get('/datatable', 'RecentLogController@datatable')->name('recentlogDatatable');
+        
+    });
 
     Route::group(['prefix' => 'setting','namespace' => 'Setting'], function() {
         Route::get('setup-team', 'SetupTeamController@index')->name('setupTeam');
