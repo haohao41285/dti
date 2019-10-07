@@ -111,7 +111,8 @@ Class WebsiteThemeController extends Controller
                 'theme_image' => $image ?? '',
             ];
 
-            MainTheme::where('theme_id',$request->theme_id)->update($arr);
+            $mainTheme = MainTheme::where('theme_id',$request->theme_id)->first(); 
+            $mainTheme->update($arr);
         }
         
         return response()->json(['status'=>1,'msg'=>$request->action.'d successfully!']);

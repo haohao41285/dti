@@ -1,8 +1,14 @@
 @extends('layouts.app')
 @section('content-title')
-Recent Logs
+
 @endsection
 @section('content')
+<div class="col-12 ">
+    <div class="card shadow mb-4 ">
+        <div class="card-header py-2">
+            <h6 class="m-0 font-weight-bold text-primary">Recent Logs</h6>
+        </div>
+        <div class="card-body">
 <div class="table-responsive">
     <table class="table table-bordered" id="log-datatable" width="100%" cellspacing="0">
         <thead>                
@@ -26,24 +32,17 @@ Recent Logs
         </tbody> --}}
     </table>
 </div>
+</div>
+</div>
+</div>
 @endsection
 @push('scripts')
 <script type="text/javascript">
     $(document).ready(function () {
             table = $('#log-datatable').DataTable({
-             // dom: "lBfrtip",
+             "order": [[ 0, "desc" ]],
              buttons: [
-              {
-                  text: '<i class="fas fa-trash"></i> Clear All Logs',
-                  className: 'btn btn-sm btn-primary',
-                  action: function ( e, dt, node, config ) {
-                     // document.location.href = "";
-                  }
-              },
-              { text : '<i class="fas fa-download"></i> Export',
-                extend: 'csvHtml5', 
-                className: 'btn btn-sm btn-primary' 
-              }
+             
           ],  
              processing: true,
              serverSide: true,
@@ -55,7 +54,7 @@ Recent Logs
              columns: [
 
                        { data: 'id', name: 'id' },
-                       { data: 'user_id', name: 'user_id' },
+                       { data: 'user_nickname', name: 'user_nickname' },
                        { data: 'type', name: 'type' },
                        { data: 'message', name: 'message' },
                        { data: 'ip_address', name: 'ip_address' },

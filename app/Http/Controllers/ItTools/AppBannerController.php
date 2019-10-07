@@ -64,7 +64,8 @@ class AppBannerController extends Controller
         if($request->action == "Create"){   
             $app = MainApp::create($arr);
         } else {
-            $app = MainApp::where('app_id',$request->appId)->update($arr);
+            $app = MainApp::where('app_id',$request->appId)->first();
+            $app->update($arr);
         }
         
         return response()->json(['status'=>1,"msg"=>"Saved successfully!"],200);
@@ -109,7 +110,8 @@ class AppBannerController extends Controller
             if(empty($image)){
                 unset($arr['app_banner_image']);
             }
-            $app = MainAppBanners::where('app_banner_id',$request->appBannerId)->update($arr);
+            $app = MainAppBanners::where('app_banner_id',$request->appBannerId)->first();
+            $app->update($arr);
         }
         
         return response()->json(['status'=>1,"msg"=>"Saved successfully!"],200);

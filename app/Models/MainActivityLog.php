@@ -18,7 +18,7 @@ class MainActivityLog extends Model
         'user_id',
         'type',
         'message',
-        'host',
+        'ip_address',
         'created_at',
         'updated_at',
     ];
@@ -28,14 +28,14 @@ class MainActivityLog extends Model
     public static function createActivityLog($type = null, $message = null){
         $userId = Auth::user()->user_id;
         $id = self::getMaxId($userId);
-        $host = GeneralHelper::getIpAddress();
+        $ipAddress = GeneralHelper::getIpAddress();
 
         $arr = [
             'id' => $id + 1,
             'user_id' => $userId,
             'type' => $type,
             'message' => $message,
-            'host' => $host,
+            'ip_address' => $ipAddress,
         ];
 
         self::create($arr);
@@ -48,7 +48,10 @@ class MainActivityLog extends Model
     public static function getDatatable(){
         $userId = Auth::user()->user_id;
 
-        $activityLog = MainActivityLog::where('user_id',$userId)->get();
+        $activityLog = MainActivityLog::select('main_user.user_nickname','main_activity_log.*')
+                        ->where('main_activity_log.user_id',$userId)
+                        ->join('main_user','main_user.user_id','main_activity_log.user_id')
+                        ->get();
 
         return DataTables::of($activityLog)
         ->editColumn('created_at',function($data){
