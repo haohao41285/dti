@@ -83,9 +83,12 @@ class CustomerController extends Controller
                         ->get();
 
         //GET LIST TEAM CUSTOMER LIST
-        $team_customer_status = MainTeam::where('id',$team_id)->first()->team_customer_status;
+        $team_customer_status = MainUser::where('user_id',Auth::user()->user_id)->first()->getTeamType;
+        $team_customer_status = $team_customer_status[0]->team_customer_status;
+//        $team_customer_status = MainTeam::where('id',$team_id)->first()->team_customer_status;
 
         $customer_status_arr = json_decode($team_customer_status,TRUE);
+//        return $customer_status_arr;
 
         foreach ($customers as $key => $customer) {
 
@@ -95,8 +98,22 @@ class CustomerController extends Controller
             }
             else
                 $ct_status = GeneralHelper::getCustomerStatus($customer_status_arr[$customer->id]);
-
-            if($status_customer != "" && intval($customer_status_arr[$customer->id]) ==  intval($status_customer)){
+            //ADMIN CAN SEE ALL
+            if(Auth::user()->user_group_id == 1){
+                if($status_customer != "" && intval($customer_status_arr[$customer->id]) ==  intval($status_customer)){
+                    $customer_arr[] = [
+                        'id' => $customer->id,
+                        'ct_salon_name' => $customer->ct_salon_name,
+                        'ct_fullname' => $customer->ct_fullname,
+                        'ct_business_phone' => $customer->ct_business_phone,
+                        'ct_cell_phone' => $customer->ct_cell_phone,
+                        'ct_status' => $ct_status,
+                        'created_at' => $customer->created_at,
+                        'user_nickname' => $customer->user_nickname,
+                        'ct_note' => $customer->ct_note
+                    ];
+                }
+                if($status_customer == ""){
                 $customer_arr[] = [
                     'id' => $customer->id,
                     'ct_salon_name' => $customer->ct_salon_name,
@@ -108,8 +125,9 @@ class CustomerController extends Controller
                     'user_nickname' => $customer->user_nickname,
                     'ct_note' => $customer->ct_note
                 ];
+                }
             }
-            if($status_customer == ""){
+            elseif(Auth::user()->user_group_id != 1 && $ct_status = 'Arrivals'){
                 $customer_arr[] = [
                     'id' => $customer->id,
                     'ct_salon_name' => $customer->ct_salon_name,
@@ -140,12 +158,6 @@ class CustomerController extends Controller
                 return substr($row['ct_cell_phone'],0,3)."########";
             })
             ->addColumn('action', function ($row){
-//                if($row['ct_status'] == 'Disabled')
-//                    if(Auth::user()->user_id == 1)
-//                    return '<a class="btn btn-sm btn-secondary view" customer_id="'.$row['id'].'" href="javascript:void(0)"><i class="fas fa-eye"></i></a>
-//                    <a class="btn btn-sm btn-secondary edit-customer" customer_id="'.$row['id'].'" href="javascript:void(0)"><i class="fas fa-edit"></i></a>
-//                    <a class="btn btn-sm btn-secondary deleted" customer_id="'.$row['id'].'" href="javascript:void(0)"><i class="fas fa-trash text-danger"></i></a>';
-//                else
                 if(Auth::user()->user_id == 1)
                     return '<a class="btn btn-sm btn-secondary view" customer_id="'.$row['id'].'" href="javascript:void(0)"><i class="fas fa-eye"></i></a>
                         <a class="btn btn-sm btn-secondary edit-customer" customer_id="'.$row['id'].'" href="javascript:void(0)"><i class="fas fa-edit"></i></a>
@@ -336,20 +348,6 @@ class CustomerController extends Controller
                     ];
                 }
             }
-        }else{
-            $customer_arr = [];
-
-            $customer_arr[] = [
-                    'id' => "",
-                    'ct_salon_name' => "",
-                    'ct_fullname' => "",
-                    'ct_business_phone' => "",
-                    'ct_cell_phone' => "",
-                    'ct_status' => "",
-                    'note' => '',
-                    'updated_at' => "",
-                    'user_nickname' => ""
-                ];
         }
         return Datatables::of($customer_arr)
                 ->editColumn('id',function ($row){

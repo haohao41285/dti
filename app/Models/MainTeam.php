@@ -15,4 +15,5 @@ class MainTeam extends Model
     	'team_type',
     	'team_email'
     ];
+
 }
