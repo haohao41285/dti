@@ -274,7 +274,7 @@ class OrdersController extends Controller
 					'place_customer_id' => $customer_id,
 					'place_code' => 'place-'.$place_id,
 					'place_logo' => 'logo',
-					'place_name' => 'New Name',
+					'place_name' => 'New Place',
 					'place_address' => $customer_info->ct_address,
 					'place_website' => $customer_info->ct_website,
 					'place_phone' => $customer_info->ct_business_phone,

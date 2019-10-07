@@ -10,7 +10,6 @@
 | contains the "web" middleware group. Now create something great!
 |
 */
-
  // Authentication Routes...
 Route::get('login', 'Auth\LoginController@showLoginForm')->name('login');
 Route::post('login', 'Auth\LoginController@postLogin');
@@ -53,6 +52,8 @@ Route::group(['middleware' => ['auth']], function () {
         Route::get('customer-tracking', 'CustomerController@customerTracking')->name('customer-tracking');
         Route::post('post-comment-customer', 'CustomerController@postCommentCustomer')->name('post-comment-customer');
         Route::get('get-seller', 'CustomerController@getSeller')->name('get-seller');
+        Route::post('move-customer', 'CustomerController@moveCustomer')->name('move-customer');
+        Route::post('add-customer-note', 'CustomerController@addCustomerNote')->name('add-customer-note');
 
     });
 
@@ -134,7 +135,11 @@ Route::group(['middleware' => ['auth']], function () {
         });
     });
 
-    Route::get('recentlog', 'RecentLogController@index')->name('recentlog');
+    Route::group(['prefix' => 'recentlog'], function() {
+        Route::get('/', 'RecentLogController@index')->name('recentlog');
+        Route::get('/datatable', 'RecentLogController@datatable')->name('recentlogDatatable');
+        
+    });
 
     Route::group(['prefix' => 'setting','namespace' => 'Setting'], function() {
         Route::get('setup-team', 'SetupTeamController@index')->name('setupTeam');
@@ -211,11 +216,11 @@ Route::group(['middleware' => ['auth']], function () {
         Route::post('down-image', 'TaskController@downImage')->name('down-image');
         Route::get('task-detail/{id}', 'TaskController@taskDetail')->where(['id'=>'[0-9]+'])->name('task-detail');
         Route::get('task-tracking', 'TaskController@taskTracking')->name('task-tracking');
-        Route::get('add/{id}', 'TaskController@taskAdd')->name('task-add');
+        Route::get('add/{id?}', 'TaskController@taskAdd')->name('task-add');
         Route::post('save-task', 'TaskController@saveTask')->name('save-task');
         Route::get('get-task', 'TaskController@getTask')->name('get-task');
         Route::get('get-subtask', 'TaskController@getSubtask')->name('get-subtask');
-        Route::get('edit-task/{id}', 'TaskController@editTask')->where(['id'=>'[0-9]+'])->name('edit-task');
+        Route::get('edit-task/{id?}', 'TaskController@editTask')->where(['id'=>'[0-9]+'])->name('edit-task');
         Route::post('send-mail-notification', 'TaskController@sendMailNotification')->name('send-mail-notification');
         Route::get('theme-mail', 'TaskController@themeMail')->name('theme-mail');
         Route::get('get-subtask', 'TaskController@getSubTask')->name('get-subtask');

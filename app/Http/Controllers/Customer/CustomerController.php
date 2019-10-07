@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Customer;
 
 use App\Helpers\ImagesHelper;
+use App\Models\MainCustomerBought;
+use App\Models\MainCustomerNote;
 use App\Models\MainFile;
 use App\Models\MainTrackingHistory;
 use Illuminate\Http\Request;
@@ -42,14 +44,13 @@ class CustomerController extends Controller
         return view('customer.customer-add');
     }
 
-    // public function editCustomer()
-    // {
-    //     return view('customer.customer-edit');
-    // }
-
     public function listMyCustomer(){
         $data['state'] = Option::state();
         $data['status'] = GeneralHelper::getCustomerStatusList();
+        $data['user_list'] = MainUser::where([
+            ['user_team',Auth::user()->user_team],
+            ['user_id','!=',Auth::user()->user_id]
+        ])->get();
         return view('customer.my-customers',$data);
     }
 
@@ -286,6 +287,14 @@ class CustomerController extends Controller
             $customer_status_arr = json_decode($team_customer_status,TRUE);
 
             foreach ($customer_list as $key => $customer) {
+                //GET CUSTOMER NOTE
+                $customer_note_info = MainCustomerNote::where([
+                                    ['customer_id',$customer->id],
+                                    ['user_id',$user_id],
+                                    ['team_id',$team_id]]
+                                )->first();
+                if(isset($customer_note_info)) $customer_note = $customer_note_info->content;
+                else $customer_note = "";
 
                 if(!isset($customer_status_arr[$customer->id])){
                     $customer_status_arr[$customer->id] = 1;
@@ -302,6 +311,7 @@ class CustomerController extends Controller
                         'ct_business_phone' => $customer->ct_business_phone,
                         'ct_cell_phone' => $customer->ct_cell_phone,
                         'ct_status' => $ct_status,
+                        'note' => $customer_note,
                         'updated_at' => $customer->updated_at,
                         'user_nickname' => $customer->user_nickname
                     ];
@@ -314,6 +324,7 @@ class CustomerController extends Controller
                         'ct_business_phone' => $customer->ct_business_phone,
                         'ct_cell_phone' => $customer->ct_cell_phone,
                         'ct_status' => $ct_status,
+                        'note' => $customer_note,
                         'updated_at' => $customer->updated_at,
                         'user_nickname' => $customer->user_nickname
                     ];
@@ -329,6 +340,7 @@ class CustomerController extends Controller
                     'ct_business_phone' => "",
                     'ct_cell_phone' => "",
                     'ct_status' => "",
+                    'note' => '',
                     'updated_at' => "",
                     'user_nickname' => ""
                 ];
@@ -344,7 +356,11 @@ class CustomerController extends Controller
                     return Carbon::parse($row['updated_at'])->format('m/d/Y H:i:s')." by ".$row['user_nickname'];
                 })
                 ->addColumn('action', function ($row){
-                    return '<a class="btn btn-sm btn-secondary order-service" href="'.route('add-order',$row['id']).'">Order</a> <a class="btn btn-sm btn-secondary view" customer_id="'.$row['id'].'" href="javascript:void(0)"><i class="fas fa-eye"></i></a>';
+                    return '
+                          <a class="btn btn-sm btn-secondary add-note"  contact_name="'.$row['ct_fullname'].'" customer_id="'.$row['id'].'" href="javascript:void(0)" title="Add Customer Note"><i class="far fa-sticky-note"></i></a> 
+                          <a class="btn btn-sm btn-secondary view" customer_id="'.$row['id'].'" href="javascript:void(0)" title="View Customer"><i class="fas fa-eye"></i></a>
+                    <a class="btn btn-sm btn-secondary order-service" href="'.route('add-order',$row['id']).'" title="Go To Order"><i class="fas fa-shopping-cart"></i></a>
+                    <a class="btn btn-sm btn-secondary move-customer" contact_name="'.$row['ct_fullname'].'" customer_id="'.$row['id'].'" href="javascript:void(0)" title="Move Customer To User"><i class="fas fa-exchange-alt"></i></a>';
                 })
                 ->rawColumns(['action','id'])
                 ->make(true);
@@ -713,6 +729,8 @@ class CustomerController extends Controller
             \Log::info($e);
             return redirect()->route('customers')->with(['error'=>'Failed! Get information failed!']);
         }
+        $data['place_service'] = MainCustomerService::where('cs_customer_id',$customer_id)->get()->groupBy('cs_place_id');
+//        $data['place_service'] = $data['place_service'];
 
         $data['main_customer_info'] = MainCustomer::where('customer_id',$customer_id)->first();
         $data['id'] = $customer_id;
@@ -839,5 +857,83 @@ class CustomerController extends Controller
                 'email'=>$seller_info->user_email
             ]);
         }
+    }
+    public function moveCustomer(Request $request){
+
+        $user_own = Auth::user()->user_id;
+        $customer_id = $request->customer_id;
+        $user_to = $request->user_id;
+
+        //REMOVE CUSTOMER FORM CURRENT USER
+        $user_customer_list = Auth::user()->user_customer_list;
+        $user_customer_arr = explode(';',$user_customer_list);
+
+        if (($key = array_search($customer_id, $user_customer_arr)) !== false) {
+            unset($user_customer_arr[$key]);
+        }
+        $user_customer_list = implode(";",$user_customer_arr);
+
+        //ADD CUSTOMER TO USER
+        $user_customer_to = MainUser::where('user_id',$user_to)->first()->user_customer_list;
+        if($user_customer_to == ""){
+            $user_customer_list_to = $customer_id;
+        }else{
+            $user_customer_list_to = $user_customer_to.";".$customer_id;
+        }
+        DB::beginTransaction();
+
+        $user_current_update = MainUser::where('user_id',$user_own)->update(['user_customer_list'=>$user_customer_list]);
+        $user_to_update= MainUser::where('user_id',$user_to)->update(['user_customer_list'=>$user_customer_list_to]);
+
+        if(!isset($user_current_update) || !isset($user_to_update)){
+            DB::callback();
+            return response(['status'=>'error','message'=>'Move Failed!']);
+        }else{
+            DB::commit();
+            return response(['status'=>'success','message'=>'Move Successfully!']);
+        }
+    }
+    public function addCustomerNote(Request $request){
+
+        $rule = [
+            'customer_note' => 'required'
+        ];
+        $message = [
+            'customer_note.required' => 'Insert Note!'
+        ];
+        $validator = Validator::make($request->all(),$rule,$message);
+        if($validator->fails()){
+            return response([
+                'status' => 'error',
+                'message' => $validator->getMessagebag()->toArray()
+            ]);
+        }
+        $customer_id = $request->customer_id_note;
+        $customer_note = $request->customer_note;
+        $team_id = Auth::user()->user_team;
+        $user_id = Auth::user()->user_id;
+
+        $note_arr = [
+            'user_id' => $user_id,
+            'team_id' => $team_id,
+            'content' => $customer_note,
+            'customer_id' => $customer_id
+        ];
+        //CHECK CUSTOMER NOTE EXIST
+        $count = MainCustomerNote::where([
+            ['customer_id',$customer_id],
+            ['team_id',$team_id],
+            ['user_id',$user_id]
+        ])->first();
+
+        if(!isset($count)){
+            $update_customer_note = MainCustomerNote::create($note_arr);
+        }else{
+            $update_customer_note = MainCustomerNote::find($count->id)->update($note_arr);
+        }
+        if(!isset($update_customer_note))
+            return response(['status'=>'error','message'=>'Add Note Failded!']);
+        else
+            return response(['status'=>'success','message'=>'Add Note Successfully!']);
     }
 }
