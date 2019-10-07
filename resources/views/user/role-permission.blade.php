@@ -21,7 +21,15 @@ User Permission
           	    <tr>
                     <td>{{$menu['text']}}</td>
                 @foreach($permission_arr as $permission)
-                    <td class="text-center"><input type="checkbox" permission_status="{{$role_permission_arr[$menu['text']][$permission]}}" {{$role_permission_arr[$menu['text']][$permission]==0?"":"checked"}} menu="{{$menu['text']}}" permission_name="{{$permission}}" class="js-switch" /></td>
+                    <td class="text-center">
+                        <input type="checkbox"
+                               permission_status="{{$role_permission_arr[$menu['text']][$permission]??0}}"
+                               {{(!isset($role_permission_arr[$menu['text']][$permission])|| $role_permission_arr[$menu['text']][$permission]==0)?"":"checked"}}
+                               menu="{{$menu['text']}}"
+                               permission_name="{{$permission}}"
+                               class="js-switch"
+                        />
+                    </td>
                 @endforeach
                 </tr>
                 @else
@@ -32,14 +40,21 @@ User Permission
 	                <tr class="{{$key}}" style="display: none">
 	                	    <td style="padding-left: 30px">{{$value_chil['text']}}</td>
                 	    @foreach($permission_arr as $permission)
-		                    <td class="text-center"><input type="checkbox" permission_status="{{$role_permission_arr[$value_chil['text']][$permission]}}" {{$role_permission_arr[$value_chil['text']][$permission]==0?"":"checked"}} menu="{{$value_chil['text']}}" permission_name="{{$permission}}" class="js-switch" /></td>
+		                    <td class="text-center">
+                                <input type="checkbox"
+                                       permission_status="{{$role_permission_arr[$value_chil['text']][$permission]??0}}"
+                                       {{(!isset($role_permission_arr[$value_chil['text']][$permission])||$role_permission_arr[$value_chil['text']][$permission]==0)?"":"checked"}}
+                                       menu="{{$value_chil['text']}}"
+                                       permission_name="{{$permission}}"
+                                       class="js-switch"
+                                />
+                            </td>
 		                @endforeach
 		            </tr>
 	                @endforeach
-                
                 @endif
             @endforeach
-          </tbody>        
+          </tbody>
       </table>
     </div>
   </div>
@@ -87,7 +102,7 @@ User Permission
 			.fail(function() {
 				console.log("error");
 			});
-			
+
 
 		});
 	});

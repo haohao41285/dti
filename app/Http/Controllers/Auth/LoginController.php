@@ -44,16 +44,16 @@ class LoginController extends Controller
     {
         $this->middleware('guest')->except('logout');
     }
-    
+
     public function showLoginForm()
     {
         return view('auth.login');
     }
-    
+
     public function postLogin(Request $request){
-         
+
         $validator = $this->validator($request->input());
-        
+
         if ($validator->fails()) {
             return redirect()->back()->withInput()->withErrors($validator->messages());
 
@@ -61,28 +61,33 @@ class LoginController extends Controller
          $credentials = ($request->only('user_phone', 'user_password'));
         if (Auth::attempt($credentials)){
 
-            //GET PROMISSION
+            //GET PERMISSION
             $user_list = DB::table('main_user')->leftjoin('main_group_user',function($join){
                                     $join->on('main_user.user_group_id','main_group_user.gu_id');
                                     })
                                     ->where('user_phone',$request->user_phone)
                                     ->get();
+            if($user_list[0]->user_group_id == 1) $permission = 1;
+            else $permission = 0;
 
             //CHECK PERMISSION EXIST IN GU_ROLE_NEW
-            if($user_list[0]->gu_role_new == null){
-                $permission_list_session = self::setPermissionList();
-                //INSERT PERMISSINO ROLE TO DATABASE
+            if($user_list[0]->gu_role_new == null || $permission == 1){
+                $permission_list_session = self::setPermissionList($permission);
+                //INSERT PERMISSION ROLE TO DATABASE
                 DB::table('main_group_user')->where('gu_id',$user_list[0]->gu_id)->update(['gu_role_new'=>$permission_list_session]);
                 Session::put('permission_list_session',json_decode($permission_list_session,TRUE));
-            }else
+            }else{
+
                 Session::put('permission_list_session',json_decode($user_list[0]->gu_role_new,TRUE));
+            }
+
 
             return redirect()->intended('/');
-        } else {          
+        } else {
             $errors = new MessageBag(['errorLogin' => 'User Phone or Password is incorrect']);
             return redirect()->back()->withInput()->withErrors($errors);
         }
-       
+
     }
     public function logout() {
         Auth::logout();
@@ -96,26 +101,26 @@ class LoginController extends Controller
      */
     protected function validator(array $data)
     {
-        $rules = [ 
-            $this->username() => 'required|max:255',            
-            'user_password' => 'required|max:255',            
+        $rules = [
+            $this->username() => 'required|max:255',
+            'user_password' => 'required|max:255',
         ];
         if(env('GOOGLE_RECAPTCHA')){
            $rules['g-recaptcha-response'] =  ['required', new \App\Rules\ValidRecaptcha];
-        }        
+        }
         return Validator::make($data, $rules);
     }
-    
+
     public function username()
     {
         return 'user_phone';
     }
-    
+
     protected function credentials(Request $request)
     {
         return $request->only($this->username(), 'user_password');
     }
-    public static function setPermissionList(){
+    public static function setPermissionList($permission){
 
         $permission_arr = [];
 
@@ -129,10 +134,10 @@ class LoginController extends Controller
             foreach ($menu_arr as $key => $value) {
 
                 $permission_arr[$value] = [
-                    'Create' => 0,
-                    'Read' => 0,
-                    'Update' => 0,
-                    'Delete' => 0
+                    'Create' => $permission,
+                    'Read' => $permission,
+                    'Update' => $permission,
+                    'Delete' => $permission
                 ];
             }
         }
