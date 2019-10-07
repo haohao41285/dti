@@ -140,12 +140,18 @@ class CustomerController extends Controller
                 return substr($row['ct_cell_phone'],0,3)."########";
             })
             ->addColumn('action', function ($row){
-                if($row['ct_status'] == 'Disabled')
-                    return '<a class="btn btn-sm btn-secondary view" customer_id="'.$row['id'].'" href="javascript:void(0)"><i class="fas fa-eye"></i></a> <a class="btn btn-sm btn-secondary edit-customer" customer_id="'.$row['id'].'" href="javascript:void(0)"><i class="fas fa-edit"></i></a>
-                    <a class="btn btn-sm btn-secondary deleted" customer_id="'.$row['id'].'" href="javascript:void(0)"><i class="fas fa-trash text-danger"></i></a>';
-                else
-                    return '<a class="btn btn-sm btn-secondary view" customer_id="'.$row['id'].'" href="javascript:void(0)"><i class="fas fa-eye"></i></a> <a class="btn btn-sm btn-secondary edit-customer" customer_id="'.$row['id'].'" href="javascript:void(0)"><i class="fas fa-edit"></i></a>
+//                if($row['ct_status'] == 'Disabled')
+//                    if(Auth::user()->user_id == 1)
+//                    return '<a class="btn btn-sm btn-secondary view" customer_id="'.$row['id'].'" href="javascript:void(0)"><i class="fas fa-eye"></i></a>
+//                    <a class="btn btn-sm btn-secondary edit-customer" customer_id="'.$row['id'].'" href="javascript:void(0)"><i class="fas fa-edit"></i></a>
+//                    <a class="btn btn-sm btn-secondary deleted" customer_id="'.$row['id'].'" href="javascript:void(0)"><i class="fas fa-trash text-danger"></i></a>';
+//                else
+                if(Auth::user()->user_id == 1)
+                    return '<a class="btn btn-sm btn-secondary view" customer_id="'.$row['id'].'" href="javascript:void(0)"><i class="fas fa-eye"></i></a>
+                        <a class="btn btn-sm btn-secondary edit-customer" customer_id="'.$row['id'].'" href="javascript:void(0)"><i class="fas fa-edit"></i></a>
                         <a class="btn btn-sm btn-secondary delete-customer" customer_id="'.$row['id'].'" href="javascript:void(0)"><i class="fas fa-trash"></i></a>';
+                else
+                    return '<a class="btn btn-sm btn-secondary view" customer_id="'.$row['id'].'" href="javascript:void(0)"><i class="fas fa-eye"></i></a>';
             })
             ->rawColumns(['action','id'])
             ->make(true);

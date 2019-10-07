@@ -138,7 +138,7 @@ Route::group(['middleware' => ['auth']], function () {
         Route::get('change-status-role','UserController@changeStatusRole')->name('change-status-role');
         Route::get('add-role','UserController@addRole')->name('add-role');
 
-        Route::get('rolepermission/{id}','UserController@permission')->where(['id'=>'[0-9]+'])->name('permission');
+        Route::get('role-permission/{id}','UserController@permission')->where(['id'=>'[0-9]+'])->name('permission');
         Route::get('change-permission','UserController@changePermission')->name('change-permission');
     });
 

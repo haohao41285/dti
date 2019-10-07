@@ -14,14 +14,14 @@ use DB;
 use App\Helpers\ImagesHelper;
 use Gate;
 
-class UserController extends Controller 
-{    
+class UserController extends Controller
+{
     public function index(){
         return view('user.list');
     }
 
     public function editProfile(){
-    	$data['user'] = Auth::user(); 
+    	$data['user'] = Auth::user();
         return view('auth.editprofile',$data);
     }
 
@@ -29,7 +29,7 @@ class UserController extends Controller
     public function edit(Request $request){
     	$id = Auth::id();
 
-    	$this->validate($request,[                       
+    	$this->validate($request,[
             'confirm_password' =>'same:new_password',
     	],[
 
@@ -46,10 +46,10 @@ class UserController extends Controller
 
         if($request->password && $request->new_password && $request->confirm_password){
             if(\Hash::check($request->password,$user->user_password)){
-                $user->user_password = bcrypt($request->new_password);               
-            }else {            	
+                $user->user_password = bcrypt($request->new_password);
+            }else {
                 return back()->with('error',"Password don't match");
-            }            
+            }
         }
 
     	$user->save();
@@ -215,7 +215,7 @@ class UserController extends Controller
 
         }else{
 
-            $permission_arr = ['Create','Read','Update','Delete'];
+            $permission_arr = ['Read','Create','Update','Delete'];
 
             $permission_check = DB::table('main_group_user')
                                 ->where('gu_id',$role_id)
@@ -223,7 +223,7 @@ class UserController extends Controller
                                 ->first();
 
             if(!isset($permission_check)){
-                return redirect()->route('dashboard');
+                return back()->with(['error'=>'Turn On This Status Role!']);
             }else
                 $permission_list = $permission_check->gu_role_new;
 
@@ -265,5 +265,4 @@ class UserController extends Controller
     }
 }
 
-    
-    
+
