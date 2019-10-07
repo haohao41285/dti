@@ -54,12 +54,14 @@ class SetupLoginBackground  extends Controller
         // dd($image);
 
         if($request->action == "Create"){   
-            $app = MainLoginBackground::create($arr);
+            MainLoginBackground::create($arr);
         } else {
             if(empty($image)){
                 unset($arr['image']);
             }
-            $app = MainLoginBackground::where('id',$request->id)->update($arr);
+
+            $data = MainLoginBackground::where('id',$request->id)->first();
+            $data->update($arr);
         }
         
         return response()->json(['status'=>1,"msg"=>"Saved successfully!"],200);
@@ -68,7 +70,8 @@ class SetupLoginBackground  extends Controller
 
     public function delete(Request $request){
         if($request->id){
-            MainLoginBackground::where('id',$request->id)->delete();
+            $data = MainLoginBackground::where('id',$request->id)->first();
+            $data->delete();
             return response()->json(['status'=>1,'msg'=>"Deleted successfully!"]);
         }
     }
