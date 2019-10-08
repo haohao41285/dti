@@ -1,12 +1,58 @@
 @extends('layouts.app')
 @section('content')
     <h4 class="border border-info border-top-0 mb-3 border-right-0 border-left-0 text-info">MY CUSTOMER</h4>
+    <div class="modal fade" id="move-customers-modal" role="dialog">
+        <div class="modal-dialog">
+            <!-- Modal content-->
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h6 class="modal-title"><b>MOVE CUSTOMERS</b></h6>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
+                <form action="" method="get" accept-charset="utf-8">
+                    <div class="modal-body">
+                        <table class="table table-hover table-striped">
+                            <thead>
+                                <tr class="text-center">
+                                    <th>Customer</th>
+                                    <th>User</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            @foreach($customer_list as $customer)
+                                <tr>
+                                    <td>
+                                        <input type="text" class="form-control form-control-sm" value="{{$customer->ct_salon_name}}" name="customer_name" disabled>
+                                        <input type="hidden" value="{{$customer->id}}" name="customer_id[]">
+                                    </td>
+                                    <td>
+                                        <select name="user_id[]" id="user_id" class="form-control form-control-sm text-capitalize">
+                                            <option value="0"></option>
+                                            @foreach($user_list as $user)
+                                                <option value="{{$user->user_id}}">{{$user->user_nickname}} ( {{$user->getFullname()}} )</option>
+                                            @endforeach
+                                        </select>
+                                    </td>
+                                </tr>
+                            @endforeach
+
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-danger btn-sm cancel" data-dismiss="modal">Cancel</button>
+                        <button type="button" class="btn btn-sm btn-primary move-customers-submit">Submit</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
 <div class="modal fade" id="move-modal" role="dialog">
     <div class="modal-dialog">
         <!-- Modal content-->
         <div class="modal-content">
             <div class="modal-header">
-                <h6 class="modal-title"><b>Move this customer to:</b></h6>
+                <h6 class="modal-title text-info"><b>MOVE CUSTOMER:</b></h6>
                 <button type="button" class="close" data-dismiss="modal">&times;</button>
             </div>
             <form action="" method="get" accept-charset="utf-8">
@@ -42,7 +88,7 @@
             <!-- Modal content-->
             <div class="modal-content">
                 <div class="modal-header">
-                    <h6 class="modal-title"><b>Add Customer Note:</b></h6>
+                    <h6 class="modal-title text-info"><b>ADD CUSTOMER NOTE:</b></h6>
                     <button type="button" class="close" data-dismiss="modal">&times;</button>
                 </div>
                 <form action="" method="post" accept-charset="utf-8">
@@ -171,6 +217,10 @@
        processing: true,
        serverSide: true,
        buttons: [
+           {
+               text: '<i class="fas fa-exchange-alt"></i> Move Customers',
+               className: "btn-sm move-customers"
+           },
            {
                text: '<i class="fas fa-download"></i> Import',
                className: "btn-sm import-show"
@@ -500,6 +550,51 @@
                 console.log("error");
             });
     });
+    $(document).on('click','.move-customers',function(){
+        $("#move-customers-modal").modal('show');
+    });
+    $(".move-customers-submit").click(function () {
+
+        var formData = new FormData($(this).parents('form')[0]);
+        formData.append('_token','{{csrf_token()}}');
+        $.ajax({
+            url: '{{route('move-customers')}}',
+            type: 'POST',
+            dataType: 'html',
+            data: formData,
+            cache: false,
+            contentType: false,
+            processData: false,
+            async: true,
+            xhr: function() {
+                var myXhr = $.ajaxSettings.xhr();
+                return myXhr;
+            },
+        })
+            .done(function(data) {
+                // console.log(data);
+                // return;
+                data = JSON.parse(data);
+                let message = '';
+                if(data.status == 'error'){
+                    if( typeof(data.message) == 'string')
+                        toastr.error(data.message);
+                    else{
+                        $.each(data.message,function (index,val) {
+                            message += val+'\n';
+                        });
+                        toastr.error(message);
+                    }
+                }else{
+                    toastr.success(data.message);
+                    table.ajax.reload(null, false);
+                    $("#move-customers-modal").modal("hide");
+                }
+            })
+            .fail(function() {
+                console.log("error");
+            });
+    })
 });
 </script>
 @endpush

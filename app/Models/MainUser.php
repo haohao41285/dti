@@ -28,6 +28,7 @@ class MainUser extends Model
 		'user_avatar',
 		'user_status',
 		'user_token',
+        'user_customer_list'
 	];
 
 	protected $guarded = [];
@@ -43,8 +44,5 @@ class MainUser extends Model
 	}
 	public function getUserGroup(){
 	    return $this->hasOne(MainGroupUser::class,'user_group_id','gu_id');
-    }
-    public function getTeamType(){
-	    return $this->hasManyThrough(MainTeamType::class,MainTeam::class,'team_type','id','user_id','id');
     }
 }
