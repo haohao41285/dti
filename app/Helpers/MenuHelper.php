@@ -18,6 +18,7 @@ class MenuHelper{
 		    ['text' => 'Marketing', 'icon'=>'fas fa-lightbulb', 'link' => 'marketing','childrens' => [
 		        ['text' => 'Send SMS', 'link'=> 'marketing/sendsms'],
 		        ['text' => 'Tracking History', 'link'=> 'marketing/tracking-history'],        
+		        ['text' => 'News', 'link'=> 'marketing/news'],        
 		    ]],
 		    ['text' => 'DataSetup', 'icon'=>'fas fa-database', 'link' => 'datasetup','childrens' => [
 		        ['text' => 'Combo', 'link'=> 'datasetup/combos'],
