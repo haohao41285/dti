@@ -15,4 +15,8 @@ class MainTeam extends Model
     	'team_type',
     	'team_email'
     ];
+    public function getTeamType(){
+        return $this->belongsTo(MainTeamType::class,'team_type','id');
+    }
+
 }

@@ -28,6 +28,7 @@ class MainUser extends Model
 		'user_avatar',
 		'user_status',
 		'user_token',
+        'user_customer_list'
 	];
 
 	protected $guarded = [];

@@ -17,7 +17,8 @@ use Auth;
 class SetupTeamController  extends Controller
 {
 	public function index(){
-
+//	    $team_info = MainUser::where('user_id',Auth::user()->user_id)->first()->getTeamType;
+//	    return $team_info;
 		return view('setting.setup-team');
 	}
 	public function getTemDatatable(Request $request)
@@ -32,7 +33,7 @@ class SetupTeamController  extends Controller
 								->select('main_team.*','main_user.user_firstname','main_user.user_lastname','main_team_type.team_type_name','main_user.user_id','main_team.id');
 
 		return DataTables::of($team_list)
-				
+
 			->editColumn('team_leader',function($row){
 				return $row->user_firstname." ".$row->user_lastname;
 			})
@@ -120,7 +121,7 @@ class SetupTeamController  extends Controller
 			}
 		}else
 		    return response(['status'=>'error','message'=>'Error! Check again!']);
-			
+
 	}
 	public function deleteTeam(Request $request)
 	{

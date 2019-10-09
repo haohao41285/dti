@@ -2,8 +2,20 @@
 @section('content-title')
     Customers Management
 @endsection
+@section('styles')
+
+@endsection
 @section('content')
-<div class="table-responsive ">
+
+    @if(\Illuminate\Support\Facades\Auth::user()->user_group_id != 1)
+        <style>
+            .an{
+                display: none;
+            }
+        </style>
+    @endif
+<div class="table-responsive">
+
     <div class="form-group col-md-12 row">
         <div class="col-md-4">
             <label for="">Created date</label>
@@ -21,13 +33,13 @@
             <label for="">Status</label>
             <select id="status-customer" name="status_customer" class="form-control form-control-sm">
                 <option value="">-- ALL --</option>
-                @if(\Auth::user()->user_group_id == 1)
+                @if(\Illuminate\Support\Facades\Auth::user()->user_group_id == 1)
                 @foreach ($status as $key =>  $element)
                     <option value="{{$key}}">{{$element}}</option>
                 @endforeach
-                @elseif
-                    <option
-                    @endif
+                @else
+                    <option value="3">Arrivals</option>
+                @endif
             </select>
         </div>
         <div class="col-2 " style="position: relative;">
@@ -105,11 +117,11 @@
        buttons: [
            {
                text: '<i class="fas fa-download"></i> Import',
-               className: "btn-sm import-show",
+               className: "btn-sm import-show an",
            },
            {
                text: '<i class="fas fa-upload"></i> Export',
-               className: "btn-sm",
+               className: "btn-sm an",
                action: function ( e, dt, node, config ) {
                   document.location.href = "{{route('export-customer')}}";
               }

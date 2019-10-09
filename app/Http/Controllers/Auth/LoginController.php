@@ -77,11 +77,8 @@ class LoginController extends Controller
                 DB::table('main_group_user')->where('gu_id',$user_list[0]->gu_id)->update(['gu_role_new'=>$permission_list_session]);
                 Session::put('permission_list_session',json_decode($permission_list_session,TRUE));
             }else{
-
                 Session::put('permission_list_session',json_decode($user_list[0]->gu_role_new,TRUE));
             }
-
-
             return redirect()->intended('/');
         } else {
             $errors = new MessageBag(['errorLogin' => 'User Phone or Password is incorrect']);
