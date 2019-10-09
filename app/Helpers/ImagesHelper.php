@@ -110,12 +110,17 @@ class ImagesHelper
                     list($type, $data) = explode(';', $data);
                     list(, $data)      = explode(',', $data);
                     $data = base64_decode($data);
-                    $image_name = "/tmp-upload/summer_note/" . time().$k.'.png';
-                    $path = public_path() . $image_name;
-                    
-                    file_put_contents($path, $data);
+                    $filename = time().$k.'.png';
+                    $tmpUpload = "tmp-upload/" . $filename;
+                    $pathTmpUpload = public_path() .'/'. $tmpUpload;
+                    file_put_contents($pathTmpUpload, $data);
+
+                    $pathImage = '/images/place/news/summernote/';
+                    self::sendRequestToApi($tmpUpload,$filename,$pathImage);
+                    unlink("tmp-upload/".$filename);
+
                     $img->removeAttribute('src');
-                    $img->setAttribute('src', $image_name);
+                    $img->setAttribute('src', env('URL_FILE_VIEW').$pathImage.$filename);
                     
                 } catch (\Exception $e) {
                   // \Log::info($e);
