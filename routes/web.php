@@ -73,6 +73,7 @@ Route::group(['middleware' => ['auth']], function () {
             Route::post('news-delete', 'NewsController@deleteNews')->name('deleteNews');
             Route::post('news-type-save', 'NewsController@saveNewsType')->name('saveNewsType');
             Route::post('news-save', 'NewsController@saveNews')->name('saveNews');
+            Route::get('get-news-by-id', 'NewsController@getNewsbyId')->name('getNewsbyId');
         });
 
     });

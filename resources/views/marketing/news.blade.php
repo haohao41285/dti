@@ -2,8 +2,12 @@
 @section('content-title')
 News
 @endsection
-@push('scripts')
-
+@push('styles')
+  <style>
+    .panel-heading{
+         background: #f8f9fc;
+      }
+  </style>
 @endpush
 @section('content')
 <div class="row" >
@@ -20,7 +24,7 @@ News
                                         <th>ID</th>
                                         <th>Title</th>
                                         <th>Created at</th>
-                                        <th>Action</th>
+                                        <th >Action</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -35,7 +39,7 @@ News
                 <div class="col-6 ">
                     <div class="card shadow mb-4 ">
                         <div class="card-header py-2">
-                            <h6 class="m-0 font-weight-bold text-primary">News List </h6>
+                            <h6 class="m-0 font-weight-bold text-primary news-list-title">News List </h6>
                         </div>
                         <div class="card-body">
                         <div class="table-responsive dataTables_scrollBody dataTables_scroll" >
@@ -90,7 +94,7 @@ News
 </div>
 {{-- news modal --}}
 <div class="modal fade" id="news-modal" tabindex="-1" role="dialog">
-  <div class="modal-dialog modal-lg" role="document">
+  <div class="modal-dialog modal-lg modal-dialog-scrollable" role="document">
     <div class="modal-content">
       <form method="post" id="news-form" enctype='multipart/form-data'>
         @csrf
@@ -100,7 +104,7 @@ News
             <span aria-hidden="true">&times;</span>
           </button>
         </div>
-        <div class="modal-body">
+        <div class="modal-body" style="position: relative;overflow: auto;max-height:80vh;width: 100%;">
             <div class="form-group row col-12">
               <label class="col-2 ">Title</label>
               <input class="form-control-sm form-control col-10" type="text" name="title">
@@ -110,6 +114,12 @@ News
               <div class="previewImage">
                   <img id="previewImageNews" src="{{ asset("images/no-image.png")}}"  />
                   <input type="file" accept="image/*" name="image" class="custom-file-input"  previewImageId="previewImageNews" value="" style="display: none">
+              </div>
+            </div>
+            <div class="form-group row col-12">
+              <label class="col-2 ">Content</label>
+              <div class="col-10 row">                     
+                    <textarea name="content" class="form-control summernote"></textarea>
               </div>
             </div>
         </div>
@@ -131,6 +141,7 @@ News
     function clear(){
       $("#news-form")[0].reset();
       $("#news-type-form")[0].reset();
+      $(".note-editable").html('');
 
       $(".previewImage img").attr('src','{{asset('images/no-image.png')}}');
     }
@@ -185,6 +196,7 @@ News
     }
     
      $(document).ready(function() {
+        summernote();
         perviewImage();
         var newsTypeId = null;
 
@@ -245,32 +257,45 @@ News
           e.preventDefault();
           clear()
           var id = $(this).attr("data-id");
-          var name = $(this).parent().parent().find(".name").text();
-          var desc = $(this).parent().parent().find(".desc").text();
+          var title = $(this).parent().parent().find(".title").text();
 
-          $("input[name='name']").val(name);
-          $("input[name='desc']").val(desc);
+          $("input[name='title']").val(title);
 
           $("#news-type-modal").modal("show");
           $("#news-type-form").find('.modal-title').text("Edit News Type");
           $("#news-type-form").find('input[name="action"]').val("Update");
-          $("#news-type-form").find('input[name="News TypeId"]').val(id);
+          $("#news-type-form").find('input[name="newsTypeId"]').val(id);
         });
 
         $(document).on('click','.edit-news',function(e){
           e.preventDefault();
           clear()
           var id = $(this).attr("data-id");
-          var link = $(this).parent().parent().find(".link").text();
-          var img = $(this).parent().parent().find(".image img").attr("src");
 
-          $("input[name='link']").val(link);
-          $("#previewImageNews img").attr("src",img);
+          $.ajax({
+            url:"{{ route('getNewsbyId') }}",
+            method:"get",
+            data:{id},
+            dataType:"json",
+            success:function(data){
+                if(data.status == true){
+                    console.log("{{env('URL_FILE_VIEW')}}" + data.data.image);
+                    $("input[name='title']").val(data.data.title);
+                    $("#previewImageNews").attr("src","{{env('URL_FILE_VIEW')}}" + data.data.image);
+                    $(".note-editable").html(data.data.content);
 
-          $("#news-modal").modal("show");
-          $("#news-form").find('.modal-title').text("Edit News Type");
-          $("#news-form").find('input[name="action"]').val("Update");
-          $("#news-form").find('input[name="News TypeBannerId"]').val(id);
+                    $("#news-modal").modal("show");
+                    $("#news-form").find('.modal-title').text("Edit News Type");
+                    $("#news-form").find('input[name="action"]').val("Update");
+                    $("#news-form").find('input[name="newsId"]').val(id);
+                }
+            },
+            error:function(){
+                toastr.error("Failed to get data");
+            }
+          });
+
+          
         });
 
         $(document).on("click",".delete-news-type",function(e){
@@ -326,10 +351,12 @@ News
         });
         //load News Type banner list by News Type id
         $("#news-type-datatable tbody").on('click',"tr",function(){
-            $('#News Type-datatable tbody tr.selected').removeClass('selected');
+            $('#news-type-datatable tbody tr.selected').removeClass('selected');
             $(this).addClass('selected');
-            newsId = $(this).find("td a.edit-News Type").attr('data-id');
-            $("#news-form").find("input[name='newsId']").val(newsId);
+            newsTypeId = $(this).find("td a.edit-news-type").attr('data-id');
+            title = $(this).find("td.title").text();
+            $("#news-form").find("input[name='newsTypeId']").val(newsTypeId);
+            $(".news-list-title").html("New List Of <b>"+title+"</b>");
             newsTable.draw();
         });
 

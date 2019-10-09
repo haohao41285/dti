@@ -91,5 +91,43 @@ class ImagesHelper
         return $pathImage . $filename;
     }
 
+
+    /**
+     * Auto upload image to SummerNote 
+     * @param  $content input
+     * @return $content output
+     */
+    public static function uploadImageSummerNote($content){
+        $dom = new \DomDocument();
+        $dom->loadHtml('<?xml encoding="utf-8" ?>' .$content);   
+        $images = $dom->getElementsByTagName('img');
+
+        foreach($images as $k => $img){
+            $data = $img->getAttribute('src');
+
+            if($data){
+                try {
+                    list($type, $data) = explode(';', $data);
+                    list(, $data)      = explode(',', $data);
+                    $data = base64_decode($data);
+                    $image_name = "/tmp-upload/summer_note/" . time().$k.'.png';
+                    $path = public_path() . $image_name;
+                    
+                    file_put_contents($path, $data);
+                    $img->removeAttribute('src');
+                    $img->setAttribute('src', $image_name);
+                    
+                } catch (\Exception $e) {
+                  // \Log::info($e);
+                  continue;
+                }
+                
+            }            
+        }
+        $content = $dom->saveHTML();
+        // \Log::info($content);
+        return $content;
+    }
+
     
 }
