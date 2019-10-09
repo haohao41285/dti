@@ -48,7 +48,8 @@ Class WebsiteThemePropertiesController extends Controller
                 unset($arr['theme_properties_image']);
             }
             // dd($request->properties_id);
-            MainThemeProperties::where('theme_properties_id',$request->theme_properties_id)->update($arr);
+            $themeProperties = MainThemeProperties::where('theme_properties_id',$request->theme_properties_id)->first();
+            $themeProperties->update($arr);
         }
         
         return response()->json(['status'=>1,'msg'=>$request->action.'d successfully!']);
@@ -64,7 +65,8 @@ Class WebsiteThemePropertiesController extends Controller
 
     public function delete(Request $request){
         if($request->properties_id){
-            $property = MainThemeProperties::where('theme_properties_id',$request->properties_id)->delete();
+            $property = MainThemeProperties::where('theme_properties_id',$request->properties_id)->first();
+            $property->delete();
 
             return response()->json(['status'=>1,'msg'=>"Deleted successfully!"]);
         }

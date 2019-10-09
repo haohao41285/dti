@@ -10,3 +10,11 @@ function perviewImage(){
             $("input[previewImageId='"+id+"']").trigger('click');
   });
 }
+
+function summernote(){
+  $('.summernote').summernote();
+  $('.note-icon-trash').trigger('click');
+}
+
+
+

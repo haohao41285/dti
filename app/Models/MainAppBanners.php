@@ -4,7 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class MainAppBanners extends Model
+class MainAppBanners extends BaseModel
 {
     protected $table = 'main_app_banners';
 
@@ -20,6 +20,9 @@ class MainAppBanners extends Model
     ];
 
     protected $guarded = [];
+
+    protected $created_by = false;
+    protected $updated_by = false;
 
         
 }

@@ -2,9 +2,9 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
+use App\Models\BaseModel;
 
-class MainTheme extends Model
+class MainTheme extends BaseModel
 {
     protected $table = 'main_theme';
 

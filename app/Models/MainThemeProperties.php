@@ -2,9 +2,9 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
+use App\Models\BaseModel;
 
-class MainThemeProperties extends Model
+class MainThemeProperties extends BaseModel
 {
     protected $table = 'main_theme_properties';
 
@@ -24,5 +24,7 @@ class MainThemeProperties extends Model
 
     protected $guarded = [];
 
-        
+    protected $created_by = false;
+
+    protected $updated_by = false;
 }

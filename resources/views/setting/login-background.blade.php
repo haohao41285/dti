@@ -167,12 +167,13 @@ Setup Login Background
           e.preventDefault();
           clear()
           var id = $(this).attr("data-id");
-          var image = $(this).parent().parent().find(".image").text();
+          var image = $(this).parent().parent().find(".image img").attr('src');
 
           $("#modal").modal("show");
           $("form").find('.modal-title').text("Edit");
           $("form").find('input[name="action"]').val("Update");
           $("form").find('input[name="id"]').val(id);
+          $(".previewImage img").attr('src',image);
         });
 
 

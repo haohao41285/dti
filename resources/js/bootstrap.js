@@ -1,3 +1,4 @@
+window.summernote = require('summernote')
 
 window.bootstrapToggle = require('bootstrap-toggle')
 

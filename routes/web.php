@@ -67,6 +67,17 @@ Route::group(['middleware' => ['auth']], function () {
         Route::get('/sms/event-detail','SmsController@eventDetail')->name('event-detail');
         Route::get('/sms/calculate-sms','SmsController@calculateSms')->name('calculate-sms');
 
+        Route::group(['prefix' => 'news'], function() {
+            Route::get('/', 'NewsController@index')->name('news');
+            Route::get('news-type-datatable', 'NewsController@getNewsTypeDatatable')->name('getNewsTypeDatatable');
+            Route::get('news-datatable', 'NewsController@getNewsDatatable')->name('getNewsDatatable');
+            Route::post('news-type-delete', 'NewsController@deleteNewsType')->name('deleteNewsType');
+            Route::post('news-delete', 'NewsController@deleteNews')->name('deleteNews');
+            Route::post('news-type-save', 'NewsController@saveNewsType')->name('saveNewsType');
+            Route::post('news-save', 'NewsController@saveNews')->name('saveNews');
+            Route::get('get-news-by-id', 'NewsController@getNewsbyId')->name('getNewsbyId');
+        });
+
     });
 
     Route::group(['prefix'=>'statistics', 'namespace'=>'Statistics'],function(){

@@ -5,9 +5,7 @@
 @import "../../node_modules/bootstrap/scss/bootstrap.scss";
 
 // Summer Note
-@import "../../node_modules/summernote/src/less/summernote-bs4.scss";
-@import "../../node_modules/summernote/src/less/summernote.scss";
-@import "../../node_modules/summernote/src/less/elements.scss";
+@import "~summernote/dist/summernote";
 
 // MetisMenu
 @import "../../node_modules/metismenu/dist/metisMenu";

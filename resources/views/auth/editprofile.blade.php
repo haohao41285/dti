@@ -12,12 +12,16 @@
          @csrf
       <div class="row m-y-2">
          <div class="col-lg-4 pull-lg-8 text-center">
-         <img  src="{{isset($user->user_avatar) ? env('PATH_VIEW_IMAGE').$user->user_avatar : '//placehold.it/150/'}}" class="m-x-auto img-fluid img-circle rounded-circle" loadImageFromId="avatar"/>
-         <h6 class="m-t-2">Upload a different photo</h6>
-         <label class="custom-file col-md-8">
-         <span id="choose_file" class="form-control form-control-sm">Choose file</span>
-         <input accept="image/*" type="file" id="avatar" name="avatar" class="custom-file-input">
-         </label>
+         {{-- <img  src="{{isset($user->user_avatar) ? env('PATH_VIEW_IMAGE').$user->user_avatar : '//placehold.it/150/'}}" class="m-x-auto img-fluid img-circle rounded-circle" loadImageFromId="avatar"/> --}}
+         {{-- <h6 class="m-t-2">Upload a different photo</h6> --}}
+         {{-- <label class="custom-file col-md-8"> --}}
+         {{-- <span id="choose_file" class="form-control form-control-sm">Choose file</span> --}}
+         {{-- <input accept="image/*" type="file" id="avatar" name="avatar" class="custom-file-input"> --}}
+         <div class="previewImage">
+                  <img id="previewImageAppbanner" src="{{isset($user->user_avatar) ? env('PATH_VIEW_IMAGE').$user->user_avatar : asset("images/no-image.png")}}"  />
+                  <input type="file" accept="image/*" name="avatar" class="custom-file-input"  previewImageId="previewImageAppbanner" value="" style="display: none">
+         </div>
+         {{-- </label> --}}
          </div>
          <div class="col-lg-8 push-lg-4 personal-info">
                <div class="form-group row">
@@ -77,6 +81,11 @@
    </div>
 </div>
 @endsection
-@section('script')
-<script src="js/upload_avatar.js"></script>
-@endsection
+@push('scripts')
+<script>
+   $(document).ready(function() {
+        perviewImage();
+   });
+</script>
+
+@endpush

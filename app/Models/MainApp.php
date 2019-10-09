@@ -4,7 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class MainApp extends Model
+class MainApp extends BaseModel
 {
     protected $table = 'main_app';
 
@@ -19,6 +19,9 @@ class MainApp extends Model
     ];
 
     protected $guarded = [];
+
+    protected $created_by = false;
+    protected $updated_by = false;
 
         
 }
