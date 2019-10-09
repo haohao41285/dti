@@ -67,7 +67,7 @@ return [
     |
     */
 
-    'timezone' => 'UTC',
+    'timezone' => 'Asia/Ho_Chi_Minh',
 
     /*
     |--------------------------------------------------------------------------
@@ -174,12 +174,13 @@ return [
         // App\Providers\BroadcastServiceProvider::class,
         App\Providers\EventServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
-        
+
         /**
          * My App
          */
         App\Providers\HelperServiceProvider::class,
         Maatwebsite\Excel\ExcelServiceProvider::class,
+        App\Providers\ComposerServiceProvider::class,
     ],
 
     /*
@@ -236,7 +237,7 @@ return [
     /*
      * File URL to view
      */
-    'url_file_view' => env( 'URL_FILE_VIEW', 'C:/xampp/htdocs/upload'),    
+    'url_file_view' => env( 'URL_FILE_VIEW', 'C:/xampp/htdocs/upload'),
     /*
      * URL Path to save file
      */

@@ -26,8 +26,8 @@ class Kernel extends ConsoleKernel
     {
         // $schedule->command('inspire')
         //          ->hourly();
-        $schedule->command('cron:sendnotification')
-            ->daily()->withoutOverlapping();;
+//        $schedule->command('cron:sendnotification')
+//            ->dailyAt('18:00')->withoutOverlapping();
     }
 
     /**

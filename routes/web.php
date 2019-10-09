@@ -126,6 +126,10 @@ Route::group(['middleware' => ['auth']], function () {
         Route::get('sms-template-datatable','SetupSmsController@smsTemplateDatatable')->name('sms-template-datatable');
         Route::post('delete-template','SetupSmsController@deleteTemplate')->name('delete-template');
         Route::post('save-template-sms','SetupSmsController@saveTemplateSms')->name('save-template-sms');
+        //SETTING EVENT HOLIDAY
+        Route::get('setup-event-holiday','EventHolidayController@index')->name('setup-event-holiday');
+        Route::get('event-datatable','EventHolidayController@eventDatatable')->name('event-datatable');
+        Route::post('add-event','EventHolidayController@addEvent')->name('add-event');
     });
 
     Route::group(['prefix'=>'user'],function(){
@@ -176,4 +180,6 @@ Route::group(['middleware' => ['auth']], function () {
         Route::get('theme-mail', 'TaskController@themeMail')->name('theme-mail');
         Route::get('get-subtask', 'TaskController@getSubTask')->name('get-subtask');
     });
+    //confirm event
+    Route::get('confirm-event', 'DashboardController@confirmEvent')->name('confirm-event');
 });
