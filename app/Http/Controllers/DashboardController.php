@@ -23,9 +23,7 @@ class DashboardController extends Controller {
             //subHours(11) to get time American
             $now = Carbon::parse(now())->subHours(11);
             $end_time = Carbon::parse(now())->subHours(11)->endOfDay();
-
             $minutes = $end_time->diffInMinutes($now);
-
             $response = new Response;
             $response->withCookie( 'event', 'confirm', $minutes);
             return $response;
@@ -40,9 +38,7 @@ class DashboardController extends Controller {
             //subHours(11) to get time American
             $now = Carbon::parse(now());
             $end_time = Carbon::parse(now())->endOfDay();
-
             $minutes = $end_time->diffInMinutes($now);
-
             $response = new Response;
             $response->withCookie( 'birthday', 'confirm', $minutes);
             return $response;
