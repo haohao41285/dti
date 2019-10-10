@@ -73,6 +73,7 @@ class Newscontroller extends Controller
 			'title' => $request->title,
 			'slug' => str_slug($request->title),
 			'image' => $image ?? '',
+			'short_content' => $request->short_content,
 			'content' => ImagesHelper::uploadImageSummerNote($request->content),
 			'news_type_id' => $request->newsTypeId,
 		];

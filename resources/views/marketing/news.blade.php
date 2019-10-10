@@ -117,6 +117,10 @@ News
               </div>
             </div>
             <div class="form-group row col-12">
+              <label class="col-2 ">Short Content</label>
+              <input class="form-control-sm form-control col-10" type="text" name="short_content">
+            </div>
+            <div class="form-group row col-12">
               <label class="col-2 ">Content</label>
               <div class="col-10 row">                     
                     <textarea name="content" class="form-control summernote"></textarea>
@@ -281,6 +285,7 @@ News
                 if(data.status == true){
                     console.log("{{env('URL_FILE_VIEW')}}" + data.data.image);
                     $("input[name='title']").val(data.data.title);
+                    $("input[name='short_content']").val(data.data.short_content);
                     $("#previewImageNews").attr("src","{{env('URL_FILE_VIEW')}}" + data.data.image);
                     $(".note-editable").html(data.data.content);
 

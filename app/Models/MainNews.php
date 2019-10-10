@@ -18,6 +18,7 @@ class MainNews extends BaseModel
         'news_id',
         'title',
         'slug',
+        'short_content',
         'content',
         'image',
         'created_at',
