@@ -921,7 +921,7 @@ class OrdersController extends Controller
 		if($request->list_file != ""){
 			foreach ($request->list_file as $key => $file) {
 
-                $file_name = ImagesHelper::uploadImage2($file,$current_month);
+                $file_name = ImagesHelper::uploadImage2($file,$current_month,'images/comment/');
                 $file_arr[] = [
                     'name' => $file_name,
                     'name_origin' => $file->getClientOriginalName(),

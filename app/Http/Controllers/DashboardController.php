@@ -35,4 +35,21 @@ class DashboardController extends Controller {
             return 'Confirm Failed!';
         }
     }
+    public function confirmBirthday(){
+        try{
+            //subHours(11) to get time American
+            $now = Carbon::parse(now());
+            $end_time = Carbon::parse(now())->endOfDay();
+
+            $minutes = $end_time->diffInMinutes($now);
+
+            $response = new Response;
+            $response->withCookie( 'birthday', 'confirm', $minutes);
+            return $response;
+
+        }catch(\Exception $e){
+            \Log::info($e);
+            return 'Confirm Failed!';
+        }
+    }
 }

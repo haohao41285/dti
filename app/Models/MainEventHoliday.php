@@ -12,6 +12,7 @@ class MainEventHoliday extends Model
         'date',
         'created_by',
         'updated_by',
-        'image'
+        'image',
+        'status'
     ];
 }

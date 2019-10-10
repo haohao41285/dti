@@ -4,7 +4,7 @@ namespace App\Helpers;
 class ImagesHelper
 {
 	public static function uploadImage($checkImage, $requestImage, $nameImageDB){
-		if($checkImage){ 
+		if($checkImage){
             $img = $requestImage;
             $img_name = time()."-".$img->getClientOriginalName();
             // if(!empty($nameImageDB)){
@@ -16,18 +16,18 @@ class ImagesHelper
             return $img_name;
         }
 	}
-    public static function uploadImage2($file, $current_month) {
+    public static function uploadImage2($file, $current_month,$path_save) {
 
         // $pathFile = config('app.url_file_write');
         $name = $file->getClientOriginalName();
         $name = str_replace(" ", "-", $name);
-        $pathImage = 'images/comment/'.$current_month.'/';
+        $pathImage = $path_save.$current_month.'/';
         $filename = strtotime('now') . strtolower($name);
         // //dd(config('app.url_file_write'));
         // if (!file_exists($pathImage)) {
         //     mkdir($pathImage, 0777, true);
         // }
-        $file->move('images/comment/'.$current_month, $filename);
+        $file->move($path_save.$current_month, $filename);
         // $tmpUpload = "tmp-upload/".$filename;
 
         // self::sendRequestToApi($tmpUpload,$filename,$pathImage);
@@ -37,13 +37,13 @@ class ImagesHelper
         return $pathImage. $filename;
     }
     /**
-     * Auto upload image to SummerNote 
+     * Auto upload image to SummerNote
      * @param  $description is SummerNote content
-     * @return $description 
+     * @return $description
      */
     public static function uploadImageSummerNote($description){
         $dom = new \DomDocument();
-        $dom->loadHtml('<?xml encoding="utf-8" ?>' .$description);   
+        $dom->loadHtml('<?xml encoding="utf-8" ?>' .$description);
         $images = $dom->getElementsByTagName('img');
 
         foreach($images as $k => $img){
@@ -61,8 +61,8 @@ class ImagesHelper
                 } catch (\Exception $e) {
                     continue;
                 }
-                
-            }            
+
+            }
         }
         $description = $dom->saveHTML();
         return $description;
