@@ -43,15 +43,25 @@ class BaseModel extends Model {
         });
 
         static::created(function($model){
-            MainActivityLog::createActivityLog('Create',$model->table);
+            $string = (string)$model;
+            $string = substr($string,1, 50)."..............";
+
+            MainActivityLog::createActivityLog('Create',$model->table. " | create: ".$string);
         });
 
         static::updated(function($model){
-            MainActivityLog::createActivityLog('Update',$model->table);
+            $string = (string)$model;
+            $string = substr($string,1, 50)."..............";
+
+            // echo ($message); die();
+            MainActivityLog::createActivityLog('Update',$model->table. " | update: ".$string);
         });
 
         static::deleted(function($model){
-            MainActivityLog::createActivityLog('Delete',$model->table);
+            $string = (string)$model;
+            $string = substr($string,1, 50)."..............";
+
+            MainActivityLog::createActivityLog('Delete',$model->table. " | delete: ".$string);
         });
 
     }
