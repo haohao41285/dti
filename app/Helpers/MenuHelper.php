@@ -54,12 +54,9 @@ class MenuHelper{
 		        ['text' => 'Setup Team Type', 'link'=> 'setting/setup-team-type'],
 		        ['text' => 'Setup Service', 'link'=> 'setting/setup-service'],        
 		        ['text' => 'Setup Template SMS', 'link'=> 'setting/setup-template-sms'],
-<<<<<<< HEAD
 		        ['text' => 'Setup Login Background', 'link'=> 'setting/login-background'],
-=======
 		        ['text' => 'Setup Background Image', 'link'=> 'setting/setup-background'],
                 ['text' => 'Setup Event Holiday', 'link'=> 'setting/setup-event-holiday'],
->>>>>>> origin/thieu
 		    ]],
 		    ['text' => 'Recent Logs', 'icon'=>'fas fa-list-alt', 'link' => 'recentlog'],
 		];
