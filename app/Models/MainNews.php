@@ -55,7 +55,9 @@ class MainNews extends BaseModel
         return self::where('news_id',$id)->first();
     }
 
+    
 
+    
 
-        
+  
 }
