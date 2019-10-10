@@ -187,6 +187,12 @@ Route::group(['middleware' => ['auth']], function () {
             Route::post('/save', "SetupLoginBackground@save")->name('saveLoginBackground');
             Route::post('/delete', "SetupLoginBackground@delete")->name('deleteLoginBackground');
         });
+
+        //SETTING EVENT HOLIDAY
+        Route::get('setup-event-holiday','EventHolidayController@index')->name('setup-event-holiday');
+        Route::get('event-datatable','EventHolidayController@eventDatatable')->name('event-datatable');
+        Route::post('add-event','EventHolidayController@addEvent')->name('add-event');
+
     });
 
     Route::group(['prefix'=>'user'],function(){
@@ -237,4 +243,6 @@ Route::group(['middleware' => ['auth']], function () {
         Route::get('theme-mail', 'TaskController@themeMail')->name('theme-mail');
         Route::get('get-subtask', 'TaskController@getSubTask')->name('get-subtask');
     });
+    //confirm event
+    Route::get('confirm-event', 'DashboardController@confirmEvent')->name('confirm-event');
 });

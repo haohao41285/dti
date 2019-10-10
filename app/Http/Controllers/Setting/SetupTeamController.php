@@ -17,8 +17,7 @@ use Auth;
 class SetupTeamController  extends Controller
 {
 	public function index(){
-//	    $team_info = MainUser::where('user_id',Auth::user()->user_id)->first()->getTeamType;
-//	    return $team_info;
+
 		return view('setting.setup-team');
 	}
 	public function getTemDatatable(Request $request)

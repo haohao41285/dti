@@ -65,7 +65,7 @@ class SendNotificationCron extends Command
                     'birthday'=>$customer->customer_birthdate,
                 ];
             }
-
+            //END GET ARRAY
         }
         //SEND NOTIFICATION BY SMS
         if(!empty($receiver_total)){
@@ -96,13 +96,12 @@ class SendNotificationCron extends Command
 
             $file_url = storage_path('exports/'.$file_name.".xlsx");
 
-            $sms_content_template = "HAPPY BIRTHDAY";
+            $sms_content_template = "Happy birthday to {name}";
 
             $url_event = 'pushsms';
 
             $url = env('SMS_API_URL').$url_event;
 
-            $header = array('Authorization'=>'Bearer ' .env("SMS_API_KEY"));
             $client = new Client([
             ]);
 
@@ -145,7 +144,7 @@ class SendNotificationCron extends Command
                     ],
                     [
                         'name' => 'timesend',
-                        'contents' => Carbon::parse(now())->addMinute(1)->format('H:i'),
+                        'contents' => Carbon::parse(now())->addMinute(2)->format('H:i'),
                     ],
                     [
                         'name' => 'type_event',
