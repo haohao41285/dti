@@ -274,7 +274,7 @@ class OrdersController extends Controller
 					'place_customer_id' => $customer_id,
 					'place_code' => 'place-'.$place_id,
 					'place_logo' => 'logo',
-					'place_name' => 'New Name',
+					'place_name' => 'New Place',
 					'place_address' => $customer_info->ct_address,
 					'place_website' => $customer_info->ct_website,
 					'place_phone' => $customer_info->ct_business_phone,
@@ -323,7 +323,7 @@ class OrdersController extends Controller
 			}
 
 			//UPDATE CUSTOMER STATUS
-			$team_customer_status = MainTeam::where('id',Auth::user()->user_team)->first()->team_customer_status;
+			$team_customer_status = MainTeam::find(Auth::user()->user_team)->getTeamType->team_customer_status;
 
 			if($team_customer_status == ""){
 
@@ -335,7 +335,7 @@ class OrdersController extends Controller
 			}
 		    $team_customer_status_list = json_encode($team_customer_status_arr);
 
-			$update_team_customr_status = MainTeam::where('id',Auth::user()->user_team)->update(['team_customer_status'=>$team_customer_status_list]);
+			$update_team_customr_status = MainTeam::find(Auth::user()->user_team)->getTeamtype->update(['team_customer_status'=>$team_customer_status_list]);
 
 		if($request->credit_card_type != 'E-CHECK'){
 			/* Create a merchantAuthenticationType object with authentication details

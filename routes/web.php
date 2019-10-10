@@ -47,11 +47,14 @@ Route::group(['middleware' => ['auth']], function () {
          Route::post('import-customer', 'CustomerController@importCustomer')->name('import-customer');
          Route::get('export-customer', 'CustomerController@exportCustomer')->name('export-customer');
          Route::get('export-my-customer', 'CustomerController@exportMyCustomer')->name('export-my-customer');
-         Route::post('save-my-customer', 'CustomerController@saveMyCustomer')->name('save-my-customer');
+         Route::post('save-my-customer', 'CustomerControllercustomersDatatable@saveMyCustomer')->name('save-my-customer');
          Route::get('customer-detail/{id}', 'CustomerController@customerDetail')->where(['id'=>'[0-9]+'])->name('customer-detail');
-        Route::get('customer-tracking', 'CustomerController@customerTracking')->name('customer-tracking');
-        Route::post('post-comment-customer', 'CustomerController@postCommentCustomer')->name('post-comment-customer');
-        Route::get('get-seller', 'CustomerController@getSeller')->name('get-seller');
+         Route::get('customer-tracking', 'CustomerController@customerTracking')->name('customer-tracking');
+         Route::post('post-comment-customer', 'CustomerController@postCommentCustomer')->name('post-comment-customer');
+         Route::get('get-seller', 'CustomerController@getSeller')->name('get-seller');
+         Route::post('move-customer', 'CustomerController@moveCustomer')->name('move-customer');
+         Route::post('add-customer-note', 'CustomerController@addCustomerNote')->name('add-customer-note');
+         Route::post('move-customers', 'CustomerController@moveCustomers')->name('move-customers');
 
     });
 
@@ -184,6 +187,12 @@ Route::group(['middleware' => ['auth']], function () {
             Route::post('/save', "SetupLoginBackground@save")->name('saveLoginBackground');
             Route::post('/delete', "SetupLoginBackground@delete")->name('deleteLoginBackground');
         });
+
+        //SETTING EVENT HOLIDAY
+        Route::get('setup-event-holiday','EventHolidayController@index')->name('setup-event-holiday');
+        Route::get('event-datatable','EventHolidayController@eventDatatable')->name('event-datatable');
+        Route::post('add-event','EventHolidayController@addEvent')->name('add-event');
+
     });
 
     Route::group(['prefix'=>'user'],function(){
@@ -197,7 +206,7 @@ Route::group(['middleware' => ['auth']], function () {
         Route::get('change-status-role','UserController@changeStatusRole')->name('change-status-role');
         Route::get('add-role','UserController@addRole')->name('add-role');
 
-        Route::get('rolepermission/{id}','UserController@permission')->where(['id'=>'[0-9]+'])->name('permission');
+        Route::get('role-permission/{id}','UserController@permission')->where(['id'=>'[0-9]+'])->name('permission');
         Route::get('change-permission','UserController@changePermission')->name('change-permission');
     });
 
@@ -225,13 +234,15 @@ Route::group(['middleware' => ['auth']], function () {
         Route::post('down-image', 'TaskController@downImage')->name('down-image');
         Route::get('task-detail/{id}', 'TaskController@taskDetail')->where(['id'=>'[0-9]+'])->name('task-detail');
         Route::get('task-tracking', 'TaskController@taskTracking')->name('task-tracking');
-        Route::get('add/{id}', 'TaskController@taskAdd')->name('task-add');
+        Route::get('add/{id?}', 'TaskController@taskAdd')->name('task-add');
         Route::post('save-task', 'TaskController@saveTask')->name('save-task');
         Route::get('get-task', 'TaskController@getTask')->name('get-task');
         Route::get('get-subtask', 'TaskController@getSubtask')->name('get-subtask');
-        Route::get('edit-task/{id}', 'TaskController@editTask')->where(['id'=>'[0-9]+'])->name('edit-task');
+        Route::get('edit-task/{id?}', 'TaskController@editTask')->where(['id'=>'[0-9]+'])->name('edit-task');
         Route::post('send-mail-notification', 'TaskController@sendMailNotification')->name('send-mail-notification');
         Route::get('theme-mail', 'TaskController@themeMail')->name('theme-mail');
         Route::get('get-subtask', 'TaskController@getSubTask')->name('get-subtask');
     });
+    //confirm event
+    Route::get('confirm-event', 'DashboardController@confirmEvent')->name('confirm-event');
 });

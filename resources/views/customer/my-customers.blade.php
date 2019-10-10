@@ -1,9 +1,117 @@
 @extends('layouts.app')
-@section('content-title')
-    Customers Management
-@endsection
 @section('content')
-<div class="table-responsive">
+    <h4 class="border border-info border-top-0 mb-3 border-right-0 border-left-0 text-info">MY CUSTOMER</h4>
+    <div class="modal fade" id="move-customers-modal" role="dialog">
+        <div class="modal-dialog">
+            <!-- Modal content-->
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h6 class="modal-title"><b>MOVE CUSTOMERS</b></h6>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
+                <form action="" method="get" accept-charset="utf-8">
+                    <div class="modal-body">
+                        <table class="table table-hover table-striped">
+                            <thead>
+                                <tr class="text-center">
+                                    <th>Customer</th>
+                                    <th>User</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            @foreach($customer_list as $customer)
+                                <tr>
+                                    <td>
+                                        <input type="text" class="form-control form-control-sm" value="{{$customer->ct_salon_name}}" name="customer_name" disabled>
+                                        <input type="hidden" value="{{$customer->id}}" name="customer_id[]">
+                                    </td>
+                                    <td>
+                                        <select name="user_id[]" id="user_id" class="form-control form-control-sm text-capitalize">
+                                            <option value="0"></option>
+                                            @foreach($user_list as $user)
+                                                <option value="{{$user->user_id}}">{{$user->user_nickname}} ( {{$user->getFullname()}} )</option>
+                                            @endforeach
+                                        </select>
+                                    </td>
+                                </tr>
+                            @endforeach
+
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-danger btn-sm cancel" data-dismiss="modal">Cancel</button>
+                        <button type="button" class="btn btn-sm btn-primary move-customers-submit">Submit</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+<div class="modal fade" id="move-modal" role="dialog">
+    <div class="modal-dialog">
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <h6 class="modal-title text-info"><b>MOVE CUSTOMER:</b></h6>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+            <form action="" method="get" accept-charset="utf-8">
+                <div class="modal-body">
+                    <div class="input-group mb-2 mr-sm-2">
+                        <div class="input-group-prepend">
+                            <div class="input-group-text">Move Customer:</div>
+                        </div>
+                        <input type="text" class="form-control text-info"  id="contact_name" disabled>
+                    </div>
+                    <div class="input-group mb-2 mr-sm-2">
+                        <div class="input-group-prepend">
+                            <div class="input-group-text">To User:</div>
+                        </div>
+                        <select name="user_id" id="user_id" class="form-control  text-capitalize">
+                            @foreach($user_list as $user)
+                                <option value="{{$user->user_id}}">{{$user->user_nickname}} ( {{$user->getFullname()}} )</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <input type="hidden" name="customer_id" id="customer_id" value="">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-danger btn-sm cancel" data-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-sm btn-primary move-submit">Submit</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="add-note-modal" role="dialog">
+        <div class="modal-dialog">
+            <!-- Modal content-->
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h6 class="modal-title text-info"><b>ADD CUSTOMER NOTE:</b></h6>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
+                <form action="" method="post" accept-charset="utf-8">
+                    <div class="modal-body">
+                        <div class="input-group mb-2 mr-sm-2">
+                            <div class="input-group-prepend">
+                                <div class="input-group-text">For Customer:</div>
+                            </div>
+                            <input type="text" class="form-control text-info"  id="customer_name_note" disabled>
+                        </div>
+                        <label for="customer_note">Note:</label>
+                        <textarea name="customer_note" id="customer_note" class="form-control form-control-sm" rows="3"></textarea>
+                        <input type="hidden" name="customer_id_note" id="customer_id_note" value="">
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-danger btn-sm cancel" data-dismiss="modal">Cancel</button>
+                        <button type="button" class="btn btn-sm btn-primary add-note-submit">Submit</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="table-responsive">
     <div class="form-group col-md-12 row">
         <div class="col-md-4">
             <label for="">Created date</label>
@@ -34,16 +142,17 @@
         </div>
     </div>
     <hr>
-    <table class="table table-bordered" id="dataTableAllCustomer" width="100%" cellspacing="0">
+    <table class="table table-striped table-hover" id="dataTableAllCustomer" width="100%" cellspacing="0">
         <thead>
-                <th>ID</th>
-                <th>Nail Shop</th>
-                <th>Contact Name</th>
-                <th>Business Phone</th>
-                <th>Cell Phone</th>
-                <th>Status</th>
-                <th>Created Date</th>
-                <th>Action</th>
+            <th>ID</th>
+            <th>Nail Shop</th>
+            <th>Contact Name</th>
+            <th>Business Phone</th>
+            <th>Cell Phone</th>
+            <th>Status</th>
+            <th>Note</th>
+            <th>Created Date</th>
+            <th>Action</th>
             </tr>
         </thead>
     </table>
@@ -109,6 +218,10 @@
        serverSide: true,
        buttons: [
            {
+               text: '<i class="fas fa-exchange-alt"></i> Move Customers',
+               className: "btn-sm move-customers"
+           },
+           {
                text: '<i class="fas fa-download"></i> Import',
                className: "btn-sm import-show"
            },
@@ -136,6 +249,7 @@
                 { data: 'ct_business_phone', name: 'ct_business_phone' ,class:'text-center'},
                 { data: 'ct_cell_phone', name: 'ct_cell_phone',class:'text-center' },
                 { data: 'ct_status', name: 'ct_status',class:'text-center' },
+                { data: 'note', name: 'note' },
                 { data: 'updated_at', name: 'updated_at' ,class:'text-center'},
                 { data: 'action' , name:'action' ,orderable: false, searcheble: false ,class:'text-center'}
         ],
@@ -343,6 +457,144 @@
       e.preventDefault();
       table.ajax.reload(null, false);
     });
+    $(document).on('click','.move-customer',function () {
+
+        var customer_id = $(this).attr('customer_id');
+        var contact_name = $(this).attr('contact_name');
+        $("#customer_id").val(customer_id);
+        $("#contact_name").val(contact_name);
+
+        $("#move-modal").modal("show");
+    });
+    $(".move-submit").click(function(){
+        var formData = new FormData($(this).parents('form')[0]);
+        formData.append('_token','{{csrf_token()}}')
+        $.ajax({
+            url: '{{route('move-customer')}}',
+            type: 'POST',
+            dataType: 'html',
+            cache: false,
+            contentType: false,
+            processData: false,
+            async: true,
+            xhr: function() {
+                var myXhr = $.ajaxSettings.xhr();
+                return myXhr;
+            },
+            data: formData,
+        })
+        .done(function(data) {
+            // console.log(data);
+            // return;
+            data = JSON.parse(data);
+            if(data.status == 'error'){
+                toastr.error(data.message);
+            }else{
+                toastr.success(data.message);
+                table.ajax.reload(null, false);
+                $("#move-modal").modal("hide");
+            }
+        })
+        .fail(function() {
+            console.log("error");
+        });
+    });
+     $(document).on('click','.add-note',function () {
+         var customer_id = $(this).attr('customer_id');
+         var contact_name = $(this).attr('contact_name');
+
+         $("#customer_name_note").val(contact_name);
+         $("#customer_id_note").val(customer_id);
+         $("#add-note-modal").modal('show');
+     });
+    $(document).on('click','.add-note-submit',function () {
+
+        var formData = new FormData($(this).parents('form')[0]);
+        formData.append('_token','{{csrf_token()}}');
+
+        $.ajax({
+            url: '{{route('add-customer-note')}}',
+            type: 'POST',
+            dataType: 'html',
+            cache: false,
+            contentType: false,
+            processData: false,
+            async: true,
+            xhr: function() {
+                var myXhr = $.ajaxSettings.xhr();
+                return myXhr;
+            },
+            data: formData,
+        })
+            .done(function(data) {
+                // console.log(data);
+                // return;
+                data = JSON.parse(data);
+                let message = '';
+                if(data.status == 'error'){
+                    if( typeof(data.message) == 'string')
+                        toastr.error(data.message);
+                    else{
+                        $.each(data.message,function (index,val) {
+                            message += val+'\n';
+                        });
+                        toastr.error(message);
+                    }
+                }else{
+                    toastr.success(data.message);
+                    table.ajax.reload(null, false);
+                    $("#add-note-modal").modal("hide");
+                }
+            })
+            .fail(function() {
+                console.log("error");
+            });
+    });
+    $(document).on('click','.move-customers',function(){
+        $("#move-customers-modal").modal('show');
+    });
+    $(".move-customers-submit").click(function () {
+
+        var formData = new FormData($(this).parents('form')[0]);
+        formData.append('_token','{{csrf_token()}}');
+        $.ajax({
+            url: '{{route('move-customers')}}',
+            type: 'POST',
+            dataType: 'html',
+            data: formData,
+            cache: false,
+            contentType: false,
+            processData: false,
+            async: true,
+            xhr: function() {
+                var myXhr = $.ajaxSettings.xhr();
+                return myXhr;
+            },
+        })
+            .done(function(data) {
+                // console.log(data);
+                // return;
+                data = JSON.parse(data);
+                let message = '';
+                if(data.status == 'error'){
+                    if( typeof(data.message) == 'string')
+                        toastr.error(data.message);
+                    else{
+                        $.each(data.message,function (index,val) {
+                            message += val+'\n';
+                        });
+                        toastr.error(message);
+                    }
+                }else{
+                    toastr.success(data.message);
+                    table.ajax.reload(null, false);
+                    $("#move-customers-modal").modal("hide");
+                }
+            })
+            .fail(function() {
+                console.log("error");
+            });
+    })
 });
 </script>
 @endpush

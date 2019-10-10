@@ -2,8 +2,20 @@
 @section('content-title')
     Customers Management
 @endsection
+@section('styles')
+
+@endsection
 @section('content')
-<div class="table-responsive ">
+
+    @if(\Illuminate\Support\Facades\Auth::user()->user_group_id != 1)
+        <style>
+            .an{
+                display: none;
+            }
+        </style>
+    @endif
+<div class="table-responsive">
+
     <div class="form-group col-md-12 row">
         <div class="col-md-4">
             <label for="">Created date</label>
@@ -21,9 +33,13 @@
             <label for="">Status</label>
             <select id="status-customer" name="status_customer" class="form-control form-control-sm">
                 <option value="">-- ALL --</option>
-                @foreach ($status as $key =>  $element)                    
+                @if(\Illuminate\Support\Facades\Auth::user()->user_group_id == 1)
+                @foreach ($status as $key =>  $element)
                     <option value="{{$key}}">{{$element}}</option>
                 @endforeach
+                @else
+                    <option value="3">Arrivals</option>
+                @endif
             </select>
         </div>
         <div class="col-2 " style="position: relative;">
@@ -31,11 +47,11 @@
             <input type="button" class="btn btn-primary btn-sm" id="search-button" value="Search">
             <input type="button" class="btn btn-secondary btn-sm" id="reset" value="Reset">
             </div>
-        </div>  
+        </div>
     </div>
     <hr>
-    <table class="table table-bordered" id="dataTableAllCustomer" width="100%" cellspacing="0">
-        <thead>                
+    <table class="table table-striped table-hover" id="dataTableAllCustomer" width="100%" cellspacing="0">
+        <thead>
                 <th>ID</th>
                 <th>Business</th>
                 <th>Contact Name</th>
@@ -67,21 +83,21 @@
                 <div class="row col-md-12">
                   <a href="" class="blue">Download an import template spreadsheet</a>
                 </div>
-                <div class="row col-md-12">    
+                <div class="row col-md-12">
                   <input type="file" class="btn btn-sm" id="file" name="file">
                 </div>
                 <div class="row col-md-12">
                   <label class="col-md-6">Begin Row Index</label>
                   <input type='number' name="begin_row" id="begin_row" class="form-control form-control-sm col-md-6" value="0"/>
-                </div> 
+                </div>
                 <div class="row col-md-12">
                   <label class="col-md-6">End Row Index</label>
                   <input type='number' name="end_row" id="end_row" class="form-control form-control-sm col-md-6" value="1000"/>
                 </div>
-                <div class="row col-md-12 ">   
-                     <button type="button" class="btn btn-danger btn-sm float-right cancle-import" >Cancle</button>   
-                     <button type="button" class="btn btn-primary btn-sm ml-2 float-right submit-form" >Submit</button>               
-                </div>   
+                <div class="row col-md-12 ">
+                     <button type="button" class="btn btn-danger btn-sm float-right cancle-import" >Cancle</button>
+                     <button type="button" class="btn btn-primary btn-sm ml-2 float-right submit-form" >Submit</button>
+                </div>
             </div>
         </form>
         </div>
@@ -99,18 +115,18 @@
        // dom: "lBfrtip",
        order:[[7,'desc']],
        buttons: [
-           {   
+           {
                text: '<i class="fas fa-download"></i> Import',
-               className: "btn-sm import-show",
+               className: "btn-sm import-show an",
            },
-           {   
+           {
                text: '<i class="fas fa-upload"></i> Export',
-               className: "btn-sm",
+               className: "btn-sm an",
                action: function ( e, dt, node, config ) {
                   document.location.href = "{{route('export-customer')}}";
               }
            }
-       ],  
+       ],
        processing: true,
        serverSide: true,
        ajax:{ url:"{{ route('customersDatatable') }}",
@@ -119,7 +135,7 @@
           d.end_date = $("#end_date").val();
           d.address = $("#address").val();
           d.status_customer = $("#status-customer :selected").val();
-            } 
+            }
         },
        columns: [
 
@@ -130,7 +146,7 @@
                 { data: 'ct_cell_phone', name: 'ct_cell_phone',class:'text-center' },
                 { data: 'ct_note', name: 'ct_note',class:'text-center' },
                 { data: 'ct_status', name: 'ct_status',class:'text-center' },
-                { data: 'created_at', name: 'created_at' ,class:'text-center'},                
+                { data: 'created_at', name: 'created_at' ,class:'text-center'},
                 { data: 'action' , name:'action' ,orderable: false, searcheble: false ,class:'text-center'}
         ],
     });
@@ -142,7 +158,7 @@
         e.preventDefault();
         table.ajax.reload(null, false);
     });
-   
+
     $(document).on("click",".view",function(){
 
       var customer_id = $(this).attr('customer_id');
@@ -159,6 +175,7 @@
           toastr.error('Get Detaill Customer Error!');
         }else{
           data = JSON.parse(data);
+          data = data.customer_list;
           if(data.ct_salon_name==null)data.ct_salon_name="";
           if(data.ct_contact_name==null)data.ct_contact_name="";
           if(data.ct_business_phone==null)data.ct_business_phone="";

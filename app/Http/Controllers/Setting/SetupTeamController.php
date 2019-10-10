@@ -32,7 +32,7 @@ class SetupTeamController  extends Controller
 								->select('main_team.*','main_user.user_firstname','main_user.user_lastname','main_team_type.team_type_name','main_user.user_id','main_team.id');
 
 		return DataTables::of($team_list)
-				
+
 			->editColumn('team_leader',function($row){
 				return $row->user_firstname." ".$row->user_lastname;
 			})
@@ -120,7 +120,7 @@ class SetupTeamController  extends Controller
 			}
 		}else
 		    return response(['status'=>'error','message'=>'Error! Check again!']);
-			
+
 	}
 	public function deleteTeam(Request $request)
 	{
