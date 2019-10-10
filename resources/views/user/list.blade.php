@@ -9,6 +9,7 @@
 			<th>ID</th>
 			<th>Full Name</th>
 			<th>NickName</th>
+            <th>Birthday</th>
 			<th>Phone</th>
 			<th>Email</th>
 			<th>Group</th>
@@ -34,13 +35,13 @@
                   }
               },
               { text : '<i class="fas fa-download"></i> Export',
-                extend: 'csvHtml5', 
-                className: 'btn btn-sm btn-primary' 
+                extend: 'csvHtml5',
+                className: 'btn btn-sm btn-primary'
               }
             ],
             columnDefs: [
                 {
-                    "targets": 0, 
+                    "targets": 0,
                     "className": "text-center"
                 },
 	            {
@@ -61,6 +62,7 @@
                 {data:'user_id', name:'user_id'},
                 {data:'user_fullname', name:'user_fullname',orderable: false, searchable: false},
                 {data:'user_nickname', name:'user_nickname'},
+                {data:'user_birthdate', name:'user_birthdate'},
                 {data:'user_phone', name:'user_phone'},
                 {data:'user_email', name:'user_email'},
                 {data:'gu_name', name:'gu_name',orderable: false, searchable: false},
@@ -73,7 +75,7 @@
                     elems.forEach(function (html) {
                         var switchery = new Switchery(html, {
                             color: '#0874e8',
-                            className : 'switchery switchery-small'                
+                            className : 'switchery switchery-small'
                         });
                     });
                 }
@@ -100,7 +102,7 @@
 			alert('Change User Status Error!');
 			console.log();
 		});
-		
+
 	})
 </script>
 @endpush
