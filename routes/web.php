@@ -193,6 +193,9 @@ Route::group(['middleware' => ['auth']], function () {
         Route::get('event-datatable','EventHolidayController@eventDatatable')->name('event-datatable');
         Route::post('add-event','EventHolidayController@addEvent')->name('add-event');
 
+        Route::post('delete-event','EventHolidayController@deleteEvent')->name('delete-event');
+        Route::post('change-status-event','EventHolidayController@changeStatusEvent')->name('change-status-event');
+
     });
 
     Route::group(['prefix'=>'user'],function(){
@@ -245,4 +248,5 @@ Route::group(['middleware' => ['auth']], function () {
     });
     //confirm event
     Route::get('confirm-event', 'DashboardController@confirmEvent')->name('confirm-event');
+    Route::get('confirm-birthday', 'DashboardController@confirmBirthday')->name('confirm-birthday');
 });

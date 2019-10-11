@@ -8,7 +8,7 @@ class ImagesHelper
      * upload image local
      */
 	public static function uploadImage($checkImage, $requestImage, $nameImageDB){
-		if($checkImage){ 
+		if($checkImage){
             $img = $requestImage;
             $img_name = time()."-".$img->getClientOriginalName();
             
@@ -17,18 +17,18 @@ class ImagesHelper
         }
 	}
 
-    public static function uploadImage2($file, $current_month) {
+    public static function uploadImage2($file, $current_month,$path_save) {
 
         // $pathFile = config('app.url_file_write');
         $name = $file->getClientOriginalName();
         $name = str_replace(" ", "-", $name);
-        $pathImage = 'images/comment/'.$current_month.'/';
+        $pathImage = $path_save.$current_month.'/';
         $filename = strtotime('now') . strtolower($name);
         // //dd(config('app.url_file_write'));
         // if (!file_exists($pathImage)) {
         //     mkdir($pathImage, 0777, true);
         // }
-        $file->move('images/comment/'.$current_month, $filename);
+        $file->move($path_save.$current_month, $filename);
         // $tmpUpload = "tmp-upload/".$filename;
 
         // self::sendRequestToApi($tmpUpload,$filename,$pathImage);
@@ -93,9 +93,15 @@ class ImagesHelper
 
 
     /**
+<<<<<<< HEAD
      * Auto upload image to SummerNote 
      * @param  $content input
      * @return $content output
+=======
+     * Auto upload image to SummerNote
+     * @param  $description is SummerNote content
+     * @return $description
+>>>>>>> origin/thieu
      */
     public static function uploadImageSummerNote($content){
         $dom = new \DomDocument();
@@ -126,13 +132,13 @@ class ImagesHelper
                   // \Log::info($e);
                   continue;
                 }
-                
-            }            
+
+            }
         }
         $content = $dom->saveHTML();
         // \Log::info($content);
         return $content;
     }
 
-    
 }
+

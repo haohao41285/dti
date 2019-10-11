@@ -63,7 +63,7 @@ class UserController extends Controller
                     $join->on('main_user.user_group_id','main_group_user.gu_id');
                     })
                     ->where('main_group_user.gu_status',1)
-                    ->select('main_group_user.gu_name','main_user.user_firstname','main_user.user_lastname','main_user.user_nickname','main_user.user_phone','main_user.user_status','main_user.user_email','main_user.user_id');
+                    ->select('main_user.user_birthdate','main_group_user.gu_name','main_user.user_firstname','main_user.user_lastname','main_user.user_nickname','main_user.user_phone','main_user.user_status','main_user.user_email','main_user.user_id');
 
         return DataTables::of($user_list)
 
@@ -76,6 +76,12 @@ class UserController extends Controller
                 else $checked="";
                     return '<input type="checkbox" user_id="'.$row->user_id.'" user_status="'.$row->user_status.'" class="js-switch"'.$checked.'/>';
                })
+                ->addColumn('user_birthdate',function($row){
+                    if($row->user_birthdate != "")
+                        return format_date($row->user_birthdate);
+                    else
+                        return "";
+                })
                ->addColumn('action',function($row){
                     return '<a class="btn btn-sm btn-secondary" href=""><i class="fas fa-edit"></i></a>
                     <a class="btn btn-sm btn-secondary" href="#"><i class="fas fa-trash"></i></a>';
