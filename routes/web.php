@@ -132,6 +132,8 @@ Route::group(['middleware' => ['auth']], function () {
         Route::post('add-event','EventHolidayController@addEvent')->name('add-event');
         Route::post('delete-event','EventHolidayController@deleteEvent')->name('delete-event');
         Route::post('change-status-event','EventHolidayController@changeStatusEvent')->name('change-status-event');
+
+
     });
 
     Route::group(['prefix'=>'user'],function(){
@@ -147,6 +149,9 @@ Route::group(['middleware' => ['auth']], function () {
 
         Route::get('role-permission/{id}','UserController@permission')->where(['id'=>'[0-9]+'])->name('permission');
         Route::get('change-permission','UserController@changePermission')->name('change-permission');
+
+
+
     });
 
     Route::group(['prefix' => 'orders','namespace' => 'Orders'], function() {

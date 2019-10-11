@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 
 use App\Http\Controllers\Controller;
+use App\Models\MainGroupUser;
+use App\Models\MainTeam;
 use Illuminate\Http\Request;
 use App\Helpers\MenuHelper;
 use App\Helpers\GeneralHelper;
@@ -83,8 +85,8 @@ class UserController extends Controller
                         return "";
                 })
                ->addColumn('action',function($row){
-                    return '<a class="btn btn-sm btn-secondary" href=""><i class="fas fa-edit"></i></a>
-                    <a class="btn btn-sm btn-secondary" href="#"><i class="fas fa-trash"></i></a>';
+                    return '<a class="btn btn-sm btn-secondary edit-user" href="'.route('user-edit',$row->user_id).'"><i class="fas fa-edit"></i></a>
+                    <a class="btn btn-sm btn-secondary delete-user" href="#"><i class="fas fa-trash"></i></a>';
                })
                ->rawColumns(['user_status','action'])
                ->make(true);
@@ -270,5 +272,3 @@ class UserController extends Controller
             return 1;
     }
 }
-
-

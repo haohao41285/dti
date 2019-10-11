@@ -362,12 +362,12 @@ class OrdersController extends Controller
 		    $order->setDescription($request->note); //"Golf Shirts"
 		    // Set the customer's Bill To address
 		    $customerAddress = new AnetAPI\CustomerAddressType();
-		    $customerAddress->setFirstName($request->first_name);    //"Ellen"
-		    $customerAddress->setLastName($request->last_name);    //"Johnson"
-		    $customerAddress->setCompany("");
-		    $customerAddress->setAddress($request->address);    //"14 Main Street"
-		    $customerAddress->setCity($request->city);    //"Pecan Springs"
-		    $customerAddress->setState($request->state);    //"TX"
+            $customerAddress->setFirstName($request->first_name);    //"Ellen"
+            $customerAddress->setLastName($request->last_name);    //"Johnson"
+            $customerAddress->setCompany("");
+            $customerAddress->setAddress($request->address);    //"14 Main Street"
+            $customerAddress->setCity($request->city);    //"Pecan Springs"
+            $customerAddress->setState($request->state);    //"TX"
 		    $customerAddress->setZip($request->zip_code);    //"44628"
 		    $customerAddress->setCountry($request->country);   //"USA"
 		    // Set the customer's identifying information

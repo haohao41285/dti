@@ -1,3 +1,4 @@
+window.summernote = require('summernote')
 window.toastr = require('toastr')
 
 window._ = require('lodash');
@@ -11,10 +12,10 @@ window._ = require('lodash');
 try {
     window.Popper = require('popper.js').default;
     window.$ = window.jQuery = require('jquery');
-    
-    require('bootstrap');  
+
+    require('bootstrap');
     window.Switchery  = require('switchery/switchery')
-        
+
 } catch (e) {console.log(e); }
 
 /**
@@ -57,4 +58,4 @@ if (token) {
 //     cluster: process.env.MIX_PUSHER_APP_CLUSTER,
 //     encrypted: true
 // });
-// 
+//
