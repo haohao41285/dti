@@ -55,7 +55,6 @@ class MenuHelper{
 		        ['text' => 'Setup Service', 'link'=> 'setting/setup-service'],        
 		        ['text' => 'Setup Template SMS', 'link'=> 'setting/setup-template-sms'],
 		        ['text' => 'Setup Login Background', 'link'=> 'setting/login-background'],
-		        ['text' => 'Setup Background Image', 'link'=> 'setting/setup-background'],
                 ['text' => 'Setup Event Holiday', 'link'=> 'setting/setup-event-holiday'],
 		    ]],
 		    ['text' => 'Recent Logs', 'icon'=>'fas fa-list-alt', 'link' => 'recentlog'],
