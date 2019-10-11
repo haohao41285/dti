@@ -49,6 +49,8 @@ class MainNewsType extends BaseModel
         return self::where('news_type_id',$id)->first();
     }
 
+    
+
 
 
         

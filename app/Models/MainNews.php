@@ -18,6 +18,7 @@ class MainNews extends BaseModel
         'news_id',
         'title',
         'slug',
+        'short_content',
         'content',
         'image',
         'created_at',
@@ -54,7 +55,9 @@ class MainNews extends BaseModel
         return self::where('news_id',$id)->first();
     }
 
+    
 
+    
 
-        
+  
 }
