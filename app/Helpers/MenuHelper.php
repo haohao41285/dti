@@ -17,7 +17,8 @@ class MenuHelper{
 		    ]],
 		    ['text' => 'Marketing', 'icon'=>'fas fa-lightbulb', 'link' => 'marketing','childrens' => [
 		        ['text' => 'Send SMS', 'link'=> 'marketing/sendsms'],
-		        ['text' => 'Tracking History', 'link'=> 'marketing/tracking-history'],
+		        ['text' => 'Tracking History', 'link'=> 'marketing/tracking-history'],        
+		        ['text' => 'News', 'link'=> 'marketing/news'],        
 		    ]],
 		    ['text' => 'DataSetup', 'icon'=>'fas fa-database', 'link' => 'datasetup','childrens' => [
 		        ['text' => 'Combo', 'link'=> 'datasetup/combos'],
@@ -32,10 +33,13 @@ class MenuHelper{
 		        ['text' => 'Website', 'link'=> 'statistic/website'],
 		    ]],
 		     ['text' => 'IT Tools', 'icon'=>'fas fa-toolbox', 'link' => 'tools','childrens' => [
-		        ['text' => 'Clone Website', 'link'=> 'tools/clonewebsite'],
-		        ['text' => 'Update Website', 'link'=> 'tools/updatewebsite'],
+		        // ['text' => 'Clone Website', 'link'=> 'tools/clonewebsite'],
+		        // ['text' => 'Update Website', 'link'=> 'tools/updatewebsite'],
+		        ['text' => 'Website theme', 'link'=> 'tools/website-themes'],
+		        ['text' => 'App banners', 'link'=> 'tools/app-banners'],
+		        ['text' => 'Places', 'link'=> 'tools/places'],
 		    ]],
-		    ['text' => 'Orders', 'icon'=>'fas fa-user-cog', 'link' => 'orders','childrens' => [
+		    ['text' => 'Orders', 'icon'=>'fas fa-shopping-cart', 'link' => 'orders','childrens' => [
 		        ['text' => 'My Orders', 'link'=> 'orders/my-orders'],
 		        ['text' => 'All Orders', 'link'=> 'orders/all'],
 		        ['text' => "Seller's Orders", 'link'=> 'orders/sellers'],
@@ -48,9 +52,9 @@ class MenuHelper{
 		    ['text' => 'Settings', 'icon'=>'fas fa-cog', 'link' => 'setting','childrens' => [
 		        ['text' => 'Setup Team', 'link'=> 'setting/setup-team'],
 		        ['text' => 'Setup Team Type', 'link'=> 'setting/setup-team-type'],
-		        ['text' => 'Setup Service', 'link'=> 'setting/setup-service'],
+		        ['text' => 'Setup Service', 'link'=> 'setting/setup-service'],        
 		        ['text' => 'Setup Template SMS', 'link'=> 'setting/setup-template-sms'],
-		        ['text' => 'Setup Background Image', 'link'=> 'setting/setup-background'],
+		        ['text' => 'Setup Login Background', 'link'=> 'setting/login-background'],
                 ['text' => 'Setup Event Holiday', 'link'=> 'setting/setup-event-holiday'],
 		    ]],
 		    ['text' => 'Recent Logs', 'icon'=>'fas fa-list-alt', 'link' => 'recentlog'],

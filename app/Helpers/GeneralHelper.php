@@ -1,9 +1,7 @@
 <?php
 namespace App\Helpers;
 
-/**
- * ImagesHelper class
- */
+
 class GeneralHelper{
     
    public static function unicodeVietNamese($str){
@@ -127,5 +125,34 @@ class GeneralHelper{
             2 =>'PROCESSING',
             3 => 'DONE'
         ];
+    }
+    public static function convertGender($gender){
+        if($gender ==1)
+                return "Male";
+        elseif($gender ==2)
+                return "Female";
+        else return "Chirld";
+    }
+
+    public static function getIpAddress(){
+        $ip = null;
+        if ($_SERVER) {
+            if (isset($_SERVER['HTTP_X_FORWARDED_FOR'])) {
+                $ip = $_SERVER['HTTP_X_FORWARDED_FOR'];
+            } elseif (isset($_SERVER['HTTP_CLIENT_IP'])) {
+                $ip = $_SERVER['HTTP_CLIENT_IP'];
+            } else {
+                $ip = $_SERVER['REMOTE_ADDR'];
+            }
+        } else {
+            if (getenv('HTTP_X_FORWARDED_FOR')) {
+                $ip = getenv('HTTP_X_FORWARDED_FOR');
+            } elseif (getenv('HTTP_CLIENT_IP')) {
+                $ip = getenv('HTTP_CLIENT_IP');
+            } else {
+                $ip = getenv('REMOTE_ADDR');
+            }
+        }
+        return $ip;
     }
 }

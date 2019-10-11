@@ -1,3 +1,33 @@
+.container, .container-fluid{
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
+}
+
+.dropdown-item{
+    padding: 0.25rem 1rem;
+}
+.sidebar-dark .nav-item.active .nav-link{
+    background: #ffffff1a;
+}
+.sidebar .nav-item .nav-link i{
+    font-size: 1rem;
+}
+
+.sidebar .nav-item .nav-link{
+    padding: 0.65rem 0.3rem !important;
+}
+
+.sidebar .nav-item .nav-link span{
+    font-size: 0.9rem;
+}
+
+.topbar , .sidebar .sidebar-brand{
+    height: 3.5rem !important;
+}
+
+.sidebar-dark .sidebar-brand{
+    background-color: #fff;
+}
 .sidebar .dropdown-item{
     color: #fff;
     font-size: 0.85rem;
@@ -84,12 +114,9 @@ form.sb-form .form-inline{
     float:right !important;    
     padding-left:5px;
 }
-td.details-control {
-    background: url('../images/details_open.png') no-repeat center center;
-    cursor: pointer;
-}
-tr.shown td.details-control {
-    background: url('../images/details_close.png') no-repeat center center;
+
+.table th, .table td{
+    padding: 0.5rem;
 }
 form{
     label.required{
@@ -103,4 +130,29 @@ form{
 }
 .nowrap{
     white-space: nowrap;
+}
+
+/* -----------------------------------------*/
+/*custom */
+table>tbody>tr>td>span.switchery>small{
+    top:-1px;
+}
+ul.toggled>li>div.show{
+    border-radius: 5px;
+    padding: 10px;
+    background: rgb(59, 97, 209);
+}
+/*custom image upload*/
+.previewImage>img{
+    width: 100%;
+    border: black solid;
+    cursor: pointer;
+}
+
+td.details-control {
+    background: url('../images/details_open.png') no-repeat center center;
+    cursor: pointer;
+}
+tr.shown td.details-control {
+    background: url('../images/details_close.png') no-repeat center center;
 }

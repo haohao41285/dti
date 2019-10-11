@@ -1,21 +1,22 @@
 <?php
 namespace App\Helpers;
+use GuzzleHttp\Client;
 
 class ImagesHelper
 {
+    /**
+     * upload image local
+     */
 	public static function uploadImage($checkImage, $requestImage, $nameImageDB){
 		if($checkImage){
             $img = $requestImage;
             $img_name = time()."-".$img->getClientOriginalName();
-            // if(!empty($nameImageDB)){
-            // 	if(file_exists(env('PATH_UPLOAD_IMAGE').'/'.$nameImageDB)){
-            //    	 	unlink(env('PATH_UPLOAD_IMAGE').'/'.$nameImageDB);
-            // 	}
-            // }
+            
             $img->move(env('PATH_UPLOAD_IMAGE'),$img_name);
             return $img_name;
         }
 	}
+
     public static function uploadImage2($file, $current_month,$path_save) {
 
         // $pathFile = config('app.url_file_write');
@@ -36,35 +37,108 @@ class ImagesHelper
         // die();
         return $pathImage. $filename;
     }
+
+    //==========================================
+
     /**
+     * send post request upload Image to a different server
+     * @return string image name
+     */
+    private static function sendRequestToApi($tmpUpload,$name,$path){
+      try {
+        $client = new Client;
+        $response = $client->request('POST', env('URL_FILE_WRITE'), 
+          [                
+                'multipart' => [
+                      [
+                          'name'     => 'name',
+                          'contents' => $name,
+                      ],                    
+                      [
+                          'name'     => 'fileUpload',
+                          'contents' => fopen($tmpUpload, 'r'),
+                      ],
+                      [
+                          'name'     => 'pathImage',
+                          'contents' => $path,
+                      ]
+                  ],
+                  'headers' => [
+                      'Authorization' => 'Bearer '.env('UPLOAD_IMAGE_API_KEY'),
+                  ],
+          ]); 
+        $body = (string)$response->getBody();
+        // echo ($body);
+
+      } catch (\Exception $e) {
+        \Log::info($e);
+        return "error";
+      }
+    }
+
+    public static function uploadImageToAPI($file, $folder_upload) { 
+        $name = $file->getClientOriginalName();
+        $name = str_replace(" ", "-", $name);
+        $pathImage = '/images/place/' . $folder_upload . '/';
+        $filename = strtotime('now') .'-'. strtolower($name);
+       
+        $file->move("tmp-upload", $filename);
+        $tmpUpload = "tmp-upload/".$filename;
+
+        self::sendRequestToApi($tmpUpload,$filename,$pathImage);
+        unlink("tmp-upload/".$filename);
+
+        return $pathImage . $filename;
+    }
+
+
+    /**
+<<<<<<< HEAD
+     * Auto upload image to SummerNote 
+     * @param  $content input
+     * @return $content output
+=======
      * Auto upload image to SummerNote
      * @param  $description is SummerNote content
      * @return $description
+>>>>>>> origin/thieu
      */
-    public static function uploadImageSummerNote($description){
+    public static function uploadImageSummerNote($content){
         $dom = new \DomDocument();
-        $dom->loadHtml('<?xml encoding="utf-8" ?>' .$description);
+        $dom->loadHtml('<?xml encoding="utf-8" ?>' .$content);   
         $images = $dom->getElementsByTagName('img');
 
         foreach($images as $k => $img){
             $data = $img->getAttribute('src');
+
             if($data){
                 try {
                     list($type, $data) = explode(';', $data);
                     list(, $data)      = explode(',', $data);
                     $data = base64_decode($data);
-                    $image_name= "/upload/summer_note/" . time().$k.'.png';
-                    $path = public_path() . $image_name;
-                    file_put_contents($path, $data);
+                    $filename = time().$k.'.png';
+                    $tmpUpload = "tmp-upload/" . $filename;
+                    $pathTmpUpload = public_path() .'/'. $tmpUpload;
+                    file_put_contents($pathTmpUpload, $data);
+
+                    $pathImage = '/images/place/news/summernote/';
+                    self::sendRequestToApi($tmpUpload,$filename,$pathImage);
+                    unlink("tmp-upload/".$filename);
+
                     $img->removeAttribute('src');
-                    $img->setAttribute('src', $image_name);
+                    $img->setAttribute('src', env('URL_FILE_VIEW').$pathImage.$filename);
+                    
                 } catch (\Exception $e) {
-                    continue;
+                  // \Log::info($e);
+                  continue;
                 }
 
             }
         }
-        $description = $dom->saveHTML();
-        return $description;
+        $content = $dom->saveHTML();
+        // \Log::info($content);
+        return $content;
     }
+
 }
+

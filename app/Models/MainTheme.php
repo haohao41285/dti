@@ -2,14 +2,13 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
+use App\Models\BaseModel;
 
-/**
- * Class PosCustomer
- */
-class MainTheme extends Model
+class MainTheme extends BaseModel
 {
     protected $table = 'main_theme';
+
+    protected $primaryKey = 'theme_id';
 
     public $timestamps = true;
 
@@ -25,7 +24,8 @@ class MainTheme extends Model
         'updated_at',
         'created_by',
         'updated_by',
-        'theme_status'
+        'theme_status',
+        'theme_license',
     ];
 
     protected $guarded = [];

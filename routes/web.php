@@ -10,7 +10,6 @@
 | contains the "web" middleware group. Now create something great!
 |
 */
-
  // Authentication Routes...
 Route::get('login', 'Auth\LoginController@showLoginForm')->name('login');
 Route::post('login', 'Auth\LoginController@postLogin');
@@ -69,6 +68,17 @@ Route::group(['middleware' => ['auth']], function () {
         Route::get('/sms/event-detail','SmsController@eventDetail')->name('event-detail');
         Route::get('/sms/calculate-sms','SmsController@calculateSms')->name('calculate-sms');
 
+        Route::group(['prefix' => 'news'], function() {
+            Route::get('/', 'NewsController@index')->name('news');
+            Route::get('news-type-datatable', 'NewsController@getNewsTypeDatatable')->name('getNewsTypeDatatable');
+            Route::get('news-datatable', 'NewsController@getNewsDatatable')->name('getNewsDatatable');
+            Route::post('news-type-delete', 'NewsController@deleteNewsType')->name('deleteNewsType');
+            Route::post('news-delete', 'NewsController@deleteNews')->name('deleteNews');
+            Route::post('news-type-save', 'NewsController@saveNewsType')->name('saveNewsType');
+            Route::post('news-save', 'NewsController@saveNews')->name('saveNews');
+            Route::get('get-news-by-id', 'NewsController@getNewsbyId')->name('getNewsbyId');
+        });
+
     });
 
     Route::group(['prefix'=>'statistics', 'namespace'=>'Statistics'],function(){
@@ -91,16 +101,60 @@ Route::group(['middleware' => ['auth']], function () {
          Route::get('license/generate', 'LicenseController@generate')->name('generateLicenses');
     });
 
-    Route::group(['prefix'=>'tools'],function(){
+   
+    Route::group(['prefix'=>'tools','namespace'=>'ItTools'],function(){
+
         Route::get('clonewebsite', 'ItToolsController@cloneWebsite')->name('cloneWebsite');
         Route::get('updatewebsite', 'ItToolsController@updateWebsite')->name('updateWebsite');
+
+        Route::group(['prefix' => 'website-themes'], function() {
+            Route::get('/', 'WebsiteThemeController@index')->name('getWebsiteThemes');
+            Route::get('/datatable','WebsiteThemeController@datatable')->name('getDatatableWebsiteThemes');
+            Route::get('/get-by-id', 'WebsiteThemeController@getById')->name('getWebsiteThemesById');
+            Route::post('/save', 'WebsiteThemeController@save')->name('saveWebsiteThemes');
+            Route::get('/delete', 'WebsiteThemeController@delete')->name('deleteThemes');
+            Route::get('/change-status', 'WebsiteThemeController@changeStatusThemes')->name('changeStatusThemes');
+        });
+
+        Route::group(['prefix' => 'app-banners'], function() {
+            Route::get('/', "AppBannerController@index")->name('getAppBanner');
+            Route::get('/app-datatable', "AppBannerController@appDataTable")->name('appDataTable');
+            Route::get('/app-banner-datatable', "AppBannerController@appBannerDataTable")->name('appBannerDataTable');
+            Route::post('/save-app', "AppBannerController@saveApp")->name('saveApp');
+            Route::post('/save-app-banner', "AppBannerController@saveAppBanner")->name('saveAppBanner');
+            Route::post('/delete-app', "AppBannerController@deleteApp")->name('deleteApp');
+            Route::post('/delete-app-banner', "AppBannerController@deleteAppBanner")->name('deleteAppBanner');
+
+        });
+
+        Route::group(['prefix' => 'website-themes-properties'], function() {
+            Route::get('/list-theme-properties','WebsiteThemePropertiesController@listThemePropertiesByThemeId')->name('listThemePropertiesByThemeId');
+            Route::get('/list-value-properties','WebsiteThemePropertiesController@listValueProperties')->name('listValueProperties');
+            Route::post('save', "WebsiteThemePropertiesController@save")->name('saveWebsiteThemesProperty');
+            Route::post('save-value-property', "WebsiteThemePropertiesController@saveValueProperties")->name('saveValueProperties');
+            Route::get('edit', "WebsiteThemePropertiesController@edit")->name('editWebsiteThemesProperty');
+            Route::post('delete', "WebsiteThemePropertiesController@delete")->name('deleteWebsiteThemesProperty');
+            Route::post('delete-value-properties', "WebsiteThemePropertiesController@deleteValueProperties")->name('deleteValueProperties');
+        });
+
+        Route::group(['prefix' => 'places'], function() {
+            Route::get('/', 'PlaceController@index')->name('getPlaces');
+            Route::get('/places-datatable', 'PlaceController@getPlacesDatatable')->name('getPlacesDatatable');
+            Route::get('/users-datatable', 'PlaceController@getUsersDatatable')->name('getUsersDatatable');
+            Route::post('/change-password', 'PlaceController@changeNewPassword')->name('changeNewPassword');
+            Route::get('/get-detail', 'PlaceController@getDetailPlace')->name('getDetailPlace');
+            Route::get('/get-themes-datatable', 'PlaceController@getThemeDatatable')->name('getThemeDatatable');
+        });
     });
 
-    Route::get('recentlog', 'RecentLogController@index')->name('recentlog');
+    Route::group(['prefix' => 'recentlog'], function() {
+        Route::get('/', 'RecentLogController@index')->name('recentlog');
+        Route::get('/datatable', 'RecentLogController@datatable')->name('recentlogDatatable');
+        
+    });
 
     Route::group(['prefix' => 'setting','namespace' => 'Setting'], function() {
         Route::get('setup-team', 'SetupTeamController@index')->name('setupTeam');
-        Route::get('setup-background', 'SetupBackground@index')->name('setupBackground');
         Route::get('get-team-list', 'SetupTeamController@getTemDatatable')->name('get-team-list');
         Route::get('edit-team', 'SetupTeamController@editTeam')->name('edit-team');
         Route::get('save-team', 'SetupTeamController@saveTeam')->name('save-team');
@@ -126,14 +180,26 @@ Route::group(['middleware' => ['auth']], function () {
         Route::get('sms-template-datatable','SetupSmsController@smsTemplateDatatable')->name('sms-template-datatable');
         Route::post('delete-template','SetupSmsController@deleteTemplate')->name('delete-template');
         Route::post('save-template-sms','SetupSmsController@saveTemplateSms')->name('save-template-sms');
+
+        Route::group(['prefix' => 'login-background'], function() {
+            Route::get('/', 'SetupLoginBackground@index')->name('loginBackground');
+            Route::get('/datatable', "SetupLoginBackground@datatable")->name('datatableLoginBackground');
+            Route::post('/save', "SetupLoginBackground@save")->name('saveLoginBackground');
+            Route::post('/delete', "SetupLoginBackground@delete")->name('deleteLoginBackground');
+        });
+
         //SETTING EVENT HOLIDAY
         Route::get('setup-event-holiday','EventHolidayController@index')->name('setup-event-holiday');
         Route::get('event-datatable','EventHolidayController@eventDatatable')->name('event-datatable');
         Route::post('add-event','EventHolidayController@addEvent')->name('add-event');
+
         Route::post('delete-event','EventHolidayController@deleteEvent')->name('delete-event');
         Route::post('change-status-event','EventHolidayController@changeStatusEvent')->name('change-status-event');
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> ec3c23f89a3d5ab1a962180b8641dc7c171d7f82
     });
 
     Route::group(['prefix'=>'user'],function(){

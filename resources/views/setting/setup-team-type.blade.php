@@ -4,34 +4,46 @@ Team Type List
 @stop
 @section('content')
 <div class="row">
-	<div class="col-md-7">
-		<h5><b>Team Type List</b></h5>
-        <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
-			<thead>
-				<tr>
-					<th class="text-center">ID</th>
-					<th>Team Type Name</th>
-					<th>Description</th>
-					<th>Status</th>
-					<th>Created At</th>
-					<th class="text-center" style="width:100px">Action</th>
-				</tr>
-			</thead>
-		</table>
+	<div class="col-md-8">
+		<div class="card shadow mb-3 ">
+      		<div class="card-header py-2">
+        		<h6 class="m-0 font-weight-bold text-primary">Team Type List</h6>
+      		</div>
+	      	<div class="card-body">
+		        <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+					<thead>
+						<tr>
+							<th class="text-center">ID</th>
+							<th>Team Type Name</th>
+							<th>Description</th>
+							<th>Status</th>
+							<th>Created At</th>
+							<th class="text-center" style="width:100px">Action</th>
+						</tr>
+					</thead>
+				</table>
+			</div>
+		</div>
 	</div>
-	<div class="col-md-5 " style="padding-top: 0px">
-		<h5><b class="tt-tip">Add Team Type</b></h5>
-		<div class="form-group">
-			<label for="">Name</label>
-			<input type="text" class="form-control form-control-sm" name="" id="team_type_name">
-		</div>
-		<div class="form-group">
-			<label for="">Description</label>
-			<textarea class="form-control form-control-sm" rows="3" id="team_type_description" ></textarea>
-		</div>
-		<div class="form-group">
-			<button type="button" class="btn btn-sm btn-danger float-right cancel-tt ml-2">Cancel</button>
-			<button type="button" class="btn btn-sm btn-primary float-right submit-tt">Submit</button>
+	<div class="col-md-4 ">
+		<div class="card shadow mb-3 ">
+      		<div class="card-header py-2">
+        		<h6 class="m-0 font-weight-bold text-primary">Add Team Type</h6>
+      		</div>
+	      	<div class="card-body">
+				<div class="form-group">
+					<label for="">Name</label>
+					<input type="text" class="form-control form-control-sm" name="" id="team_type_name">
+				</div>
+				<div class="form-group">
+					<label for="">Description</label>
+					<textarea class="form-control form-control-sm" rows="3" id="team_type_description" ></textarea>
+				</div>
+				<div class="form-group">
+					<button type="button" class="btn btn-sm btn-danger float-right cancel-tt ml-2">Cancel</button>
+					<button type="button" class="btn btn-sm btn-primary float-right submit-tt">Submit</button>
+				</div>
+			</div>
 		</div>
 	</div>
 </div>
@@ -112,7 +124,7 @@ Team Type List
 	    	var team_type_description = $("#team_type_description").val();
 	    	var team_type_name = $("#team_type_name").val();
 
-	    	if(team_type_description != "" && team_type_name != ""){
+	    	if(team_type_name != ""){
 	    		$.ajax({
 		    		url: '{{route('add-team-type')}}',
 		    		type: 'GET',
@@ -136,6 +148,9 @@ Team Type List
 	                toastr.error('Error!');
 	                // console.log(thrownError + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText);
 	         	});
+	    	}
+	    	else{
+	    		toastr.error('Please enter Team type name!')
 	    	}
 	    });
 	    $(".cancel-tt").click(function(){

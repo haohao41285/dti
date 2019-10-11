@@ -121,7 +121,7 @@
               <input type="text" class="input-sm form-control form-control-sm" id="end_date" name="end" />
             </div>
         </div>
-        <div class="col-md-2">
+        <div class="col-md-3">
             <label for="">Address</label>
             <input type="text" id="address" name="address" class="form-control form-control-sm">
         </div>

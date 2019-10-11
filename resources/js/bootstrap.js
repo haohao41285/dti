@@ -1,4 +1,10 @@
 window.summernote = require('summernote')
+<<<<<<< HEAD
+=======
+
+window.bootstrapToggle = require('bootstrap-toggle')
+
+>>>>>>> ec3c23f89a3d5ab1a962180b8641dc7c171d7f82
 window.toastr = require('toastr')
 
 window._ = require('lodash');
