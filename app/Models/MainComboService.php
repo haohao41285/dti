@@ -17,8 +17,6 @@ class MainComboService extends Model
     	'cs_status',
     	'cs_type',
     	'cs_assign_to',
-    	'routing_number',
-    	'account_number',
-    	'bank_name'
+        'cs_form_type'
     ];
 }

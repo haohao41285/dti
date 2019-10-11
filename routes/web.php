@@ -101,7 +101,7 @@ Route::group(['middleware' => ['auth']], function () {
          Route::get('license/generate', 'LicenseController@generate')->name('generateLicenses');
     });
 
-   
+
     Route::group(['prefix'=>'tools','namespace'=>'ItTools'],function(){
 
         Route::get('clonewebsite', 'ItToolsController@cloneWebsite')->name('cloneWebsite');
@@ -150,7 +150,7 @@ Route::group(['middleware' => ['auth']], function () {
     Route::group(['prefix' => 'recentlog'], function() {
         Route::get('/', 'RecentLogController@index')->name('recentlog');
         Route::get('/datatable', 'RecentLogController@datatable')->name('recentlogDatatable');
-        
+
     });
 
     Route::group(['prefix' => 'setting','namespace' => 'Setting'], function() {
@@ -196,10 +196,6 @@ Route::group(['middleware' => ['auth']], function () {
         Route::post('delete-event','EventHolidayController@deleteEvent')->name('delete-event');
         Route::post('change-status-event','EventHolidayController@changeStatusEvent')->name('change-status-event');
 
-<<<<<<< HEAD
-
-=======
->>>>>>> ec3c23f89a3d5ab1a962180b8641dc7c171d7f82
     });
 
     Route::group(['prefix'=>'user'],function(){
@@ -215,6 +211,9 @@ Route::group(['middleware' => ['auth']], function () {
 
         Route::get('role-permission/{id}','UserController@permission')->where(['id'=>'[0-9]+'])->name('permission');
         Route::get('change-permission','UserController@changePermission')->name('change-permission');
+
+        Route::get('user-add/{id?}','UserController@userAdd')->where(['id'=>'[0-9]+'])->name('user-add');
+        Route::post('user-save','UserController@userSave')->name('user-save');
 
 
 

@@ -15,9 +15,13 @@ use DataTables;
 use DB;
 use App\Helpers\ImagesHelper;
 use Gate;
+use Validator;
+use Hash;
 
 class UserController extends Controller
 {
+    private $validator;
+
     public function index(){
         return view('user.list');
     }
@@ -85,7 +89,7 @@ class UserController extends Controller
                         return "";
                 })
                ->addColumn('action',function($row){
-                    return '<a class="btn btn-sm btn-secondary edit-user" href="'.route('user-edit',$row->user_id).'"><i class="fas fa-edit"></i></a>
+                    return '<a class="btn btn-sm btn-secondary edit-user" href="'.route('user-add',$row->user_id).'"><i class="fas fa-edit"></i></a>
                     <a class="btn btn-sm btn-secondary delete-user" href="#"><i class="fas fa-trash"></i></a>';
                })
                ->rawColumns(['user_status','action'])
@@ -270,5 +274,59 @@ class UserController extends Controller
             return 0;
         else
             return 1;
+    }
+    public function userAdd($id = 0){
+
+        $data['user'] =MainUser::where('user_id',$id)->first();
+        $data['roles'] = MainGroupUser::active()->get();
+        $data['teams'] = MainTeam::active()->get();
+
+        return view('user.user-add',$data);
+    }
+    public function userSave(Request $request){
+        $rule = [
+            'user_firstname' => 'required',
+            'user_lastname' => 'required',
+            'user_nickname' => 'required',
+            'new_password' =>'required|min:6',
+            'user_phone' => 'required|min:10|max:15',
+            'user_email' =>'required|email'
+        ];
+        $message = [
+            'user_firstname.required' => 'Enter Firstname',
+            'user_lastname.required' => 'Enter Lastname',
+            'user_nickname.required' => 'Enter Nickname',
+            'new_password.required' => 'Enter Pasword',
+            'new_password.min' => 'Password at least 6 characters',
+            'user_phone.required' => 'Enter Phone',
+            'user_phone.min' => 'Phone not True',
+            'user_phone.max' => 'Phone not True',
+            'user_email.required' => 'Enter Mail',
+            'user_email.email' => 'Enter Enable Mail',
+
+        ];
+        $validator = Validator::make($request->all(),$rule,$message);
+        if($validator->fails()){
+            return back()->withErrors($validator)->withInput();
+        }
+        $input = $request->all();
+        $max_user_id = MainUser::max('user_id')+1;
+        $input['user_id'] = $max_user_id;
+        $input['user_password'] = Hash::make($request->new_password);
+        $input['user_country_code'] = '84';
+        if($request->user_birthdate != ""){
+            $input['user_birthdate'] = format_date_db($request->user_birthdate);
+        }
+
+        if($request->hasFile('avatar')){
+            $input['user_avatar'] = ImagesHelper::uploadImage($request->hasFile('avatar'),$request->avatar,"");
+            // dd($user->user_avatar);
+        }
+        $save_user = MainUser::create($input);
+        if(!isset($save_user)){
+            return back()->with(['error'=>'Save User Failed']);
+        }else
+            return redirect()->route('userList')->with(['success'=>'Save User Successfully!']);
+
     }
 }
