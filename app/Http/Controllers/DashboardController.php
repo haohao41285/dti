@@ -5,6 +5,10 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use Carbon\Carbon;
 use Illuminate\Http\Response;
+use App\Models\MainComboServiceBought;
+use App\Models\MainTask;
+use App\Models\MainCustomerBought;
+use App\Models\MainCustomerService;
 
 
 class DashboardController extends Controller {
@@ -14,9 +18,15 @@ class DashboardController extends Controller {
 
     }
 
-    public function index()
-    {
-        return view('dashboard');
+    public function index(){   
+        $yearNow = format_year(get_nowDate());
+        $data['earnings'] = MainComboServiceBought::getSumChargeByYear($yearNow);
+        $data['pendingTasks'] = MainTask::getPendingTasks();
+        $data['nearlyExpired'] = MainCustomerBought::getNearlyExpired();
+        $data['popularServices'] = MainCustomerService::get10popularServices();
+        // echo $data['popularServices']; die();
+        
+        return view('dashboard',$data);
     }
     public function confirmEvent(){
         try{

@@ -1,3 +1,5 @@
+window.CanvasJS = require('canvasjs/dist/canvasjs.min.js');
+
 window.summernote = require('summernote')
 
 window.bootstrapToggle = require('bootstrap-toggle')

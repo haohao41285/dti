@@ -1,0 +1,1 @@
+ALTER TABLE `main_task` CHANGE `complete_percent` `complete_percent` INT(3) NOT NULL DEFAULT '0' COMMENT 'percent';

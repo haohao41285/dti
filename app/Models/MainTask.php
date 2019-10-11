@@ -2,12 +2,15 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
+// use Illuminate\Database\Eloquent\Model;
 use App\Models\MainFile;
+use Auth;
+use App\Models\BaseModel;
 
-class MainTask extends Model
+class MainTask extends BaseModel
 {
     protected $table = "main_task";
+
     protected $fillable = [
     	'subject',
     	'priority',
@@ -52,5 +55,12 @@ class MainTask extends Model
     }
     public function getSubTask(){
         return $this->hasMany(MainTask::class,'task_parent_id','id');
+    }
+
+    public static function getPendingTasks(){
+        return self::select('id','complete_percent')
+                    ->where('assign_to',Auth::user()->user_id)
+                    ->where('complete_percent','!=',"100")
+                    ->count();
     }
 }

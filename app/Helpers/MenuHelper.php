@@ -38,6 +38,7 @@ class MenuHelper{
 		        ['text' => 'Website theme', 'link'=> 'tools/website-themes'],
 		        ['text' => 'App banners', 'link'=> 'tools/app-banners'],
 		        ['text' => 'Places', 'link'=> 'tools/places'],
+		        // ['text' => 'Build code', 'link'=> 'tools/build-code'],
 		    ]],
 		    ['text' => 'Orders', 'icon'=>'fas fa-shopping-cart', 'link' => 'orders','childrens' => [
 		        ['text' => 'My Orders', 'link'=> 'orders/my-orders'],

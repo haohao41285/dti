@@ -40,4 +40,11 @@ class MainCustomerService extends Model
 	    return $this->belongsTo(MainUser::class,'created_by','user_id');
     }
 
+    public static function get10popularServices(){
+    	return self::select('cs_service_id')
+    				->where('cs_status',1)
+    				->groupBy('cs_service_id')
+    				->get();
+    }
+
 }
