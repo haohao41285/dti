@@ -162,7 +162,6 @@ class OrdersController extends Controller
 				$customer_id = $check_customer->customer_id;
 
 			else{
-
 				$customer_id = MainCustomer::max('customer_id')+1;
 				$main_customer_arr = [
 					'customer_id' => $customer_id,
@@ -429,9 +428,10 @@ class OrdersController extends Controller
 							$service_arr = array_unique($service_arr);
 							$task_arr = [];
 							foreach ($service_arr as $key => $service) {
-								$service_name = MainComboService::where('id',$service)->first()->cs_name;
+								$service_info = MainComboService::find($service);
+								
 								$task_arr[] = [
-									'subject' => $service_name,
+									'subject' => $service_info->cs_name,
 									'priority' => 2,
 									'status' => 1,
 									'order_id'=> $insert_order->id,
@@ -440,7 +440,7 @@ class OrdersController extends Controller
 									'service_id' => $service,
 									'place_id' => $place_id,
 									'category' => 1,
-									'assign_to' => $service->cs_assign_to
+									'assign_to' => $service_info->cs_assign_to
 								];
 							}
 							$task_create = MainTask::insert($task_arr);

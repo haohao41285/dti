@@ -11,7 +11,7 @@ $permission_list_session = Session::get('permission_list_session');
   <!-- Sidebar - Brand -->
   <a class="sidebar-brand d-flex align-items-center justify-content-center" href="{{ asset('/') }}">
 
-      <img style="width: 100%;" src="{{asset("images/logo169x46.png")}}" alt="logo">
+      <img style="width: 100px;" src="{{asset("images/logo169x46.png")}}" alt="logo">
   </a>
   @foreach($navs as $nav)
         @php
