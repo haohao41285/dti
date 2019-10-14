@@ -18,5 +18,8 @@ class MainTeam extends Model
     public function getTeamType(){
         return $this->belongsTo(MainTeamType::class,'team_type','id');
     }
+    public function scopeActive($query){
+        return $query->where('team_status',1);
+    }
 
 }
