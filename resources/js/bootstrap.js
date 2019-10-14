@@ -1,4 +1,5 @@
 window.CanvasJS = require('canvasjs/dist/canvasjs.min.js');
+window.CanvasJSJ = require('canvasjs/dist/jquery.canvasjs.min.js');
 
 window.summernote = require('summernote')
 

@@ -4,17 +4,17 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Laracasts\Presenter\PresentableTrait;
+use DB;
 
-/**
- * Class PosCustomer
- */
+
 class MainCustomer extends Model
 {
     use PresentableTrait;
     protected  $presenter = 'App\\Presenters\\MainCustomerPresenter';
+
     protected $table = 'main_customer';
 
-    public $timestamps = false;
+    protected $updated_at = false;
 
     protected $fillable = [
         'customer_id',
@@ -30,7 +30,8 @@ class MainCustomer extends Model
         'customer_agent',
         'customer_type',
         'customer_status',
-        'customer_customer_template_id'
+        'customer_customer_template_id',
+        'created_at',
     ];
 
     protected $guarded = [];
@@ -41,5 +42,21 @@ class MainCustomer extends Model
     public function getOrder(){
         return $this->hasMany(MainComboServiceBought::class,'csb_customer_id','customer_id');
     }
+
+    public static function getTotalNewCustomersEveryMonthByYear($year){
+        $startDate = $year."-01-01";
+        $endDate = $year."-12-31";
+
+        return self::select(
+                    DB::raw('DATE_FORMAT(created_at, "%m") as month'),
+                    DB::raw('COUNT("month") as count' ) 
+                        )
+                    ->where('customer_status',1)
+                    ->whereBetween('created_at',[$startDate,$endDate])
+                    ->groupBy('month')
+                    ->get();
+    }
+
+    
 
 }
