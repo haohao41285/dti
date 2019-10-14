@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Orders;
 
+use App\Models\MainComboServiceType;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Helpers\Option;
@@ -76,10 +77,10 @@ class OrdersController extends Controller
 					->select('pos_place.place_id','pos_place.place_name')
 			        ->get();
         }
+        //GET COMBO SERVICE NOT TYPE
+        $data['combo_service_orther'] = MainComboService::where('cs_status',1)->whereNull('cs_combo_service_type')->get();
 
-        $data['combo_service_list'] = MainComboService::where('cs_status',1)->orderBy('cs_type','asc')->get();
-
-        $data['count'] = round($data['combo_service_list']->count()/2);
+        $data['combo_service_type'] = MainComboServiceType::active()->get();
 
         return view('orders.add',$data);
 	}
@@ -429,7 +430,7 @@ class OrdersController extends Controller
 							$task_arr = [];
 							foreach ($service_arr as $key => $service) {
 								$service_info = MainComboService::find($service);
-								
+
 								$task_arr[] = [
 									'subject' => $service_info->cs_name,
 									'priority' => 2,
@@ -1034,4 +1035,5 @@ class OrdersController extends Controller
         // Output the generated PDF to Browser
         $dompdf->stream();
     }
+
 }

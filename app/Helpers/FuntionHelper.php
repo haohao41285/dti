@@ -29,4 +29,14 @@ if(!function_exists('getStatusTask')){
 	    ];
 	}
 }
+if(!function_exists('getFormService')){
+    function getFormService(){
+        return [
+            1 => 'Google',
+            2 => 'Website',
+            3 => 'Facebook',
+            4 => 'Domain'
+        ];
+    }
+}
 ?>
