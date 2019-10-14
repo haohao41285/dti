@@ -44,4 +44,10 @@ class MainComboServiceBought extends Model
         return $this->hasMany(MainTask::class,'order_id','id');
     }
 
+    public static function getSumChargeByYear($year){
+        return self::select('csb_charge')
+                    ->whereYear('created_at',$year)
+                    ->sum('csb_charge');
+    }
+
 }

@@ -16,4 +16,7 @@ class MainGroupUser extends Model
         'updated_by',
         'gu_status'
     ];
+    public function scopeActive($query){
+        return $query->where('gu_status',1);
+    }
 }

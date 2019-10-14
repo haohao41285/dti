@@ -1,7 +1,7 @@
 @extends('layouts.app')
 @section('title','Edit profile')
 @section('content')
-<div class="container-fluid">
+<div class="">
    <!-- Page Heading -->
 @section('content-title')
     Edit Profile
@@ -26,7 +26,7 @@
          <div class="col-lg-8 push-lg-4 personal-info">
                <div class="form-group row">
                   <label class="col-lg-3 col-form-label form-control-label">Nickname & Phone</label>
-                  <div class="col-lg-6">                     
+                  <div class="col-lg-6">
                      <input required="" class="form-control form-control-sm" type="text" name="user_nickname" value="{{$user->user_nickname}}" placeholder="Fullname" />
                   </div>
                   <div class="col-lg-3">
@@ -48,34 +48,40 @@
                      <input required="" class="form-control form-control-sm" type="text" value="{{$user->user_lastname}}" name="user_lastname" placeholder="Last Name" />
                   </div>
                </div>
-
+               <div class="form-group row">
+                   <label class="col-lg-3 col-form-label form-control-label" for="user_birthdate">Birthdate</label>
+                   <div class="col-lg-9">
+                       <input class="form-control form-control-sm" type="text" id="user_birthdate" value="{{$user->user_birthdate!==""?format_date($user->user_birthdate):""}}" name="user_birthdate" />
+                   </div>
+               </div>
                <div class="form-group row">
                   <label class="col-lg-3 col-form-label form-control-label">Password</label>
                   <div class="col-lg-9">
-                     <input class="form-control form-control-sm" type="password" value="" name="password" />                     
+                     <input class="form-control form-control-sm" type="password" value="" name="password" />
                   </div>
                </div>
                <div class="form-group row">
                   <label class="col-lg-3 col-form-label form-control-label">New Password</label>
                   <div class="col-lg-9">
-                     <input class="form-control form-control-sm" type="password" value="" name="new_password" />
+                     <input class="form-control form-control-sm" type="password" id="new_password" value="" name="new_password" />
                   </div>
                </div>
                <div class="form-group row">
                   <label class="col-lg-3 col-form-label form-control-label">Confirm New Password</label>
                   <div class="col-lg-9">
-                     <input class="form-control form-control-sm" type="password" value="" name="confirm_password" />
+                     <input class="form-control form-control-sm" type="password" id="confirm_password" value="" name="confirm_password" />
+                      <span class="text-danger message-error"></span>
                   </div>
                </div>
                <div class="form-group row">
                   <label class="col-lg-3 col-form-label form-control-label"></label>
-                  <div class="col-lg-9">     
-                     <input type="submit" class="btn btn-primary btn-sm" value="Save Changes" />                
-                     <a href="{{ route('dashboard') }}" class="btn btn-secondary btn-sm">Cancel</a>                     
+                  <div class="col-lg-9">
+                     <input type="submit" class="btn btn-primary btn-sm" value="Save Changes" />
+                     <a href="{{ route('dashboard') }}" class="btn btn-secondary btn-sm">Cancel</a>
                   </div>
                </div>
          </div>
-         
+
          </form>
       </div>
    </div>
@@ -84,7 +90,21 @@
 @push('scripts')
 <script>
    $(document).ready(function() {
+
+       $("#user_birthdate").datepicker();
+
         perviewImage();
+
+        $('#confirm_password').keyup(function () {
+            let new_password = $("#new_password").val();
+            let confirm_password = $("#confirm_password").val();
+            let message_error = $(".message-error");
+
+            if(new_password =! "" && confirm_password != "" && new_password === confirm_password){
+                message_error.text("");
+            }else
+                message_error.text("Password not match!");
+        })
    });
 </script>
 

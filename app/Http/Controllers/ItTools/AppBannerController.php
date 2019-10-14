@@ -94,7 +94,7 @@ class AppBannerController extends Controller
         }
 
         if($request->hasFile('image')){
-            $image = ImagesHelper::uploadImageToAPI($request->image,'theme');
+            $image = ImagesHelper::uploadImageToAPI($request->image,'app/banner');
         }
 
         $arr = [

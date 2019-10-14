@@ -22,9 +22,9 @@ News
                                 <thead>
                                     <tr>
                                         <th>ID</th>
-                                        <th>Title</th>
+                                        <th >Title</th>
                                         <th>Created at</th>
-                                        <th >Action</th>
+                                        <th width="100">Action</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -47,10 +47,10 @@ News
                                 <thead>
                                     <tr>
                                         <th>ID</th>
-                                        <th>Title</th>
+                                        <th >Title</th>
                                         <th>Image</th>
                                         <th>Created at</th>
-                                        <th>Action</th>
+                                        <th width="100">Action</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -94,7 +94,7 @@ News
 </div>
 {{-- news modal --}}
 <div class="modal fade" id="news-modal" tabindex="-1" role="dialog">
-  <div class="modal-dialog modal-lg modal-dialog-scrollable" role="document">
+  <div style="max-width: 90%" class="modal-dialog modal-dialog-scrollable" role="document">
     <div class="modal-content">
       <form method="post" id="news-form" enctype='multipart/form-data'>
         @csrf
@@ -104,7 +104,7 @@ News
             <span aria-hidden="true">&times;</span>
           </button>
         </div>
-        <div class="modal-body" style="position: relative;overflow: auto;max-height:80vh;width: 100%;">
+        <div class="modal-body" style="position: relative;overflow: auto;max-height:70vh;width: 100%;">
             <div class="form-group row col-12">
               <label class="col-2 ">Title</label>
               <input class="form-control-sm form-control col-10" type="text" name="title">
@@ -123,7 +123,7 @@ News
             <div class="form-group row col-12">
               <label class="col-2 ">Content</label>
               <div class="col-10 row">                     
-                    <textarea name="content" class="form-control summernote"></textarea>
+                    <textarea name="content" class="form-control summernote col-12"></textarea>
               </div>
             </div>
         </div>

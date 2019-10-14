@@ -1,3 +1,5 @@
+window.CanvasJS = require('canvasjs/dist/canvasjs.min.js');
+
 window.summernote = require('summernote')
 
 window.bootstrapToggle = require('bootstrap-toggle')
@@ -15,10 +17,10 @@ window._ = require('lodash');
 try {
     window.Popper = require('popper.js').default;
     window.$ = window.jQuery = require('jquery');
-    
-    require('bootstrap');  
+
+    require('bootstrap');
     window.Switchery  = require('switchery/switchery')
-        
+
 } catch (e) {console.log(e); }
 
 /**
@@ -61,4 +63,4 @@ if (token) {
 //     cluster: process.env.MIX_PUSHER_APP_CLUSTER,
 //     encrypted: true
 // });
-// 
+//
