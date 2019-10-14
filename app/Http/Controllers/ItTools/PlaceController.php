@@ -19,7 +19,11 @@ class PlaceController extends Controller
     public function index(){
         return view('tools.place');
     }
-
+    public function cloneWebsite(Request $data)
+    {
+        $value = RunShFileHelper::run("clonewebsite.sh");
+         return response()->json(['status'=>1,'msg'=>"Clone website successfully!", "value"=>$value]); 
+    }
     public function getPlacesDatatable(){
         $places = PosPlace::select('place_id','place_name','place_address','place_email','place_phone','place_ip_license','created_at')
             ->where('place_status',1)

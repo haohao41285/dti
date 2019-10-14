@@ -104,8 +104,7 @@ Route::group(['middleware' => ['auth']], function () {
 
     Route::group(['prefix'=>'tools','namespace'=>'ItTools'],function(){
 
-        Route::get('clonewebsite', 'ItToolsController@cloneWebsite')->name('cloneWebsite');
-        Route::get('updatewebsite', 'ItToolsController@updateWebsite')->name('updateWebsite');
+        
 
         Route::group(['prefix' => 'website-themes'], function() {
             Route::get('/', 'WebsiteThemeController@index')->name('getWebsiteThemes');
@@ -138,6 +137,8 @@ Route::group(['middleware' => ['auth']], function () {
         });
 
         Route::group(['prefix' => 'places'], function() {
+            Route::post('clonewebsite', 'PlaceController@cloneWebsite')->name('cloneWebsite');
+            Route::post('updatewebsite', 'PlaceController@updateWebsite')->name('updateWebsite');
             Route::get('/', 'PlaceController@index')->name('getPlaces');
             Route::get('/places-datatable', 'PlaceController@getPlacesDatatable')->name('getPlacesDatatable');
             Route::get('/users-datatable', 'PlaceController@getUsersDatatable')->name('getUsersDatatable');
