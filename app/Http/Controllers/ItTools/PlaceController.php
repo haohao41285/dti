@@ -21,7 +21,12 @@ class PlaceController extends Controller
     }
     public function cloneWebsite(Request $data)
     {
-        $value = RunShFileHelper::run("clonewebsite.sh");
+
+        $value = RunShFileHelper::run("[
+            'ssh createweb',
+            'sudo mkdir /home/hcmdev/temp/".$data->branch."',
+            'sudo cp -R /home/hanoidev/web_builder/websitenails/. /home/hcmdev/temp/".$data->branch."']
+            ");
          return response()->json(['status'=>1,'msg'=>"Clone website successfully!", "value"=>$value]); 
     }
     public function getPlacesDatatable(){
