@@ -21,7 +21,7 @@ class PlaceController extends Controller
     }
     public function cloneWebsite(Request $data)
     {
-        $value = RunShFileHelper::run("clonewebsite.sh");
+        $value = RunShFileHelper::run("ls -l");
          return response()->json(['status'=>1,'msg'=>"Clone website successfully!", "value"=>$value]); 
     }
     public function getPlacesDatatable(){
