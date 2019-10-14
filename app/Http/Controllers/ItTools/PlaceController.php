@@ -10,7 +10,8 @@ use DataTables;
 use App\Helpers\GeneralHelper;
 use App\Helpers\RunShFileHelper;
 use Validator;
-use App\Http\Controllers\ItTools\WebsiteThemeController;
+// use App\Http\Controllers\ItTools\WebsiteThemeController;
+use App\Models\MainTheme;
 
 
 class PlaceController extends Controller
@@ -112,7 +113,14 @@ class PlaceController extends Controller
     }
 
     public function getThemeDatatable(){
-        $theme = new WebsiteThemeController;
-        return $theme->datatable();
+        return MainTheme::getDatatable();
+    }
+
+    public function getThemeProperties(Request $request){
+        if($request->themeId){
+            $properties = MainThemeProperties::getThemePropertiesByThemeId($request->themeId);
+
+            return response()->json(['status'=>1,'data'=>$properties]);
+        }
     }
 }

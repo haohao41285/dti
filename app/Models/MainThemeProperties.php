@@ -27,4 +27,8 @@ class MainThemeProperties extends BaseModel
     protected $created_by = false;
 
     protected $updated_by = false;
+
+    public static function getThemePropertiesByThemeId($themeId){
+        return self::where('theme_id',$themeId)->get();
+    }
 }

@@ -79,7 +79,7 @@ class ImagesHelper
     public static function uploadImageToAPI($file, $folder_upload) { 
         $name = $file->getClientOriginalName();
         $name = str_replace(" ", "-", $name);
-        $pathImage = '/images/place/' . $folder_upload . '/';
+        $pathImage = '/images/' . $folder_upload . '/';
         $filename = strtotime('now') .'-'. strtolower($name);
        
         $file->move("tmp-upload", $filename);

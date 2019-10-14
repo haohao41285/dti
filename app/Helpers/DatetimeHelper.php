@@ -71,6 +71,12 @@ if (!function_exists('format_month')){
     }
 }
 
+if (!function_exists('format_year')){
+    function format_year($date){
+        return Carbon::parse($date)->format('Y');
+    }
+}
+
 if (!function_exists('gettime_by_datetime')) {
     function gettime_by_datetime($date)
     {
