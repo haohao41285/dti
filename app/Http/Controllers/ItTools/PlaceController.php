@@ -19,15 +19,13 @@ class PlaceController extends Controller
     public function index(){
         return view('tools.place');
     }
-    public function cloneWebsite(Request $data)
+    public function cloneWebsite(Request $request)
     {
+        dd($request->all());
 
-        $value = RunShFileHelper::run("[
-            'ssh createweb',
-            'sudo mkdir /home/hcmdev/temp/".$data->branch."',
-            'sudo cp -R /home/hanoidev/web_builder/websitenails/. /home/hcmdev/temp/".$data->branch."']
-            ");
-         return response()->json(['status'=>1,'msg'=>"Clone website successfully!", "value"=>$value]); 
+
+        
+         return response()->json(['status'=>1,'msg'=>"Clone website successfully!"]); 
     }
     public function getPlacesDatatable(){
         $places = PosPlace::select('place_id','place_name','place_address','place_email','place_phone','place_ip_license','created_at')
@@ -131,5 +129,23 @@ class PlaceController extends Controller
 
             return response()->json(['status'=>1,'data'=>$properties]);
         }
+    }
+
+    private function requestAPI(){
+        $data = array("name" => "Hagrid", "age" => "36");
+        $data_string = json_encode($data);
+
+        $curl = curl_init('http://example.api.com');
+
+        curl_setopt($curl, CURLOPT_CUSTOMREQUEST, "POST");
+        curl_setopt($curl, CURLOPT_POSTFIELDS, $data_string);
+        curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($curl, CURLOPT_HTTPHEADER, array(
+            'Content-Type: application/json',
+            'Content-Length: ' . strlen($data_string))
+        );
+
+        $result = curl_exec($curl);
+        curl_close($curl);
     }
 }
