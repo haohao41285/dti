@@ -39,6 +39,7 @@
 @section('scripts')
     @include('layouts.partials.scripts')
 @show
+
 <script>
     $(document).ready(function () {
         $("#birthday-modal").modal('show');
@@ -98,6 +99,37 @@
         });
     @endif
     @endif
+</script>
+<script>
+    $(document).ready(function(){
+        $(".search-customer").click(function(){
+
+            var customer_phone = $("#customer_phone_search").val();
+
+            if(customer_phone != ""){
+                $.ajax({
+                    url: '{{route('search-customer')}}',
+                    type: 'GET',
+                    dataType: 'html',
+                    data: {customer_phone: customer_phone},
+                })
+                    .done(function(data) {
+
+                        data = JSON.parse(data);
+
+                        if(data.status == 'error'){
+
+                            toastr.error(data.message);
+                        }else{
+                            window.location.href = "{{route('customer-detail')}}"+"/"+data.id;
+                        }
+                    })
+                    .fail(function() {
+                        toastr.error('Search Customer Failed!');
+                    });
+            }
+        });
+    });
 </script>
 </body>
 </html>

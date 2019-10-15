@@ -205,8 +205,17 @@
         var task_id = 0;
         var order_id = {{$id}};
 
-        $('#summernote').summernote();
-        $('#summernote2').summernote();
+        $('#summernote').summernote({
+            toolbar: [
+                // [groupName, [list of button]]
+                ['style', ['bold', 'italic', 'underline', 'clear']],
+                ['font', ['strikethrough', 'superscript', 'subscript']],
+                ['fontsize', ['fontsize']],
+                ['color', ['color']],
+                ['para', ['ul', 'ol', 'paragraph']],
+                ['height', ['height']]
+            ]
+        });
 
         var table = $('#tracking_history').DataTable({
             // dom: "lBfrtip",

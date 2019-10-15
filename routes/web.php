@@ -48,7 +48,7 @@ Route::group(['middleware' => ['auth']], function () {
          Route::get('export-customer', 'CustomerController@exportCustomer')->name('export-customer');
          Route::get('export-my-customer', 'CustomerController@exportMyCustomer')->name('export-my-customer');
          Route::post('save-my-customer', 'CustomerControllercustomersDatatable@saveMyCustomer')->name('save-my-customer');
-         Route::get('customer-detail/{id}', 'CustomerController@customerDetail')->where(['id'=>'[0-9]+'])->name('customer-detail');
+         Route::get('customer-detail/{id?}', 'CustomerController@customerDetail')->where(['id'=>'[0-9]+'])->name('customer-detail');
          Route::get('customer-tracking', 'CustomerController@customerTracking')->name('customer-tracking');
          Route::post('post-comment-customer', 'CustomerController@postCommentCustomer')->name('post-comment-customer');
          Route::get('get-seller', 'CustomerController@getSeller')->name('get-seller');
@@ -263,4 +263,5 @@ Route::group(['middleware' => ['auth']], function () {
     //confirm event
     Route::get('confirm-event', 'DashboardController@confirmEvent')->name('confirm-event');
     Route::get('confirm-birthday', 'DashboardController@confirmBirthday')->name('confirm-birthday');
+    Route::get('search-customer', 'DashboardController@searchCustomer')->name('search-customer');
 });

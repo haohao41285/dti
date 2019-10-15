@@ -45,7 +45,7 @@ class TaskController extends Controller
     		        $detail_button = "<i class=\"fas fa-plus-circle details-control text-danger\" id='".$row->id."'></i>";
                 }else $detail_button = "";
 
-    			return $detail_button.'<a href="'.route('task-detail',$row->id).'"> #'.$row->id.'</a>';
+    			return $detail_button.'&nbsp&nbsp<a href="'.route('task-detail',$row->id).'"> #'.$row->id.'</a>';
     		})
     		->editColumn('order_id',function($row){
     			return '<a href="'.route('order-view',$row->order_id).'">#'.$row->order_id.'</a>';

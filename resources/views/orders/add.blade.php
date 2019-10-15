@@ -184,8 +184,7 @@
     </div>
     <div class="col-md-12 form-group row">
         <label class="col-md-2 required">Name On Card</label>
-        <div class="col-md-2"><input class="form-control form-control-sm" type="text" value="{{old('first_name')}}" name="first_name" placeholder="First Name"></div>
-        <div class="col-md-2"><input class="form-control form-control-sm" type="text" value="{{old('last_name')}}" name="last_name" placeholder="Last Name"></div>
+        <div class="col-md-4"><input class="form-control form-control-sm" type="text" value="{{old('fullname')}}" name="fullname" placeholder="Last Name"></div>
     </div>
     <div class="col-md-12 form-group row">
         <label class="col-md-2">Address</label>
