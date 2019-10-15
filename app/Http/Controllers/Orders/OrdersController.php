@@ -162,7 +162,6 @@ class OrdersController extends Controller
 				$customer_id = $check_customer->customer_id;
 
 			else{
-
 				$customer_id = MainCustomer::max('customer_id')+1;
 				$main_customer_arr = [
 					'customer_id' => $customer_id,
@@ -362,12 +361,12 @@ class OrdersController extends Controller
 		    $order->setDescription($request->note); //"Golf Shirts"
 		    // Set the customer's Bill To address
 		    $customerAddress = new AnetAPI\CustomerAddressType();
-		    $customerAddress->setFirstName($request->first_name);    //"Ellen"
-		    $customerAddress->setLastName($request->last_name);    //"Johnson"
-		    $customerAddress->setCompany("");
-		    $customerAddress->setAddress($request->address);    //"14 Main Street"
-		    $customerAddress->setCity($request->city);    //"Pecan Springs"
-		    $customerAddress->setState($request->state);    //"TX"
+            $customerAddress->setFirstName($request->first_name);    //"Ellen"
+            $customerAddress->setLastName($request->last_name);    //"Johnson"
+            $customerAddress->setCompany("");
+            $customerAddress->setAddress($request->address);    //"14 Main Street"
+            $customerAddress->setCity($request->city);    //"Pecan Springs"
+            $customerAddress->setState($request->state);    //"TX"
 		    $customerAddress->setZip($request->zip_code);    //"44628"
 		    $customerAddress->setCountry($request->country);   //"USA"
 		    // Set the customer's identifying information
@@ -429,9 +428,10 @@ class OrdersController extends Controller
 							$service_arr = array_unique($service_arr);
 							$task_arr = [];
 							foreach ($service_arr as $key => $service) {
-								$service_name = MainComboService::where('id',$service)->first()->cs_name;
+								$service_info = MainComboService::find($service);
+								
 								$task_arr[] = [
-									'subject' => $service_name,
+									'subject' => $service_info->cs_name,
 									'priority' => 2,
 									'status' => 1,
 									'order_id'=> $insert_order->id,
@@ -440,7 +440,7 @@ class OrdersController extends Controller
 									'service_id' => $service,
 									'place_id' => $place_id,
 									'category' => 1,
-									'assign_to' => $service->cs_assign_to
+									'assign_to' => $service_info->cs_assign_to
 								];
 							}
 							$task_create = MainTask::insert($task_arr);
@@ -921,7 +921,7 @@ class OrdersController extends Controller
 		if($request->list_file != ""){
 			foreach ($request->list_file as $key => $file) {
 
-                $file_name = ImagesHelper::uploadImage2($file,$current_month);
+                $file_name = ImagesHelper::uploadImage2($file,$current_month,'images/comment/');
                 $file_arr[] = [
                     'name' => $file_name,
                     'name_origin' => $file->getClientOriginalName(),

@@ -11,5 +11,6 @@
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="module" module-name="xenamdinh" />
+    <orderEntry type="module" module-name="firework" />
   </component>
 </module>

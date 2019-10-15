@@ -101,11 +101,10 @@ Route::group(['middleware' => ['auth']], function () {
          Route::get('license/generate', 'LicenseController@generate')->name('generateLicenses');
     });
 
-   
+
     Route::group(['prefix'=>'tools','namespace'=>'ItTools'],function(){
 
-        Route::get('clonewebsite', 'ItToolsController@cloneWebsite')->name('cloneWebsite');
-        Route::get('updatewebsite', 'ItToolsController@updateWebsite')->name('updateWebsite');
+        
 
         Route::group(['prefix' => 'website-themes'], function() {
             Route::get('/', 'WebsiteThemeController@index')->name('getWebsiteThemes');
@@ -138,6 +137,8 @@ Route::group(['middleware' => ['auth']], function () {
         });
 
         Route::group(['prefix' => 'places'], function() {
+            Route::post('clonewebsite', 'PlaceController@cloneWebsite')->name('cloneWebsite');
+            Route::post('updatewebsite', 'PlaceController@updateWebsite')->name('updateWebsite');
             Route::get('/', 'PlaceController@index')->name('getPlaces');
             Route::get('/places-datatable', 'PlaceController@getPlacesDatatable')->name('getPlacesDatatable');
             Route::get('/users-datatable', 'PlaceController@getUsersDatatable')->name('getUsersDatatable');
@@ -154,7 +155,7 @@ Route::group(['middleware' => ['auth']], function () {
     Route::group(['prefix' => 'recentlog'], function() {
         Route::get('/', 'RecentLogController@index')->name('recentlog');
         Route::get('/datatable', 'RecentLogController@datatable')->name('recentlogDatatable');
-        
+
     });
 
     Route::group(['prefix' => 'setting','namespace' => 'Setting'], function() {
@@ -197,6 +198,9 @@ Route::group(['middleware' => ['auth']], function () {
         Route::get('event-datatable','EventHolidayController@eventDatatable')->name('event-datatable');
         Route::post('add-event','EventHolidayController@addEvent')->name('add-event');
 
+        Route::post('delete-event','EventHolidayController@deleteEvent')->name('delete-event');
+        Route::post('change-status-event','EventHolidayController@changeStatusEvent')->name('change-status-event');
+
     });
 
     Route::group(['prefix'=>'user'],function(){
@@ -212,6 +216,12 @@ Route::group(['middleware' => ['auth']], function () {
 
         Route::get('role-permission/{id}','UserController@permission')->where(['id'=>'[0-9]+'])->name('permission');
         Route::get('change-permission','UserController@changePermission')->name('change-permission');
+
+        Route::get('user-add/{id?}','UserController@userAdd')->where(['id'=>'[0-9]+'])->name('user-add');
+        Route::post('user-save','UserController@userSave')->name('user-save');
+
+
+
     });
 
     Route::group(['prefix' => 'orders','namespace' => 'Orders'], function() {
@@ -249,4 +259,5 @@ Route::group(['middleware' => ['auth']], function () {
     });
     //confirm event
     Route::get('confirm-event', 'DashboardController@confirmEvent')->name('confirm-event');
+    Route::get('confirm-birthday', 'DashboardController@confirmBirthday')->name('confirm-birthday');
 });

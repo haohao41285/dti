@@ -20,13 +20,13 @@ class MenuHelper{
 		        ['text' => 'Tracking History', 'link'=> 'marketing/tracking-history'],        
 		        ['text' => 'News', 'link'=> 'marketing/news'],        
 		    ]],
-		    ['text' => 'DataSetup', 'icon'=>'fas fa-database', 'link' => 'datasetup','childrens' => [
+		    /*['text' => 'DataSetup', 'icon'=>'fas fa-database', 'link' => 'datasetup','childrens' => [
 		        ['text' => 'Combo', 'link'=> 'datasetup/combos'],
 		        ['text' => 'Services', 'link'=> 'datasetup/services'],
 		        ['text' => 'Service Details', 'link'=> 'datasetup/servicedetails'],
 		        ['text' => 'Themes', 'link'=> 'datasetup/themes'],
 		        ['text' => 'Licenses', 'link'=> 'datasetup/licenses'],
-		    ]],
+		    ]],*/
 		    ['text' => 'Statistic', 'icon'=>'fas fa-chart-bar', 'link' => 'statistic','childrens' => [
 		        ['text' => 'Seller', 'link'=> 'statistic/seller'],
 		        ['text' => 'POS', 'link'=> 'statistic/pos'],
@@ -56,7 +56,6 @@ class MenuHelper{
 		        ['text' => 'Setup Service', 'link'=> 'setting/setup-service'],        
 		        ['text' => 'Setup Template SMS', 'link'=> 'setting/setup-template-sms'],
 		        ['text' => 'Setup Login Background', 'link'=> 'setting/login-background'],
-		        ['text' => 'Setup Background Image', 'link'=> 'setting/setup-background'],
                 ['text' => 'Setup Event Holiday', 'link'=> 'setting/setup-event-holiday'],
 		    ]],
 		    ['text' => 'Recent Logs', 'icon'=>'fas fa-list-alt', 'link' => 'recentlog'],

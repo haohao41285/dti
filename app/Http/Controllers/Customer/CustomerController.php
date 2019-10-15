@@ -824,7 +824,7 @@ class CustomerController extends Controller
             //Upload Image
             foreach ($file_list as $key => $file) {
 
-                $file_name = ImagesHelper::uploadImage2($file,$current_month);
+                $file_name = ImagesHelper::uploadImage2($file,$current_month,'images/comment/');
                 $file_arr[] = [
                     'name' => $file_name,
                     'name_origin' => $file->getClientOriginalName(),

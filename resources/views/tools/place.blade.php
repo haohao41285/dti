@@ -439,19 +439,19 @@
                 </div>
                 <div class="col-6">
                     <div class="form-group">
-                        <button class="btn-sm btn btn-success btn-copy-theme">Copy theme</button>
-                        <button class="btn-sm btn btn-warning btn-copy-properties">Copy properties</button>
+                        <button class="btn-sm btn btn-success btn-copy-theme">Clone Website</button>
+                        <button class="btn-sm btn btn-warning btn-copy-properties">Update Website</button>
                     </div>
                     <div class="card shadow mb-4 copy-theme">
                         <div class="card-header py-2">
-                            <h6 class="m-0 font-weight-bold text-primary " >Setting </h6>
+                            <h6 class="m-0 font-weight-bold text-primary " >Clone Website </h6>
                         </div>
                         <div class="card-body">
-                            <form method="post" id="setting-form">
+                            <form method="post" id="clone-form">
                                 @csrf
                                 <div class="form-group row">
                                     <label class="col-2">License</label>
-                                    <label id="get-license"><b>837ec5754f503cfaaee0929fd48974e7</b></label>
+                                    <input readonly="true" name="get-license" id="get-license" class="col-10 form-control-sm form-control" type="text" >
                                 </div>
                                 <div class="form-group row">
                                     <label class="col-2">Website</label>
@@ -463,11 +463,11 @@
                                 </div>
                                 <div class="form-group row">
                                     <label class="col-2">Theme</label>
-                                    <label id="get-code"><b>demo 10</b></label>
+                                    <input id="get-code" name ="get-code" class="col-10 form-control-sm form-control" type="text" readonly="true">
                                 </div>
                                 <div class="form-group row">
                                     <label class="col-2"></label>
-                                    <input class="btn-sm btn btn-primary" type="submit" value="Update">
+                                    <input class="btn-sm btn btn-primary" type="submit" value="Clone Website">
                                 </div>
                             </form>
                         </div>
@@ -476,7 +476,7 @@
                     <div class="copy-properties" style="display: none">
                     <div class="card shadow mb-4">
                         <div class="card-header py-2">
-                            <h6 class="m-0 font-weight-bold text-primary " >Setting </h6>
+                            <h6 class="m-0 font-weight-bold text-primary " >Update Website </h6>
                         </div>
                         <div class="card-body">
                             <form method="post" id="copy-properties-form">
@@ -499,7 +499,7 @@
                                 </div>
                                 <div class="form-group row">
                                     <label class="col-2"></label>
-                                    <input class="btn-sm btn btn-primary" type="submit" value="Update">
+                                    <input class="btn-sm btn btn-primary" type="submit" value="Update Code">
                                 </div>
                             </form>
                         </div>
@@ -537,9 +537,9 @@
 <script type="text/javascript">
     function clear(){
       $("#change-password-form")[0].reset();
-      $("#setting-form")[0].reset();
+      $("#clone-form")[0].reset();
       $("#user_nickname").html("Change password");
-      $("label#get-code b").text("");
+      
       $('#themes-datatable tbody tr.selected').removeClass('selected');
     }
 
@@ -822,10 +822,31 @@
       
       $(document).on('click','.setting',function(e){
           e.preventDefault();
+          clear();
           $("#setting").modal("show");
           license = $(this).attr("data-license");
-          $("label#get-license b").text(license);
-          clear();
+          $("input#get-license").val(license);
+      });
+      //Create New Website
+      $("#clone-form").on('submit',function(e){
+        e.preventDefault();
+        var form = $(this).serialize();
+          $.ajax({
+              url:"{{ route('cloneWebsite') }}",
+              method:"post",
+              data:form,
+              dataType:"json",
+              success:function(data){
+                if(data.status == 1){
+                  toastr.success(data.msg);
+                } else {
+                  toastr.error(data.msg);
+                }
+              },
+              error:function(){
+                toastr.error("Failed to change!");
+              }
+            });
       });
     
       $("#themes-datatable tbody").on('click',"tr",function(){
@@ -833,7 +854,7 @@
              $(this).addClass('selected');
              themeId = $(this).find("td.id").text();
              var code = $(this).find("td.code").text();
-             $("label#get-code b").text(code);
+             $("input#get-code").val(code);
              listThemePropertiesByThemeId(themeId);
        });
 

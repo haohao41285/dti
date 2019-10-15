@@ -3,26 +3,17 @@
   @include('layouts.partials.htmlhead')
 @show
 <body id="app">
+{{--modal birthday--}}
+@if(Cookie::get('birthday') != 'confirm')
+@if(!empty($data['user_info']))
+    @include('layouts.partials.modal-birthday')
+@endif
+@endif
+{{--end modalbirthday--}}
 {{--check confirm view event holiday if exist--}}
-
 @if(Cookie::get('event') != 'confirm')
 @if(!empty($data['event_info']))
-    <div class="modal fade" id="event-modal" tabindex="-1" role="dialog" aria-labelledby="" aria-hidden="true">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-body text-center">
-                    <span class="text-danger" style="font-size: 30px">3 ngày</span> nữa sẽ đến
-                   <span class="text-danger" style="font-size: 30px">{{$data['event_info']['name']}}</span>
-                    <hr>
-                    <img src="{{asset($data['event_info']['image'])}}" width="100%" alt="">
-                </div>
-                <div class="modal-footer">
-                    <button class="btn btn-sm btn-info confirm-event">OK, KHÔNG HIỂN THỊ LẠI</button>
-                </div>
-            </div>
-        </div>
-    </div>
-    </div>
+    @include('layouts.partials.modal-event')
 @endif
 @endif
 {{--end check--}}
@@ -49,12 +40,43 @@
     @include('layouts.partials.scripts')
 @show
 <script>
-    @if(cookie('event'))
+    $(document).ready(function () {
+        $("#birthday-modal").modal('show');
+    });
+</script>
+<script>
+    @if(Cookie::get('birthday') != 'confirm')
+    @if(!empty($data['user_info']))
+    $(document).ready(function () {
+
+        $("#birthday-modal").modal('show');
+        $(".confirm-birthday").click(function () {
+            $.ajax({
+                url: '{{route('confirm-birthday')}}',
+                type: 'GET',
+                dataType: 'html',
+            })
+                .done(function(data) {
+                    if(data != ""){
+                        toastr.error(data);
+                    }else{
+                        $("#birthday-modal").modal('hide');
+                    }
+                    console.log(data);
+                })
+                .fail(function() {
+                    toastr.error('Confirm Failed!');
+                });
+        });
+    });
+    @endif
+    @endif
+</script>
+<script>
+    @if(Cookie::get('event') != 'confirm')
     @if(!empty($data['event_info']))
         $(document).ready(function () {
-
             $("#event-modal").modal('show');
-
             $(".confirm-event").click(function () {
                 $.ajax({
                     url: '{{route('confirm-event')}}',

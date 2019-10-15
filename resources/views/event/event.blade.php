@@ -10,6 +10,7 @@
                 <thead>
                 <tr>
                     <th class="text-center">ID</th>
+                    <th hidden></th>
                     <th>Name</th>
                     <th>Date</th>
                     <th>Image</th>
@@ -21,7 +22,7 @@
         </div>
         <div class="col-md-5 offset-md-1" style="padding-top: 0px">
          <form action="">
-            <h4 class="border border-info border-top-0 mb-3 border-right-0 border-left-0 text-info">ADD EVENT</h4>
+            <h4 class="border border-info border-top-0 mb-3 border-right-0 border-left-0 text-info event-tip">ADD EVENT</h4>
             <div class="form-group">
                 <label for="">Name</label>
                 <input type="text" class="form-control form-control-sm" name="name" id="name">
@@ -34,7 +35,7 @@
                 <input type="file" id="image" hidden name="image" onchange="loadFile(event)">
                 <input type="button" onclick="ChangeImage()" value="Change Image" id="date" class="btn btn-sm btn-info">
                 <div class="text-center mt-1">
-                    <img src="{{asset('images/event/valentine.jpg')}}" id="preview-image" style="max-width:80%"  alt="">
+                    <img src="" id="preview-image" style="max-width:80%"  alt="">
                 </div>
             </div>
             <div class="form-group">
@@ -63,7 +64,7 @@
         }
         $("#date").datepicker();
         //DEFINE VAR
-        var gu_id = 0;
+        var event_id = 0;
         $(document).ready(function($) {
             dataTable = $("#dataTable").DataTable({
                 processing: true,
@@ -74,11 +75,12 @@
                 ajax:{ url:"{{route('event-datatable')}}"},
                 columns:[
                     {data:'id', name:'id',class:'text-center'},
+                    {data:'image_hidden', name:'image_hidden',class:'d-none'},
                     {data:'name', name:'name'},
                     {data:'date', name:'date',class:'text-center'},
                     {data:'image', name:'image',class:'text-center'},
                     {data:'status', name:'status',class:'text-center'},
-                    {data:'action', name:'action',orderable: false, searchable: false},
+                    {data:'action', name:'action',orderable: false, searchable: false,class:'text-center'},
                 ],
                 fnDrawCallback:function (oSettings) {
                     var elems = Array.prototype.slice.call(document.querySelectorAll('.js-switch'));
@@ -92,27 +94,28 @@
             })
             $(document).on('click','.switchery',function(){
 
-                var gu_id = $(this).siblings('input').attr('gu_id');
-                var gu_status = $(this).siblings('input').attr('gu_status');
+                var id = $(this).siblings('input').attr('id');
+                var status = $(this).siblings('input').attr('status');
                 clearView();
 
                 $.ajax({
-                    url: '{{route('change-status-role')}}',
-                    type: 'GET',
+                    url: '{{route('change-status-event')}}',
+                    type: 'POST',
                     dataType: 'html',
                     data: {
-                        gu_status: gu_status,
-                        gu_id: gu_id
+                        status: status,
+                        id: id,
+                        _token: '{{csrf_token()}}'
                     },
                 })
                     .done(function(data) {
-                        if(data != ""){
-                            data = JSON.parse(data);
-                            if(data.message != ""){
-                                alert(data.message);
-                            }
+                        data = JSON.parse(data);
+                        if(data.status == 'error')
+                            toastr.error(data.message);
+                        else{
+                            toastr.success(data.message);
+                            dataTable.draw();
                         }
-                        dataTable.draw();
                     })
                     .fail(function(data) {
                         data = JSON.parse(data.responseText);
@@ -123,10 +126,11 @@
             });
             $('#dataTable tbody').on( 'click', 'tr', function () {
 
-                $("#gu_name").val(dataTable.row(this).data()['gu_name']);
-                $("#gu_descript").val(dataTable.row(this).data()['gu_descript']);
-                $(".role-tip").text("Edit Role");
-                gu_id = dataTable.row(this).data()['gu_id'];
+                $("#name").val(dataTable.row(this).data()['name']);
+                $("#date").val(dataTable.row(this).data()['date']);
+                $(".event-tip").text("EDIT EVENT");
+                $("#preview-image").attr('src',dataTable.row(this).data()['image_hidden'])
+                event_id = dataTable.row(this).data()['id'];
 
             });
             $(document).on('click','.submit-event',function(e){
@@ -144,15 +148,15 @@
 
                     let formData = new FormData($(this).parents('form')[0]);
                     formData.append('_token','{{csrf_token()}}');
+                    formData.append('id',event_id);
 
                     $.ajax({
                         url: '{{route('add-event')}}',
                         type: 'POST',
-                        dataType: 'html',
-                        processData: false,
                         data: formData,
                         cache: false,
                         contentType: false,
+                        processData: false,
                         async: true,
                         xhr: function() {
                             var myXhr = $.ajaxSettings.xhr();
@@ -160,19 +164,25 @@
                         },
                     })
                         .done(function(data) {
-                            console.log(data);
-                            return;
-                            if(data == 0){
-                                alert('Error!');
+                            let message = '';
+                            if(data.status == 'error'){
+                                if( typeof(data.message) == 'string')
+                                    toastr.error(data.message);
+                                else{
+                                    $.each(data.message,function (index,val) {
+                                        message += val+'\n';
+                                    });
+                                    toastr.error(message);
+                                }
                             }else{
-                                clearView();
+                                toastr.success(data.message);
+                                console.log(data);
                                 dataTable.draw();
+                                clearView();
                             }
-                            console.log(data);
                         })
-                        .fail(function(xhr, ajaxOptions, thrownError) {
-                            alert('Error!');
-                            console.log(thrownError + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText);
+                        .fail(function() {
+                            toastr.error('Failed!');
                         });
                 }
             });
@@ -180,11 +190,40 @@
                 clearView();
             })
             function clearView(){
-                $(".role-tip").text("Add Role");
-                $("#gu_descript").val("");
-                $("#gu_name").val("");
-                gu_id = 0;
+                $(".event-tip").text("ADD EVENT");
+                $("#name").val("");
+                $("#date").val("");
+                event_id = 0;
+                $("#preview-image").attr('src',"");
             }
+            $(document).on('click','.event-delete',function () {
+                clearView();
+                if(confirm('Do you want to delete this event?')){
+                    let id = $(this).attr('id');
+                    $.ajax({
+                        url: '{{route('delete-event')}}',
+                        type: 'POST',
+                        dataType: 'html',
+                        data: {
+                            id:id,
+                            _token: '{{csrf_token()}}'
+                        },
+                    })
+                        .done(function(data) {
+                            data = JSON.parse(data);
+                            if(data.status == 'error')
+                                toastr.error(data.message);
+                            else{
+                                toastr.success(data.message);
+                                dataTable.draw();
+                                clearView();
+                            }
+                        })
+                        .fail(function() {
+                            toastr.error('Failed!');
+                        });
+                }
+            })
         });
     </script>
 @endpush
