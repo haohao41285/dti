@@ -156,6 +156,8 @@ Route::group(['middleware' => ['auth']], function () {
         Route::get('/', 'RecentLogController@index')->name('recentlog');
         Route::get('/datatable', 'RecentLogController@datatable')->name('recentlogDatatable');
 
+        Route::get('/activity-log', 'RecentLogController@activityLog')->name('activity-log');
+        Route::get('/activity-log-datatable', 'RecentLogController@activityLogDatatable')->name('activityLogDatatable');
     });
 
     Route::group(['prefix' => 'setting','namespace' => 'Setting'], function() {

@@ -466,10 +466,10 @@
                     </div>
                     <div class="card shadow mb-4 copy-theme">
                         <div class="card-header py-2">
-                            <h6 class="m-0 font-weight-bold text-primary " >Clone Website </h6>
+                            <h6 class="m-0 font-weight-bold text-primary text-form" >Clone Website </h6>
                         </div>
                         <div class="card-body">
-                            <form method="post" id="clone-form">
+                            <form method="post" id="clone-update-form">
                                 @csrf
                                 <div class="form-group row">
                                     <label class="col-3">License</label>
@@ -494,6 +494,7 @@
                                 <div class="form-group row">
                                     <label class="col-3"></label>
                                     <input class="btn-sm btn btn-primary" type="submit" value="Clone Website">
+                                    <input type="hidden" name="action" value="clone">
                                 </div>
                             </form>
                         </div>
@@ -546,7 +547,7 @@
 <script type="text/javascript">
     function clear(){
       $("#change-password-form")[0].reset();
-      $("#clone-form")[0].reset();
+      $("#clone-update-form")[0].reset();
       $("#user_nickname").html("Change password");
       
       $('#themes-datatable tbody tr.selected').removeClass('selected');
@@ -837,7 +838,7 @@
           $("input#get-license").val(license);
       });
       //Create New Website
-      $("#clone-form").on('submit',function(e){
+      $("#clone-update-form").on('submit',function(e){
         e.preventDefault();
         var form = $(this).serialize();
           $.ajax({
@@ -868,12 +869,14 @@
        });
 
       $(".btn-copy-theme").on('click',function(){
-            $(".copy-theme").fadeIn(300);
-            $(".copy-properties").hide(300);
+            $(".text-form").text("Clone Website");
+            $("#clone-update-form").find("input[type=submit]").val("Clone Website");
+            $("#clone-update-form").find("input[name=action]").val("clone");
       });
       $(".btn-copy-properties").on('click',function(){
-            $(".copy-theme").hide(300);
-            $(".copy-properties").fadeIn(300);
+            $(".text-form").text("Update Website");
+            $("#clone-update-form").find("input[type=submit]").val("Update Website");
+            $("#clone-update-form").find("input[name=action]").val("update");
       });
 
       $("#themeProperties tbody").on('click',"tr",function(){

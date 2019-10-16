@@ -27,6 +27,8 @@ class PlaceController extends Controller
         
          return response()->json(['status'=>1,'msg'=>"Clone website successfully!"]); 
     }
+
+
     public function getPlacesDatatable(){
         $places = PosPlace::select('place_id','place_name','place_address','place_email','place_phone','place_ip_license','created_at')
             ->where('place_status',1)
@@ -131,21 +133,5 @@ class PlaceController extends Controller
         }
     }
 
-    private function requestAPI(){
-        $data = array("name" => "Hagrid", "age" => "36");
-        $data_string = json_encode($data);
-
-        $curl = curl_init('http://example.api.com');
-
-        curl_setopt($curl, CURLOPT_CUSTOMREQUEST, "POST");
-        curl_setopt($curl, CURLOPT_POSTFIELDS, $data_string);
-        curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($curl, CURLOPT_HTTPHEADER, array(
-            'Content-Type: application/json',
-            'Content-Length: ' . strlen($data_string))
-        );
-
-        $result = curl_exec($curl);
-        curl_close($curl);
-    }
+    
 }
