@@ -12,6 +12,7 @@ use App\Helpers\RunShFileHelper;
 use Validator;
 // use App\Http\Controllers\ItTools\WebsiteThemeController;
 use App\Models\MainTheme;
+use App\Models\PosWebsiteProperty;
 
 
 class PlaceController extends Controller
@@ -19,13 +20,15 @@ class PlaceController extends Controller
     public function index(){
         return view('tools.place');
     }
-    public function cloneWebsite(Request $request)
+    public function cloneUpdateWebsite(Request $request)
     {
-        dd($request->all());
+        $placeId = PosPlace::getPlaceIdByLicense($request->get_license);
 
+        PosWebsiteProperty::cloneUpdate($request->id_properties,$placeId);
 
+        //run sh file 
         
-         return response()->json(['status'=>1,'msg'=>"Clone website successfully!"]); 
+        return response()->json(['status'=>1,'msg'=>"Clone website successfully!"]); 
     }
 
 

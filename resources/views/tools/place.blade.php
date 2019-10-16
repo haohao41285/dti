@@ -473,7 +473,7 @@
                                 @csrf
                                 <div class="form-group row">
                                     <label class="col-3">License</label>
-                                    <input readonly="true" name="get-license" id="get-license" class="col-9 form-control-sm form-control" type="text" >
+                                    <input readonly="true" name="get_license" id="get-license" class="col-9 form-control-sm form-control" type="text" >
                                 </div>
                                 <div class="form-group row">
                                     <label class="col-3">Website</label>
@@ -485,11 +485,11 @@
                                 </div>
                                 <div class="form-group row">
                                     <label class="col-3">Theme</label>
-                                    <input id="get-code" name ="get-code" class="col-9 form-control-sm form-control" type="text" readonly="true">
+                                    <input id="get-code" name ="get_code" class="col-9 form-control-sm form-control" type="text" readonly="true">
                                 </div>
                                 <div class="form-group row">
                                     <label class="col-3">ID Properties</label>
-                                    <input  name ="id-properties" class="col-9 form-control-sm form-control" type="text" readonly="true">
+                                    <input  name ="id_properties" class="col-9 form-control-sm form-control" type="text" readonly="true">
                                 </div>
                                 <div class="form-group row">
                                     <label class="col-3"></label>
@@ -840,9 +840,21 @@
       //Create New Website
       $("#clone-update-form").on('submit',function(e){
         e.preventDefault();
+
+        var checkThemeProperties = $('#themeProperties tr');
+
+        if(checkThemeProperties.length > 1){
+            var checkSelected = $('#themeProperties tr.selected');
+            if(checkSelected.length == 0){
+                toastr.error("You have not selected website properties");
+                return false;
+            }
+        }
+
         var form = $(this).serialize();
+
           $.ajax({
-              url:"{{ route('cloneWebsite') }}",
+              url:"{{ route('cloneUpdateWebsite') }}",
               method:"post",
               data:form,
               dataType:"json",
@@ -866,6 +878,8 @@
              var code = $(this).find("td.code").text();
              $("input#get-code").val(code);
              listThemePropertiesByThemeId(themeId);
+
+             $("input[name='id_properties']").val('');
        });
 
       $(".btn-copy-theme").on('click',function(){
@@ -880,19 +894,10 @@
       });
 
       $("#themeProperties tbody").on('click',"tr",function(){
-
-            var checkSelected = $(this).hasClass("selected");
-            if(checkSelected){
-                $(this).removeClass('selected');
-            } else{
-                $(this).addClass('selected');
-            }
-            var listId = '';
-            $('#themeProperties tr.selected').each(function(index){
-                listId += $(this).attr('properties-id') + ",";
-            });
-
-            $("input[name='id-properties']").val(listId);
+            $('#themeProperties tbody tr.selected').removeClass('selected');
+            $(this).addClass('selected');
+            id = $(this).attr("properties-id");
+            $("input[name='id_properties']").val(id);
        });
     
     

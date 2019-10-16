@@ -31,4 +31,15 @@ class MainThemeProperties extends BaseModel
     public static function getThemePropertiesByThemeId($themeId){
         return self::where('theme_id',$themeId)->get();
     }
+
+    public static function getThemePropertiesValueById($id){
+        try {
+            return self::select('theme_properties_value')
+                    ->where('theme_properties_id',$id)
+                    ->first()->theme_properties_value;
+        } catch (\Exception $e) {
+            return;
+        }
+        
+    }
 }

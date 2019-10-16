@@ -137,8 +137,7 @@ Route::group(['middleware' => ['auth']], function () {
         });
 
         Route::group(['prefix' => 'places'], function() {
-            Route::post('clonewebsite', 'PlaceController@cloneWebsite')->name('cloneWebsite');
-            Route::post('updatewebsite', 'PlaceController@updateWebsite')->name('updateWebsite');
+            Route::post('clone-update-website', 'PlaceController@cloneUpdateWebsite')->name('cloneUpdateWebsite');
             Route::get('/', 'PlaceController@index')->name('getPlaces');
             Route::get('/places-datatable', 'PlaceController@getPlacesDatatable')->name('getPlacesDatatable');
             Route::get('/users-datatable', 'PlaceController@getUsersDatatable')->name('getUsersDatatable');
