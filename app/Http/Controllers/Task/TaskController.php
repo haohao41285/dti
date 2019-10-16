@@ -103,7 +103,9 @@ class TaskController extends Controller
     		'task_id' => $task_id==0?NULL:$task_id,
     		'content' => $content,
     		'created_by' => Auth::user()->user_id,
-            'email_list' => $request->email_list
+            'email_list' => $request->email_list,
+            'receiver_id' => $request->receiver_id,
+            'read_not' => 0
     	];
     	DB::beginTransaction();
     	$tracking_create = MainTrackingHistory::create($tracking_arr);
@@ -146,6 +148,8 @@ class TaskController extends Controller
             return response(['status'=>'error', 'message'=> 'Failed!']);
         }
         else{
+
+
             DB::commit();
             return response(['status'=> 'success','message'=>'Successly!']);
         }

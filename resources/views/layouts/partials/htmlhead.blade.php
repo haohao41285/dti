@@ -14,15 +14,8 @@
 {{-- Scripts --}}
 <script src="{{asset('OneSignalSDKWorker.js')}}"></script>
 <script src="{{asset('OneSignalSDKUpdaterWorker.js')}}"></script>
-    <script src="https://cdn.onesignal.com/sdks/OneSignalSDK.js" async=""></script>
-    <script>
-        var OneSignal = window.OneSignal || [];
-        OneSignal.push(function() {
-            OneSignal.init({
-                appId: "d11fe280-bd65-4897-90b8-22835655a341",
-            });
-        });
-    </script>
+<script src="https://cdn.onesignal.com/sdks/OneSignalSDK.js" async=""></script>
+
 <script type="text/javascript">
     window.Laravel = {!! json_encode([
         'csrfToken' => csrf_token(),

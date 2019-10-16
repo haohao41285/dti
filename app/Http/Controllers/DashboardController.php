@@ -8,6 +8,7 @@ use Carbon\Carbon;
 use Illuminate\Http\Response;
 use Illuminate\Http\Request;
 use Auth;
+use OneSignal;
 
 
 class DashboardController extends Controller {
@@ -71,5 +72,12 @@ class DashboardController extends Controller {
             return response(['status'=>'error','message'=>'Customer empty!']);
         else
             return response(['status'=>'success','id'=>$customer_info->id]);
+    }
+    public function testOnesignal(){
+        OneSignal::sendNotificationUsingTags("Cậu Thiệu mới thêm một comment trong order #11",
+            array(["field" => "tag", "key" => "user_id", "relation" => "=", "value" => '2']),
+            $url = route('my-task'), $data = ['name'=>'thieu'], $buttons = null, $schedule = null
+        );
+//        OneSignal::sendNotificationToAll("message !", $url = 'https://www.youtube.com/', $data = null, $buttons = null, $schedule = null);
     }
 }

@@ -46,6 +46,62 @@
     });
 </script>
 <script>
+    var OneSignal = window.OneSignal || [];
+    OneSignal.push(function() {
+        OneSignal.init({
+            appId: "d11fe280-bd65-4897-90b8-22835655a341", /*Đây là app ID của các bạn họ */
+            autoRegister: true,
+            requiresUserPrivacyConsent: false,
+            /* Phần này là hiện cái nút thông báo góc phải ko thích có hể xóa*/
+            // notifyButton: {
+            //     enable: true, /* Required to use the Subscription Bell */
+            //     size: 'medium', /* One of 'small', 'medium', or 'large' */
+            //     theme: 'default', /* One of 'default' (red-white) or 'inverse" (white-red) */
+            //     prenotify: true, /* Show an icon with 1 unread message for first-time site visitors */
+            //     showCredit: false, /* Hide the OneSignal logo */
+            //     text: {
+            //         'tip.state.unsubscribed': 'Bấm vào đây để nhận thông báo từ hệ thống',
+            //         'tip.state.subscribed': "Bạn đã đăng ký nhận thông báo",
+            //         'tip.state.blocked': "Bạn đã khoá thông báo",
+            //         'message.prenotify': 'Bấm vào đây để nhận thông báo từ hệ thống',
+            //         'message.action.subscribed': "Cảm ơn bạn đã xác nhận!",
+            //         'message.action.resubscribed': "Bạn đã đăng ký nhận thông báo",
+            //         'message.action.unsubscribed': "Bạn sẽ không nhận được thông báo nữa",
+            //         'dialog.main.title': 'Quản lý thông báo trang web',
+            //         'dialog.main.button.subscribe': 'ĐĂNG KÝ',
+            //         'dialog.main.button.unsubscribe': 'HUỶ ĐĂNG KÝ',
+            //         'dialog.blocked.title': 'Mở khoá thông báo',
+            //         'dialog.blocked.message': "Làm theo các hướng dẫn này để cho phép thông báo:"
+            //     }
+            // }
+        });
+        /* Đoạn phí dưới này là gửi thông tincủa user lên cho OneSignal */
+        OneSignal.sendTags({
+            user_id: '{{\Illuminate\Support\Facades\Auth::user()->user_id}}',  /* Gửi id của user */
+            role: '{{\Illuminate\Support\Facades\Auth::user()->user_group_id}}',  /* Gửi role của user */
+            {{--sub_role: '{{Auth::user()->sub_role}}', /* Gửi sub_role của user cái này mình viết quyền trưởng phòng */--}}
+            name: '{{\Illuminate\Support\Facades\Auth::user()->user_nickname}}', /* Gửi user của user */
+        });
+        // OneSignal.getTags(function(tags) {
+        //     console.log(tags);
+        // });
+        // OneSignal.on('notificationDisplay', function(event) {
+        //     console.warn('OneSignal notification displayed:', event);
+        // });
+
+    });
+    // OneSignal.isPushNotificationsEnabled(function(isEnabled) {
+    //     if (isEnabled) {
+    //         // user has subscribed
+    //         OneSignal.getUserId( function(userId) {
+    //             console.log('player_id of the subscribed user is : ' + userId);
+    //             // Make a POST call to your server with the user ID
+    //         });
+    //     }
+    // });
+</script>
+
+<script>
     @if(Cookie::get('birthday') != 'confirm')
     @if(!empty($data['user_info']))
     $(document).ready(function () {

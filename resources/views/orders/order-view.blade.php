@@ -240,6 +240,7 @@
         var service_table = $('#service-datatable').DataTable({
             // dom: "lBfrtip",
             // order:[[0,'desc']],
+            responsive: false,
             searching: false,
             paging: false,
             info: false,

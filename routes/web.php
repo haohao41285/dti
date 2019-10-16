@@ -264,4 +264,5 @@ Route::group(['middleware' => ['auth']], function () {
     Route::get('confirm-event', 'DashboardController@confirmEvent')->name('confirm-event');
     Route::get('confirm-birthday', 'DashboardController@confirmBirthday')->name('confirm-birthday');
     Route::get('search-customer', 'DashboardController@searchCustomer')->name('search-customer');
+    Route::get('test-onesignal', 'DashboardController@testOnesignal')->name('test-onesignal');
 });
