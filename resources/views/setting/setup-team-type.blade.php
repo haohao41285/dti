@@ -3,7 +3,7 @@
 Team Type List
 @stop
 @section('content')
-<div class="row">
+<div class="col-12 row">
 	<div class="col-md-8">
 		<div class="card shadow mb-3 ">
       		<div class="card-header py-2">

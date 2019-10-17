@@ -29,7 +29,7 @@
                             <th>Phone</th>
                             <th>License</th>
                             <th>Created Date</th>
-                            <th width="150">Action</th>
+                            <th width="200">Action</th>
                         </tr>
                     </thead>
                 </table>
@@ -37,6 +37,8 @@
         </div>
     </div>
 </div>
+
+
 <div class="modal fade" id="view" tabindex="-1" role="dialog">
     <div style="max-width: 90%" class="modal-dialog" role="document">
         <div class="modal-content">
@@ -407,7 +409,7 @@
         </div>
     </div>
 </div>
-{{-- setting modal --}}
+{{-- modal setting --}}
 <div class="modal fade" id="setting" tabindex="-1" role="dialog">
     <div style="max-width: 95%" class="modal-dialog" role="document">
         <div class="modal-content">
@@ -460,10 +462,10 @@
                 </div>
 
                 <div class="col-4">
-                    <div class="form-group">
+                    {{-- <div class="form-group">
                         <button class="btn-sm btn btn-success btn-copy-theme">Clone Website</button>
                         <button class="btn-sm btn btn-warning btn-copy-properties">Update Website</button>
-                    </div>
+                    </div> --}}
                     <div class="card shadow mb-4 copy-theme">
                         <div class="card-header py-2">
                             <h6 class="m-0 font-weight-bold text-primary text-form" >Clone Website </h6>
@@ -542,6 +544,90 @@
         </div>
     </div>
 </div>
+
+<div class="modal fade" id="custom-properties-modal" tabindex="-1" role="dialog">
+    <div style="max-width: 90%" class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Custom value property</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body row">
+                <div class="col-8 ">
+                    <div class="card shadow mb-4 ">
+                        <div class="card-header py-2">
+                            <h6 class="m-0 font-weight-bold text-primary">Value property list </h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-bordered table-hover" id="value-property-datatable" width="100%" cellspacing="0">
+                                    <thead>
+                                        <tr>
+                                            <th>Variable</th>
+                                            <th>Name</th>
+                                            <th >Value</th>
+                                            <th >Action</th>
+                                        </tr>
+                                    </thead>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-4">
+                    <div class="form-group" id="buttonSetupProperties">
+                        <button class="btn-sm btn-primary btn showAdd" id="addText">Add Text</button>
+                        <button class="btn-sm btn-danger btn showAdd" id="addImage">Add Image</button>
+                        <button class="btn btn-sm btn-warning resetAddProperty">Reset Add</button>
+                    </div>
+                    <div class="card shadow mb-4 ">
+                        <div class="card-header py-2">
+                            <h6 class="m-0 font-weight-bold text-primary " id="custom-properties-title">Add</h6>
+                        </div>
+                        <div class="card-body">
+                            <form method="post" id="custom-properties-form">
+                                @csrf
+                                <div class="form-group row col-12">
+                                    <label class="col-5">Variable</label>
+                                    <input class="col-7 form-control-sm form-control" type="text" name="variable">
+                                </div>
+                                <div class="form-group row col-12">
+                                    <label class="col-5">Name</label>
+                                    <input class="col-7 form-control-sm form-control" type="text" name="name">
+                                </div>
+                                <div class="addText form-group row col-12">
+                                    <label class="col-5">Value</label>
+                                    <input class="col-7 form-control-sm form-control" type="text" name="value">
+                                </div>
+                                <div class="addImage form-group col-12" style="display: none;">
+                                    <label>Image</label>
+                                    <div class="previewImage">
+                                        <img id="previewImageValue" src="{{ asset('/images/no-image.png') }}">
+                                        <input type="file" class="custom-file-input" name="image" previewimageid="previewImageValue">
+                                    </div>
+                                </div>
+                                <div class="form-group col-12 row">
+                                    <label class="col-5"></label>
+                                    <input class="btn-sm btn btn-primary" type="submit" value="Save">
+                                    <input type="hidden" name="action" value="create">
+                                    <input type="hidden" name="valuePropertyId">
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {{-- 
+            <div class="modal-footer">
+                <button type="button" class="btn-sm btn btn-primary">Save changes</button>
+                <button type="button" class="btn-sm btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+            --}}
+        </div>
+    </div>
+</div>
 @endsection
 @push('scripts')
 <script type="text/javascript">
@@ -549,7 +635,9 @@
       $("#change-password-form")[0].reset();
       $("#clone-update-form")[0].reset();
       $("#user_nickname").html("Change password");
-      
+      $("#custom-properties-form")[0].reset();
+      $(".previewImage img").attr("src","{{ asset('images/no-image.png') }}");
+
       $('#themes-datatable tbody tr.selected').removeClass('selected');
     }
 
@@ -580,6 +668,7 @@
     }
     
     $(document).ready(function() {
+      perviewImage();
       var placeId = null;
       var userId = null;
       var license = null;
@@ -645,6 +734,30 @@
     
                    ],
           });
+
+        customPropertytable = $('#value-property-datatable').DataTable({
+             // dom: "lBfrtip",
+             processing: true,
+             serverSide: true, 
+             responsive: true,
+             autoWidth: true,
+             buttons: [            
+
+             ],
+
+             ajax:{ 
+                url:"{{ route('getWpDatableByPlaceId') }}",
+                data:function(data){
+                    data.placeId = placeId;
+                },
+            },
+                 columns: [
+                          { data: 'wp_variable', name: 'wp_variable',class:"wp_variable" },
+                          { data: 'wp_name', name: 'wp_name',class:"wp_name" },
+                          { data: 'wp_value', name: 'wp_value',class:"wp_value"  },
+                          { data: 'action' , name: 'action',  orderable: false, searchable: false , class:'text-center'}
+                       ]    
+       });
     
     
       $(document).on('click','.view',function(e){
@@ -899,7 +1012,61 @@
             id = $(this).attr("properties-id");
             $("input[name='id_properties']").val(id);
        });
+
+      // custom properties
+      $(document).on('click',".btn-custom-properties",function(e){
+            e.preventDefault();
+            placeId = $(this).attr('data-id');
+            customPropertytable.draw();
+            $("#custom-properties-modal").modal("show");
+      });
+
+      $("#addText").on('click',function(){
+            $(".addText").show(200);
+            $(".addImage").hide(200);
+      });
+
+      $("#addImage").on('click',function(){
+            $(".addImage").show(200);
+            $(".addText").hide(200);
+      });
+
+      $(".resetAddProperty").on('click',function(){
+        clear();
+        $("#custom-properties-title").text("Add");
+        $("#custom-properties-form").find("input[name='action']").val("create");
+      });
+
+    $(document).on("click",".editValueProperty",function(e){
+        e.preventDefault();
+        var id = $(this).attr('data-id');
+    });
     
+    $(document).on("click",".deleteValueProperty",function(e){
+        e.preventDefault();
+        if(confirm("Are you sure do you want to delete this data?")){
+            var id = $(this).attr('data-id');
+            $.ajax({
+                url:"{{ route('deleteValueProperty') }}",
+                method:"get",
+                data:{
+                    __token:"{{csrf_token()}}",
+                    id,
+                    placeId,
+                },
+                dataType:"json",
+                success:function(data){
+                    if(data.status == 1){
+                        toastr.success("Deleted successfully!");
+                        customPropertytable.draw();
+                    }
+                },
+                error:function(){
+                    toastr.error("Failed to delete!");
+                }
+            });
+        };
+    });
     
     });
     

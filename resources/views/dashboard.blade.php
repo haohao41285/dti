@@ -4,7 +4,7 @@
     Dashboard
 @endsection
 @section('content')
-	<div class="">
+	<div class="col-12">
           <!-- Content Row -->
           <div class="row">
 

@@ -144,11 +144,10 @@ Route::group(['middleware' => ['auth']], function () {
             Route::post('/change-password', 'PlaceController@changeNewPassword')->name('changeNewPassword');
             Route::get('/get-detail', 'PlaceController@getDetailPlace')->name('getDetailPlace');
             Route::get('/get-themes-datatable', 'PlaceController@getThemeDatatable')->name('getThemeDatatable');
+            Route::get('/get-wp-datatable-by-place-id', 'PlaceController@getWpDatableByPlaceId')->name('getWpDatableByPlaceId');
+            Route::get('/delete-value-property', 'PlaceController@deleteValueProperty')->name('deleteValueProperty');
         });
 
-        Route::group(['prefix' => 'build-code'], function() {
-            Route::get('/', 'BuildCodeController@index');
-        });
     });
 
     Route::group(['prefix' => 'recentlog'], function() {

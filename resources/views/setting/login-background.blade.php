@@ -1,12 +1,12 @@
 @extends('layouts.app')
 @section('content-title')
-Setup Login Background
+ Setup Login Background
 @endsection
 @push('scripts')
 
 @endpush
 @section('content')
-<div class="row" >
+<div class="row col-12" >
                 <div class="col-12 ">
                     <div class="card shadow mb-4 ">
                         <div class="card-header py-2">

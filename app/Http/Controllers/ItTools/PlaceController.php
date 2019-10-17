@@ -22,9 +22,16 @@ class PlaceController extends Controller
     }
     public function cloneUpdateWebsite(Request $request)
     {
-        $placeId = PosPlace::getPlaceIdByLicense($request->get_license);
+        $place = PosPlace::getPlaceIdByLicense($request->get_license);
+
+        $place->place_theme_code = $request->get_code;
+        $place->save();
+
+        $placeId = $place->place_id;
 
         PosWebsiteProperty::cloneUpdate($request->id_properties,$placeId);
+
+
 
         //run sh file 
         
@@ -41,7 +48,8 @@ class PlaceController extends Controller
         ->editColumn('action',function($places){
             return '<a class="btn btn-sm btn-secondary view" data-id="'.$places->place_id.'" href="#" data-toggle="tooltip" title="View users"><i class="fas fa-user-cog"></i></a>
             <a class="btn btn-sm btn-secondary detail" data-id="'.$places->place_id.'" href="#" data-toggle="tooltip" title="Detail"><i class="fas fa-eye"></i></a>
-            <a class="btn btn-sm btn-secondary setting" data-license="'.$places->place_ip_license.'" href="#" data-toggle="tooltip" title="Setting place theme"><i class="fas fa-cogs"></i></a>';
+            <a class="btn btn-sm btn-secondary setting" data-license="'.$places->place_ip_license.'" href="#" data-toggle="tooltip" title="Setting place theme"><i class="fas fa-cogs"></i></a>
+            <a class="btn btn-sm btn-secondary btn-custom-properties" data-id="'.$places->place_id.'" href="#" data-toggle="tooltip" title="Custom properties"><i class="fas fa-project-diagram"></i></a>';
         })
         ->editColumn('created_at',function($places){
             return format_datetime($places->created_at);
@@ -134,6 +142,22 @@ class PlaceController extends Controller
 
             return response()->json(['status'=>1,'data'=>$properties]);
         }
+    }
+
+    public function getWpDatableByPlaceId(Request $request){
+        return PosWebsiteProperty::getDatatableByPlaceId($request->placeId);
+    }
+
+    public function deleteValueProperty(Request $request){
+        if($request->id){
+            PosWebsiteProperty::deleteByIdAndPlaceId($request->id,$request->placeId);
+            return response()->json(['status'=>1,'msg'=>"Deleted successfully!"]);
+        }
+    }
+
+    public function saveCustomValueProperty(Request $request){
+       PosWebsiteProperty::aveValue($variable,$name,$requestValue = null,$image = null,$action,$placeId); 
+       return response()->json(['status'=> 1,"msg"=>"Saved successfully"]);
     }
 
     
