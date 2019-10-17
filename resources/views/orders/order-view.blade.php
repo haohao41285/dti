@@ -50,6 +50,7 @@
             <form  enctype="multipart/form-data" accept-charset="utf-8">
                 @csrf()
                 <textarea hidden id="summernote" class="form-control form-control-sm" name="note"></textarea>
+                <input type="hidden" name="receiver_id" id="receiver_id">
                 <input type="button" class="btn btn-sm btn-secondary mt-2" name="" value="Upload attchment's file" onclick="getFile()" placeholder="">
                 <input type="file" hidden id="file_image_list" multiple name="file_image_list[]">
                 <p>(The maximum upload file size: 100M)</p>
@@ -172,7 +173,7 @@
                 <td>{{$task->complete_percent}}</td>
                 <td>{{$task->getUser->user_nickname}}</td>
                 <td class="text-left">{{format_datetime($task->updated_at)}} by {{$task->user_nickname}}</td>
-                <td class="text-primary add-comment" order_id="{{$id}}" task_id="{{$task->id}}" ><a href="javascript:void(0)" title="">Add comment</a></td>
+                <td class="text-primary add-comment" order_id="{{$id}}" created_by="{{$task->created_by}}" task_id="{{$task->id}}" assign_to="{{$task->assign_to}}" ><a href="javascript:void(0)" title="">Add comment</a></td>
             </tr>
             @endforeach
         </tbody>
@@ -472,6 +473,15 @@
         $(".add-comment").click(function(){
 
             task_id = $(this).attr('task_id');
+            var assign_to = $(this).attr('assign_to');
+            var created_by = $(this).attr('created_by');
+
+            if( assign_to == {{\Illuminate\Support\Facades\Auth::user()->user_id}}){
+                receiver_id = created_by;
+            }else{
+                receiver_id = assign_to;
+            }
+            $("#receiver_id").val(assign_to);
 
             $("#add-comment-modal").modal('show');
         });

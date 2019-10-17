@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\Models\MainCustomerTemplate;
+use App\Models\MainNotification;
 use Carbon\Carbon;
 use Illuminate\Http\Response;
 use Illuminate\Http\Request;
@@ -73,11 +74,30 @@ class DashboardController extends Controller {
         else
             return response(['status'=>'success','id'=>$customer_info->id]);
     }
-    public function testOnesignal(){
-        OneSignal::sendNotificationUsingTags("Cậu Thiệu mới thêm một comment trong order #11",
-            array(["field" => "tag", "key" => "user_id", "relation" => "=", "value" => '2']),
-            $url = route('my-task'), $data = ['name'=>'thieu'], $buttons = null, $schedule = null
-        );
-//        OneSignal::sendNotificationToAll("message !", $url = 'https://www.youtube.com/', $data = null, $buttons = null, $schedule = null);
+    public function checkAllNotification(){
+
+        $notification_update = MainNotification::where('receiver_id',Auth::user()->user_id)->notRead()->update(['read_not'=>1]);
+        if(!isset($notification_update))
+            return $this->getFailed();
+        else
+            return $this->getSuccess();
+    }
+    public function getNotification(Request $request){
+        $number = $request->number;
+        if ($number == 0){
+            $notification_list = MainNotification::notRead()->where('receiver_id',Auth::user()->user_id)->latest()->get();
+        }else{
+            $notification_list = MainNotification::notRead()->where('receiver_id',Auth::user()->user_id)->latest()->skip(0)->take($number)->get();
+        }
+        if(!isset($notification_list))
+            return $this->getFailed();
+        else
+            return response(['status'=>'success','notification_list'=>$notification_list]);
+    }
+    public function getFailed(){
+        return response(['status'=>'error','message'=>'Processing Failed!']);
+    }
+    public function getSuccess(){
+        return response(['status'=>'success','message'=>'Processing Successfully!']);
     }
 }
