@@ -409,7 +409,7 @@
 </div>
 {{-- setting modal --}}
 <div class="modal fade" id="setting" tabindex="-1" role="dialog">
-    <div style="max-width: 80%" class="modal-dialog" role="document">
+    <div style="max-width: 95%" class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title">Setting place theme</h5>
@@ -418,7 +418,7 @@
                 </button>
             </div>
             <div class="modal-body row">
-                <div class="col-6">
+                <div class="col-4">
                     <div class="card shadow mb-4">
                         <div class="card-header py-2">
                             <h6 class="m-0 font-weight-bold text-primary " >Website themes </h6>
@@ -437,73 +437,8 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-6">
-                    <div class="form-group">
-                        <button class="btn-sm btn btn-success btn-copy-theme">Clone Website</button>
-                        <button class="btn-sm btn btn-warning btn-copy-properties">Update Website</button>
-                    </div>
-                    <div class="card shadow mb-4 copy-theme">
-                        <div class="card-header py-2">
-                            <h6 class="m-0 font-weight-bold text-primary " >Clone Website </h6>
-                        </div>
-                        <div class="card-body">
-                            <form method="post" id="clone-form">
-                                @csrf
-                                <div class="form-group row">
-                                    <label class="col-2">License</label>
-                                    <input readonly="true" name="get-license" id="get-license" class="col-10 form-control-sm form-control" type="text" >
-                                </div>
-                                <div class="form-group row">
-                                    <label class="col-2">Website</label>
-                                    <input class="col-10 form-control-sm form-control" type="text" name="website">
-                                </div>
-                                <div class="form-group row">
-                                    <label class="col-2">Branch</label>
-                                    <input class="col-10 form-control-sm form-control" type="text" name="branch">
-                                </div>
-                                <div class="form-group row">
-                                    <label class="col-2">Theme</label>
-                                    <input id="get-code" name ="get-code" class="col-10 form-control-sm form-control" type="text" readonly="true">
-                                </div>
-                                <div class="form-group row">
-                                    <label class="col-2"></label>
-                                    <input class="btn-sm btn btn-primary" type="submit" value="Clone Website">
-                                </div>
-                            </form>
-                        </div>
-                    </div>
-                    <!-- properties -->
-                    <div class="copy-properties" style="display: none">
-                    <div class="card shadow mb-4">
-                        <div class="card-header py-2">
-                            <h6 class="m-0 font-weight-bold text-primary " >Update Website </h6>
-                        </div>
-                        <div class="card-body">
-                            <form method="post" id="copy-properties-form">
-                                @csrf
-                                <div class="form-group row">
-                                    <label class="col-2">License</label>
-                                    <label id="get-license"><b></b></label>
-                                </div>
-                                <div class="form-group row">
-                                    <label class="col-2">Website</label>
-                                    <input class="col-10 form-control-sm form-control" type="text" name="website">
-                                </div>
-                                <div class="form-group row">
-                                    <label class="col-2">Branch</label>
-                                    <input class="col-10 form-control-sm form-control" type="text" name="branch">
-                                </div>
-                                <div class="form-group row">
-                                    <label class="col-2">Theme</label>
-                                    <label id="get-code"><b></b></label>
-                                </div>
-                                <div class="form-group row">
-                                    <label class="col-2"></label>
-                                    <input class="btn-sm btn btn-primary" type="submit" value="Update Code">
-                                </div>
-                            </form>
-                        </div>
-                    </div>
+
+                <div class="col-4">
                     <div class="card shadow mb-4">
                         <div class="card-header py-2">
                             <h6 class="m-0 font-weight-bold text-primary " >Website properties </h6>
@@ -522,7 +457,82 @@
                             </div>
                         </div>
                     </div>
+                </div>
+
+                <div class="col-4">
+                    <div class="form-group">
+                        <button class="btn-sm btn btn-success btn-copy-theme">Clone Website</button>
+                        <button class="btn-sm btn btn-warning btn-copy-properties">Update Website</button>
                     </div>
+                    <div class="card shadow mb-4 copy-theme">
+                        <div class="card-header py-2">
+                            <h6 class="m-0 font-weight-bold text-primary text-form" >Clone Website </h6>
+                        </div>
+                        <div class="card-body">
+                            <form method="post" id="clone-update-form">
+                                @csrf
+                                <div class="form-group row">
+                                    <label class="col-3">License</label>
+                                    <input readonly="true" name="get_license" id="get-license" class="col-9 form-control-sm form-control" type="text" >
+                                </div>
+                                <div class="form-group row">
+                                    <label class="col-3">Website</label>
+                                    <input class="col-9 form-control-sm form-control" type="text" name="website">
+                                </div>
+                                <div class="form-group row">
+                                    <label class="col-3">Branch</label>
+                                    <input class="col-9 form-control-sm form-control" type="text" name="branch">
+                                </div>
+                                <div class="form-group row">
+                                    <label class="col-3">Theme</label>
+                                    <input id="get-code" name ="get_code" class="col-9 form-control-sm form-control" type="text" readonly="true">
+                                </div>
+                                <div class="form-group row">
+                                    <label class="col-3">ID Properties</label>
+                                    <input  name ="id_properties" class="col-9 form-control-sm form-control" type="text" readonly="true">
+                                </div>
+                                <div class="form-group row">
+                                    <label class="col-3"></label>
+                                    <input class="btn-sm btn btn-primary" type="submit" value="Clone Website">
+                                    <input type="hidden" name="action" value="clone">
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                    <!-- properties -->
+                   {{--  <div class="copy-properties" style="display: none">
+                    <div class="card shadow mb-4">
+                        <div class="card-header py-2">
+                            <h6 class="m-0 font-weight-bold text-primary " >Update Website </h6>
+                        </div>
+                        <div class="card-body">
+                            <form method="post" id="copy-properties-form">
+                                @csrf
+                                <div class="form-group row">
+                                    <label class="col-3">License</label>
+                                    <label id="get-license"><b></b></label>
+                                </div>
+                                <div class="form-group row">
+                                    <label class="col-3">Website</label>
+                                    <input class="col-9 form-control-sm form-control" type="text" name="website">
+                                </div>
+                                <div class="form-group row">
+                                    <label class="col-3">Branch</label>
+                                    <input class="col-9 form-control-sm form-control" type="text" name="branch">
+                                </div>
+                                <div class="form-group row">
+                                    <label class="col-3">Theme</label>
+                                    <label id="get-code"><b></b></label>
+                                </div>
+                                <div class="form-group row">
+                                    <label class="col-3"></label>
+                                    <input class="btn-sm btn btn-primary" type="submit" value="Update Code">
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                    
+                    </div> --}}
                 </div>
             </div>
             <div class="modal-footer">
@@ -537,7 +547,7 @@
 <script type="text/javascript">
     function clear(){
       $("#change-password-form")[0].reset();
-      $("#clone-form")[0].reset();
+      $("#clone-update-form")[0].reset();
       $("#user_nickname").html("Change password");
       
       $('#themes-datatable tbody tr.selected').removeClass('selected');
@@ -828,11 +838,23 @@
           $("input#get-license").val(license);
       });
       //Create New Website
-      $("#clone-form").on('submit',function(e){
+      $("#clone-update-form").on('submit',function(e){
         e.preventDefault();
+
+        var checkThemeProperties = $('#themeProperties tr');
+
+        if(checkThemeProperties.length > 1){
+            var checkSelected = $('#themeProperties tr.selected');
+            if(checkSelected.length == 0){
+                toastr.error("You have not selected website properties");
+                return false;
+            }
+        }
+
         var form = $(this).serialize();
+
           $.ajax({
-              url:"{{ route('cloneWebsite') }}",
+              url:"{{ route('cloneUpdateWebsite') }}",
               method:"post",
               data:form,
               dataType:"json",
@@ -856,25 +878,26 @@
              var code = $(this).find("td.code").text();
              $("input#get-code").val(code);
              listThemePropertiesByThemeId(themeId);
+
+             $("input[name='id_properties']").val('');
        });
 
       $(".btn-copy-theme").on('click',function(){
-            $(".copy-theme").fadeIn(300);
-            $(".copy-properties").hide(300);
+            $(".text-form").text("Clone Website");
+            $("#clone-update-form").find("input[type=submit]").val("Clone Website");
+            $("#clone-update-form").find("input[name=action]").val("clone");
       });
       $(".btn-copy-properties").on('click',function(){
-            $(".copy-theme").hide(300);
-            $(".copy-properties").fadeIn(300);
+            $(".text-form").text("Update Website");
+            $("#clone-update-form").find("input[type=submit]").val("Update Website");
+            $("#clone-update-form").find("input[name=action]").val("update");
       });
 
       $("#themeProperties tbody").on('click',"tr",function(){
-
-            var checkSelected = $(this).hasClass("selected");
-            if(checkSelected){
-                $(this).removeClass('selected');
-            } else{
-                $(this).addClass('selected');
-            }
+            $('#themeProperties tbody tr.selected').removeClass('selected');
+            $(this).addClass('selected');
+            id = $(this).attr("properties-id");
+            $("input[name='id_properties']").val(id);
        });
     
     

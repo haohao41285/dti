@@ -12,8 +12,8 @@ use App\Helpers\RunShFileHelper;
 use Validator;
 // use App\Http\Controllers\ItTools\WebsiteThemeController;
 use App\Models\MainTheme;
-use Symfony\Component\Process\Process;
-use Symfony\Component\Process\Exception\ProcessFailedException;
+use App\Models\PosWebsiteProperty;
+
 
 
 class PlaceController extends Controller
@@ -21,20 +21,17 @@ class PlaceController extends Controller
     public function index(){
         return view('tools.place');
     }
-    public function cloneWebsite(Request $data)
+    public function cloneUpdateWebsite(Request $request)
     {
-        //$process = new Process('cd /home/hcmdev/degdti/');
-        $process = new Process('/home/hcmdev/.composer/vendor/bin/envoy run deploy');
-        $process->run();
+        $placeId = PosPlace::getPlaceIdByLicense($request->get_license);
 
-        if (!$process->isSuccessful()) {
-            throw new ProcessFailedException($process);
-        }
+        PosWebsiteProperty::cloneUpdate($request->id_properties,$placeId);
 
-        $value = $process->getOutput();
-        //$value = RunShFileHelper::run("['cd ~','ssh createweb']");
-         return response()->json(['status'=>1,'msg'=>"Clone website successfully!", "value"=>$value]); 
+        //run sh file 
+        return response()->json(['status'=>1,'msg'=>"Clone website successfully!"]); 
     }
+
+
     public function getPlacesDatatable(){
         $places = PosPlace::select('place_id','place_name','place_address','place_email','place_phone','place_ip_license','created_at')
             ->where('place_status',1)
@@ -138,4 +135,6 @@ class PlaceController extends Controller
             return response()->json(['status'=>1,'data'=>$properties]);
         }
     }
+
+    
 }

@@ -4,9 +4,6 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-/**
- * Class PosCustomer
- */
 class MainCustomerBought extends Model
 {
     protected $table = 'main_customer_bought';
@@ -44,5 +41,7 @@ class MainCustomerBought extends Model
                 ->where('cb_status',1)
                 ->count();
     }
+
+    
         
 }

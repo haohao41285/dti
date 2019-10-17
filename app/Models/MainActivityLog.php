@@ -45,11 +45,23 @@ class MainActivityLog extends Model
         return self::select('id')->where('user_id',$userId)->max('id');
     }
 
-    public static function getDatatable(){
+    public static function getActivityLogDatatable(){
         $userId = Auth::user()->user_id;
 
         $activityLog = MainActivityLog::select('main_user.user_nickname','main_activity_log.*')
                         ->where('main_activity_log.user_id',$userId)
+                        ->join('main_user','main_user.user_id','main_activity_log.user_id')
+                        ->get();
+
+        return DataTables::of($activityLog)
+        ->editColumn('created_at',function($data){
+            return format_datetime($data->created_at);
+        })
+        ->make(true);
+    }
+
+    public static function getDatatable(){
+        $activityLog = MainActivityLog::select('main_user.user_nickname','main_activity_log.*')
                         ->join('main_user','main_user.user_id','main_activity_log.user_id')
                         ->get();
 

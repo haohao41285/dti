@@ -22,4 +22,12 @@ class RecentLogController extends Controller {
     	return MainActivityLog::getDatatable();
     }
 
+    public function activityLog(){
+        return view('logs.activity-log');
+    }
+
+    public function activityLogDatatable(){
+        return MainActivityLog::getActivityLogDatatable();
+    }
+
 }
