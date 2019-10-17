@@ -30,6 +30,8 @@ class CustomerController extends Controller
     {
         $data['state'] = Option::state();
         $data['status'] = GeneralHelper::getCustomerStatusList();
+        if(Auth::user()->user_group_id == 1)
+            $data['teams'] = MainTeam::active()->get();
         return view('customer.all-customers',$data);
     }
 
@@ -48,7 +50,11 @@ class CustomerController extends Controller
         $team_id = Auth::user()->user_team;
         $team_list_id = [];
 
+        if(!isset(MainTeam::find($team_id)->team_type)){
+            return back()->with(['error'=>'Choose your Team, first!']);
+        }
         $team_list = MainTeam::select('id')->where([['team_type',MainTeam::find($team_id)->team_type],['team_status',1]])->get();
+
         foreach ($team_list as $team_id){
             $team_list_id[] = $team_id->id;
         }
@@ -65,7 +71,6 @@ class CustomerController extends Controller
     public function customersDatatable(Request $request){
 
         $customer_arr = [];
-        $team_id = Auth::user()->user_team;
         $start_date = $request->start_date;
         $end_date = $request->end_date;
         $address = $request->address;
@@ -77,8 +82,8 @@ class CustomerController extends Controller
 
         if($start_date != "" && $end_date != ""){
 
-            $start_date = Carbon::parse($start_date)->format('Y-m-d');
-            $end_date = Carbon::parse($end_date)->format('Y-m-d');
+            $start_date = format_date_db($start_date);
+            $end_date = format_date_db($end_date);
 
             $customers->whereDate('main_customer_template.created_at','>=',$start_date)
                     ->whereDate('main_customer_template.created_at','<=',$end_date);
@@ -91,6 +96,11 @@ class CustomerController extends Controller
                         ->get();
 
         //GET LIST TEAM CUSTOMER LIST
+        if(isset($team_id) && $team_id != "")
+            $team_id = $request->team_id;
+        else
+            $team_id = Auth::user()->user_team;
+
         $team_customer_status = MainTeam::find($team_id)->getTeamType;
         $team_customer_status = $team_customer_status->team_customer_status;
 
@@ -158,10 +168,14 @@ class CustomerController extends Controller
                 return Carbon::parse($row['created_at'])->format('m/d/Y H:i:s')." by ".$row['user_nickname'];
             })
             ->editColumn('ct_business_phone',function($row){
-                return substr($row['ct_business_phone'],0,3)."########";
+                if($row['ct_business_phone'] != null && Auth::user()->user_group_id != 1)
+                    return substr($row['ct_business_phone'],0,3)."########";
+                else return $row['ct_business_phone'];
             })
             ->editColumn('ct_cell_phone',function($row){
-                return substr($row['ct_cell_phone'],0,3)."########";
+                if($row['ct_cell_phone'] != null && Auth::user()->user_group_id != 1)
+                    return substr($row['ct_cell_phone'],0,3)."########";
+                else return $row['ct_cell_phone'];
             })
             ->addColumn('action', function ($row){
                 if(Auth::user()->user_id == 1)
@@ -219,7 +233,9 @@ class CustomerController extends Controller
             }
 
             if(!isset($request->my_customer)){
-                $customer_list['ct_business_phone'] = substr($customer_list->ct_business_phone,0,3)."########";
+                if($customer_list->ct_business_phone != null && Auth::user()->user_group_id != 1)
+                    $customer_list['ct_business_phone'] = substr($customer_list->ct_business_phone,0,3)."########";
+                if($customer_list->ct_cell_phone != null && Auth::user()->user_group_id != 1)
                 $customer_list['ct_cell_phone'] = substr($customer_list->ct_cell_phone,0,3)."########";
             }
             //GET PALCE, SERVICE
@@ -730,7 +746,10 @@ class CustomerController extends Controller
             return redirect()->route('myCustomers')->with(['success'=>'Create Customer Successfully!']);
         }
     }
-    public function customerDetail($customer_id){
+    public function customerDetail($customer_id =0){
+
+        if(!isset($customer_id) || $customer_id == 0)
+            return back()->with(['error'=>'Get CustomerDetail Failed!']);
 
         $data['template_customer_info'] = MainCustomerTemplate::find($customer_id);
         try{

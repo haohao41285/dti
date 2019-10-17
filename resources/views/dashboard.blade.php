@@ -4,6 +4,7 @@
     Dashboard
 @endsection
 @section('content')
+<<<<<<< HEAD
 	<div class="">
           <!-- Content Row -->
           <div class="row">
@@ -179,7 +180,7 @@
 			});
 			chartServices.render();
 			$("a.canvasjs-chart-credit").remove();
-
 		}
 </script>
 @endpush
+

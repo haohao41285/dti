@@ -66,7 +66,8 @@
 
         var table = $('#task-datatable').DataTable({
            // dom: "lBfrtip",
-           order:[[0,'desc']],
+            responsive: false,
+            order:[[9,'desc']],
            info: false,
            buttons: [
            ],

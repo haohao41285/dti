@@ -45,7 +45,7 @@ class TaskController extends Controller
     		        $detail_button = "<i class=\"fas fa-plus-circle details-control text-danger\" id='".$row->id."'></i>";
                 }else $detail_button = "";
 
-    			return $detail_button.'<a href="'.route('task-detail',$row->id).'"> #'.$row->id.'</a>';
+    			return $detail_button.'&nbsp&nbsp<a href="'.route('task-detail',$row->id).'"> #'.$row->id.'</a>';
     		})
     		->editColumn('order_id',function($row){
     			return '<a href="'.route('order-view',$row->order_id).'">#'.$row->order_id.'</a>';
@@ -103,7 +103,9 @@ class TaskController extends Controller
     		'task_id' => $task_id==0?NULL:$task_id,
     		'content' => $content,
     		'created_by' => Auth::user()->user_id,
-            'email_list' => $request->email_list
+            'email_list' => $request->email_list,
+            'receiver_id' => $request->receiver_id,
+            'read_not' => 0
     	];
     	DB::beginTransaction();
     	$tracking_create = MainTrackingHistory::create($tracking_arr);
@@ -146,6 +148,8 @@ class TaskController extends Controller
             return response(['status'=>'error', 'message'=> 'Failed!']);
         }
         else{
+
+
             DB::commit();
             return response(['status'=> 'success','message'=>'Successly!']);
         }

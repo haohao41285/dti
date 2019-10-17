@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Setting;
 
+use App\Models\MainComboServiceType;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Models\MainComboService;
@@ -10,6 +11,7 @@ use App\Models\MainUser;
 use Validator;
 use DataTables;
 use DB;
+use Auth;
 
 class SetupServiceController extends Controller
 {
@@ -51,6 +53,8 @@ class SetupServiceController extends Controller
 				'cs_assign_to' => $service_combo->user_nickname,
 				'cs_assign_id' => $service_combo->user_id,
 				'cs_status' => $service_combo->cs_status,
+                'cs_form_type' => $service_combo->cs_form_type,
+                'cs_combo_service_type' => $service_combo->cs_combo_service_type
 			];
 		}
 
@@ -68,7 +72,7 @@ class SetupServiceController extends Controller
 				return '<input type="checkbox" cs_id="'.$row['id'].'" cs_status="'.$row['cs_status'].'" class="js-switch"'.$checked.'/>';
 			})
 			->addColumn('action',function($row){
-				return '<a class="btn btn-sm btn-secondary edit-cs" cs_price='.$row['cs_price'].' cs_description="'.$row['cs_description'].'" cs_type='.$row['cs_type'].' cs_name="'.$row['cs_name'].'" cs_id="'.$row['id'].'"  title="Edit" href="javascript:void(0)" cs_assign_id="'.$row['cs_assign_id'].'"><i class="fas fa-edit"></i></a>
+				return '<a class="btn btn-sm btn-secondary edit-cs" cs_combo_service_type="'.$row['cs_combo_service_type'].'" cs_form_type="'.$row['cs_form_type'].'" cs_price='.$row['cs_price'].' cs_description="'.$row['cs_description'].'" cs_type='.$row['cs_type'].' cs_name="'.$row['cs_name'].'" cs_id="'.$row['id'].'"  title="Edit" href="javascript:void(0)" cs_assign_id="'.$row['cs_assign_id'].'"><i class="fas fa-edit"></i></a>
                 <a class="btn btn-sm btn-secondary delete-team" title="Delete" href="javascript:void(0)"><i class="fas fa-trash"></i></a>';
 			})
 			->rawColumns(['cs_status','action','cs_service_id'])
@@ -102,6 +106,8 @@ class SetupServiceController extends Controller
 			return response(['status'=>'error','message'=>'Error!']);
 	    //GET ALL USER
 		$data['user'] = MainUser::where('user_status',1)->get();
+		$data['service_form'] = getFormService();
+		$data['combo_service_type_list'] = MainComboServiceType::all();
 
 		if($cs_type == 1){//COMBO
 
@@ -128,8 +134,8 @@ class SetupServiceController extends Controller
 			$cs_info = MainComboService::find($cs_id);
 			$cs_menu_id = $cs_info->cs_menu_id;
 			$menu_id_arr = explode(";", $cs_menu_id);
-			
-			
+
+
 			foreach ($menu_parents as $key => $menu_parent) {
 				$check = "";
 				$id = ''.$menu_parent->mer_menu_id;
@@ -179,6 +185,8 @@ class SetupServiceController extends Controller
 		$cs_description = $request->cs_description;
 		$service_id_arr = $request->service_id_arr;
 		$cs_assign_to = $request->cs_assign_to;
+		$cs_form_type = $request->cs_form_type;
+		$cs_combo_service_type = $request->cs_combo_service_type;
 
 		$rule = [
             'cs_name' => 'required',
@@ -216,16 +224,51 @@ class SetupServiceController extends Controller
 
         if($cs_type == 1){
         	if($cs_id != 0)
-			    $cs_update = MainComboService::where('id',$cs_id)->update(['cs_name'=>$cs_name,'cs_service_id'=>$service_id_list,'cs_description'=>$cs_description,'cs_assign_to'=>$cs_assign_to]);
+			    $cs_update = MainComboService::where('id',$cs_id)->update([
+			        'cs_name'=>$cs_name,
+                    'cs_service_id'=>$service_id_list,
+                    'cs_description'=>$cs_description,
+                    'cs_assign_to'=>$cs_assign_to,
+                    'cs_combo_service_type' => $cs_combo_service_type,
+                    'cs_form_type' => $cs_form_type
+
+                ]);
 			else
-				$cs_update = MainComboService::insert(['cs_name'=>$cs_name,'cs_service_id'=>$service_id_list,'cs_price'=>$cs_price,'cs_type'=>1,'cs_status'=>1,'cs_description'=>$cs_description,'cs_assign_to'=>$cs_assign_to]);
+				$cs_update = MainComboService::insert([
+				    'cs_name'=>$cs_name,
+                    'cs_service_id'=>$service_id_list,
+                    'cs_price'=>$cs_price,
+                    'cs_type'=>1,
+                    'cs_status'=>1,
+                    'cs_description'=>$cs_description,
+                    'cs_assign_to'=>$cs_assign_to,
+                    'cs_combo_service_type'=>$cs_combo_service_type,
+                    'cs_form_type' => $cs_form_type
+                ]);
         }
         else{
         	if($cs_id != 0){
-        		$cs_update = MainComboService::where('id',$cs_id)->update(['cs_name'=>$cs_name,'cs_menu_id'=>$service_id_list,'cs_description'=>$cs_description,'cs_assign_to'=>$cs_assign_to]);
+        		$cs_update = MainComboService::where('id',$cs_id)->update([
+        		    'cs_name'=>$cs_name,
+                    'cs_menu_id'=>$service_id_list,
+                    'cs_description'=>$cs_description,
+                    'cs_assign_to'=>$cs_assign_to,
+                    'cs_combo_service_type' => $cs_combo_service_type,
+                    'cs_form_type' => $cs_form_type
+                ]);
         	}else
-        	    $cs_update = MainComboService::insert(['cs_name'=>$cs_name,'cs_service_id'=>$service_id_list,'cs_price'=>$cs_price,'cs_type'=>2,'cs_status'=>1,'cs_description'=>$cs_description,'cs_assign_to'=>$cs_assign_to]);
-			
+        	    $cs_update = MainComboService::insert([
+        	        'cs_name'=>$cs_name,
+                    'cs_service_id'=>$service_id_list,
+                    'cs_price'=>$cs_price,
+                    'cs_type'=>2,
+                    'cs_status'=>1,
+                    'cs_description'=>$cs_description,
+                    'cs_assign_to'=>$cs_assign_to,
+                    'cs_combo_service_type' => $cs_combo_service_type,
+                    'cs_form_type' => $cs_form_type
+                ]);
+
         }
 
 		if(!isset($cs_update))
@@ -253,7 +296,7 @@ class SetupServiceController extends Controller
 			$menu_parents = $menu_list->where('mer_menu_parent_id',0);
 
 			$menu_id_arr = [];
-			
+
 			foreach ($menu_parents as $key => $menu_parent) {
 				$check = "";
 				$id = ''.$menu_parent->mer_menu_id;
@@ -268,6 +311,53 @@ class SetupServiceController extends Controller
 
 			return response($data);
 		}
-		
 	}
+    public function setServiceType (){
+        return view('setting.setup-service-type');
+    }
+    public function serviceTypeDatatable(Request $request){
+	    $service_type_list = MainComboServiceType::all();
+	    return DataTables::of($service_type_list)
+            ->addColumn('status',function($row){
+                if($row->status == 1) $checked='checked';
+                else $checked="";
+                return '<input type="checkbox" id="'.$row->id.'" status="'.$row->status.'" class="js-switch"'.$checked.'/>';
+            })
+            ->rawColumns(['status'])
+            ->make(true);
+    }
+    public function changeStatusServiceType(Request $request){
+	    $id = $request->id;
+	    $status = $request->status;
+	    if($status == 1)
+	        $status_update = 0;
+	    else
+	        $status_update = 1;
+	    $update_service_type = MainComboServiceType::find($id)->update(['status'=>$status_update]);
+
+	    if(!isset($update_service_type))
+	        return response(['status'=>'error','message'=>'Change Status Failed!']);
+	    else
+	        return response(['status'=>'success','message'=>'Change Status Successfully!']);
+    }
+    public function addServiceType(Request $request){
+
+	    $id = $request->service_type_id;
+	    if($request->name == "")
+	        return response(['status'=>'error','message'=>'Enter Name']);
+
+        $input = $request->all();
+	    if($id == 0){
+	        $input['created_by'] = Auth::user()->user_id;
+	        $input['status'] = 1;
+	        $service_type_update = MainComboServiceType::create($input);
+        }else{
+	        $input['updated_by'] = Auth::user()->user_id;
+	        $service_type_update  =MainComboServiceType::find($id)->update($input);
+        }
+	    if(!isset($service_type_update))
+	        return response(['status'=>'error','message'=>'Save Service Type Failed!']);
+	    else
+	        return response(['status'=>'success','message'=>'Save Service Type Successfully!']);
+    }
 }

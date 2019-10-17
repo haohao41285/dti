@@ -3,13 +3,18 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use App\Models\MainCustomerTemplate;
 use Carbon\Carbon;
 use Illuminate\Http\Response;
+
 use App\Models\MainComboServiceBought;
 use App\Models\MainTask;
 use App\Models\MainCustomerBought;
 use App\Models\MainCustomerService;
 use App\Models\MainCustomer;
+use Illuminate\Http\Request;
+use Auth;
+
 
 
 class DashboardController extends Controller {
@@ -75,5 +80,26 @@ class DashboardController extends Controller {
             \Log::info($e);
             return 'Confirm Failed!';
         }
+    }
+    public function searchCustomer(Request $request){
+
+        $customer_phone = $request->customer_phone;
+
+        $customer_list = Auth::user()->user_customer_list;
+
+        if($customer_list == "")
+            return response(['status'=>'error','message'=>'Customer empty!']);
+        $customer_arr = explode(";",$customer_list);
+
+        $customer_info =  MainCustomerTemplate::where('ct_active',1)
+                        ->whereIn('id',$customer_arr)
+                        ->where(function ($query) use ($customer_phone){
+                            $query->where('ct_business_phone',$customer_phone)
+                                ->orWhere('ct_cell_phone',$customer_phone);
+                        })->first();
+        if($customer_info == "")
+            return response(['status'=>'error','message'=>'Customer empty!']);
+        else
+            return response(['status'=>'success','id'=>$customer_info->id]);
     }
 }
