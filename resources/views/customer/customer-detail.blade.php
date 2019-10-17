@@ -184,7 +184,17 @@
             $("#file_image_list_2").click();
         }
         $(document).ready(function () {
-            $('#summernote2').summernote();
+            $('#summernote2').summernote({
+                toolbar: [
+                    // [groupName, [list of button]]
+                    ['style', ['bold', 'italic', 'underline', 'clear']],
+                    ['font', ['strikethrough', 'superscript', 'subscript']],
+                    ['fontsize', ['fontsize']],
+                    ['color', ['color']],
+                    ['para', ['ul', 'ol', 'paragraph']],
+                    ['height', ['height']]
+                ]
+            });
             var table = $('#tracking-datatable').DataTable({
                 // dom: "lBfrtip",
                 order:[[0,'desc']],

@@ -3,12 +3,18 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use App\Models\MainCustomerTemplate;
 use Carbon\Carbon;
 use Illuminate\Http\Response;
+
 use App\Models\MainComboServiceBought;
 use App\Models\MainTask;
 use App\Models\MainCustomerBought;
 use App\Models\MainCustomerService;
+use App\Models\MainCustomer;
+use Illuminate\Http\Request;
+use Auth;
+
 
 
 class DashboardController extends Controller {
@@ -20,11 +26,16 @@ class DashboardController extends Controller {
 
     public function index(){   
         $yearNow = format_year(get_nowDate());
+        $now = get_nowDate();
+
         $data['earnings'] = MainComboServiceBought::getSumChargeByYear($yearNow);
         $data['pendingTasks'] = MainTask::getPendingTasks();
         $data['nearlyExpired'] = MainCustomerBought::getNearlyExpired();
-        $data['popularServices'] = MainCustomerService::get10popularServices();
-        // echo $data['popularServices']; die();
+        $data['popularServices'] = MainComboServiceBought::get10popularServicesByMonth($now);
+
+        $newCustomer = MainCustomer::getTotalNewCustomersEveryMonthByYear($yearNow);
+   
+        $data['newCustomer'] = $this->formatCustomersArr($newCustomer);      
         
         return view('dashboard',$data);
     }
@@ -43,6 +54,18 @@ class DashboardController extends Controller {
             return 'Confirm Failed!';
         }
     }
+
+
+    private function formatCustomersArr($customers){
+        $arr = [];
+
+        foreach ($customers as $key => $value) {
+            $arr[$value->month] = $value->count;
+        }
+
+        return $arr;
+    }
+
     public function confirmBirthday(){
         try{
             //subHours(11) to get time American
@@ -57,5 +80,26 @@ class DashboardController extends Controller {
             \Log::info($e);
             return 'Confirm Failed!';
         }
+    }
+    public function searchCustomer(Request $request){
+
+        $customer_phone = $request->customer_phone;
+
+        $customer_list = Auth::user()->user_customer_list;
+
+        if($customer_list == "")
+            return response(['status'=>'error','message'=>'Customer empty!']);
+        $customer_arr = explode(";",$customer_list);
+
+        $customer_info =  MainCustomerTemplate::where('ct_active',1)
+                        ->whereIn('id',$customer_arr)
+                        ->where(function ($query) use ($customer_phone){
+                            $query->where('ct_business_phone',$customer_phone)
+                                ->orWhere('ct_cell_phone',$customer_phone);
+                        })->first();
+        if($customer_info == "")
+            return response(['status'=>'error','message'=>'Customer empty!']);
+        else
+            return response(['status'=>'success','id'=>$customer_info->id]);
     }
 }

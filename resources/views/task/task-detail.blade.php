@@ -241,6 +241,7 @@
 <h4 class="border border-info border-top-0 border-right-0 border-left-0 text-info mt-5">ADD NEW COMMENT</h4>
 <form  enctype="multipart/form-data" accept-charset="utf-8">
     @csrf()
+    <input type="hidden" name="receiver_id" value="{{$task_info->assign_to==\Illuminate\Support\Facades\Auth::user()->user_id?$task_info->created_by:$task_info->assign_to}}">
     <textarea  id="summernote2" class="form-control form-control-sm"  name="note"></textarea>
     <input type="button" class="btn btn-sm btn-secondary mt-2" name="" value="Upload attchment's file" onclick="getFile2()" placeholder="">
     <input type="file" hidden id="file_image_list_2" multiple name="file_image_list[]">
@@ -256,7 +257,7 @@
         <input type="text" class="form-control" name="email_list" id="email_list_2" placeholder="">
       </div>
     <p>CC Multiple Email for example:<i> email_1@gmail.com;email_2@gmail.com</i></p>
-    <button type="botton" class="btn btn-sm btn-primary submit-comment">Submit Comment</button>
+    <button type="button" class="btn btn-sm btn-primary submit-comment">Submit Comment</button>
 </form>
 @endsection
 @push('scripts')
@@ -266,7 +267,17 @@
     }
 	$(document).ready(function() {
 
-        $('#summernote2').summernote();
+        $('#summernote2').summernote({
+            toolbar: [
+                // [groupName, [list of button]]
+                ['style', ['bold', 'italic', 'underline', 'clear']],
+                ['font', ['strikethrough', 'superscript', 'subscript']],
+                ['fontsize', ['fontsize']],
+                ['color', ['color']],
+                ['para', ['ul', 'ol', 'paragraph']],
+                ['height', ['height']]
+            ]
+        });
 
         var table = $('#subtask-datatable').DataTable({
             // dom: "lBfrtip",
@@ -319,8 +330,8 @@
         $(document).on("click",".file-comment",function(){
             $(this).parent('form').submit();
         });
-        $('body').on('click', '.submit-comment', function(e){
-            e.preventDefault();
+        $('body').on('click', '.submit-comment', function(){
+            alert('ok');
             var formData = new FormData($(this).parents('form')[0]);
             formData.append('order_id',{{$task_info->order_id}});
             formData.append('task_id',{{$id}});

@@ -155,4 +155,22 @@ class GeneralHelper{
         }
         return $ip;
     }
+
+    public static function callAPI($arr){
+        $data = array("name" => "Hagrid", "age" => "36");
+        $data_string = json_encode($data);
+
+        $curl = curl_init('http://example.api.com');
+
+        curl_setopt($curl, CURLOPT_CUSTOMREQUEST, "POST");
+        curl_setopt($curl, CURLOPT_POSTFIELDS, $data_string);
+        curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($curl, CURLOPT_HTTPHEADER, array(
+            'Content-Type: application/json',
+            'Content-Length: ' . strlen($data_string))
+        );
+
+        $result = curl_exec($curl);
+        curl_close($curl);
+    }
 }

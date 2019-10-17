@@ -12,6 +12,10 @@
 
 @stack('styles')
 {{-- Scripts --}}
+<script src="{{asset('OneSignalSDKWorker.js')}}"></script>
+<script src="{{asset('OneSignalSDKUpdaterWorker.js')}}"></script>
+<script src="https://cdn.onesignal.com/sdks/OneSignalSDK.js" async=""></script>
+
 <script type="text/javascript">
     window.Laravel = {!! json_encode([
         'csrfToken' => csrf_token(),

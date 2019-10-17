@@ -47,8 +47,9 @@ Route::group(['middleware' => ['auth']], function () {
          Route::post('import-customer', 'CustomerController@importCustomer')->name('import-customer');
          Route::get('export-customer', 'CustomerController@exportCustomer')->name('export-customer');
          Route::get('export-my-customer', 'CustomerController@exportMyCustomer')->name('export-my-customer');
+
          Route::post('save-my-customer', 'CustomerControllercustomersDatatable@saveMyCustomer')->name('save-my-customer');
-         Route::get('customer-detail/{id}', 'CustomerController@customerDetail')->where(['id'=>'[0-9]+'])->name('customer-detail');
+         Route::get('customer-detail/{id?}', 'CustomerController@customerDetail')->where(['id'=>'[0-9]+'])->name('customer-detail');
          Route::get('customer-tracking', 'CustomerController@customerTracking')->name('customer-tracking');
          Route::post('post-comment-customer', 'CustomerController@postCommentCustomer')->name('post-comment-customer');
          Route::get('get-seller', 'CustomerController@getSeller')->name('get-seller');
@@ -137,8 +138,7 @@ Route::group(['middleware' => ['auth']], function () {
         });
 
         Route::group(['prefix' => 'places'], function() {
-            Route::post('clonewebsite', 'PlaceController@cloneWebsite')->name('cloneWebsite');
-            Route::post('updatewebsite', 'PlaceController@updateWebsite')->name('updateWebsite');
+            Route::post('clone-update-website', 'PlaceController@cloneUpdateWebsite')->name('cloneUpdateWebsite');
             Route::get('/', 'PlaceController@index')->name('getPlaces');
             Route::get('/places-datatable', 'PlaceController@getPlacesDatatable')->name('getPlacesDatatable');
             Route::get('/users-datatable', 'PlaceController@getUsersDatatable')->name('getUsersDatatable');
@@ -156,6 +156,8 @@ Route::group(['middleware' => ['auth']], function () {
         Route::get('/', 'RecentLogController@index')->name('recentlog');
         Route::get('/datatable', 'RecentLogController@datatable')->name('recentlogDatatable');
 
+        Route::get('/activity-log', 'RecentLogController@activityLog')->name('activity-log');
+        Route::get('/activity-log-datatable', 'RecentLogController@activityLogDatatable')->name('activityLogDatatable');
     });
 
     Route::group(['prefix' => 'setting','namespace' => 'Setting'], function() {
@@ -201,6 +203,12 @@ Route::group(['middleware' => ['auth']], function () {
         Route::post('delete-event','EventHolidayController@deleteEvent')->name('delete-event');
         Route::post('change-status-event','EventHolidayController@changeStatusEvent')->name('change-status-event');
 
+        //SETTING SERVICE TYPE
+        Route::get('setup-service-type','SetupServiceController@setServiceType')->name('setup-service-type');
+        Route::get('service-type-datatable','SetupServiceController@serviceTypeDatatable')->name('service-type-datatable');
+        Route::get('change-status-service-type','SetupServiceController@changeStatusServiceType')->name('change-status-service-type');
+        Route::get('add-service-type','SetupServiceController@addServiceType')->name('add-service-type');
+
     });
 
     Route::group(['prefix'=>'user'],function(){
@@ -219,6 +227,8 @@ Route::group(['middleware' => ['auth']], function () {
 
         Route::get('user-add/{id?}','UserController@userAdd')->where(['id'=>'[0-9]+'])->name('user-add');
         Route::post('user-save','UserController@userSave')->name('user-save');
+        Route::post('user-delete','UserController@userDelete')->name('user-delete');
+        Route::get('user-export','UserController@userExport')->name('user-export');
 
 
 
@@ -260,4 +270,6 @@ Route::group(['middleware' => ['auth']], function () {
     //confirm event
     Route::get('confirm-event', 'DashboardController@confirmEvent')->name('confirm-event');
     Route::get('confirm-birthday', 'DashboardController@confirmBirthday')->name('confirm-birthday');
+    Route::get('search-customer', 'DashboardController@searchCustomer')->name('search-customer');
+    Route::get('test-onesignal', 'DashboardController@testOnesignal')->name('test-onesignal');
 });
