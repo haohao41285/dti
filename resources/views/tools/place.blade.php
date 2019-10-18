@@ -546,7 +546,7 @@
 </div>
 
 <div class="modal fade" id="custom-properties-modal" tabindex="-1" role="dialog">
-    <div style="max-width: 90%" class="modal-dialog" role="document">
+    <div style="max-width: 95%" class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title">Custom value property</h5>
@@ -587,7 +587,7 @@
                             <h6 class="m-0 font-weight-bold text-primary " id="custom-properties-title">Add</h6>
                         </div>
                         <div class="card-body">
-                            <form method="post" id="custom-properties-form">
+                            <form method="post" id="custom-properties-form" enctype="multipart/form-data">
                                 @csrf
                                 <div class="form-group row col-12">
                                     <label class="col-5">Variable</label>
@@ -639,6 +639,7 @@
       $(".previewImage img").attr("src","{{ asset('images/no-image.png') }}");
 
       $('#themes-datatable tbody tr.selected').removeClass('selected');
+      $("#custom-properties-form").find("input[name='variable']").attr("readonly",false);
     }
 
     function listThemePropertiesByThemeId(theme_id){
@@ -1019,6 +1020,7 @@
             placeId = $(this).attr('data-id');
             customPropertytable.draw();
             $("#custom-properties-modal").modal("show");
+            $(".resetAddProperty").trigger('click');
       });
 
       $("#addText").on('click',function(){
@@ -1035,11 +1037,32 @@
         clear();
         $("#custom-properties-title").text("Add");
         $("#custom-properties-form").find("input[name='action']").val("create");
+
       });
 
     $(document).on("click",".editValueProperty",function(e){
         e.preventDefault();
-        var id = $(this).attr('data-id');
+        var variable = $(this).attr('data-id');
+        var name = $(this).parent().parent().find(".wp_name").text();
+        var value = $(this).parent().parent().find(".wp_value").text();
+        var img = $(this).parent().parent().find(".wp_value img").attr('src');
+
+        if(img){
+            $("#addImage").trigger("click");
+        } else {
+            $("#addText").trigger("click");
+        }
+
+        $("#custom-properties-title").text("Edit");
+        $("#custom-properties-form").find("input[name='action']").val("update");
+        $("#custom-properties-form").find("input[name='valuePropertyId']").val(variable);
+
+        $("#custom-properties-form").find("input[name='variable']").val(variable);
+        $("#custom-properties-form").find("input[name='name']").val(name);
+        $("#custom-properties-form").find("input[name='value']").val(value);
+        $("#custom-properties-form").find("#previewImageValue").attr("src",img);
+
+        $("#custom-properties-form").find("input[name='variable']").attr("readonly",true);
     });
     
     $(document).on("click",".deleteValueProperty",function(e){
@@ -1066,6 +1089,31 @@
                 }
             });
         };
+    });
+
+    $("#custom-properties-form").on("submit",function(e){
+        e.preventDefault();
+        var form = $(this)[0];
+        var form_data = new FormData(form);
+        form_data.append('placeId',placeId);
+        $.ajax({
+            url:"{{ route('saveCustomValueProperty') }}",
+            method:"post",
+            dataType:"json",
+            data:form_data,
+            cache:false,
+            contentType: false,
+            processData: false,
+            success:function(data){
+                customPropertytable.draw();
+                toastr.success("Saved successfully!");
+                clear();
+
+            }, 
+            error:function(){   
+                toastr.error("Failed to save!");
+            }
+        });
     });
     
     });

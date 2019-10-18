@@ -83,7 +83,17 @@ class PosWebsiteProperty extends Model
             <a class="btn btn-sm btn-secondary deleteValueProperty" data-id="'.$data->wp_variable.'" href="#" data-toggle="tooltip" title="Delete"><i class="fas fa-trash"></i></a>';
             
         })
-        ->rawColumns(['action'])
+        ->editColumn('wp_value',function($data){
+            $check = strpos($data->wp_value,"images/theme/properties");
+            // dd($check);
+            if($check === 1){
+                return "<img style='height: 5rem;' src=".env('URL_FILE_VIEW').$data->wp_value." >";
+            }
+            else {
+                return $data->wp_value;
+            }
+        })
+        ->rawColumns(['action','wp_value'])
         ->make(true);
     }
 
@@ -95,8 +105,8 @@ class PosWebsiteProperty extends Model
             $value = $requestValue;
             $type = 1;
         }
-        if ($request->hasFile('image')) {
-                $value = ImagesHelper::uploadImageToAPI($image,"place/value_properties");
+        if ($image) {
+                $value = ImagesHelper::uploadImageToAPI($image,"theme/properties");
                 $type = 2;
         }
 

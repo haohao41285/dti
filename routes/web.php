@@ -146,6 +146,7 @@ Route::group(['middleware' => ['auth']], function () {
             Route::get('/get-themes-datatable', 'PlaceController@getThemeDatatable')->name('getThemeDatatable');
             Route::get('/get-wp-datatable-by-place-id', 'PlaceController@getWpDatableByPlaceId')->name('getWpDatableByPlaceId');
             Route::get('/delete-value-property', 'PlaceController@deleteValueProperty')->name('deleteValueProperty');
+            Route::post('/save-custom-value-property', 'PlaceController@saveCustomValueProperty')->name('saveCustomValueProperty');
         });
 
     });

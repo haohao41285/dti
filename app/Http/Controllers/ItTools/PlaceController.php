@@ -156,7 +156,7 @@ class PlaceController extends Controller
     }
 
     public function saveCustomValueProperty(Request $request){
-       PosWebsiteProperty::aveValue($variable,$name,$requestValue = null,$image = null,$action,$placeId); 
+       PosWebsiteProperty::saveValue($request->variable,$request->name,$request->value,$request->image,$request->action,$request->placeId); 
        return response()->json(['status'=> 1,"msg"=>"Saved successfully"]);
     }
 
