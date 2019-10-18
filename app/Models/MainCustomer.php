@@ -5,7 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Laracasts\Presenter\PresentableTrait;
 use DB;
-
+use DataTables;
 
 class MainCustomer extends Model
 {
@@ -55,6 +55,37 @@ class MainCustomer extends Model
                     ->whereBetween('created_at',[$startDate,$endDate])
                     ->groupBy('month')
                     ->get();
+    }
+
+    public static function getDatatableNewCustomerByYear($year){
+        $startDate = $year."-01-01";
+        $endDate = $year."-12-31";
+
+        $customers = self::select(
+                        'customer_id',
+                        'customer_lastname',
+                        'customer_firstname',
+                        'customer_email',
+                        'customer_phone',
+                        'created_at'
+                        )
+                    ->where('customer_status',1)
+                    ->whereBetween('created_at',[$startDate,$endDate])
+                    ->get();
+             // echo $customers; die();      
+
+
+        return Datatables::of($customers)
+        ->addColumn('customer_fullname',function($customers){
+            return $customers->customer_firstname." ".$customers->customer_lastname;
+        })
+        ->editColumn('created_at',function($customers){
+            return format_datetime($customers->created_at);
+        })
+        ->addColumn('created_month',function($customers){
+            return format_month($customers->created_at);
+        })
+        ->make(true);
     }
 
     

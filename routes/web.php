@@ -81,9 +81,17 @@ Route::group(['middleware' => ['auth']], function () {
 
     });
 
-    Route::group(['prefix'=>'statistics', 'namespace'=>'Statistics'],function(){
-
+    Route::group(['prefix'=>'statistic', 'namespace'=>'Statistics'],function(){
+        Route::group(['prefix' => 'customers'], function() {
+            Route::get('/', 'CustomerController@index')->name('statisticsCustomer');
+            Route::get('datatable', 'CustomerController@datatable')->name('statisticCustomerDatable');
+        });
+        Route::group(['prefix' => 'services'], function() {
+            Route::get('/', 'ServiceController@index')->name('statisticsService');
+            Route::get('datatable', 'ServiceController@datatable')->name('statisticServiceDatable');
+        });
     });
+
    Route::group(['prefix'=>'datasetup', 'namespace'=>'DataSetup'],function(){
          Route::get('combos', 'ComboController@index')->name('listCombo');
          Route::get('combo/add', 'ComboController@add')->name('addCombo');
