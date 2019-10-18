@@ -14,6 +14,7 @@ class Kernel extends ConsoleKernel
      */
     protected $commands = [
         Commands\SendNotificationCron::class,
+        Commands\ServiceNotificationCron::class,
     ];
 
     /**
@@ -28,6 +29,8 @@ class Kernel extends ConsoleKernel
         //          ->hourly();
 //        $schedule->command('cron:sendnotification')
 //            ->dailyAt('18:00')->withoutOverlapping();
+        $schedule->command('command:servicenotification')
+            ->dailyAt('07:00')->withoutOverlapping();
     }
 
     /**
