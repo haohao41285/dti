@@ -73,10 +73,10 @@ class ComposerServiceProvider extends ServiceProvider
             $data['user_info'] = $user_info;
 
             //GET NOTIFICATION
-            $notification_count = MainNotification::where('receiver_id',Auth::user()->user_id)->notRead()->latest()->count();
-
-            $data['notification_count'] = $notification_count;
-
+            if(isset(Auth::user()->user_id)){
+                $notification_count = MainNotification::where('receiver_id',Auth::user()->user_id)->notRead()->latest()->count();
+                $data['notification_count'] = $notification_count;
+            }
             $view->with('data',$data);
         });
     }
