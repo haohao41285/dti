@@ -10,7 +10,15 @@ use DataTables;
 use App\Helpers\GeneralHelper;
 use App\Helpers\RunShFileHelper;
 use Validator;
-use App\Http\Controllers\ItTools\WebsiteThemeController;
+// use App\Http\Controllers\ItTools\WebsiteThemeController;
+use App\Models\MainTheme;
+<<<<<<< HEAD
+use Symfony\Component\Process\Process;
+use Symfony\Component\Process\Exception\ProcessFailedException;
+=======
+use App\Models\PosWebsiteProperty;
+
+>>>>>>> b30b2787367159b31ae08966f96aa95d65b85b7d
 
 
 class PlaceController extends Controller
@@ -18,6 +26,16 @@ class PlaceController extends Controller
     public function index(){
         return view('tools.place');
     }
+    public function cloneUpdateWebsite(Request $request)
+    {
+        $placeId = PosPlace::getPlaceIdByLicense($request->get_license);
+
+        PosWebsiteProperty::cloneUpdate($request->id_properties,$placeId);
+
+        //run sh file 
+        return response()->json(['status'=>1,'msg'=>"Clone website successfully!"]); 
+    }
+
 
     public function getPlacesDatatable(){
         $places = PosPlace::select('place_id','place_name','place_address','place_email','place_phone','place_ip_license','created_at')
@@ -112,7 +130,16 @@ class PlaceController extends Controller
     }
 
     public function getThemeDatatable(){
-        $theme = new WebsiteThemeController;
-        return $theme->datatable();
+        return MainTheme::getDatatable();
     }
+
+    public function getThemeProperties(Request $request){
+        if($request->themeId){
+            $properties = MainThemeProperties::getThemePropertiesByThemeId($request->themeId);
+
+            return response()->json(['status'=>1,'data'=>$properties]);
+        }
+    }
+
+    
 }

@@ -47,6 +47,7 @@ Route::group(['middleware' => ['auth']], function () {
          Route::post('import-customer', 'CustomerController@importCustomer')->name('import-customer');
          Route::get('export-customer', 'CustomerController@exportCustomer')->name('export-customer');
          Route::get('export-my-customer', 'CustomerController@exportMyCustomer')->name('export-my-customer');
+
          Route::post('save-my-customer', 'CustomerControllercustomersDatatable@saveMyCustomer')->name('save-my-customer');
          Route::get('customer-detail/{id?}', 'CustomerController@customerDetail')->where(['id'=>'[0-9]+'])->name('customer-detail');
          Route::get('customer-tracking', 'CustomerController@customerTracking')->name('customer-tracking');
@@ -104,8 +105,7 @@ Route::group(['middleware' => ['auth']], function () {
 
     Route::group(['prefix'=>'tools','namespace'=>'ItTools'],function(){
 
-        Route::get('clonewebsite', 'ItToolsController@cloneWebsite')->name('cloneWebsite');
-        Route::get('updatewebsite', 'ItToolsController@updateWebsite')->name('updateWebsite');
+        
 
         Route::group(['prefix' => 'website-themes'], function() {
             Route::get('/', 'WebsiteThemeController@index')->name('getWebsiteThemes');
@@ -138,6 +138,7 @@ Route::group(['middleware' => ['auth']], function () {
         });
 
         Route::group(['prefix' => 'places'], function() {
+            Route::post('clone-update-website', 'PlaceController@cloneUpdateWebsite')->name('cloneUpdateWebsite');
             Route::get('/', 'PlaceController@index')->name('getPlaces');
             Route::get('/places-datatable', 'PlaceController@getPlacesDatatable')->name('getPlacesDatatable');
             Route::get('/users-datatable', 'PlaceController@getUsersDatatable')->name('getUsersDatatable');
@@ -145,12 +146,18 @@ Route::group(['middleware' => ['auth']], function () {
             Route::get('/get-detail', 'PlaceController@getDetailPlace')->name('getDetailPlace');
             Route::get('/get-themes-datatable', 'PlaceController@getThemeDatatable')->name('getThemeDatatable');
         });
+
+        Route::group(['prefix' => 'build-code'], function() {
+            Route::get('/', 'BuildCodeController@index');
+        });
     });
 
     Route::group(['prefix' => 'recentlog'], function() {
         Route::get('/', 'RecentLogController@index')->name('recentlog');
         Route::get('/datatable', 'RecentLogController@datatable')->name('recentlogDatatable');
 
+        Route::get('/activity-log', 'RecentLogController@activityLog')->name('activity-log');
+        Route::get('/activity-log-datatable', 'RecentLogController@activityLogDatatable')->name('activityLogDatatable');
     });
 
     Route::group(['prefix' => 'setting','namespace' => 'Setting'], function() {

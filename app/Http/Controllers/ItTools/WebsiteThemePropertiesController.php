@@ -15,7 +15,7 @@ Class WebsiteThemePropertiesController extends Controller
      * @return json
      */
     public function listThemePropertiesByThemeId(Request $request){
-        $properties = MainThemeProperties::where('theme_id',$request->theme_id)->get();
+        $properties = MainThemeProperties::getThemePropertiesByThemeId($request->theme_id);
 
         return response()->json(['status'=>1,'data'=>$properties]);
     }
@@ -25,7 +25,7 @@ Class WebsiteThemePropertiesController extends Controller
     public function save(Request $request){
         // dd($request->all());
         if($request->hasFile('image')){
-            $image = ImagesHelper::uploadImageToAPI($request->image,'theme_properties');
+            $image = ImagesHelper::uploadImageToAPI($request->image,'theme/properties');
         }
 
         if($request->action == "Create"){
@@ -98,7 +98,7 @@ Class WebsiteThemePropertiesController extends Controller
     public function saveValueProperties(Request $request){
 
         if($request->hasFile('image')){
-            $valueRequest = ImagesHelper::uploadImageToAPI($request->image,'value_properties');
+            $valueRequest = ImagesHelper::uploadImageToAPI($request->image,'theme/properties');
         } else {
             $valueRequest = $request->value;
         }

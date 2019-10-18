@@ -6,7 +6,7 @@
 <div class="col-12 ">
     <div class="card shadow mb-4 ">
         <div class="card-header py-2">
-            <h6 class="m-0 font-weight-bold text-primary">Recent logs</h6>
+            <h6 class="m-0 font-weight-bold text-primary">Activity log</h6>
         </div>
         <div class="card-body">
 <div class="table-responsive">
@@ -46,7 +46,7 @@
           ],  
              processing: true,
              serverSide: true,
-             ajax:{ url:"{{ route('recentlogDatatable') }}",
+             ajax:{ url:"{{ route('activityLogDatatable') }}",
              data: function (d) {
 
                   } 

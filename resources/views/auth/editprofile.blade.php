@@ -1,7 +1,7 @@
 @extends('layouts.app')
 @section('title','Edit profile')
 @section('content')
-<div class="container-fluid">
+<div class="">
    <!-- Page Heading -->
 @section('content-title')
     Edit Profile

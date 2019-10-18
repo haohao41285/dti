@@ -61,5 +61,12 @@ class PosPlace extends BaseModel
     ];
 
     protected $guarded = [];
+
+    public static function getPlaceIdByLicense($license){
+        return self::select('place_id')
+                    ->where('place_ip_license',$license)
+                    ->where('place_status',1)
+                    ->first()->place_id;
+    }
         
 }

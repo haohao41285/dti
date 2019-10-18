@@ -4,9 +4,6 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-/**
- * Class PosCustomer
- */
 class MainCustomerBought extends Model
 {
     protected $table = 'main_customer_bought';
@@ -35,5 +32,16 @@ class MainCustomerBought extends Model
 
     protected $guarded = [];
 
+    public static function getNearlyExpired(){
+        $dateNow = format_date_db(get_nowDate());
+        $dateNowAdd = format_date_db(get_nowDate()->addMonth());
+       
+        return self::select('cb_id')
+                ->whereBetween('cb_date_expire',[$dateNow,$dateNowAdd])
+                ->where('cb_status',1)
+                ->count();
+    }
+
+    
         
 }

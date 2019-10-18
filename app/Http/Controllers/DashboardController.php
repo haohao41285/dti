@@ -7,9 +7,15 @@ use App\Models\MainCustomerTemplate;
 use App\Models\MainNotification;
 use Carbon\Carbon;
 use Illuminate\Http\Response;
+
+use App\Models\MainComboServiceBought;
+use App\Models\MainTask;
+use App\Models\MainCustomerBought;
+use App\Models\MainCustomerService;
+use App\Models\MainCustomer;
 use Illuminate\Http\Request;
 use Auth;
-use OneSignal;
+
 
 
 class DashboardController extends Controller {
@@ -19,9 +25,20 @@ class DashboardController extends Controller {
 
     }
 
-    public function index()
-    {
-        return view('dashboard');
+    public function index(){
+        $yearNow = format_year(get_nowDate());
+        $now = get_nowDate();
+
+        $data['earnings'] = MainComboServiceBought::getSumChargeByYear($yearNow);
+        $data['pendingTasks'] = MainTask::getPendingTasks();
+        $data['nearlyExpired'] = MainCustomerBought::getNearlyExpired();
+        $data['popularServices'] = MainComboServiceBought::get10popularServicesByMonth($now);
+
+        $newCustomer = MainCustomer::getTotalNewCustomersEveryMonthByYear($yearNow);
+
+        $data['newCustomer'] = $this->formatCustomersArr($newCustomer);
+
+        return view('dashboard',$data);
     }
     public function confirmEvent(){
         try{
@@ -38,6 +55,18 @@ class DashboardController extends Controller {
             return 'Confirm Failed!';
         }
     }
+
+
+    private function formatCustomersArr($customers){
+        $arr = [];
+
+        foreach ($customers as $key => $value) {
+            $arr[$value->month] = $value->count;
+        }
+
+        return $arr;
+    }
+
     public function confirmBirthday(){
         try{
             //subHours(11) to get time American
