@@ -27,12 +27,13 @@ class TaskController extends Controller
 {
     use PresentableTrait;
     protected $presenter = 'App\\Presenters\\ThemeMailPresenter';
+
     public function index(){
     	return view('task.my-task');
     }
     public function myTaskDatatable(Request $request){
 
-    	$task_list = MainTask::where('updated_by',Auth::user()->user_id)->whereNull('task_parent_id');
+        $task_list = MainTask::where('updated_by',Auth::user()->user_id)->whereNull('task_parent_id');
 
     	return DataTables::of($task_list)
     		->editColumn('priority',function($row){
@@ -271,6 +272,10 @@ class TaskController extends Controller
         }
 
         $input =  $request->all();
+        if($request->date_start != "")
+            $input['date_start'] = format_date_d_m_y($request->date_start);
+        if($request->date_end != "")
+            $input['date_end'] = format_date_d_m_y($request->date_end);
 
         if(!isset($request->id)){
 
@@ -426,6 +431,59 @@ class TaskController extends Controller
                 return response(['status'=>'success','message'=>'Message has been sent']);
             }
         }
+    }
+    public function allTask(){
+        return view('task.all-task');
+    }
+    public function allTaskDatatable(Request $request){
+
+        if(Auth::user()->user_group_id == 1)
+            $task_list = MainTask::whereNull('task_parent_id');
+        else
+            $task_list = MainTask::where('updated_by',Auth::user()->user_id)->whereNull('task_parent_id');
+
+        return DataTables::of($task_list)
+            ->editColumn('priority',function($row){
+                return getPriorityTask()[$row->priority];
+            })
+            ->editColumn('status',function($row){
+                return getStatusTask()[$row->status];
+            })
+            ->addColumn('task',function($row){
+                if(count($row->getSubTask) >0){
+                    $detail_button = "<i class=\"fas fa-plus-circle details-control text-danger\" id='".$row->id."'></i>";
+                }else $detail_button = "";
+
+                return $detail_button.'&nbsp&nbsp<a href="'.route('task-detail',$row->id).'"> #'.$row->id.'</a>';
+            })
+            ->editColumn('order_id',function($row){
+                if($row->order_id != null)
+                    return '<a href="'.route('order-view',$row->order_id).'">#'.$row->order_id.'</a>';
+            })
+            ->editColumn('date_start',function($row){
+                if($row->date_start != "")
+                    $date_start = Carbon::parse($row->date_start)->format('m/d/Y');
+                else
+                    $date_start = "";
+
+                return $date_start;
+            })
+            ->editColumn('category',function($row){
+                return getCategory()[$row->category];
+            })
+            ->editColumn('date_end',function($row){
+                if($row->date_end != "")
+                    $date_end = Carbon::parse($row->date_end)->format('m/d/Y');
+                else
+                    $date_end = "";
+
+                return $date_end;
+            })
+            ->editColumn('updated_at',function($row){
+                return Carbon::parse($row->updated_at)->format('m/d/Y h:i A');
+            })
+            ->rawColumns(['order_id','task'])
+            ->make(true);
     }
 
 }

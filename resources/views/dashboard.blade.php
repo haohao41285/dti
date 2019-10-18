@@ -114,7 +114,23 @@
               </div>
             </div>
           </div>
+        <div class="col-md-12">
+            <h4>Customer is about to expire</h4>
+            <table class="table table-striped table-hover" id="datatable-customer-service" width="100%" cellspacing="0">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Customer Name</th>
+                        <th>Customer Phone</th>
+                        <th>Service</th>
+                        <th>Expired Date</th>
+                        <th>Seller</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+            </table>
         </div>
+    </div>
 @endsection
 @push('scripts')
 <script type="text/javascript">
@@ -179,6 +195,28 @@
 			});
 			chartServices.render();
 			$("a.canvasjs-chart-credit").remove();
+            var table = $('#datatable-customer-service').DataTable({
+                // dom: "lBfrtip",
+                buttons: [
+                ],
+                processing: true,
+                serverSide: true,
+                ajax:{ url:"{{ route('customer-service-datatable') }}",
+                    data: function (d) {
+                    }
+
+                },
+                columns: [
+
+                    { data: 'cs_id', name: 'cs_id',class:'text-center' },
+                    { data: 'customer_name', name: 'customer_name' },
+                    { data: 'customer_phone', name: 'customer_phone' },
+                    { data: 'service_info', name: 'service_info'},
+                    { data: 'expired_date', name: 'expired_date',class: 'text-center'},
+                    { data: 'seller_name', name: 'seller_name'},
+                    { data: 'action' , name:'action' ,orderable: false, searcheble: false ,class:'text-center'}
+                ],
+            });
 		}
 </script>
 @endpush

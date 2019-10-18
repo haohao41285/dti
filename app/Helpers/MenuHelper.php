@@ -7,6 +7,7 @@ class MenuHelper{
 		return [
 		    ['text' => 'Dashboard', 'icon'=>'fas fa-tachometer-alt', 'link' => 'dashboard'],
 		    ['text' => 'Task', 'icon'=>'fas fa-users', 'link' => 'task','childrens' => [
+                ['text' => 'All Task', 'link'=> 'task/all-task'],
 		        ['text' => 'My Task', 'link'=> 'task'],
 		        ['text' => 'Create New Task', 'link'=> 'task/add'],
 		    ]],
