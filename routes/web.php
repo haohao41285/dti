@@ -82,9 +82,17 @@ Route::group(['middleware' => ['auth']], function () {
 
     });
 
-    Route::group(['prefix'=>'statistics', 'namespace'=>'Statistics'],function(){
-
+    Route::group(['prefix'=>'statistic', 'namespace'=>'Statistics'],function(){
+        Route::group(['prefix' => 'customers'], function() {
+            Route::get('/', 'CustomerController@index')->name('statisticsCustomer');
+            Route::get('datatable', 'CustomerController@datatable')->name('statisticCustomerDatable');
+        });
+        Route::group(['prefix' => 'services'], function() {
+            Route::get('/', 'ServiceController@index')->name('statisticsService');
+            Route::get('datatable', 'ServiceController@datatable')->name('statisticServiceDatable');
+        });
     });
+
    Route::group(['prefix'=>'datasetup', 'namespace'=>'DataSetup'],function(){
          Route::get('combos', 'ComboController@index')->name('listCombo');
          Route::get('combo/add', 'ComboController@add')->name('addCombo');
@@ -105,7 +113,7 @@ Route::group(['middleware' => ['auth']], function () {
 
     Route::group(['prefix'=>'tools','namespace'=>'ItTools'],function(){
 
-        
+
 
         Route::group(['prefix' => 'website-themes'], function() {
             Route::get('/', 'WebsiteThemeController@index')->name('getWebsiteThemes');
@@ -145,11 +153,11 @@ Route::group(['middleware' => ['auth']], function () {
             Route::post('/change-password', 'PlaceController@changeNewPassword')->name('changeNewPassword');
             Route::get('/get-detail', 'PlaceController@getDetailPlace')->name('getDetailPlace');
             Route::get('/get-themes-datatable', 'PlaceController@getThemeDatatable')->name('getThemeDatatable');
+            Route::get('/get-wp-datatable-by-place-id', 'PlaceController@getWpDatableByPlaceId')->name('getWpDatableByPlaceId');
+            Route::get('/delete-value-property', 'PlaceController@deleteValueProperty')->name('deleteValueProperty');
+            Route::post('/save-custom-value-property', 'PlaceController@saveCustomValueProperty')->name('saveCustomValueProperty');
         });
 
-        Route::group(['prefix' => 'build-code'], function() {
-            Route::get('/', 'BuildCodeController@index');
-        });
     });
 
     Route::group(['prefix' => 'recentlog'], function() {
@@ -242,7 +250,7 @@ Route::group(['middleware' => ['auth']], function () {
         Route::post('authorize','OrdersController@authorizeCreditCard')->name('authorize');
         Route::get('get-customer-infor', 'OrdersController@getCustomerInfor')->name('get-customer-infor');
         Route::get('my-order-datatable', 'OrdersController@myOrderDatatable')->name('my-order-datatable');
-        Route::get('seller-order-datatable', 'OrdersController@sellerOrderDatatable')->name('seller-order-datatable');
+        Route::get('seller-orderpost-comment-datatable', 'OrdersController@sellerOrderDatatable')->name('seller-order-datatable');
         Route::get('view/{id?}', 'OrdersController@orderView')->where(['id'=>'[0-9]+'])->name('order-view');
         Route::get('order-tracking', 'OrdersController@orderTracking')->name('order-tracking');
         Route::get('order-service', 'OrdersController@orderService')->name('order-service');
@@ -266,10 +274,15 @@ Route::group(['middleware' => ['auth']], function () {
         Route::post('send-mail-notification', 'TaskController@sendMailNotification')->name('send-mail-notification');
         Route::get('theme-mail', 'TaskController@themeMail')->name('theme-mail');
         Route::get('get-subtask', 'TaskController@getSubTask')->name('get-subtask');
+
+        Route::get('all-task', 'TaskController@allTask')->name('all-task');
+        Route::get('all-task-datatable', 'TaskController@allTaskDatatable')->name('all-task-datatable');
     });
     //confirm event
     Route::get('confirm-event', 'DashboardController@confirmEvent')->name('confirm-event');
     Route::get('confirm-birthday', 'DashboardController@confirmBirthday')->name('confirm-birthday');
     Route::get('search-customer', 'DashboardController@searchCustomer')->name('search-customer');
-    Route::get('test-onesignal', 'DashboardController@testOnesignal')->name('test-onesignal');
+    Route::get('check-all-notification', 'DashboardController@checkAllNotification')->name('check-all-notification');
+    Route::get('get-notification', 'DashboardController@getNotification')->name('get-notification');
+    Route::get('customer-service-datatable', 'DashboardController@customerServiceDatatable')->name('customer-service-datatable');
 });

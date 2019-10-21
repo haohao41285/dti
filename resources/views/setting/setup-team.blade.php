@@ -24,6 +24,7 @@ Setup Team
 </style>
 @endpush
 @section('content')
+<div class="col-12">
 <div class="row">
   <div class="col-md-8">
     <div class="card shadow mb-4 ">
@@ -82,6 +83,9 @@ Setup Team
 <div class="row">
   
 </div>
+
+</div>
+
 
 <div class="modal fade" id="editModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
   <div class="modal-dialog" role="document">

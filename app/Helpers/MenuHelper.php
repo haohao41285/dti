@@ -7,6 +7,7 @@ class MenuHelper{
 		return [
 		    ['text' => 'Dashboard', 'icon'=>'fas fa-tachometer-alt', 'link' => 'dashboard'],
 		    ['text' => 'Task', 'icon'=>'fas fa-users', 'link' => 'task','childrens' => [
+                ['text' => 'All Task', 'link'=> 'task/all-task'],
 		        ['text' => 'My Task', 'link'=> 'task'],
 		        ['text' => 'Create New Task', 'link'=> 'task/add'],
 		    ]],
@@ -28,9 +29,11 @@ class MenuHelper{
 		        ['text' => 'Licenses', 'link'=> 'datasetup/licenses'],
 		    ]],*/
 		    ['text' => 'Statistic', 'icon'=>'fas fa-chart-bar', 'link' => 'statistic','childrens' => [
-		        ['text' => 'Seller', 'link'=> 'statistic/seller'],
-		        ['text' => 'POS', 'link'=> 'statistic/pos'],
-		        ['text' => 'Website', 'link'=> 'statistic/website'],
+		        // ['text' => 'Seller', 'link'=> 'statistic/seller'],
+		        // ['text' => 'POS', 'link'=> 'statistic/pos'],
+		        // ['text' => 'Website', 'link'=> 'statistic/website'],
+		        ['text' => 'Customers', 'link'=> 'statistic/customers'],
+		        ['text' => 'Services', 'link'=> 'statistic/services'],
 		    ]],
 		     ['text' => 'IT Tools', 'icon'=>'fas fa-toolbox', 'link' => 'tools','childrens' => [
 		        // ['text' => 'Clone Website', 'link'=> 'tools/clonewebsite'],

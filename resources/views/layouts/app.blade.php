@@ -25,9 +25,9 @@
         <div id="content">
             @include('layouts.partials.header')
             <!-- Begin Page Content -->
-            <div class="container-fluid">
+            <div class="">
               <!-- Page Heading -->
-              <h1 class="h3 mb-4 text-gray-800">@yield('content-title')</h1>
+              <h1 class="h3 mb-4 text-gray-800 col-12">@yield('content-title')</h1>
               @yield('content')
             </div>
             <!-- /.container-fluid -->
@@ -52,7 +52,6 @@
             appId: "d11fe280-bd65-4897-90b8-22835655a341", /*Đây là app ID của các bạn họ */
             autoRegister: true,
             requiresUserPrivacyConsent: false,
-            /* Phần này là hiện cái nút thông báo góc phải ko thích có hể xóa*/
             // notifyButton: {
             //     enable: true, /* Required to use the Subscription Bell */
             //     size: 'medium', /* One of 'small', 'medium', or 'large' */
@@ -75,30 +74,14 @@
             //     }
             // }
         });
-        /* Đoạn phí dưới này là gửi thông tincủa user lên cho OneSignal */
+        // SEND USER'S NOTIFICATION TO ONNESIGNAL SERVER
         OneSignal.sendTags({
-            user_id: '{{\Illuminate\Support\Facades\Auth::user()->user_id}}',  /* Gửi id của user */
-            role: '{{\Illuminate\Support\Facades\Auth::user()->user_group_id}}',  /* Gửi role của user */
-            {{--sub_role: '{{Auth::user()->sub_role}}', /* Gửi sub_role của user cái này mình viết quyền trưởng phòng */--}}
-            name: '{{\Illuminate\Support\Facades\Auth::user()->user_nickname}}', /* Gửi user của user */
+            user_id: '{{\Illuminate\Support\Facades\Auth::user()->user_id}}',
+            role: '{{\Illuminate\Support\Facades\Auth::user()->user_group_id}}',
+{{--            team: '{{Auth::user()->user_team}}',--}}
+            name: '{{\Illuminate\Support\Facades\Auth::user()->user_nickname}}',
         });
-        // OneSignal.getTags(function(tags) {
-        //     console.log(tags);
-        // });
-        // OneSignal.on('notificationDisplay', function(event) {
-        //     console.warn('OneSignal notification displayed:', event);
-        // });
-
     });
-    // OneSignal.isPushNotificationsEnabled(function(isEnabled) {
-    //     if (isEnabled) {
-    //         // user has subscribed
-    //         OneSignal.getUserId( function(userId) {
-    //             console.log('player_id of the subscribed user is : ' + userId);
-    //             // Make a POST call to your server with the user ID
-    //         });
-    //     }
-    // });
 </script>
 
 <script>
@@ -185,6 +168,72 @@
                     });
             }
         });
+    });
+</script>
+<script>
+    $(document).ready(function(){
+
+        $("#alertsDropdown").click(function () {
+            getNotification();
+        });
+        function getNotification(number = 0){
+            $.ajax({
+                url: '{{route('get-notification')}}',
+                type: 'GET',
+                dataType: 'html',
+                data: {
+                    number: number,
+                },
+            })
+            .done(function(data) {
+                data = JSON.parse(data);
+                if(data.status == 'error'){
+
+                    toastr.error(data.message);
+                }else{
+                    var notifi_list_html = '';
+                    $.each(data.notification_list,function (ind,val) {
+                        notifi_list_html += `
+                        <a class="dropdown-item d-flex align-items-center" href="`+val['href_to']+`">
+                              <div >
+                                  <div class="small text-gray-500">`+val['created_at']+`</div>
+                                  <span class="font-weight-bold">`+val['content']+`</span>
+                              </div>
+                        </a>`;
+                    });
+                    $("#notification_list").html(notifi_list_html);
+                }
+            })
+            .fail(function() {
+                toastr.error('Check Failed!');
+            });
+        }
+        $("#check-all-notification").click(function(){
+            $.ajax({
+                url: '{{route('check-all-notification')}}',
+                type: 'GET',
+                dataType: 'html',
+            })
+                .done(function(data) {
+
+                    data = JSON.parse(data);
+                    console.log(data);
+
+                    if(data.status == 'error'){
+
+                        toastr.error(data.message);
+                    }else{
+                        $("#notification_list").html("");
+                        $(this).remove();
+                        $("#noti-box").hide();
+                        $("#number").text(0);
+                        toastr.success(data.message);
+                    }
+                })
+                .fail(function() {
+                    toastr.error('Check Failed!');
+                });
+        })
     });
 </script>
 </body>

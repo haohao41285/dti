@@ -331,7 +331,6 @@
             $(this).parent('form').submit();
         });
         $('body').on('click', '.submit-comment', function(){
-            alert('ok');
             var formData = new FormData($(this).parents('form')[0]);
             formData.append('order_id',{{$task_info->order_id}});
             formData.append('task_id',{{$id}});
@@ -349,7 +348,6 @@
                     return myXhr;
                 },
                 success: function (data) {
-                    console.log(data);
                     // return;
                     // data = JSON.parse(data);
                     if(data.status == 'error'){
