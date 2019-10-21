@@ -28,4 +28,7 @@ class MainTrackingHistory extends Model
     public function getUserCreated(){
         return $this->belongsTo(MainUser::class,'created_by','user_id');
     }
+    public function getReceiver(){
+        return $this->belongsTo(MainUser::class,'created_by','receiver_id');
+    }
 }

@@ -230,7 +230,8 @@ Route::group(['middleware' => ['auth']], function () {
         Route::post('user-delete','UserController@userDelete')->name('user-delete');
         Route::get('user-export','UserController@userExport')->name('user-export');
 
-
+        Route::get('service-permission','UserController@servicePermission')->name('service-permission');
+        Route::get('change-service-permission','UserController@changeServicePermission')->name('change-service-permission');
 
     });
 

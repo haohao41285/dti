@@ -25,7 +25,8 @@
 {{-- END MODAL --}}
 <div class="table-responsive">
 	<h4 class="border border-info border-top-0 border-right-0 border-left-0 text-info">MY TASK</h4>
-    <table class="table mt-4 table-hover table-bordered" id="task-datatable" widtd="100%" cellspacing="0">
+    @include('task.search_task')
+    <table class="table mt-4 table-hover table-bordered" id="task-datatable" width="100%" cellspacing="0">
         <thead  class="thead-light">
             <tr>
                 <th>Task#</th>
@@ -75,6 +76,11 @@
            serverSide: true,
            ajax:{ url:"{{route('my-task-datatable')}}",
            data: function (d) {
+               d.category = $("#category :selected").val();
+               d.service_id = $("#service_id :selected").val();
+               d.assign_to = $("#assign_to :selected").val();
+               d.priority = $("#priority :selected").val();
+               d.status = $("#status :selected").val();
                 }
             },
            columns: [
@@ -141,6 +147,13 @@
                     });
             }
         } );
+        $("#search-button").click(function(){
+            table.draw();
+        });
+        $("#formReset").click(function () {
+            $(this).parents('form')[0].reset();
+            table.draw();
+        })
     });
 </script>
 @endpush

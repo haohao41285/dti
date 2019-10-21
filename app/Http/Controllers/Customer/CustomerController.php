@@ -824,7 +824,8 @@ class CustomerController extends Controller
             'customer_id' => $customer_id,
             'content' => $content,
             'created_by' => Auth::user()->user_id,
-            'email_list' => $email_list
+            'email_list' => $email_list,
+            'receiver_id' => $request->receiver_id
         ];
 
         DB::beginTransaction();
@@ -875,6 +876,10 @@ class CustomerController extends Controller
     public function getSeller(Request $request){
 
         $seller_id = $request->seller_id;
+        if($seller_id == Auth::user()->user_id)
+            $receiver_id = "";
+        else
+            $receiver_id = Auth::user()->user_id;
 
         $seller_info = MainUser::where('user_id',$seller_id)->first();
 
@@ -883,7 +888,8 @@ class CustomerController extends Controller
         }else{
             return response([
                 'fullname'=>strtoupper($seller_info->user_firstname). " ".strtoupper($seller_info->user_lastname),
-                'email'=>$seller_info->user_email
+                'email'=>$seller_info->user_email,
+                'receiver_id' => $receiver_id
             ]);
         }
     }
