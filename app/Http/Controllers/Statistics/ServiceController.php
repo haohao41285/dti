@@ -12,7 +12,7 @@ class ServiceController extends Controller
 	function __construct(){
 		$date = get_nowDate();
 
-		MainComboServiceBought::getDatatable($date);
+		// MainComboServiceBought::getDatatable($date);
 	}
 
 	public function index(){

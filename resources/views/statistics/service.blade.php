@@ -42,11 +42,11 @@
                     <thead>
                         <tr>
                             <th>ID</th>
-                            <th>Name</th>
-                            <th>Email</th>                            
-                            <th>Phone</th>
+                            <th>Service Name</th>
+                            {{-- <th>Email</th>                             --}}
+                            <th>Quantity</th>
                             <th>Created Date</th>
-                            <th>Created Month</th>
+                            {{-- <th>Created Month</th> --}}
                         </tr>
                     </thead>
                 </table>
