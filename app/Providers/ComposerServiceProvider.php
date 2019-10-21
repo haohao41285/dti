@@ -2,8 +2,10 @@
 
 namespace App\Providers;
 
+use App\Models\MainNotification;
 use App\Models\MainUser;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\ServiceProvider;
 use App\Models\MainEventHoliday;
 
@@ -70,6 +72,11 @@ class ComposerServiceProvider extends ServiceProvider
             $data['image_birthday'] = $image_arr[rand(0,5)];
             $data['user_info'] = $user_info;
 
+            //GET NOTIFICATION
+            if(isset(Auth::user()->user_id)){
+                $notification_count = MainNotification::where('receiver_id',Auth::user()->user_id)->notRead()->latest()->count();
+                $data['notification_count'] = $notification_count;
+            }
             $view->with('data',$data);
         });
     }

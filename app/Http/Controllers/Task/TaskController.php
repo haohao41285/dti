@@ -21,17 +21,19 @@ use Validator;
 use DB;
 use ZipArchive;
 use Laracasts\Presenter\PresentableTrait;
+use App\Models\MainNotification;
 
 class TaskController extends Controller
 {
     use PresentableTrait;
     protected $presenter = 'App\\Presenters\\ThemeMailPresenter';
+
     public function index(){
     	return view('task.my-task');
     }
     public function myTaskDatatable(Request $request){
 
-    	$task_list = MainTask::where('updated_by',Auth::user()->user_id)->whereNull('task_parent_id');
+        $task_list = MainTask::where('updated_by',Auth::user()->user_id)->whereNull('task_parent_id');
 
     	return DataTables::of($task_list)
     		->editColumn('priority',function($row){
@@ -48,7 +50,8 @@ class TaskController extends Controller
     			return $detail_button.'&nbsp&nbsp<a href="'.route('task-detail',$row->id).'"> #'.$row->id.'</a>';
     		})
     		->editColumn('order_id',function($row){
-    			return '<a href="'.route('order-view',$row->order_id).'">#'.$row->order_id.'</a>';
+    		    if($row->order_id != null)
+    			    return '<a href="'.route('order-view',$row->order_id).'">#'.$row->order_id.'</a>';
     		})
     		->editColumn('date_start',function($row){
     			if($row->date_start != "")
@@ -76,6 +79,7 @@ class TaskController extends Controller
     		->make(true);
     }
     public function postComment(Request $request){
+//        return $request->all();
     	$rule = [
     		'order_id' => 'required',
             'note' => 'required'
@@ -105,10 +109,27 @@ class TaskController extends Controller
     		'created_by' => Auth::user()->user_id,
             'email_list' => $request->email_list,
             'receiver_id' => $request->receiver_id,
-            'read_not' => 0
     	];
     	DB::beginTransaction();
     	$tracking_create = MainTrackingHistory::create($tracking_arr);
+
+    	//SAVE NOTIFICATION
+        $task_id = "";
+        if($tracking_create->task_id != "")
+            $task_id = $tracking_create->task_id;
+        if($tracking_create->subtask_id != "")
+            $task_id = $tracking_create->subtask_id;
+
+        $content = $tracking_create->getUserCreated->user_nickname." created a comment on task #".$task_id;
+
+        $notification_arr = [
+            'content' => $content,
+            'href_to' => route('task-detail',$task_id),
+            'receiver_id' => $tracking_create->receiver_id,
+            'read_not' => 0,
+            'created_by' => Auth::user()->user_id,
+        ];
+        $notification_create = MainNotification::create($notification_arr);
 
         if($file_list != ""){
             //CHECK SIZE IMAGE
@@ -132,7 +153,7 @@ class TaskController extends Controller
             }
             $file_create = MainFile::insert($file_arr);
 
-            if(!isset($tracking_create) || !isset($file_create))
+            if(!isset($tracking_create) || !isset($file_create) || !isset($notification_create))
             {
                 DB::callback();
                 return response(['status'=>'error', 'message'=> 'Failed!']);
@@ -142,14 +163,12 @@ class TaskController extends Controller
                 return response(['status'=> 'success','message'=>'Successly!']);
             }
         }
-        if(!isset($tracking_create))
+        if(!isset($tracking_create) || !isset($notification_create))
         {
             DB::callback();
             return response(['status'=>'error', 'message'=> 'Failed!']);
         }
         else{
-
-
             DB::commit();
             return response(['status'=> 'success','message'=>'Successly!']);
         }
@@ -253,12 +272,26 @@ class TaskController extends Controller
         }
 
         $input =  $request->all();
+        if($request->date_start != "")
+            $input['date_start'] = format_date_d_m_y($request->date_start);
+        if($request->date_end != "")
+            $input['date_end'] = format_date_d_m_y($request->date_end);
 
         if(!isset($request->id)){
 
             $input['created_by'] = Auth::user()->user_id;
             $input['updated_by'] = Auth::user()->user_id;
             $task_save = MainTask::create($input);
+            //SAVE NOTIFICATION
+            $content = Auth::user()->user_nickname. "created a task #".$task_save->id;
+            $notification_arr = [
+                'content' => $content,
+                'href_to' => route('task-detail',$task_save->id),
+                'receiver_id' => $request->assign_to,
+                'read_not' => 0,
+                'created_by' => Auth::user()->user_id,
+            ];
+            $notification_create = MainNotification::create($notification_arr);
 
         }else{
             //UPDATE TASK
@@ -275,13 +308,25 @@ class TaskController extends Controller
             ];
             $tracking_history = MainTrackingHistory::find($task_info->order_id)->create($task_tracking);
 
-            if(!isset($task_save) || !isset($tracking_history))
+            //SAVE NOTIFICATION
+            $content = Auth::user()->user_nickname. " updated a task #".$request->id;
+            $notification_arr = [
+                'content' => $content,
+                'href_to' => route('task-detail',$request->id),
+                'receiver_id' => $request->assign_to,
+                'read_not' => 0,
+                'created_by' => Auth::user()->user_id,
+            ];
+            $notification_create = MainNotification::create($notification_arr);
+
+            if(!isset($task_save) || !isset($tracking_history) || !isset($notification_create))
                 return back()->with(['error'=>'Save Error. Check Again, Please!']);
             else
                 return redirect()->route('my-task');
         }
 
-        if(!isset($task_save))
+
+        if(!isset($task_save) || !isset($notification_create))
             return back()->with(['error'=>'Save Error. Check Again, Please!']);
         else
             return redirect()->route('my-task');
@@ -386,6 +431,59 @@ class TaskController extends Controller
                 return response(['status'=>'success','message'=>'Message has been sent']);
             }
         }
+    }
+    public function allTask(){
+        return view('task.all-task');
+    }
+    public function allTaskDatatable(Request $request){
+
+        if(Auth::user()->user_group_id == 1)
+            $task_list = MainTask::whereNull('task_parent_id');
+        else
+            $task_list = MainTask::where('updated_by',Auth::user()->user_id)->whereNull('task_parent_id');
+
+        return DataTables::of($task_list)
+            ->editColumn('priority',function($row){
+                return getPriorityTask()[$row->priority];
+            })
+            ->editColumn('status',function($row){
+                return getStatusTask()[$row->status];
+            })
+            ->addColumn('task',function($row){
+                if(count($row->getSubTask) >0){
+                    $detail_button = "<i class=\"fas fa-plus-circle details-control text-danger\" id='".$row->id."'></i>";
+                }else $detail_button = "";
+
+                return $detail_button.'&nbsp&nbsp<a href="'.route('task-detail',$row->id).'"> #'.$row->id.'</a>';
+            })
+            ->editColumn('order_id',function($row){
+                if($row->order_id != null)
+                    return '<a href="'.route('order-view',$row->order_id).'">#'.$row->order_id.'</a>';
+            })
+            ->editColumn('date_start',function($row){
+                if($row->date_start != "")
+                    $date_start = Carbon::parse($row->date_start)->format('m/d/Y');
+                else
+                    $date_start = "";
+
+                return $date_start;
+            })
+            ->editColumn('category',function($row){
+                return getCategory()[$row->category];
+            })
+            ->editColumn('date_end',function($row){
+                if($row->date_end != "")
+                    $date_end = Carbon::parse($row->date_end)->format('m/d/Y');
+                else
+                    $date_end = "";
+
+                return $date_end;
+            })
+            ->editColumn('updated_at',function($row){
+                return Carbon::parse($row->updated_at)->format('m/d/Y h:i A');
+            })
+            ->rawColumns(['order_id','task'])
+            ->make(true);
     }
 
 }

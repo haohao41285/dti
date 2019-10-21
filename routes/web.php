@@ -105,7 +105,7 @@ Route::group(['middleware' => ['auth']], function () {
 
     Route::group(['prefix'=>'tools','namespace'=>'ItTools'],function(){
 
-        
+
 
         Route::group(['prefix' => 'website-themes'], function() {
             Route::get('/', 'WebsiteThemeController@index')->name('getWebsiteThemes');
@@ -242,7 +242,7 @@ Route::group(['middleware' => ['auth']], function () {
         Route::post('authorize','OrdersController@authorizeCreditCard')->name('authorize');
         Route::get('get-customer-infor', 'OrdersController@getCustomerInfor')->name('get-customer-infor');
         Route::get('my-order-datatable', 'OrdersController@myOrderDatatable')->name('my-order-datatable');
-        Route::get('seller-order-datatable', 'OrdersController@sellerOrderDatatable')->name('seller-order-datatable');
+        Route::get('seller-orderpost-comment-datatable', 'OrdersController@sellerOrderDatatable')->name('seller-order-datatable');
         Route::get('view/{id?}', 'OrdersController@orderView')->where(['id'=>'[0-9]+'])->name('order-view');
         Route::get('order-tracking', 'OrdersController@orderTracking')->name('order-tracking');
         Route::get('order-service', 'OrdersController@orderService')->name('order-service');
@@ -266,10 +266,15 @@ Route::group(['middleware' => ['auth']], function () {
         Route::post('send-mail-notification', 'TaskController@sendMailNotification')->name('send-mail-notification');
         Route::get('theme-mail', 'TaskController@themeMail')->name('theme-mail');
         Route::get('get-subtask', 'TaskController@getSubTask')->name('get-subtask');
+
+        Route::get('all-task', 'TaskController@allTask')->name('all-task');
+        Route::get('all-task-datatable', 'TaskController@allTaskDatatable')->name('all-task-datatable');
     });
     //confirm event
     Route::get('confirm-event', 'DashboardController@confirmEvent')->name('confirm-event');
     Route::get('confirm-birthday', 'DashboardController@confirmBirthday')->name('confirm-birthday');
     Route::get('search-customer', 'DashboardController@searchCustomer')->name('search-customer');
-    Route::get('test-onesignal', 'DashboardController@testOnesignal')->name('test-onesignal');
+    Route::get('check-all-notification', 'DashboardController@checkAllNotification')->name('check-all-notification');
+    Route::get('get-notification', 'DashboardController@getNotification')->name('get-notification');
+    Route::get('customer-service-datatable', 'DashboardController@customerServiceDatatable')->name('customer-service-datatable');
 });

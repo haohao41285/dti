@@ -58,10 +58,12 @@ class TrackingHistoryObserver
         //END SEND MAIL
 
         //SEND NOTIFICATION WITH ONESIGNAL
-        OneSignal::sendNotificationUsingTags($name_created . " have just created a comment on task#" . $task_id,
-            array(["field" => "tag", "key" => "user_id", "relation" => "=", "value" => $$mainTrackingHistory->receiver_id]),
-            $url = route('task-detail',$task_id)
-        );
+        $receiver_id = $mainTrackingHistory->receiver_id;
+        if($receiver_id != "")
+            OneSignal::sendNotificationUsingTags($name_created . " have just created a comment on task#" . $task_id,
+                array(["field" => "tag", "key" => "user_id", "relation" => "=", "value" => $receiver_id]),
+                $url = route('task-detail',$task_id)
+            );
         //END SEND NOTIFICATION
     }
 
