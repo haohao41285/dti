@@ -29,9 +29,11 @@ class MenuHelper{
 		        ['text' => 'Licenses', 'link'=> 'datasetup/licenses'],
 		    ]],*/
 		    ['text' => 'Statistic', 'icon'=>'fas fa-chart-bar', 'link' => 'statistic','childrens' => [
-		        ['text' => 'Seller', 'link'=> 'statistic/seller'],
-		        ['text' => 'POS', 'link'=> 'statistic/pos'],
-		        ['text' => 'Website', 'link'=> 'statistic/website'],
+		        // ['text' => 'Seller', 'link'=> 'statistic/seller'],
+		        // ['text' => 'POS', 'link'=> 'statistic/pos'],
+		        // ['text' => 'Website', 'link'=> 'statistic/website'],
+		        ['text' => 'Customers', 'link'=> 'statistic/customers'],
+		        ['text' => 'Services', 'link'=> 'statistic/services'],
 		    ]],
 		     ['text' => 'IT Tools', 'icon'=>'fas fa-toolbox', 'link' => 'tools','childrens' => [
 		        // ['text' => 'Clone Website', 'link'=> 'tools/clonewebsite'],

@@ -82,9 +82,17 @@ Route::group(['middleware' => ['auth']], function () {
 
     });
 
-    Route::group(['prefix'=>'statistics', 'namespace'=>'Statistics'],function(){
-
+    Route::group(['prefix'=>'statistic', 'namespace'=>'Statistics'],function(){
+        Route::group(['prefix' => 'customers'], function() {
+            Route::get('/', 'CustomerController@index')->name('statisticsCustomer');
+            Route::get('datatable', 'CustomerController@datatable')->name('statisticCustomerDatable');
+        });
+        Route::group(['prefix' => 'services'], function() {
+            Route::get('/', 'ServiceController@index')->name('statisticsService');
+            Route::get('datatable', 'ServiceController@datatable')->name('statisticServiceDatable');
+        });
     });
+
    Route::group(['prefix'=>'datasetup', 'namespace'=>'DataSetup'],function(){
          Route::get('combos', 'ComboController@index')->name('listCombo');
          Route::get('combo/add', 'ComboController@add')->name('addCombo');
@@ -145,11 +153,11 @@ Route::group(['middleware' => ['auth']], function () {
             Route::post('/change-password', 'PlaceController@changeNewPassword')->name('changeNewPassword');
             Route::get('/get-detail', 'PlaceController@getDetailPlace')->name('getDetailPlace');
             Route::get('/get-themes-datatable', 'PlaceController@getThemeDatatable')->name('getThemeDatatable');
+            Route::get('/get-wp-datatable-by-place-id', 'PlaceController@getWpDatableByPlaceId')->name('getWpDatableByPlaceId');
+            Route::get('/delete-value-property', 'PlaceController@deleteValueProperty')->name('deleteValueProperty');
+            Route::post('/save-custom-value-property', 'PlaceController@saveCustomValueProperty')->name('saveCustomValueProperty');
         });
 
-        Route::group(['prefix' => 'build-code'], function() {
-            Route::get('/', 'BuildCodeController@index');
-        });
     });
 
     Route::group(['prefix' => 'recentlog'], function() {

@@ -59,9 +59,7 @@ class MainComboServiceBought extends Model
         $startDate = $date->format('Y-m')."-01";
         $endDate = $date->format('Y-m')."-31";
 
-        $services = self::select('csb_combo_service_id','created_at')
-                        ->whereBetween('created_at',[$startDate,$endDate])
-                        ->get();
+        $services = self::getServiceByStartAndEndDate($startDate,$endDate);
 
         $formatArrServices = self::formatArrServices($services);
 
@@ -70,6 +68,12 @@ class MainComboServiceBought extends Model
         $arrServices = self::addNameServiceToArrServices($formatArrServices,$arrServices);
         
         return $arrServices;
+    }
+
+    private static function getServiceByStartAndEndDate($startDate,$endDate){
+        return self::select('csb_combo_service_id','created_at')
+                        ->whereBetween('created_at',[$startDate,$endDate])
+                        ->get();
     }
 
     private static function formatArrServices($services){
@@ -124,6 +128,20 @@ class MainComboServiceBought extends Model
             }
         }
         return $arrServices;
+    }
+
+    public static function getDatatable($date){
+        $startDate = $date->format('Y-m')."-01";
+        $endDate = $date->format('Y-m')."-31";
+
+        $services = self::getServiceByStartAndEndDate($startDate,$endDate);
+        echo $services; die();
+
+        return Datatables::of($services)
+        ->editColumn('created_at',function($services){
+            return format_datetime($services->created_at);
+        })
+        ->make(true);
     }
 
 }
