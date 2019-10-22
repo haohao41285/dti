@@ -408,12 +408,10 @@ class UserController extends Controller
         return view('user.service-permission',$data);
     }
     public function changeServicePermission(Request $request){
-
         $role_id = $request->role_id;
         $service_id = $request->service_id;
 
         $service_permission = MainGroupUser::where('gu_id',$role_id)->first();
-        return $service_permission;
         $service_permission_list = $service_permission->service_permission;
 
         if($service_permission_list == ""){
@@ -422,13 +420,14 @@ class UserController extends Controller
         }else{
             $service_permission_arr = explode(';',$service_permission_list);
 
-            if ($key = array_search($service_id, $service_permission_arr) !== false) {
+            if (($key = array_search($service_id, $service_permission_arr)) !== false) {
                 unset($service_permission_arr[$key]);
                 $service_permission_list = implode(';',$service_permission_arr);
-            }else
+            }
+            else
                 $service_permission_list = $service_permission_list.";".$service_id;
         }
-        $service_update = $service_permission->update(['service_permission'=> $service_permission_list]);
+        $service_update = MainGroupUser::where('gu_id',$role_id)->update(['service_permission'=> $service_permission_list]);
 
         if(!isset($service_update))
             return response(['status'=>'error','message'=>'Failed!']);

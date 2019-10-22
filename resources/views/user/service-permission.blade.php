@@ -57,7 +57,7 @@
             $(document).on('click','.switchery',function(){
 
                 var service_id = $(this).siblings('input').attr('service_id');
-                var role_id = $(this).siblings('input').attr('role');
+                var role_id = $(this).siblings('input').attr('role_id');
 
                 $.ajax({
                     url: '{{route('change-service-permission')}}',
@@ -69,18 +69,16 @@
                     },
                 })
                     .done(function(data) {
-                        console.log(data);
-                        return;
                         data = JSON.parse(data);
-
-                        if(data.status === 'error')
+                        // console.log(data);
+                        // return;
+                        if(data.status == 'error')
                             toastr.error(data.message);
                         else
                             toastr.success(data.message);
-                        console.log(data);
                     })
                     .fail(function() {
-                        console.log("error");
+                        toastr.error('Change Failed!');
                     });
 
 
