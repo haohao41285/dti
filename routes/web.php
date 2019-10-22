@@ -57,6 +57,12 @@ Route::group(['middleware' => ['auth']], function () {
          Route::post('add-customer-note', 'CustomerController@addCustomerNote')->name('add-customer-note');
          Route::post('move-customers', 'CustomerController@moveCustomers')->name('move-customers');
 
+         Route::get('move-customer-all', 'CustomerController@moveCustomerAll')->name('move-customer-all');
+         Route::get('get-user-team', 'CustomerController@getUserTeam')->name('get-user-team');
+         Route::get('get-customer-1', 'CustomerController@getCustomer1')->name('get_customer_1');
+         Route::get('get-customer-2', 'CustomerController@getCustomer2')->name('get_customer_2');
+         Route::post('move-customers-all', 'CustomerController@moveCustomersAll')->name('move-customers-all');
+
     });
 
     Route::group(['prefix'=>'marketing', 'namespace'=>'Marketing'],function(){

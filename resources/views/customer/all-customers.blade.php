@@ -15,7 +15,7 @@
         </style>
     @endif
 <div class="table-responsive">
-
+    <form>
     <div class="form-group col-md-12 row">
         <div class="col-md-4">
             <label for="">Created date</label>
@@ -55,13 +55,15 @@
         <div class="col-2 " style="position: relative;">
             <div style="position: absolute;top: 50%;" class="">
             <input type="button" class="btn btn-primary btn-sm" id="search-button" value="Search">
-            <input type="button" class="btn btn-secondary btn-sm" id="reset" value="Reset">
+            <input type="button" class="btn btn-secondary btn-sm" id="formReset" value="Reset">
             </div>
         </div>
     </div>
+    </form>
     <hr>
     <table class="table table-striped table-hover" id="dataTableAllCustomer" width="100%" cellspacing="0">
         <thead>
+            <tr>
                 <th>ID</th>
                 <th>Business</th>
                 <th>Contact Name</th>
@@ -125,6 +127,14 @@
        // dom: "lBfrtip",
        order:[[7,'desc']],
        buttons: [
+
+           {
+               text: '<i class="fas fa-exchange-alt"></i> Move Customer',
+               className: "btn-sm an",
+               action: function () {
+                   document.location.href = "{{route('move-customer-all')}}";
+               }
+           },
            {
                text: '<i class="fas fa-download"></i> Import',
                className: "btn-sm import-show an",
@@ -132,7 +142,7 @@
            {
                text: '<i class="fas fa-upload"></i> Export',
                className: "btn-sm an",
-               action: function ( e, dt, node, config ) {
+               action: function () {
                   document.location.href = "{{route('export-customer')}}";
               }
            }
@@ -162,13 +172,14 @@
         ],
     });
 
-    $("#reset").on('click',function(e){
-        $("#start_date").val("");
-        $("#end_date").val("");
-        $("#address").val("");
-        e.preventDefault();
-        table.ajax.reload(null, false);
-    });
+    // $("#formReset").on('click',function(e){
+    //    $(this).parents('form')[0].reset();
+    //     table.ajax.reload(null, false);
+    // });
+     $("#formReset").click(function () {
+         $(this).parents('form')[0].reset();
+         table.draw();
+     });
 
     $(document).on("click",".view",function(){
 
