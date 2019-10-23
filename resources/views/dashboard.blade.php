@@ -4,7 +4,7 @@
     Dashboard
 @endsection
 @section('content')
-	<div class="">
+	<div class="col-12">
           <!-- Content Row -->
           <div class="row">
 
@@ -15,7 +15,7 @@
                   <div class="row no-gutters align-items-center">
                     <div class="col mr-2">
                       <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">Earnings (Monthly)</div>
-                      <div class="h5 mb-0 font-weight-bold text-gray-800">$40,000</div>
+                      <div class="h5 mb-0 font-weight-bold text-gray-800">$40,000?</div>
                     </div>
                     <div class="col-auto">
                       <i class="fas fa-calendar fa-2x text-gray-300"></i>
@@ -90,8 +90,7 @@
               <div class="card shadow mb-4">
                 <!-- Card Header - Dropdown -->
                 <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-                  {{-- <h6 class="m-0 font-weight-bold text-primary">Earnings Overview</h6> --}}
-                  
+                  <h6 class="m-0 font-weight-bold text-primary"><a href="{{ route('statisticsCustomer') }}">Show Details</a></h6>
                 </div>
                 <!-- Card Body -->
                 <div class="card-body">
@@ -105,7 +104,7 @@
               <div class="card shadow mb-4">
                 <!-- Card Header - Dropdown -->
                 <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-                  {{-- <h6 class="m-0 font-weight-bold text-primary">Revenue Sources</h6> --}}
+                  <h6 class="m-0 font-weight-bold text-primary"><a href="{{ route('statisticsService') }}">Show Details</a></h6>
                 </div>
                 <!-- Card Body -->
                 <div class="card-body">
@@ -114,62 +113,110 @@
               </div>
             </div>
           </div>
+        <div class="col-md-12">
+            <h4>Customer is about to expire</h4>
+            <table class="table table-striped table-hover" id="datatable-customer-service" width="100%" cellspacing="0">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Customer Name</th>
+                        <th>Customer Phone</th>
+                        <th>Service</th>
+                        <th>Expired Date</th>
+                        <th>Seller</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+            </table>
         </div>
+    </div>
 @endsection
 @push('scripts')
 <script type="text/javascript">
 		window.onload = function () {
-			var chart = new CanvasJS.Chart("new-customer-chart", {
+			var chartCustomer = new CanvasJS.Chart("new-customer-chart", {
 				title:{
-					text: "New customers in 12 months"              
+					text: "New customers in 12 months"
 				},
-				data: [              
+				data: [
 				{
 					type: "column",
 					dataPoints: [
-						{ label: "Jan",  y: 124  },
-						{ label: "Feb",  y: 10  },
-						{ label: "Mar",  y: 10  },
-						{ label: "Apr",  y: 10  },
-						{ label: "May",  y: 10  },
-						{ label: "Jun",  y: 10  },
-						{ label: "Jul",  y: 10  },
-						{ label: "Aug",  y: 10  },
-						{ label: "Sep", y: 15  },
-						{ label: "Oct", y: 25  },
-						{ label: "Nov",  y: 30  },
-						{ label: "Dec",  y: 28  }
+						{ label: "Jan",  y: {{$newCustomer['1'] ?? '0'}}  },
+						{ label: "Feb",  y: {{$newCustomer['2'] ?? '0'}}  },
+						{ label: "Mar",  y: {{$newCustomer['3'] ?? '0'}}  },
+						{ label: "Apr",  y: {{$newCustomer['4'] ?? '0'}}  },
+						{ label: "May",  y: {{$newCustomer['5'] ?? '0'}}  },
+						{ label: "Jun",  y: {{$newCustomer['6'] ?? '0'}}  },
+						{ label: "Jul",  y: {{$newCustomer['7'] ?? '0'}}  },
+						{ label: "Aug",  y: {{$newCustomer['8'] ?? '0'}}  },
+						{ label: "Sep",  y: {{$newCustomer['9'] ?? '0'}}  },
+						{ label: "Oct",  y: {{$newCustomer['10'] ?? '0'}}  },
+						{ label: "Nov",  y: {{$newCustomer['11'] ?? '0'}}  },
+						{ label: "Dec",  y: {{$newCustomer['12'] ?? '0'}}  }
 					]
 				}
 				]
 			});
-			chart.render();
+			chartCustomer.render();
 
-			var chart = new CanvasJS.Chart("top-10-services-chart", {
+			var chartServices = new CanvasJS.Chart("top-10-services-chart", {
+				animationEnabled: true,
+				axisX:{
+			    gridThickness: 0,
+			    tickLength: 0,
+			    lineThickness: 0,
+			    labelFormatter: function(){
+			      return " ";
+			    	}
+			  	},
 				title:{
-					text: "Top 10 most popular services"              
+					text: "Top 10 most popular services in month"
 				},
-				data: [              
+				data: [
 				{
 					type: "column",
 					dataPoints: [
-						{ label: "Jan",  y: 124  },
-						{ label: "Feb",  y: 10  },
-						{ label: "Mar",  y: 10  },
-						{ label: "Apr",  y: 10  },
-						{ label: "May",  y: 10  },
-						{ label: "Jun",  y: 10  },
-						{ label: "Jul",  y: 10  },
-						{ label: "Aug",  y: 10  },
-						{ label: "Sep", y: 15  },
-						{ label: "Oct", y: 25  },
+						{ label: "{{$popularServices[0]['nameService'] ?? ' '}}",  y: {{$popularServices[0]['count'] ?? '0'}}  },
+						{ label: "{{$popularServices[1]['nameService'] ?? ' '}}",  y: {{$popularServices[1]['count'] ?? '0'}}  },
+						{ label: "{{$popularServices[2]['nameService'] ?? ' '}}",  y: {{$popularServices[2]['count'] ?? '0'}}  },
+						{ label: "{{$popularServices[3]['nameService'] ?? ' '}}",  y: {{$popularServices[3]['count'] ?? '0'}}  },
+						{ label: "{{$popularServices[4]['nameService'] ?? ' '}}",  y: {{$popularServices[4]['count'] ?? '0'}}  },
+						{ label: "{{$popularServices[5]['nameService'] ?? ' '}}",  y: {{$popularServices[5]['count'] ?? '0'}}  },
+						{ label: "{{$popularServices[6]['nameService'] ?? ' '}}",  y: {{$popularServices[6]['count'] ?? '0'}}  },
+						{ label: "{{$popularServices[7]['nameService'] ?? ' '}}",  y: {{$popularServices[7]['count'] ?? '0'}}  },
+						{ label: "{{$popularServices[8]['nameService'] ?? ' '}}",  y: {{$popularServices[8]['count'] ?? '0'}}  },
+						{ label: "{{$popularServices[9]['nameService'] ?? ' '}}",  y: {{$popularServices[9]['count'] ?? '0'}}  },
+
 					]
 				}
 				]
 			});
-			chart.render();
+			chartServices.render();
+			$("a.canvasjs-chart-credit").remove();
+            var table = $('#datatable-customer-service').DataTable({
+                // dom: "lBfrtip",
+                buttons: [
+                ],
+                processing: true,
+                serverSide: true,
+                ajax:{ url:"{{ route('customer-service-datatable') }}",
+                    data: function (d) {
+                    }
 
+                },
+                columns: [
 
+                    { data: 'cs_id', name: 'cs_id',class:'text-center' },
+                    { data: 'customer_name', name: 'customer_name' },
+                    { data: 'customer_phone', name: 'customer_phone' },
+                    { data: 'service_info', name: 'service_info'},
+                    { data: 'expired_date', name: 'expired_date',class: 'text-center'},
+                    { data: 'seller_name', name: 'seller_name'},
+                    { data: 'action' , name:'action' ,orderable: false, searcheble: false ,class:'text-center'}
+                ],
+            });
 		}
 </script>
 @endpush
+

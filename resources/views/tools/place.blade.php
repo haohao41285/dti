@@ -29,7 +29,7 @@
                             <th>Phone</th>
                             <th>License</th>
                             <th>Created Date</th>
-                            <th width="150">Action</th>
+                            <th width="200">Action</th>
                         </tr>
                     </thead>
                 </table>
@@ -37,6 +37,8 @@
         </div>
     </div>
 </div>
+
+
 <div class="modal fade" id="view" tabindex="-1" role="dialog">
     <div style="max-width: 90%" class="modal-dialog" role="document">
         <div class="modal-content">
@@ -407,9 +409,9 @@
         </div>
     </div>
 </div>
-{{-- setting modal --}}
+{{-- modal setting --}}
 <div class="modal fade" id="setting" tabindex="-1" role="dialog">
-    <div style="max-width: 80%" class="modal-dialog" role="document">
+    <div style="max-width: 95%" class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title">Setting place theme</h5>
@@ -418,7 +420,7 @@
                 </button>
             </div>
             <div class="modal-body row">
-                <div class="col-6">
+                <div class="col-4">
                     <div class="card shadow mb-4">
                         <div class="card-header py-2">
                             <h6 class="m-0 font-weight-bold text-primary " >Website themes </h6>
@@ -437,73 +439,8 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-6">
-                    <div class="form-group">
-                        <button class="btn-sm btn btn-success btn-copy-theme">Clone Website</button>
-                        <button class="btn-sm btn btn-warning btn-copy-properties">Update Website</button>
-                    </div>
-                    <div class="card shadow mb-4 copy-theme">
-                        <div class="card-header py-2">
-                            <h6 class="m-0 font-weight-bold text-primary " >Clone Website </h6>
-                        </div>
-                        <div class="card-body">
-                            <form method="post" id="clone-form">
-                                @csrf
-                                <div class="form-group row">
-                                    <label class="col-2">License</label>
-                                    <input readonly="true" name="get-license" id="get-license" class="col-10 form-control-sm form-control" type="text" >
-                                </div>
-                                <div class="form-group row">
-                                    <label class="col-2">Website</label>
-                                    <input class="col-10 form-control-sm form-control" type="text" name="website">
-                                </div>
-                                <div class="form-group row">
-                                    <label class="col-2">Branch</label>
-                                    <input class="col-10 form-control-sm form-control" type="text" name="branch">
-                                </div>
-                                <div class="form-group row">
-                                    <label class="col-2">Theme</label>
-                                    <input id="get-code" name ="get-code" class="col-10 form-control-sm form-control" type="text" readonly="true">
-                                </div>
-                                <div class="form-group row">
-                                    <label class="col-2"></label>
-                                    <input class="btn-sm btn btn-primary" type="submit" value="Clone Website">
-                                </div>
-                            </form>
-                        </div>
-                    </div>
-                    <!-- properties -->
-                    <div class="copy-properties" style="display: none">
-                    <div class="card shadow mb-4">
-                        <div class="card-header py-2">
-                            <h6 class="m-0 font-weight-bold text-primary " >Update Website </h6>
-                        </div>
-                        <div class="card-body">
-                            <form method="post" id="copy-properties-form">
-                                @csrf
-                                <div class="form-group row">
-                                    <label class="col-2">License</label>
-                                    <label id="get-license"><b></b></label>
-                                </div>
-                                <div class="form-group row">
-                                    <label class="col-2">Website</label>
-                                    <input class="col-10 form-control-sm form-control" type="text" name="website">
-                                </div>
-                                <div class="form-group row">
-                                    <label class="col-2">Branch</label>
-                                    <input class="col-10 form-control-sm form-control" type="text" name="branch">
-                                </div>
-                                <div class="form-group row">
-                                    <label class="col-2">Theme</label>
-                                    <label id="get-code"><b></b></label>
-                                </div>
-                                <div class="form-group row">
-                                    <label class="col-2"></label>
-                                    <input class="btn-sm btn btn-primary" type="submit" value="Update Code">
-                                </div>
-                            </form>
-                        </div>
-                    </div>
+
+                <div class="col-4">
                     <div class="card shadow mb-4">
                         <div class="card-header py-2">
                             <h6 class="m-0 font-weight-bold text-primary " >Website properties </h6>
@@ -522,7 +459,82 @@
                             </div>
                         </div>
                     </div>
+                </div>
+
+                <div class="col-4">
+                    {{-- <div class="form-group">
+                        <button class="btn-sm btn btn-success btn-copy-theme">Clone Website</button>
+                        <button class="btn-sm btn btn-warning btn-copy-properties">Update Website</button>
+                    </div> --}}
+                    <div class="card shadow mb-4 copy-theme">
+                        <div class="card-header py-2">
+                            <h6 class="m-0 font-weight-bold text-primary text-form" >Clone Website </h6>
+                        </div>
+                        <div class="card-body">
+                            <form method="post" id="clone-update-form">
+                                @csrf
+                                <div class="form-group row">
+                                    <label class="col-3">License</label>
+                                    <input readonly="true" name="get_license" id="get-license" class="col-9 form-control-sm form-control" type="text" >
+                                </div>
+                                <div class="form-group row">
+                                    <label class="col-3">Website</label>
+                                    <input class="col-9 form-control-sm form-control" type="text" name="website">
+                                </div>
+                                <div class="form-group row">
+                                    <label class="col-3">Branch</label>
+                                    <input class="col-9 form-control-sm form-control" type="text" name="branch">
+                                </div>
+                                <div class="form-group row">
+                                    <label class="col-3">Theme</label>
+                                    <input id="get-code" name ="get_code" class="col-9 form-control-sm form-control" type="text" readonly="true">
+                                </div>
+                                <div class="form-group row">
+                                    <label class="col-3">ID Properties</label>
+                                    <input  name ="id_properties" class="col-9 form-control-sm form-control" type="text" readonly="true">
+                                </div>
+                                <div class="form-group row">
+                                    <label class="col-3"></label>
+                                    <input class="btn-sm btn btn-primary" type="submit" value="Clone Website">
+                                    <input type="hidden" name="action" value="clone">
+                                </div>
+                            </form>
+                        </div>
                     </div>
+                    <!-- properties -->
+                   {{--  <div class="copy-properties" style="display: none">
+                    <div class="card shadow mb-4">
+                        <div class="card-header py-2">
+                            <h6 class="m-0 font-weight-bold text-primary " >Update Website </h6>
+                        </div>
+                        <div class="card-body">
+                            <form method="post" id="copy-properties-form">
+                                @csrf
+                                <div class="form-group row">
+                                    <label class="col-3">License</label>
+                                    <label id="get-license"><b></b></label>
+                                </div>
+                                <div class="form-group row">
+                                    <label class="col-3">Website</label>
+                                    <input class="col-9 form-control-sm form-control" type="text" name="website">
+                                </div>
+                                <div class="form-group row">
+                                    <label class="col-3">Branch</label>
+                                    <input class="col-9 form-control-sm form-control" type="text" name="branch">
+                                </div>
+                                <div class="form-group row">
+                                    <label class="col-3">Theme</label>
+                                    <label id="get-code"><b></b></label>
+                                </div>
+                                <div class="form-group row">
+                                    <label class="col-3"></label>
+                                    <input class="btn-sm btn btn-primary" type="submit" value="Update Code">
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                    
+                    </div> --}}
                 </div>
             </div>
             <div class="modal-footer">
@@ -532,15 +544,102 @@
         </div>
     </div>
 </div>
+
+<div class="modal fade" id="custom-properties-modal" tabindex="-1" role="dialog">
+    <div style="max-width: 95%" class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Custom value property</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body row">
+                <div class="col-8 ">
+                    <div class="card shadow mb-4 ">
+                        <div class="card-header py-2">
+                            <h6 class="m-0 font-weight-bold text-primary">Value property list </h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-bordered table-hover" id="value-property-datatable" width="100%" cellspacing="0">
+                                    <thead>
+                                        <tr>
+                                            <th>Variable</th>
+                                            <th>Name</th>
+                                            <th >Value</th>
+                                            <th >Action</th>
+                                        </tr>
+                                    </thead>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-4">
+                    <div class="form-group" id="buttonSetupProperties">
+                        <button class="btn-sm btn-primary btn showAdd" id="addText">Add Text</button>
+                        <button class="btn-sm btn-danger btn showAdd" id="addImage">Add Image</button>
+                        <button class="btn btn-sm btn-warning resetAddProperty">Reset Add</button>
+                    </div>
+                    <div class="card shadow mb-4 ">
+                        <div class="card-header py-2">
+                            <h6 class="m-0 font-weight-bold text-primary " id="custom-properties-title">Add</h6>
+                        </div>
+                        <div class="card-body">
+                            <form method="post" id="custom-properties-form" enctype="multipart/form-data">
+                                @csrf
+                                <div class="form-group row col-12">
+                                    <label class="col-5">Variable</label>
+                                    <input class="col-7 form-control-sm form-control" type="text" name="variable">
+                                </div>
+                                <div class="form-group row col-12">
+                                    <label class="col-5">Name</label>
+                                    <input class="col-7 form-control-sm form-control" type="text" name="name">
+                                </div>
+                                <div class="addText form-group row col-12">
+                                    <label class="col-5">Value</label>
+                                    <input class="col-7 form-control-sm form-control" type="text" name="value">
+                                </div>
+                                <div class="addImage form-group col-12" style="display: none;">
+                                    <label>Image</label>
+                                    <div class="previewImage">
+                                        <img id="previewImageValue" src="{{ asset('/images/no-image.png') }}">
+                                        <input type="file" class="custom-file-input" name="image" previewimageid="previewImageValue">
+                                    </div>
+                                </div>
+                                <div class="form-group col-12 row">
+                                    <label class="col-5"></label>
+                                    <input class="btn-sm btn btn-primary" type="submit" value="Save">
+                                    <input type="hidden" name="action" value="create">
+                                    <input type="hidden" name="valuePropertyId">
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {{-- 
+            <div class="modal-footer">
+                <button type="button" class="btn-sm btn btn-primary">Save changes</button>
+                <button type="button" class="btn-sm btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+            --}}
+        </div>
+    </div>
+</div>
 @endsection
 @push('scripts')
 <script type="text/javascript">
     function clear(){
       $("#change-password-form")[0].reset();
-      $("#clone-form")[0].reset();
+      $("#clone-update-form")[0].reset();
       $("#user_nickname").html("Change password");
-      
+      $("#custom-properties-form")[0].reset();
+      $(".previewImage img").attr("src","{{ asset('images/no-image.png') }}");
+
       $('#themes-datatable tbody tr.selected').removeClass('selected');
+      $("#custom-properties-form").find("input[name='variable']").attr("readonly",false);
     }
 
     function listThemePropertiesByThemeId(theme_id){
@@ -570,6 +669,7 @@
     }
     
     $(document).ready(function() {
+      perviewImage();
       var placeId = null;
       var userId = null;
       var license = null;
@@ -635,6 +735,30 @@
     
                    ],
           });
+
+        customPropertytable = $('#value-property-datatable').DataTable({
+             // dom: "lBfrtip",
+             processing: true,
+             serverSide: true, 
+             responsive: true,
+             autoWidth: true,
+             buttons: [            
+
+             ],
+
+             ajax:{ 
+                url:"{{ route('getWpDatableByPlaceId') }}",
+                data:function(data){
+                    data.placeId = placeId;
+                },
+            },
+                 columns: [
+                          { data: 'wp_variable', name: 'wp_variable',class:"wp_variable" },
+                          { data: 'wp_name', name: 'wp_name',class:"wp_name" },
+                          { data: 'wp_value', name: 'wp_value',class:"wp_value"  },
+                          { data: 'action' , name: 'action',  orderable: false, searchable: false , class:'text-center'}
+                       ]    
+       });
     
     
       $(document).on('click','.view',function(e){
@@ -828,11 +952,23 @@
           $("input#get-license").val(license);
       });
       //Create New Website
-      $("#clone-form").on('submit',function(e){
+      $("#clone-update-form").on('submit',function(e){
         e.preventDefault();
+
+        var checkThemeProperties = $('#themeProperties tr');
+
+        if(checkThemeProperties.length > 1){
+            var checkSelected = $('#themeProperties tr.selected');
+            if(checkSelected.length == 0){
+                toastr.error("You have not selected website properties");
+                return false;
+            }
+        }
+
         var form = $(this).serialize();
+
           $.ajax({
-              url:"{{ route('cloneWebsite') }}",
+              url:"{{ route('cloneUpdateWebsite') }}",
               method:"post",
               data:form,
               dataType:"json",
@@ -856,27 +992,129 @@
              var code = $(this).find("td.code").text();
              $("input#get-code").val(code);
              listThemePropertiesByThemeId(themeId);
+
+             $("input[name='id_properties']").val('');
        });
 
       $(".btn-copy-theme").on('click',function(){
-            $(".copy-theme").fadeIn(300);
-            $(".copy-properties").hide(300);
+            $(".text-form").text("Clone Website");
+            $("#clone-update-form").find("input[type=submit]").val("Clone Website");
+            $("#clone-update-form").find("input[name=action]").val("clone");
       });
       $(".btn-copy-properties").on('click',function(){
-            $(".copy-theme").hide(300);
-            $(".copy-properties").fadeIn(300);
+            $(".text-form").text("Update Website");
+            $("#clone-update-form").find("input[type=submit]").val("Update Website");
+            $("#clone-update-form").find("input[name=action]").val("update");
       });
 
       $("#themeProperties tbody").on('click',"tr",function(){
-
-            var checkSelected = $(this).hasClass("selected");
-            if(checkSelected){
-                $(this).removeClass('selected');
-            } else{
-                $(this).addClass('selected');
-            }
+            $('#themeProperties tbody tr.selected').removeClass('selected');
+            $(this).addClass('selected');
+            id = $(this).attr("properties-id");
+            $("input[name='id_properties']").val(id);
        });
+
+      // custom properties
+      $(document).on('click',".btn-custom-properties",function(e){
+            e.preventDefault();
+            placeId = $(this).attr('data-id');
+            customPropertytable.draw();
+            $("#custom-properties-modal").modal("show");
+            $(".resetAddProperty").trigger('click');
+      });
+
+      $("#addText").on('click',function(){
+            $(".addText").show(200);
+            $(".addImage").hide(200);
+      });
+
+      $("#addImage").on('click',function(){
+            $(".addImage").show(200);
+            $(".addText").hide(200);
+      });
+
+      $(".resetAddProperty").on('click',function(){
+        clear();
+        $("#custom-properties-title").text("Add");
+        $("#custom-properties-form").find("input[name='action']").val("create");
+
+      });
+
+    $(document).on("click",".editValueProperty",function(e){
+        e.preventDefault();
+        var variable = $(this).attr('data-id');
+        var name = $(this).parent().parent().find(".wp_name").text();
+        var value = $(this).parent().parent().find(".wp_value").text();
+        var img = $(this).parent().parent().find(".wp_value img").attr('src');
+
+        if(img){
+            $("#addImage").trigger("click");
+        } else {
+            $("#addText").trigger("click");
+        }
+
+        $("#custom-properties-title").text("Edit");
+        $("#custom-properties-form").find("input[name='action']").val("update");
+        $("#custom-properties-form").find("input[name='valuePropertyId']").val(variable);
+
+        $("#custom-properties-form").find("input[name='variable']").val(variable);
+        $("#custom-properties-form").find("input[name='name']").val(name);
+        $("#custom-properties-form").find("input[name='value']").val(value);
+        $("#custom-properties-form").find("#previewImageValue").attr("src",img);
+
+        $("#custom-properties-form").find("input[name='variable']").attr("readonly",true);
+    });
     
+    $(document).on("click",".deleteValueProperty",function(e){
+        e.preventDefault();
+        if(confirm("Are you sure do you want to delete this data?")){
+            var id = $(this).attr('data-id');
+            $.ajax({
+                url:"{{ route('deleteValueProperty') }}",
+                method:"get",
+                data:{
+                    __token:"{{csrf_token()}}",
+                    id,
+                    placeId,
+                },
+                dataType:"json",
+                success:function(data){
+                    if(data.status == 1){
+                        toastr.success("Deleted successfully!");
+                        customPropertytable.draw();
+                    }
+                },
+                error:function(){
+                    toastr.error("Failed to delete!");
+                }
+            });
+        };
+    });
+
+    $("#custom-properties-form").on("submit",function(e){
+        e.preventDefault();
+        var form = $(this)[0];
+        var form_data = new FormData(form);
+        form_data.append('placeId',placeId);
+        $.ajax({
+            url:"{{ route('saveCustomValueProperty') }}",
+            method:"post",
+            dataType:"json",
+            data:form_data,
+            cache:false,
+            contentType: false,
+            processData: false,
+            success:function(data){
+                customPropertytable.draw();
+                toastr.success("Saved successfully!");
+                clear();
+
+            }, 
+            error:function(){   
+                toastr.error("Failed to save!");
+            }
+        });
+    });
     
     });
     

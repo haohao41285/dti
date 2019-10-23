@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use DB;
 
 class MainCustomerTemplate extends Model
 {
@@ -19,7 +20,9 @@ class MainCustomerTemplate extends Model
     	'ct_website',
     	'ct_note',
     	'created_by',
-    	'updated_by'
+    	'updated_by',
+        'created_at',
+        'ct_active'
     ];
     public function getFullname(){
         return $this->ct_firstname." ".$this->ct_lastname;
@@ -27,4 +30,7 @@ class MainCustomerTemplate extends Model
     public function getMainCustomer(){
         return $this->hasOne(MainCustomer::class,'customer_customer_template_id','id');
     }
+
+    
 }
+//

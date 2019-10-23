@@ -4,6 +4,7 @@ namespace App\Observers;
 
 use App\Jobs\SendNotification;
 use App\Models\MainTrackingHistory;
+use OneSignal;
 
 class TrackingHistoryObserver
 {
@@ -15,6 +16,7 @@ class TrackingHistoryObserver
      */
     public function created(MainTrackingHistory $mainTrackingHistory)
     {
+        //SEND MAIL
         $name_created = $mainTrackingHistory->getUserCreated->user_nickname;
         $email_list = $mainTrackingHistory->email_list;
 
@@ -53,6 +55,16 @@ class TrackingHistoryObserver
 
             dispatch(new SendNotification($input));
         }
+        //END SEND MAIL
+
+        //SEND NOTIFICATION WITH ONESIGNAL
+        $receiver_id = $mainTrackingHistory->receiver_id;
+        if($receiver_id != "")
+            OneSignal::sendNotificationUsingTags($name_created . " have just created a comment on task#" . $task_id,
+                array(["field" => "tag", "key" => "user_id", "relation" => "=", "value" => $receiver_id]),
+                $url = route('task-detail',$task_id)
+            );
+        //END SEND NOTIFICATION
     }
 
     /**

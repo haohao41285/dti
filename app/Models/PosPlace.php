@@ -57,9 +57,17 @@ class PosPlace extends BaseModel
         'place_ip_license',
         'place_timezone',
         'place_auto_print',
-        'place_orderservice_price'
+        'place_orderservice_price',
+        'place_theme_code'
     ];
 
     protected $guarded = [];
+
+    public static function getPlaceIdByLicense($license){
+        return self::select('place_id','place_ip_license','place_theme_code')
+                    ->where('place_ip_license',$license)
+                    ->where('place_status',1)
+                    ->first();
+    }
         
 }

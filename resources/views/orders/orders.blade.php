@@ -52,6 +52,7 @@
     $("#created_at").datepicker({});
     var table = $('#dataTableAllCustomer').DataTable({
          // dom: "lBfrtip",
+        order: [[1,'desc']],
             buttons: [
             ],
             processing: true,

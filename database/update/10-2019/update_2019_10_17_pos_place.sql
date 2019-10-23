@@ -1,0 +1,1 @@
+ALTER TABLE `pos_place` ADD `place_theme_code` VARCHAR(110) NULL AFTER `place_turn_option`;

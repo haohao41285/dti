@@ -12,8 +12,18 @@ use App\Helpers\RunShFileHelper;
 use Validator;
 // use App\Http\Controllers\ItTools\WebsiteThemeController;
 use App\Models\MainTheme;
+<<<<<<< HEAD
 use Symfony\Component\Process\Process;
 use Symfony\Component\Process\Exception\ProcessFailedException;
+=======
+<<<<<<< HEAD
+use Symfony\Component\Process\Process;
+use Symfony\Component\Process\Exception\ProcessFailedException;
+=======
+use App\Models\PosWebsiteProperty;
+
+>>>>>>> b30b2787367159b31ae08966f96aa95d65b85b7d
+>>>>>>> c8f41a0d48660c64c0c1a724009ac1c39f33f053
 
 
 class PlaceController extends Controller
@@ -21,8 +31,9 @@ class PlaceController extends Controller
     public function index(){
         return view('tools.place');
     }
-    public function cloneWebsite(Request $data)
+    public function cloneUpdateWebsite(Request $request)
     {
+<<<<<<< HEAD
         //$process = new Process('cd /home/hcmdev/degdti/');
         $process = new Process('/home/hcmdev/.composer/vendor/bin/envoy run deploy');
         $process->run();
@@ -34,7 +45,24 @@ class PlaceController extends Controller
         $value = $process->getOutput();
         //$value = RunShFileHelper::run("['cd ~','ssh createweb']");
          return response()->json(['status'=>1,'msg'=>"Clone website successfully!", "value"=>$value]); 
+=======
+        $place = PosPlace::getPlaceIdByLicense($request->get_license);
+
+        $place->place_theme_code = $request->get_code;
+        $place->save();
+
+        $placeId = $place->place_id;
+
+        PosWebsiteProperty::cloneUpdate($request->id_properties,$placeId);
+
+
+
+        //run sh file 
+        return response()->json(['status'=>1,'msg'=>"Clone website successfully!"]); 
+>>>>>>> c8f41a0d48660c64c0c1a724009ac1c39f33f053
     }
+
+
     public function getPlacesDatatable(){
         $places = PosPlace::select('place_id','place_name','place_address','place_email','place_phone','place_ip_license','created_at')
             ->where('place_status',1)
@@ -44,7 +72,8 @@ class PlaceController extends Controller
         ->editColumn('action',function($places){
             return '<a class="btn btn-sm btn-secondary view" data-id="'.$places->place_id.'" href="#" data-toggle="tooltip" title="View users"><i class="fas fa-user-cog"></i></a>
             <a class="btn btn-sm btn-secondary detail" data-id="'.$places->place_id.'" href="#" data-toggle="tooltip" title="Detail"><i class="fas fa-eye"></i></a>
-            <a class="btn btn-sm btn-secondary setting" data-license="'.$places->place_ip_license.'" href="#" data-toggle="tooltip" title="Setting place theme"><i class="fas fa-cogs"></i></a>';
+            <a class="btn btn-sm btn-secondary setting" data-license="'.$places->place_ip_license.'" href="#" data-toggle="tooltip" title="Setting place theme"><i class="fas fa-cogs"></i></a>
+            <a class="btn btn-sm btn-secondary btn-custom-properties" data-id="'.$places->place_id.'" href="#" data-toggle="tooltip" title="Custom properties"><i class="fas fa-project-diagram"></i></a>';
         })
         ->editColumn('created_at',function($places){
             return format_datetime($places->created_at);
@@ -138,4 +167,22 @@ class PlaceController extends Controller
             return response()->json(['status'=>1,'data'=>$properties]);
         }
     }
+
+    public function getWpDatableByPlaceId(Request $request){
+        return PosWebsiteProperty::getDatatableByPlaceId($request->placeId);
+    }
+
+    public function deleteValueProperty(Request $request){
+        if($request->id){
+            PosWebsiteProperty::deleteByIdAndPlaceId($request->id,$request->placeId);
+            return response()->json(['status'=>1,'msg'=>"Deleted successfully!"]);
+        }
+    }
+
+    public function saveCustomValueProperty(Request $request){
+       PosWebsiteProperty::saveValue($request->variable,$request->name,$request->value,$request->image,$request->action,$request->placeId); 
+       return response()->json(['status'=> 1,"msg"=>"Saved successfully"]);
+    }
+
+    
 }

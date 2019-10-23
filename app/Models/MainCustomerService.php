@@ -39,12 +39,11 @@ class MainCustomerService extends Model
     public function getCreatedBy(){
 	    return $this->belongsTo(MainUser::class,'created_by','user_id');
     }
-
-    public static function get10popularServices(){
-    	return self::select('cs_service_id')
-    				->where('cs_status',1)
-    				->groupBy('cs_service_id')
-    				->get();
+    public function scopeActive($query){
+	    return $query->where('cs_status',1);
+    }
+    public function getCustomer(){
+	    return $this->belongsTo(MainCustomer::class,'cs_customer_id','customer_id');
     }
 
 }

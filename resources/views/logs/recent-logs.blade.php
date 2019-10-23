@@ -6,7 +6,7 @@
 <div class="col-12 ">
     <div class="card shadow mb-4 ">
         <div class="card-header py-2">
-            <h6 class="m-0 font-weight-bold text-primary">Recent Logs</h6>
+            <h6 class="m-0 font-weight-bold text-primary">Recent logs</h6>
         </div>
         <div class="card-body">
 <div class="table-responsive">
@@ -40,7 +40,7 @@
 <script type="text/javascript">
     $(document).ready(function () {
             table = $('#log-datatable').DataTable({
-             "order": [[ 0, "desc" ]],
+             "order": [[ 5, "desc" ]],
              buttons: [
              
           ],  
