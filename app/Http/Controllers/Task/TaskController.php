@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Task;
 
+use App\Models\MainComboService;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use PHPMailer\PHPMailer\PHPMailer;
@@ -29,11 +30,23 @@ class TaskController extends Controller
     protected $presenter = 'App\\Presenters\\ThemeMailPresenter';
 
     public function index(){
-    	return view('task.my-task');
+        $data['user_list'] = MainUser::active()->get();
+        $data['service_list'] = MainComboService::where([['cs_type',2],['cs_status',1]])->get();
+    	return view('task.my-task',$data);
     }
     public function myTaskDatatable(Request $request){
 
         $task_list = MainTask::where('updated_by',Auth::user()->user_id)->whereNull('task_parent_id');
+        if($request->category != "")
+            $task_list->where('category',$request->category);
+        if($request->service_id != "")
+            $task_list->where('service_id',$request->service_id);
+        if($request->assign_to)
+            $task_list->where('assign_to',$request->assign_to);
+        if($request->priority != "")
+            $task_list->where('priority',$request->priority);
+        if($request->status != "")
+            $task_list->where('status',$request->status);
 
     	return DataTables::of($task_list)
     		->editColumn('priority',function($row){
@@ -433,7 +446,9 @@ class TaskController extends Controller
         }
     }
     public function allTask(){
-        return view('task.all-task');
+        $data['user_list'] = MainUser::active()->get();
+        $data['service_list'] = MainComboService::where([['cs_type',2],['cs_status',1]])->get();
+        return view('task.all-task',$data);
     }
     public function allTaskDatatable(Request $request){
 
@@ -441,6 +456,17 @@ class TaskController extends Controller
             $task_list = MainTask::whereNull('task_parent_id');
         else
             $task_list = MainTask::where('updated_by',Auth::user()->user_id)->whereNull('task_parent_id');
+
+        if($request->category != "")
+            $task_list->where('category',$request->category);
+        if($request->service_id != "")
+            $task_list->where('service_id',$request->service_id);
+        if($request->assign_to)
+            $task_list->where('assign_to',$request->assign_to);
+        if($request->priority != "")
+            $task_list->where('priority',$request->priority);
+        if($request->status != "")
+            $task_list->where('status',$request->status);
 
         return DataTables::of($task_list)
             ->editColumn('priority',function($row){

@@ -52,6 +52,7 @@ class MenuHelper{
 		    ['text' => 'Users', 'icon'=>'fas fa-user-cog', 'link' => 'user','childrens' => [
 		        ['text' => 'Users', 'link'=> 'user/list'],
 		        ['text' => 'Roles', 'link'=> 'user/roles'],
+                ['text' => 'Service Permission', 'link'=> 'user/service-permission'],
 		    ]],
 		    ['text' => 'Settings', 'icon'=>'fas fa-cog', 'link' => 'setting','childrens' => [
 		        ['text' => 'Setup Team', 'link'=> 'setting/setup-team'],
