@@ -61,7 +61,7 @@ Route::group(['middleware' => ['auth']], function () {
          Route::get('get-user-team', 'CustomerController@getUserTeam')->name('get-user-team');
          Route::get('get-customer-1', 'CustomerController@getCustomer1')->name('get_customer_1');
          Route::get('get-customer-2', 'CustomerController@getCustomer2')->name('get_customer_2');
-         Route::post('move-customers-all', 'CustomerController@moveCustomersAll')->name('move-customers-all');
+         Route::post('move-customer-all', 'CustomerController@moveCustomersAll')->name('move-customer-all');
 
     });
 
