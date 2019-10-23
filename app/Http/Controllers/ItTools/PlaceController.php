@@ -12,13 +12,11 @@ use App\Helpers\RunShFileHelper;
 use Validator;
 // use App\Http\Controllers\ItTools\WebsiteThemeController;
 use App\Models\MainTheme;
-<<<<<<< HEAD
 use Symfony\Component\Process\Process;
 use Symfony\Component\Process\Exception\ProcessFailedException;
-=======
 use App\Models\PosWebsiteProperty;
 
->>>>>>> b30b2787367159b31ae08966f96aa95d65b85b7d
+
 
 
 class PlaceController extends Controller
