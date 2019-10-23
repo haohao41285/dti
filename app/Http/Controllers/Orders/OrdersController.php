@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Orders;
 
 use App\Models\MainComboServiceType;
+use App\Models\MainGroupUser;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Helpers\Option;
@@ -83,8 +84,13 @@ class OrdersController extends Controller
 					->select('pos_place.place_id','pos_place.place_name')
 			        ->get();
         }
+        //GET COMBO SERVICE WITH ROLE
+        $service_permission_list = MainGroupUser::where('gu_id',Auth::user()->user_group_id)->first()->service_permission;
+        $service_permission_arr = explode(';',$service_permission_list);
+        $data['service_permission_arr'] = $service_permission_arr;
+//        return $service_permission_arr;
         //GET COMBO SERVICE NOT TYPE
-        $data['combo_service_orther'] = MainComboService::where('cs_status',1)->whereNull('cs_combo_service_type')->get();
+        $data['combo_service_orther'] = MainComboService::where('cs_status',1)->whereIn('id',$service_permission_arr)->whereNull('cs_combo_service_type')->get();
 
         $data['combo_service_type'] = MainComboServiceType::active()->get();
 
