@@ -284,4 +284,15 @@ Route::group(['middleware' => ['auth']], function () {
     Route::get('check-all-notification', 'DashboardController@checkAllNotification')->name('check-all-notification');
     Route::get('get-notification', 'DashboardController@getNotification')->name('get-notification');
     Route::get('customer-service-datatable', 'DashboardController@customerServiceDatatable')->name('customer-service-datatable');
+
+
+    Route::group(['prefix' => 'notification'], function() {
+        Route::get('/', 'NotificationController@index')->name('notification-list');
+        Route::get('notification-receive-datatable', 'NotificationController@notificationReceiveDatatable')->name('notification-receive-datatable');
+        Route::post('notification-mark-read', 'NotificationController@notificationMarkRead')->name('notification-mark-read');
+        Route::get('notification-sent-datatable', 'NotificationController@notificationSentDatatable')->name('notification-sent-datatable');
+        Route::post('send-notification', 'NotificationController@sendNotification')->name('send-notification');
+
+    });
+
 });
