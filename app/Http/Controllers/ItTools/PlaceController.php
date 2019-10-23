@@ -12,6 +12,8 @@ use App\Helpers\RunShFileHelper;
 use Validator;
 // use App\Http\Controllers\ItTools\WebsiteThemeController;
 use App\Models\MainTheme;
+use Symfony\Component\Process\Process;
+use Symfony\Component\Process\Exception\ProcessFailedException;
 
 
 class PlaceController extends Controller
@@ -21,7 +23,16 @@ class PlaceController extends Controller
     }
     public function cloneWebsite(Request $data)
     {
-        $value = RunShFileHelper::run("ls -l");
+        //$process = new Process('cd /home/hcmdev/degdti/');
+        $process = new Process('/home/hcmdev/.composer/vendor/bin/envoy run deploy');
+        $process->run();
+
+        if (!$process->isSuccessful()) {
+            throw new ProcessFailedException($process);
+        }
+
+        $value = $process->getOutput();
+        //$value = RunShFileHelper::run("['cd ~','ssh createweb']");
          return response()->json(['status'=>1,'msg'=>"Clone website successfully!", "value"=>$value]); 
     }
     public function getPlacesDatatable(){
