@@ -20,6 +20,6 @@ class ServiceController extends Controller
 	}
 
 	public function datatable(Request $request){
-		
-	}
+		return MainComboServiceBought::getDatatable();
+	}	
 }

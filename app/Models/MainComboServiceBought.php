@@ -58,7 +58,25 @@ class MainComboServiceBought extends Model
     public static function get10popularServicesByMonth($date){
         $startDate = $date->format('Y-m')."-01";
         $endDate = $date->format('Y-m')."-31";
+        
+        return self::getServiceBetween2Date($startDate,$endDate);
+    }
 
+    public static function getServicesByYear($date){
+        $startDate = $date->format('Y')."01-01";
+        $endDate = $date->format('Y')."12-31";
+        
+        return self::getServiceBetween2Date($startDate,$endDate);
+    }
+
+    public static function getServicesByDate($date){
+        $startDate = $date;
+        $endDate =  $date;
+        
+        return self::getServiceBetween2Date($startDate,$endDate);
+    }
+
+    private static function getServiceBetween2Date($startDate,$endDate){
         $services = self::getServiceByStartAndEndDate($startDate,$endDate);
 
         $formatArrServices = self::formatArrServices($services);
@@ -71,6 +89,9 @@ class MainComboServiceBought extends Model
     }
 
     private static function getServiceByStartAndEndDate($startDate,$endDate){
+        $startDate = format_date_db($startDate);
+        $endDate = format_date_db($endDate);
+
         return self::select('csb_combo_service_id','created_at')
                         ->whereBetween('created_at',[$startDate,$endDate])
                         ->get();
@@ -131,17 +152,19 @@ class MainComboServiceBought extends Model
     }
 
     public static function getDatatable($date){
-        $startDate = $date->format('Y-m')."-01";
-        $endDate = $date->format('Y-m')."-31";
+        $arr = [              
+                [
+                  "Airi",
+                  "Satou",
+                  "Accountant",
+                  "Tokyo",
+                  "28th Nov 08",
+                  "$162,700"
+                ],                
+        ];
 
-        $services = self::getServiceByStartAndEndDate($startDate,$endDate);
-        echo $services; die();
 
-        return Datatables::of($services)
-        ->editColumn('created_at',function($services){
-            return format_datetime($services->created_at);
-        })
-        ->make(true);
+       return response()->json($arr);
     }
 
 }
