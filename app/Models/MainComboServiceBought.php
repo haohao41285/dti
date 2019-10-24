@@ -63,9 +63,11 @@ class MainComboServiceBought extends Model
     }
 
     public static function getServicesByYear($date){
-        $startDate = $date->format('Y')."01-01";
-        $endDate = $date->format('Y')."12-31";
-        
+        $data = format_date_db($date);
+
+        $startDate = $date->format('Y')."-01-01";
+        $endDate = $date->format('Y')."-12-31";
+        //echo $startDate."-" .$endDate;
         return self::getServiceBetween2Date($startDate,$endDate);
     }
 
@@ -151,20 +153,49 @@ class MainComboServiceBought extends Model
         return $arrServices;
     }
 
-    public static function getDatatable($date){
-        $arr = [              
-                [
-                  "Airi",
-                  "Satou",
-                  "Accountant",
-                  "Tokyo",
-                  "28th Nov 08",
-                  "$162,700"
-                ],                
-        ];
+    public static function getDatatable($start, $length){
+        // $arr = [];  
+        // for ($i=0; $i < 1000; $i++) {
+        //     $arr[] = [
+        //     'service_name' => 'sdfsdf-'.$i,
+        //     'quantity' => 1,
+        //     'created_at'=> '21321',
+        //     ];  
+        // }
+        $date = get_nowDate();
+        // choose type by search /////////////////////////////////////////////////////////////////////////
+        $arr = self::getServicesByYear($date); 
+        // dd($arr);
+// dd($a);
+        $arrOut = self::getArrByStartAndLength($arr, $start, $length);
+
+        return response()->json([
+            'data'=>$arrOut,
+            'recordsFiltered' => count($arr),
+            'recordsTotal' => count($arr),
+
+        ]);
 
 
        return response()->json($arr);
+    }
+    /**
+     * get arr by start and length of datatable
+     * @param  array    $arr
+     * @param  int      $start 
+     * @param  int      $length
+     * @return array    $arrOut
+     */
+    private static function getArrByStartAndLength($arr, $start, $length){
+        $arrOut = [];
+        for ($i = $start; $i < $start + $length; $i++) { 
+            try {
+                $arrOut[] = $arr[$i];
+            } catch (\Exception $e) {
+                continue;
+            }            
+        }
+        return $arrOut;
     }
 
 }

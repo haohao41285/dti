@@ -20,6 +20,13 @@ class ServiceController extends Controller
 	}
 
 	public function datatable(Request $request){
-		return MainComboServiceBought::getDatatable();
+		$start = $request->start;
+		$length = $request->length;
+		// dd( $request->search['value'] );
+
+		
+		return MainComboServiceBought::getDatatable($start, $length);
 	}	
+
+	
 }
