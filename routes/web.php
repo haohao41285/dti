@@ -292,6 +292,7 @@ Route::group(['middleware' => ['auth']], function () {
         Route::post('notification-mark-read', 'NotificationController@notificationMarkRead')->name('notification-mark-read');
         Route::get('notification-sent-datatable', 'NotificationController@notificationSentDatatable')->name('notification-sent-datatable');
         Route::post('send-notification', 'NotificationController@sendNotification')->name('send-notification');
+        Route::get('view-notification/{id}', 'NotificationController@viewNotification')->name('view-notification');
 
     });
 

@@ -143,7 +143,7 @@ class DashboardController extends Controller {
            ->where('main_customer_service.cs_customer_id','!=',null);
 
         if(Auth::user()->user_group_id != 1)
-            $customer_service_list = $customer_service_list->where('created_by',Auth::user()->user_id);
+            $customer_service_list = $customer_service_list->where('main_customer_service.created_by',Auth::user()->user_id);
 
         $customer_service_list = $customer_service_list->get();
         $customer_service_list = $customer_service_list->groupBy('cs_customer_id');

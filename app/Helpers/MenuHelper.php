@@ -61,10 +61,7 @@ class MenuHelper{
 		        ['text' => 'Setup Login Background', 'link'=> 'setting/login-background'],
                 ['text' => 'Setup Event Holiday', 'link'=> 'setting/setup-event-holiday'],
 		    ]],
-            ['text' => 'Notification', 'icon'=>'fas fa-sms', 'link' => 'user','childrens' => [
-                ['text' => 'Notifications List', 'link'=> 'notification'],
-                ['text' => 'Create Notification', 'link'=> 'notification/create'],
-            ]],
+            ['text' => 'Notification', 'icon'=>'fas fa-sms', 'link' => 'notification'],
 		    ['text' => 'Recent Logs', 'icon'=>'fas fa-list-alt', 'link' => 'recentlog'],
 		];
 	}
