@@ -60,6 +60,8 @@ class MenuHelper{
                 ['text' => 'Setup Template SMS', 'link'=> 'setting/setup-template-sms'],
 		        ['text' => 'Setup Login Background', 'link'=> 'setting/login-background'],
                 ['text' => 'Setup Event Holiday', 'link'=> 'setting/setup-event-holiday'],
+                ['text' => 'Setup Menu', 'link'=> 'setting/menu'],
+                ['text' => 'Setup Permission', 'link'=> 'setting/setup-permission'],
 		    ]],
             ['text' => 'Notification', 'icon'=>'fas fa-sms', 'link' => 'notification'],
 		    ['text' => 'Recent Logs', 'icon'=>'fas fa-list-alt', 'link' => 'recentlog'],

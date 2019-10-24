@@ -215,6 +215,13 @@ Route::group(['middleware' => ['auth']], function () {
         Route::get('change-status-service-type','SetupServiceController@changeStatusServiceType')->name('change-status-service-type');
         Route::get('add-service-type','SetupServiceController@addServiceType')->name('add-service-type');
 
+        //SETTING MENU
+        Route::get('setup-menu','MenuController@index')->name('setup-menu');
+        Route::get('setup-permission-begin','MenuController@setPermission')->name('setup-permission-begin');
+
+        Route::get('menu','MenuController@setupMenu')->name('menu');
+        Route::get('setup-permission','MenuController@permission')->name('setup-permission');
+
     });
 
     Route::group(['prefix'=>'user'],function(){
@@ -295,5 +302,7 @@ Route::group(['middleware' => ['auth']], function () {
         Route::get('view-notification/{id}', 'NotificationController@viewNotification')->name('view-notification');
 
     });
+
+
 
 });
