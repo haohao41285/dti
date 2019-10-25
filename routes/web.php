@@ -221,6 +221,10 @@ Route::group(['middleware' => ['auth']], function () {
 
         Route::get('menu','MenuController@setupMenu')->name('menu');
         Route::get('setup-permission','MenuController@permission')->name('setup-permission');
+        Route::get('permission-datatable','MenuController@permissionDatatable')->name('permission-datatable');
+        Route::post('change-status-permission','MenuController@changeStatusPermission')->name('change-status-permission');
+        Route::get('save-permission','MenuController@savePermission')->name('save-permission');
+        Route::delete('delete-permission','MenuController@deletePermission')->name('delete-permission');
 
     });
 
@@ -245,6 +249,10 @@ Route::group(['middleware' => ['auth']], function () {
 
         Route::get('service-permission','UserController@servicePermission')->name('service-permission');
         Route::get('change-service-permission','UserController@changeServicePermission')->name('change-service-permission');
+
+        Route::get('user-permission','UserController@userPermission')->name('user-permission');
+
+
 
     });
 
