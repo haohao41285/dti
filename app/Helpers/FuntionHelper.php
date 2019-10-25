@@ -40,5 +40,20 @@ if(!function_exists('getFormService')){
         ];
     }
 }
+function cutString($str, $length = 15, $end = '...')
+{
+    $minword = 3;
+    $sub = '';
+    $len = 0;
+    foreach (explode(' ', $str) as $word) {
+        $part = (($sub != '') ? ' ' : '') . $word;
+        $sub .= $part;
+        $len += strlen($part);
+        if (strlen($word) > $minword && strlen($sub) >= $length) {
+            break;
+        }
+    }
+    return $sub . (($len < strlen($str)) ? $end : '');
+}
 
 ?>

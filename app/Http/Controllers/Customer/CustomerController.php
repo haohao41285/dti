@@ -1038,10 +1038,12 @@ class CustomerController extends Controller
     public function getCustomer1(Request $request){
 
         $user_id = $request->user_1;
+        $customer_arr = [];
 
         $customer_list = MainUser::where('user_id',$user_id)->first();
 
-        $customer_arr = explode(';',$customer_list);
+        if($customer_list != "")
+            $customer_arr = explode(';',$customer_list->user_customer_list);
 
         $customer_list = MainCustomerTemplate::whereIn('id',$customer_arr);
 
@@ -1051,10 +1053,11 @@ class CustomerController extends Controller
     public function getCustomer2(Request $request){
 
         $user_id = $request->user_2;
+        $customer_arr = [];
 
         $customer_list = MainUser::where('user_id',$user_id)->first();
-
-        $customer_arr = explode(';',$customer_list);
+        if($customer_list != "")
+            $customer_arr = explode(';',$customer_list->user_customer_list);
 
         $customer_list = MainCustomerTemplate::whereIn('id',$customer_arr);
 
@@ -1063,5 +1066,43 @@ class CustomerController extends Controller
     }
     public function moveCustomersAll(Request $request){
 
+        $customer_input = $request->customer_array;
+
+        $customer_list_1 = MainUser::where('user_id',$request->user_1)->first()->user_customer_list;
+        $customer_arr_1 = explode(';',$customer_list_1);
+
+        DB::beginTransaction();
+        //REMOVE CUSTOMER FORM USER 1
+        foreach ($customer_input as $customer){
+            if (($key = array_search( intval($customer), $customer_arr_1)) !== false) {
+                unset($customer_arr_1[$key]);
+            }
+        }
+        $customer_list_1 = implode(';',$customer_arr_1);
+        $update_user_1 = MainUser::where('user_id',$request->user_1)->update(['user_customer_list'=>$customer_list_1]);
+
+        $customer_list_2 = MainUser::where('user_id',$request->user_2)->first()->user_customer_list;
+
+        $customer_input = implode(';',$customer_input);
+
+        if( is_null($customer_list_2) )
+            $customer_list_2 = $customer_input;
+        else
+            $customer_list_2 = $customer_list_2.";".$customer_input;
+
+        $update_user_2 = MainUser::where('user_id',$request->user_2)->update(['user_customer_list'=>$customer_list_2]);
+
+        if(!isset($update_user_1) || !isset($update_user_2)){
+            DB::callback();
+            return response(['status'=>'error','message'=>'Failed! Move Customer Failed!']);
+        }else{
+            DB::commit();
+            return response(['status'=>'success','message'=>'Successfully! Move Customer Successfully!']);
+        }
+
+
+
+
+        return $customer_arr;
     }
 }

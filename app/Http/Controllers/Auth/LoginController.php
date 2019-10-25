@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Models\MainUser;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
@@ -58,15 +59,20 @@ class LoginController extends Controller
             return redirect()->back()->withInput()->withErrors($validator->messages());
 
         }
+        //CHECK USER STATUS ENABLE
+        $user_info = MainUser::where('user_phone',$request->user_phone)->first();
+        if($user_info['user_status'] == 0){
+            return back()->with(['error'=>'You Do Not ave Permission!']);
+        }
+
          $credentials = ($request->only('user_phone', 'user_password'));
         if (Auth::attempt($credentials)){
-
             //GET PERMISSION
             $user_list = DB::table('main_user')->leftjoin('main_group_user',function($join){
-                                    $join->on('main_user.user_group_id','main_group_user.gu_id');
-                                    })
-                                    ->where('user_phone',$request->user_phone)
-                                    ->get();
+                $join->on('main_user.user_group_id','main_group_user.gu_id');
+            })
+                ->where('user_phone',$request->user_phone)
+                ->get();
             if($user_list[0]->user_group_id == 1) $permission = 1;
             else $permission = 0;
 
