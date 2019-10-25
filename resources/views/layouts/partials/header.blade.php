@@ -59,6 +59,7 @@
         </h6>
           <div id="notification_list" class="scroll" style="max-height: 300px;overflow-y: auto;">
           </div>
+          <a class="dropdown-item text-center small text-gray-500" href="{{route('notification-list')}}">Show All Alerts</a>
       </div>
        @endif
     </li>

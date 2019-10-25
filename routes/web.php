@@ -61,7 +61,7 @@ Route::group(['middleware' => ['auth']], function () {
          Route::get('get-user-team', 'CustomerController@getUserTeam')->name('get-user-team');
          Route::get('get-customer-1', 'CustomerController@getCustomer1')->name('get_customer_1');
          Route::get('get-customer-2', 'CustomerController@getCustomer2')->name('get_customer_2');
-         Route::post('move-customers-all', 'CustomerController@moveCustomersAll')->name('move-customers-all');
+         Route::post('move-customer-all', 'CustomerController@moveCustomersAll')->name('move-customer-all');
 
     });
 
@@ -223,6 +223,13 @@ Route::group(['middleware' => ['auth']], function () {
         Route::get('change-status-service-type','SetupServiceController@changeStatusServiceType')->name('change-status-service-type');
         Route::get('add-service-type','SetupServiceController@addServiceType')->name('add-service-type');
 
+        //SETTING MENU
+        Route::get('setup-menu','MenuController@index')->name('setup-menu');
+        Route::get('setup-permission-begin','MenuController@setPermission')->name('setup-permission-begin');
+
+        Route::get('menu','MenuController@setupMenu')->name('menu');
+        Route::get('setup-permission','MenuController@permission')->name('setup-permission');
+
     });
 
     Route::group(['prefix'=>'user'],function(){
@@ -292,4 +299,18 @@ Route::group(['middleware' => ['auth']], function () {
     Route::get('check-all-notification', 'DashboardController@checkAllNotification')->name('check-all-notification');
     Route::get('get-notification', 'DashboardController@getNotification')->name('get-notification');
     Route::get('customer-service-datatable', 'DashboardController@customerServiceDatatable')->name('customer-service-datatable');
+
+
+    Route::group(['prefix' => 'notification'], function() {
+        Route::get('/', 'NotificationController@index')->name('notification-list');
+        Route::get('notification-receive-datatable', 'NotificationController@notificationReceiveDatatable')->name('notification-receive-datatable');
+        Route::post('notification-mark-read', 'NotificationController@notificationMarkRead')->name('notification-mark-read');
+        Route::get('notification-sent-datatable', 'NotificationController@notificationSentDatatable')->name('notification-sent-datatable');
+        Route::post('send-notification', 'NotificationController@sendNotification')->name('send-notification');
+        Route::get('view-notification/{id}', 'NotificationController@viewNotification')->name('view-notification');
+
+    });
+
+
+
 });

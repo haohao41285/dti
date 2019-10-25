@@ -6,10 +6,10 @@
 
 @endsection
 @section('content')
-    <div class="table-responsive">
+    <div class="">
             <div class="form-group col-md-12">
                 <div class="form-inline">
-                    <label for="team_type_id">Choose Team </label>
+                    <label for="team_type_id"><b>Choose Team</b></label>
                     <select name="team_type_id" id="team_type_id" class="form-control form-control-sm col-md-2">
                         @foreach($team_type_list as $team_type)
                             <option value="{{$team_type->id}}">{{$team_type->team_type_name}}</option>
@@ -21,7 +21,7 @@
         <div class="row">
             <div class="col-md-6">
                 <div class="form-inline">
-                    <label for="user_1">From Staff</label>
+                    <label for="user_1"><b>From Staff</b></label>
                     <select name="user_1" id="user_1" class="form-control form-control-sm col-md-4">
                         <option value=""></option>
                     </select>
@@ -41,7 +41,7 @@
             </div>
             <div class="col-md-6">
                 <div class="form-inline">
-                    <label for="user_2">To Staff</label>
+                    <label for="user_2"><b>To Staff</b></label>
                     <select name="user_2" id="user_2" class="form-control form-control-sm col-md-4">
                         <option value=""></option>
                     </select>
@@ -165,34 +165,28 @@
                     return;
                 }
                 $.ajax({
-                    url: '{{route('move-customer')}}',
-                    type: 'GET',
+                    url: '{{route('move-customer-all')}}',
+                    type: 'POST',
                     dataType: 'html',
                     data: {
-                        team_type_id:team_type_id
+                        user_1: user_1,
+                        user_2: user_2,
+                        customer_array:customer_array,
+                        _token:'{{csrf_token()}}'
                     },
                 })
                     .done(function(data) {
+                        console.log(data);
                         data = JSON.parse(data);
-
                         if(data.status == 'success'){
-                            var user_list_html = "";
-                            $.each(data.user_list,function (ind,val) {
-                                user_list_html += `
-                                <option value="`+val['user_id']+`">`+val['user_nickname']+`(`+val['user_firstname']+val['user_lastname']+`)</option>
-                            `;
-                                if(ind === 0){
-                                    user_1 = val['user_id'];
-                                    user_2 = val['user_id'];
-                                    table_user_1.draw();
-                                    table_user_2.draw();
-                                }
-                            });
-                            $("#user_1").html(user_list_html);
-                            $("#user_2").html(user_list_html);
+                            toastr.success(data.message);
                         }
                         else
                             toastr.error(data.message);
+
+                        table_user_1.draw();
+                        table_user_2.draw();
+                        customer_array = [];
                     })
                     .fail(function() {
                         console.log("error");

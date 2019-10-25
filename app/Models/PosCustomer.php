@@ -46,4 +46,6 @@ class PosCustomer extends BaseModel
         //return $this->hasOne('App\Models\PosCustomertag', 'customertag_id', 'customer_customertag_id');
         return $this->belongsTo('App\Models\PosCustomertag');
     }
+
+    
 }
