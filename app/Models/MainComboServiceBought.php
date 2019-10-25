@@ -7,10 +7,12 @@ use Laracasts\Presenter\PresentableTrait;
 use App\Models\MainService;
 use Carbon\Carbon;
 use DB;
+use App\Traits\StatisticsTrait;
 
 class MainComboServiceBought extends Model
 {
-    use PresentableTrait;
+    use PresentableTrait,StatisticsTrait;
+
     protected $presenter = 'App\\Presenters\\ThemeMailPresenter';
 
     protected $table = "main_combo_service_bought";
@@ -52,56 +54,8 @@ class MainComboServiceBought extends Model
                     ->whereYear('created_at',$year)
                     ->sum('csb_charge');
     }
-    /**
-     * get services by monthe of the year 
-     * @param  date $date ex: 2019-04-31 
-     * @return query
-     */
-    public static function getServicesByMonth($date){
-        $startDate = getStartMonthByDate($date);
-        $endDate = getEndMonthByDate($date);
-        
-        return self::getServiceBetween2Date($startDate,$endDate);
-    }
 
-    private static function getServicesByYear($date){
-        $startDate = format_year($date)."-01-01";
-        $endDate = format_year($date)."-12-31";
-
-        return self::getServiceBetween2Date($startDate,$endDate);
-    }
-
-    private static function getServicesByQuarterly($date, $valueQuarter){
-        switch ($valueQuarter) {
-            case 'first':
-                $startDate = getStartMonthByDate(format_year($date)."-01-01");
-                $endDate = getEndMonthByDate(format_year($date)."-03-01");
-                break;
-            case 'second':
-                $startDate = getStartMonthByDate(format_year($date)."-04-01");
-                $endDate = getEndMonthByDate(format_year($date)."-06-01");
-                break;
-            case 'third':
-                $startDate = getStartMonthByDate(format_year($date)."-07-01");
-                $endDate = getEndMonthByDate(format_year($date)."-09-01");
-                break;
-            case 'fourth':
-                $startDate = getStartMonthByDate(format_year($date)."-10-01");
-                $endDate = getEndMonthByDate(format_year($date)."-12-01");
-                break;
-        }        
-        
-        return self::getServiceBetween2Date($startDate,$endDate);
-    }
-
-    private static function getServicesByDate($date){
-        $startDate = $date;
-        $endDate =  $date;
-        
-        return self::getServiceBetween2Date($startDate,$endDate);
-    }
-
-    private static function getServiceBetween2Date($startDate,$endDate){
+    private static function getBetween2Date($startDate,$endDate){
         $services = self::getServiceByStartAndEndDate($startDate,$endDate);
 
         $formatArrServices = self::formatArrServices($services);
@@ -182,20 +136,20 @@ class MainComboServiceBought extends Model
             $date = format_date_db(get_nowDate());
         }
         
-        // choose type by search 
         $arr = [];
+        // choose by type, from StatisticsTrait
         switch ($type) {
             case 'Daily':
-                $arr = self::getServicesByDate($date);
+                $arr = self::getByDate($date);
                 break;
             case 'Monthly':
-                $arr = self::getServicesByMonth($date); 
+                $arr = self::getByMonth($date); 
                 break;
             case 'Quarterly':
-                $arr = self::getServicesByQuarterly($date,$valueQuarter); 
+                $arr = self::getByQuarterly($date,$valueQuarter); 
                 break;
             case 'Yearly':
-                $arr = self::getServicesByYear($date); 
+                $arr = self::getByYear($date); 
                 break;            
         }
         

@@ -25,8 +25,6 @@ margin-top: 12px;
                         <button class="btn btn-sm btn-secondary quarterly">Quarterly</button>
                         <button class="btn btn-sm btn-secondary yearly">Yearly</button>
                     </span>
-                    {{-- <input type="submit" class="btn btn-primary btn-sm" value="Search"> --}}
-                    {{-- <br> --}}
                 </div>
             </form>
             <div class="form-group form-group-sm search-group">
