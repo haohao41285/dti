@@ -58,7 +58,27 @@ class MainComboServiceBought extends Model
     public static function get10popularServicesByMonth($date){
         $startDate = $date->format('Y-m')."-01";
         $endDate = $date->format('Y-m')."-31";
+        
+        return self::getServiceBetween2Date($startDate,$endDate);
+    }
 
+    public static function getServicesByYear($date){
+        $data = format_date_db($date);
+
+        $startDate = $date->format('Y')."-01-01";
+        $endDate = $date->format('Y')."-12-31";
+        //echo $startDate."-" .$endDate;
+        return self::getServiceBetween2Date($startDate,$endDate);
+    }
+
+    public static function getServicesByDate($date){
+        $startDate = $date;
+        $endDate =  $date;
+        
+        return self::getServiceBetween2Date($startDate,$endDate);
+    }
+
+    private static function getServiceBetween2Date($startDate,$endDate){
         $services = self::getServiceByStartAndEndDate($startDate,$endDate);
 
         $formatArrServices = self::formatArrServices($services);
@@ -71,6 +91,9 @@ class MainComboServiceBought extends Model
     }
 
     private static function getServiceByStartAndEndDate($startDate,$endDate){
+        $startDate = format_date_db($startDate);
+        $endDate = format_date_db($endDate);
+
         return self::select('csb_combo_service_id','created_at')
                         ->whereBetween('created_at',[$startDate,$endDate])
                         ->get();
@@ -130,18 +153,49 @@ class MainComboServiceBought extends Model
         return $arrServices;
     }
 
-    public static function getDatatable($date){
-        $startDate = $date->format('Y-m')."-01";
-        $endDate = $date->format('Y-m')."-31";
+    public static function getDatatable($start, $length){
+        // $arr = [];  
+        // for ($i=0; $i < 1000; $i++) {
+        //     $arr[] = [
+        //     'service_name' => 'sdfsdf-'.$i,
+        //     'quantity' => 1,
+        //     'created_at'=> '21321',
+        //     ];  
+        // }
+        $date = get_nowDate();
+        // choose type by search /////////////////////////////////////////////////////////////////////////
+        $arr = self::getServicesByYear($date); 
+        // dd($arr);
+// dd($a);
+        $arrOut = self::getArrByStartAndLength($arr, $start, $length);
 
-        $services = self::getServiceByStartAndEndDate($startDate,$endDate);
-        echo $services; die();
+        return response()->json([
+            'data'=>$arrOut,
+            'recordsFiltered' => count($arr),
+            'recordsTotal' => count($arr),
 
-        return Datatables::of($services)
-        ->editColumn('created_at',function($services){
-            return format_datetime($services->created_at);
-        })
-        ->make(true);
+        ]);
+
+
+       return response()->json($arr);
+    }
+    /**
+     * get arr by start and length of datatable
+     * @param  array    $arr
+     * @param  int      $start 
+     * @param  int      $length
+     * @return array    $arrOut
+     */
+    private static function getArrByStartAndLength($arr, $start, $length){
+        $arrOut = [];
+        for ($i = $start; $i < $start + $length; $i++) { 
+            try {
+                $arrOut[] = $arr[$i];
+            } catch (\Exception $e) {
+                continue;
+            }            
+        }
+        return $arrOut;
     }
 
 }
