@@ -14,21 +14,7 @@ use Validator;
 use App\Models\MainTheme;
 use Symfony\Component\Process\Process;
 use Symfony\Component\Process\Exception\ProcessFailedException;
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
-use Symfony\Component\Process\Process;
-use Symfony\Component\Process\Exception\ProcessFailedException;
-=======
 use App\Models\PosWebsiteProperty;
-
->>>>>>> b30b2787367159b31ae08966f96aa95d65b85b7d
->>>>>>> c8f41a0d48660c64c0c1a724009ac1c39f33f053
-
-=======
-use App\Models\PosWebsiteProperty;
-
->>>>>>> 0c5e2a4937a8d0cedbf911e9f00cc2458cb99410
 
 class PlaceController extends Controller
 {
@@ -37,19 +23,7 @@ class PlaceController extends Controller
     }
     public function cloneUpdateWebsite(Request $request)
     {
-<<<<<<< HEAD
-        //$process = new Process('cd /home/hcmdev/degdti/');
-        $process = new Process('/home/hcmdev/.composer/vendor/bin/envoy run deploy');
-        $process->run();
 
-        if (!$process->isSuccessful()) {
-            throw new ProcessFailedException($process);
-        }
-
-        $value = $process->getOutput();
-        //$value = RunShFileHelper::run("['cd ~','ssh createweb']");
-         return response()->json(['status'=>1,'msg'=>"Clone website successfully!", "value"=>$value]); 
-=======
         $place = PosPlace::getPlaceIdByLicense($request->get_license);
 
         $place->place_theme_code = $request->get_code;
@@ -59,11 +33,8 @@ class PlaceController extends Controller
 
         PosWebsiteProperty::cloneUpdate($request->id_properties,$placeId);
 
-
-
         //run sh file 
         return response()->json(['status'=>1,'msg'=>"Clone website successfully!"]); 
->>>>>>> c8f41a0d48660c64c0c1a724009ac1c39f33f053
     }
 
 
