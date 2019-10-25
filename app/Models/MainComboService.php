@@ -19,4 +19,10 @@ class MainComboService extends Model
     	'cs_assign_to',
         'cs_form_type'
     ];
+
+    public static function getByArrId($arr){
+        return self::select('id','cs_name','cs_price')
+                    ->whereIn('id',$arr)
+                    ->get();
+    } 
 }

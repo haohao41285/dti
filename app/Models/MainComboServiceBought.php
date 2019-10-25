@@ -5,6 +5,8 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Laracasts\Presenter\PresentableTrait;
 use App\Models\MainService;
+use Carbon\Carbon;
+use DB;
 
 class MainComboServiceBought extends Model
 {
@@ -51,27 +53,48 @@ class MainComboServiceBought extends Model
                     ->sum('csb_charge');
     }
     /**
-     * get 10 popular services by monthe of the year , (year && month of $date)
+     * get services by monthe of the year 
      * @param  date $date ex: 2019-04-31 
      * @return query
      */
-    public static function get10popularServicesByMonth($date){
-        $startDate = $date->format('Y-m')."-01";
-        $endDate = $date->format('Y-m')."-31";
+    public static function getServicesByMonth($date){
+        $startDate = getStartMonthByDate($date);
+        $endDate = getEndMonthByDate($date);
         
         return self::getServiceBetween2Date($startDate,$endDate);
     }
 
-    public static function getServicesByYear($date){
-        $data = format_date_db($date);
+    private static function getServicesByYear($date){
+        $startDate = format_year($date)."-01-01";
+        $endDate = format_year($date)."-12-31";
 
-        $startDate = $date->format('Y')."-01-01";
-        $endDate = $date->format('Y')."-12-31";
-        //echo $startDate."-" .$endDate;
         return self::getServiceBetween2Date($startDate,$endDate);
     }
 
-    public static function getServicesByDate($date){
+    private static function getServicesByQuarterly($date, $valueQuarter){
+        switch ($valueQuarter) {
+            case 'first':
+                $startDate = getStartMonthByDate(format_year($date)."-01-01");
+                $endDate = getEndMonthByDate(format_year($date)."-03-01");
+                break;
+            case 'second':
+                $startDate = getStartMonthByDate(format_year($date)."-04-01");
+                $endDate = getEndMonthByDate(format_year($date)."-06-01");
+                break;
+            case 'third':
+                $startDate = getStartMonthByDate(format_year($date)."-07-01");
+                $endDate = getEndMonthByDate(format_year($date)."-09-01");
+                break;
+            case 'fourth':
+                $startDate = getStartMonthByDate(format_year($date)."-10-01");
+                $endDate = getEndMonthByDate(format_year($date)."-12-01");
+                break;
+        }        
+        
+        return self::getServiceBetween2Date($startDate,$endDate);
+    }
+
+    private static function getServicesByDate($date){
         $startDate = $date;
         $endDate =  $date;
         
@@ -91,9 +114,10 @@ class MainComboServiceBought extends Model
     }
 
     private static function getServiceByStartAndEndDate($startDate,$endDate){
-        $startDate = format_date_db($startDate);
-        $endDate = format_date_db($endDate);
-
+        $startDate = format_date_db($startDate)." 00:00:00";
+        $endDate = format_date_db($endDate)." 23:59:59";
+        // echo $startDate. " - ".$endDate; die();
+        
         return self::select('csb_combo_service_id','created_at')
                         ->whereBetween('created_at',[$startDate,$endDate])
                         ->get();
@@ -139,32 +163,42 @@ class MainComboServiceBought extends Model
     }
 
     private static function addNameServiceToArrServices($formatArrServices, $arrServices){
-        $servicesName = MainService::select('service_id','service_name')
-                                    ->whereIn('service_id',$formatArrServices)
-                                    ->get();
+        $servicesName = MainComboService::getByArrId($formatArrServices);
 
-        foreach ($arrServices as $key => $valueArrServices) {            
+        foreach ($arrServices as $key => $valueArrServices) {
             foreach ($servicesName as $valueArrServicesName) {
-               if($valueArrServices['idService'] == $valueArrServicesName->service_id){
-                    $arrServices[$key]['nameService'] = $valueArrServicesName->service_name;
+               if($valueArrServices['idService'] == $valueArrServicesName->id){
+                    $arrServices[$key]['nameService'] = $valueArrServicesName->cs_name;
+                    $arrServices[$key]['priceService'] = $valueArrServicesName->cs_price;
+                    $arrServices[$key]['totalPrice'] = $valueArrServicesName->cs_price * $valueArrServices['count'];
                }
             }
         }
         return $arrServices;
     }
 
-    public static function getDatatable($start, $length){
-        // $arr = [];  
-        // for ($i=0; $i < 1000; $i++) {
-        //     $arr[] = [
-        //     'service_name' => 'sdfsdf-'.$i,
-        //     'quantity' => 1,
-        //     'created_at'=> '21321',
-        //     ];  
-        // }
-        $date = get_nowDate();
-        // choose type by search /////////////////////////////////////////////////////////////////////////
-        $arr = self::getServicesByYear($date); 
+    public static function getDatatable($start, $length, $type,$valueQuarter = null, $date = null){
+        if(!$date){
+            $date = format_date_db(get_nowDate());
+        }
+        
+        // choose type by search 
+        $arr = [];
+        switch ($type) {
+            case 'Daily':
+                $arr = self::getServicesByDate($date);
+                break;
+            case 'Monthly':
+                $arr = self::getServicesByMonth($date); 
+                break;
+            case 'Quarterly':
+                $arr = self::getServicesByQuarterly($date,$valueQuarter); 
+                break;
+            case 'Yearly':
+                $arr = self::getServicesByYear($date); 
+                break;            
+        }
+        
         // dd($arr);
 // dd($a);
         $arrOut = self::getArrByStartAndLength($arr, $start, $length);
@@ -199,3 +233,7 @@ class MainComboServiceBought extends Model
     }
 
 }
+
+
+
+

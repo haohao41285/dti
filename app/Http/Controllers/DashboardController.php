@@ -19,14 +19,14 @@ class DashboardController extends Controller {
 
     }
 
-    public function index(){   
+    public function index(){
         $yearNow = format_year(get_nowDate());
         $now = get_nowDate();
 
         $data['earnings'] = MainComboServiceBought::getSumChargeByYear($yearNow);
         $data['pendingTasks'] = MainTask::getPendingTasks();
         $data['nearlyExpired'] = MainCustomerBought::getNearlyExpired();
-        $data['popularServices'] = MainComboServiceBought::get10popularServicesByMonth($now);
+        $data['popularServices'] = MainComboServiceBought::getServicesByMonth($now);
 
         $newCustomer = MainCustomer::getTotalNewCustomersEveryMonthByYear($yearNow);
    
