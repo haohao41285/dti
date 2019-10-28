@@ -40,6 +40,7 @@ class DashboardController extends Controller {
 
         return view('dashboard',$data);
     }
+    
     public function confirmEvent(){
         try{
             //subHours(11) to get time American
