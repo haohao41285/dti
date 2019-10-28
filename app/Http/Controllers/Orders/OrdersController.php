@@ -330,7 +330,9 @@ class OrdersController extends Controller
 					'user_status' => 1
 				];
 				PosUser::create($user_arr);
-			}
+			}else{
+			    //INSERT
+            }
 
 			//UPDATE CUSTOMER STATUS
 			$team_customer_status = MainTeam::find(Auth::user()->user_team)->getTeamType->team_customer_status;

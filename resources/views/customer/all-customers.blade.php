@@ -38,7 +38,7 @@
                     <option value="{{$key}}">{{$element}}</option>
                 @endforeach
                 @else
-                    <option value="3">Arrivals</option>
+                    <option value="3">New Arrivals</option>
                 @endif
             </select>
         </div>
@@ -209,7 +209,7 @@
           if(data.ct_status==null)data.ct_status="";
 
           var button = ``;
-          if(data.ct_status === 'Arrivals')
+          if(data.ct_status === 'New Arrivals')
             button = `<button type="button" id=`+data.id+` class="btn btn-primary btn-sm get-customer">Assign</button>`;
           $(".modal-content-view").html(`
             <div class="modal-header">

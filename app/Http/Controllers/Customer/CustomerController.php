@@ -111,7 +111,7 @@ class CustomerController extends Controller
 
             if(!isset($customer_status_arr[$customer->id])){
                 $customer_status_arr[$customer->id] = 1;
-                $ct_status = 'Arrivals';
+                $ct_status = 'New Arrivals';
             }
             else
                 $ct_status = GeneralHelper::getCustomerStatus($customer_status_arr[$customer->id]);
@@ -144,7 +144,7 @@ class CustomerController extends Controller
                 ];
                 }
             }
-            elseif(Auth::user()->user_group_id != 1 && $ct_status = 'Arrivals'){
+            elseif(Auth::user()->user_group_id != 1 && $ct_status = 'New Arrivals'){
                 $customer_arr[] = [
                     'id' => $customer->id,
                     'ct_salon_name' => $customer->ct_salon_name,
@@ -208,7 +208,7 @@ class CustomerController extends Controller
             $team_customer_status = MainTeam::find($team_id)->getTeamType->team_customer_status;
             $customer_status_arr = json_decode($team_customer_status,TRUE);
             if(!isset($customer_status_arr[$customer_list->id]))
-                $customer_status = 'Arrivals';
+                $customer_status = 'New Arrivals';
             else
                 $customer_status = GeneralHelper::getCustomerStatus($customer_status_arr[$customer_list->id]);
 
@@ -339,7 +339,7 @@ class CustomerController extends Controller
 
                 if(!isset($customer_status_arr[$customer->id])){
                     $customer_status_arr[$customer->id] = 1;
-                    $ct_status = 'Arrivals';
+                    $ct_status = 'New Arrivals';
                 }
                 else
                     $ct_status = GeneralHelper::getCustomerStatus($customer_status_arr[$customer->id]);
