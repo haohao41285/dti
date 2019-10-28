@@ -17,7 +17,8 @@ class MainTrackingHistory extends Model
     	'created_at',
     	'content',
         'email_list',
-        'customer_id'
+        'customer_id',
+        'receiver_id'
     ];
     public $timestamps = false;
 
@@ -26,5 +27,8 @@ class MainTrackingHistory extends Model
     }
     public function getUserCreated(){
         return $this->belongsTo(MainUser::class,'created_by','user_id');
+    }
+    public function getReceiver(){
+        return $this->belongsTo(MainUser::class,'created_by','receiver_id');
     }
 }

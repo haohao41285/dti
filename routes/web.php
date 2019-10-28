@@ -47,14 +47,21 @@ Route::group(['middleware' => ['auth']], function () {
          Route::post('import-customer', 'CustomerController@importCustomer')->name('import-customer');
          Route::get('export-customer', 'CustomerController@exportCustomer')->name('export-customer');
          Route::get('export-my-customer', 'CustomerController@exportMyCustomer')->name('export-my-customer');
-         Route::post('save-my-customer', 'CustomerController@saveMyCustomer')->name('save-my-customer');
-         Route::get('customer-detail/{id}', 'CustomerController@customerDetail')->where(['id'=>'[0-9]+'])->name('customer-detail');
+
+         Route::post('save-my-customer', 'CustomerControllercustomersDatatable@saveMyCustomer')->name('save-my-customer');
+         Route::get('customer-detail/{id?}', 'CustomerController@customerDetail')->where(['id'=>'[0-9]+'])->name('customer-detail');
          Route::get('customer-tracking', 'CustomerController@customerTracking')->name('customer-tracking');
          Route::post('post-comment-customer', 'CustomerController@postCommentCustomer')->name('post-comment-customer');
          Route::get('get-seller', 'CustomerController@getSeller')->name('get-seller');
          Route::post('move-customer', 'CustomerController@moveCustomer')->name('move-customer');
          Route::post('add-customer-note', 'CustomerController@addCustomerNote')->name('add-customer-note');
          Route::post('move-customers', 'CustomerController@moveCustomers')->name('move-customers');
+
+         Route::get('move-customer-all', 'CustomerController@moveCustomerAll')->name('move-customer-all');
+         Route::get('get-user-team', 'CustomerController@getUserTeam')->name('get-user-team');
+         Route::get('get-customer-1', 'CustomerController@getCustomer1')->name('get_customer_1');
+         Route::get('get-customer-2', 'CustomerController@getCustomer2')->name('get_customer_2');
+         Route::post('move-customer-all', 'CustomerController@moveCustomersAll')->name('move-customer-all');
 
     });
 
@@ -112,7 +119,7 @@ Route::group(['middleware' => ['auth']], function () {
 
     Route::group(['prefix'=>'tools','namespace'=>'ItTools'],function(){
 
-        
+
 
         Route::group(['prefix' => 'website-themes'], function() {
             Route::get('/', 'WebsiteThemeController@index')->name('getWebsiteThemes');
@@ -210,6 +217,19 @@ Route::group(['middleware' => ['auth']], function () {
         Route::post('delete-event','EventHolidayController@deleteEvent')->name('delete-event');
         Route::post('change-status-event','EventHolidayController@changeStatusEvent')->name('change-status-event');
 
+        //SETTING SERVICE TYPE
+        Route::get('setup-service-type','SetupServiceController@setServiceType')->name('setup-service-type');
+        Route::get('service-type-datatable','SetupServiceController@serviceTypeDatatable')->name('service-type-datatable');
+        Route::get('change-status-service-type','SetupServiceController@changeStatusServiceType')->name('change-status-service-type');
+        Route::get('add-service-type','SetupServiceController@addServiceType')->name('add-service-type');
+
+        //SETTING MENU
+        Route::get('setup-menu','MenuController@index')->name('setup-menu');
+        Route::get('setup-permission-begin','MenuController@setPermission')->name('setup-permission-begin');
+
+        Route::get('menu','MenuController@setupMenu')->name('menu');
+        Route::get('setup-permission','MenuController@permission')->name('setup-permission');
+
     });
 
     Route::group(['prefix'=>'user'],function(){
@@ -228,8 +248,11 @@ Route::group(['middleware' => ['auth']], function () {
 
         Route::get('user-add/{id?}','UserController@userAdd')->where(['id'=>'[0-9]+'])->name('user-add');
         Route::post('user-save','UserController@userSave')->name('user-save');
+        Route::post('user-delete','UserController@userDelete')->name('user-delete');
+        Route::get('user-export','UserController@userExport')->name('user-export');
 
-
+        Route::get('service-permission','UserController@servicePermission')->name('service-permission');
+        Route::get('change-service-permission','UserController@changeServicePermission')->name('change-service-permission');
 
     });
 
@@ -241,7 +264,7 @@ Route::group(['middleware' => ['auth']], function () {
         Route::post('authorize','OrdersController@authorizeCreditCard')->name('authorize');
         Route::get('get-customer-infor', 'OrdersController@getCustomerInfor')->name('get-customer-infor');
         Route::get('my-order-datatable', 'OrdersController@myOrderDatatable')->name('my-order-datatable');
-        Route::get('seller-order-datatable', 'OrdersController@sellerOrderDatatable')->name('seller-order-datatable');
+        Route::get('seller-orderpost-comment-datatable', 'OrdersController@sellerOrderDatatable')->name('seller-order-datatable');
         Route::get('view/{id?}', 'OrdersController@orderView')->where(['id'=>'[0-9]+'])->name('order-view');
         Route::get('order-tracking', 'OrdersController@orderTracking')->name('order-tracking');
         Route::get('order-service', 'OrdersController@orderService')->name('order-service');
@@ -265,8 +288,29 @@ Route::group(['middleware' => ['auth']], function () {
         Route::post('send-mail-notification', 'TaskController@sendMailNotification')->name('send-mail-notification');
         Route::get('theme-mail', 'TaskController@themeMail')->name('theme-mail');
         Route::get('get-subtask', 'TaskController@getSubTask')->name('get-subtask');
+
+        Route::get('all-task', 'TaskController@allTask')->name('all-task');
+        Route::get('all-task-datatable', 'TaskController@allTaskDatatable')->name('all-task-datatable');
     });
     //confirm event
     Route::get('confirm-event', 'DashboardController@confirmEvent')->name('confirm-event');
     Route::get('confirm-birthday', 'DashboardController@confirmBirthday')->name('confirm-birthday');
+    Route::get('search-customer', 'DashboardController@searchCustomer')->name('search-customer');
+    Route::get('check-all-notification', 'DashboardController@checkAllNotification')->name('check-all-notification');
+    Route::get('get-notification', 'DashboardController@getNotification')->name('get-notification');
+    Route::get('customer-service-datatable', 'DashboardController@customerServiceDatatable')->name('customer-service-datatable');
+
+
+    Route::group(['prefix' => 'notification'], function() {
+        Route::get('/', 'NotificationController@index')->name('notification-list');
+        Route::get('notification-receive-datatable', 'NotificationController@notificationReceiveDatatable')->name('notification-receive-datatable');
+        Route::post('notification-mark-read', 'NotificationController@notificationMarkRead')->name('notification-mark-read');
+        Route::get('notification-sent-datatable', 'NotificationController@notificationSentDatatable')->name('notification-sent-datatable');
+        Route::post('send-notification', 'NotificationController@sendNotification')->name('send-notification');
+        Route::get('view-notification/{id}', 'NotificationController@viewNotification')->name('view-notification');
+
+    });
+
+
+
 });

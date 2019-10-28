@@ -31,12 +31,14 @@
                   text: '<i class="fas fa-plus"></i> Add User',
                   className: 'btn btn-sm btn-primary',
                   action: function ( e, dt, node, config ) {
-                     document.location.href = "{{ route('addCombo') }}";
+                     document.location.href = "{{ route('user-add') }}";
                   }
               },
               { text : '<i class="fas fa-download"></i> Export',
-                extend: 'csvHtml5',
-                className: 'btn btn-sm btn-primary'
+                className: 'btn btn-sm btn-primary',
+                  action:function () {
+                      document.location.href = "{{ route('user-export') }}";
+                  }
               }
             ],
             columnDefs: [
@@ -96,13 +98,45 @@
 			},
 		})
 		.done(function(data) {
-			dataTable.draw();
+		    data = JSON.parse(data);
+		    if(data.status == 'error')
+		        toastr.error(data.message);
+		    else{
+                dataTable.draw();
+                toastr.success(data.message);
+            }
 		})
 		.fail(function() {
-			alert('Change User Status Error!');
-			console.log();
+		    toastr.error('Change Failed!');
 		});
+	});
+    $(document).on('click','.delete-user',function () {
 
-	})
+        let user_id = $(this).attr('user_id');
+
+        if(confirm('Do you want delete this user from database?')){
+            $.ajax({
+                url: '{{route('user-delete')}}',
+                type: 'POST',
+                dataType: 'html',
+                data: {
+                    user_id: user_id,
+                    _token: '{{csrf_token()}}'
+                },
+            })
+                .done(function(data) {
+                    data = JSON.parse(data);
+                    if(data.status == 'error'){
+                        toastr.error(data.message);
+                    }else{
+                        toastr.success(data.message);
+                        dataTable.ajax.reload(null, false);
+                    }
+                })
+                .fail(function() {
+                    toastr.error('Delete Failed!');
+                });
+        }
+    });
 </script>
 @endpush

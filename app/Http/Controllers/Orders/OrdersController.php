@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\Orders;
 
+use App\Models\MainComboServiceType;
+use App\Models\MainGroupUser;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Helpers\Option;
@@ -56,7 +58,13 @@ class OrdersController extends Controller
 		$data['state'] = Option::state();
         $data['status'] = GeneralHelper::getOrdersStatus();
         $team = Auth::user()->user_team;
-        $data['user_teams'] = MainUser::where('user_team',$team)->get();
+        //CHECK TEAM LEADER
+        $team_leader = MainTeam::where('team_leader',Auth::user()->user_id)->first();
+        if(isset($team_leader) && $team_leader != ""){
+            $data['user_teams'] = MainUser::where('user_team',$team)->get();
+        }else
+            $data['user_teams'] = MainUser::all();
+
         $data['services'] = MainComboService::where('cs_status',1)->get();
 		return view('orders.sellers',$data);
 	}
@@ -76,10 +84,15 @@ class OrdersController extends Controller
 					->select('pos_place.place_id','pos_place.place_name')
 			        ->get();
         }
+        //GET COMBO SERVICE WITH ROLE
+        $service_permission_list = MainGroupUser::where('gu_id',Auth::user()->user_group_id)->first()->service_permission;
+        $service_permission_arr = explode(';',$service_permission_list);
+        $data['service_permission_arr'] = $service_permission_arr;
+//        return $service_permission_arr;
+        //GET COMBO SERVICE NOT TYPE
+        $data['combo_service_orther'] = MainComboService::where('cs_status',1)->whereIn('id',$service_permission_arr)->whereNull('cs_combo_service_type')->get();
 
-        $data['combo_service_list'] = MainComboService::where('cs_status',1)->orderBy('cs_type','asc')->get();
-
-        $data['count'] = round($data['combo_service_list']->count()/2);
+        $data['combo_service_type'] = MainComboServiceType::active()->get();
 
         return view('orders.add',$data);
 	}
@@ -93,8 +106,7 @@ class OrdersController extends Controller
 				'experation_month' => 'required',
 				'experation_year' => 'required',
 				'cvv_number' => 'required',
-				'first_name' => 'required',
-				'last_name' => 'required',
+				'fullname' => 'required',
 				'cs_id' =>'required',
 				'customer_phone' => 'required',
 				'customer_id' =>'required',
@@ -119,8 +131,7 @@ class OrdersController extends Controller
 				'routing_number' => 'required',
 				'account_number' => 'required',
 				'bank_name' => 'required',
-				'first_name' => 'required',
-				'last_name' => 'required',
+				'fullname' => 'required',
 				'cs_id' =>'required',
 				'customer_phone' => 'required',
 				'customer_id' =>'required',
@@ -355,48 +366,11 @@ class OrdersController extends Controller
 		    // Add the payment data to a paymentType object
 		    $paymentOne = new AnetAPI\PaymentType();
 		    $paymentOne->setCreditCard($creditCard);
-		    // Create order information
-		    $order = new AnetAPI\OrderType();
-		    $order->setInvoiceNumber("10101");
-		    $order->setDescription($request->note); //"Golf Shirts"
-		    // Set the customer's Bill To address
-		    $customerAddress = new AnetAPI\CustomerAddressType();
-            $customerAddress->setFirstName($request->first_name);    //"Ellen"
-            $customerAddress->setLastName($request->last_name);    //"Johnson"
-            $customerAddress->setCompany("");
-            $customerAddress->setAddress($request->address);    //"14 Main Street"
-            $customerAddress->setCity($request->city);    //"Pecan Springs"
-            $customerAddress->setState($request->state);    //"TX"
-		    $customerAddress->setZip($request->zip_code);    //"44628"
-		    $customerAddress->setCountry($request->country);   //"USA"
-		    // Set the customer's identifying information
-		    $customerData = new AnetAPI\CustomerDataType();
-		    $customerData->setType("individual");
-		    $customerData->setId("");
-		    $customerData->setEmail("");
-		    // Add values for transaction settings
-		    $duplicateWindowSetting = new AnetAPI\SettingType();
-		    $duplicateWindowSetting->setSettingName("duplicateWindow");
-		    $duplicateWindowSetting->setSettingValue("60");
-		    // Add some merchant defined fields. These fields won't be stored with the transaction,
-		    // but will be echoed back in the response.
-		    $merchantDefinedField1 = new AnetAPI\UserFieldType();
-		    $merchantDefinedField1->setName("customerLoyaltyNum");
-		    $merchantDefinedField1->setValue("1128836273");
-		    $merchantDefinedField2 = new AnetAPI\UserFieldType();
-		    $merchantDefinedField2->setName("favoriteColor");
-		    $merchantDefinedField2->setValue("blue");
 		    // Create a TransactionRequestType object and add the previous objects to it
 		    $transactionRequestType = new AnetAPI\TransactionRequestType();
 		    $transactionRequestType->setTransactionType("authOnlyTransaction");
 		    $transactionRequestType->setAmount($request->payment_amount);
-		    $transactionRequestType->setOrder($order);
 		    $transactionRequestType->setPayment($paymentOne);
-		    $transactionRequestType->setBillTo($customerAddress);
-		    $transactionRequestType->setCustomer($customerData);
-		    $transactionRequestType->addToTransactionSettings($duplicateWindowSetting);
-		    $transactionRequestType->addToUserFields($merchantDefinedField1);
-		    $transactionRequestType->addToUserFields($merchantDefinedField2);
 		    // Assemble the complete transaction request
 		    $request = new AnetAPI\CreateTransactionRequest();
 		    $request->setMerchantAuthentication($merchantAuthentication);
@@ -429,7 +403,7 @@ class OrdersController extends Controller
 							$task_arr = [];
 							foreach ($service_arr as $key => $service) {
 								$service_info = MainComboService::find($service);
-								
+
 								$task_arr[] = [
 									'subject' => $service_info->cs_name,
 									'priority' => 2,
@@ -649,15 +623,18 @@ class OrdersController extends Controller
 		$start_date = $request->start_date;
 		$end_date = $request->end_date;
 		$service_id = $request->service_id;
-		$user_id = $request->user_id;
+        $seller_id = $request->seller_id;
 		$team_id = Auth::user()->user_team;
 		$order_arr = [];
 
 		$order_list = MainComboServiceBought::join('main_user',function($join){
 			$join->on('main_combo_service_bought.created_by','main_user.user_id');
-		})
-		    ->where('main_user.user_team',$team_id);
-
+		});
+        //CHECK LEADER TEAM
+        $team_leader = MainTeam::where('team_leader',Auth::user()->user_id)->first();
+        if(isset($team_leader) && $team_leader != ""){
+            $order_list = $order_list->where('main_user.user_team',$team_id);
+        }
 		if($start_date != ""){
 			$start_date = format_date_db($start_date);
 			$order_list = $order_list->whereDate('main_combo_service_bought.created_at','>=',$start_date);
@@ -666,8 +643,8 @@ class OrdersController extends Controller
 			$end_date = format_date_db($end_date);
 			$order_list = $order_list->whereDate('main_combo_service_bought.created_at','<=',$end_date);
 		}
-		if($user_id != ""){
-			$order_list = $order_list->where('main_combo_service_bought.created_by',$user_id);
+		if($seller_id != ""){
+			$order_list = $order_list->where('main_combo_service_bought.created_by',$seller_id);
 		}
 		if($service_id != ""){
 			$order_list = $order_list->where(function($query) use ($service_id){
@@ -694,7 +671,7 @@ class OrdersController extends Controller
 	    	$order_arr[] = [
 	    		'id' => $order->id,
 	    		'order_date' => Carbon::parse($order->created_at)->format('m/d/Y H:i:s'),
-	    		'customer' => $order->customer_firstname. " " .$order->customer_lastname,
+	    		'customer' => $order->getCustomer->customer_firstname. " " .$order->getCustomer->customer_lastname,
 	    		'servivce' => $service_name,
 	    		'subtotal' => $order->csb_amount,
 	    		'discount' => $order->csb_amount_deal,
@@ -1034,4 +1011,5 @@ class OrdersController extends Controller
         // Output the generated PDF to Browser
         $dompdf->stream();
     }
+
 }

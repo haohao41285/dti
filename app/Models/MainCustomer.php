@@ -50,12 +50,15 @@ class MainCustomer extends Model
 
         return self::select(
                     DB::raw('DATE_FORMAT(created_at, "%m") as month'),
-                    DB::raw('COUNT("month") as count' ) 
+                    DB::raw('COUNT("month") as count' )
                         )
                     ->where('customer_status',1)
                     ->whereBetween('created_at',[$startDate,$endDate])
                     ->groupBy('month')
                     ->get();
+    }
+    public function getFullname(){
+        return  $this->customer_firstname. " ".$this->customer_lastname;
     }
 
     public static function getDatatableStatistic($type,$valueQuarter = null, $date = null){
@@ -104,7 +107,5 @@ class MainCustomer extends Model
                     ->whereBetween('created_at',[$startDate,$endDate])
                     ->get();
     }
-
-    
 
 }

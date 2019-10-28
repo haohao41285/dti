@@ -21,6 +21,7 @@
                         <div class="form-group row">
                             <label class="col-lg-3 col-form-label form-control-label">Nickname & Phone</label>
                             <div class="col-lg-6">
+                                <input type="hidden" value="{{$user->user_id??0}}" name="user_id">
                                 <input required="" class="form-control form-control-sm" type="text" name="user_nickname" value="{{$user->user_nickname??old('user_nickname')}}" placeholder="Nickname" />
                             </div>
                             <div class="col-lg-3">
@@ -111,7 +112,7 @@
                     message_error.text("");
                 }else
                     message_error.text("Password not match!");
-            })
+            });
         });
     </script>
 

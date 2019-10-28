@@ -27,7 +27,7 @@
             <label for="">Status</label>
             <select id="status-customer" name="status_customer" class="form-control form-control-sm">
                 <option value="">-- ALL --</option>
-                @foreach ($status as $key =>  $element)                    
+                @foreach ($status as $key =>  $element)
                     <option value="{{$key}}">{{$element}}</option>
                 @endforeach
             </select>
@@ -46,12 +46,12 @@
             <input type="button" class="btn btn-primary btn-sm" id="search-button" value="Search">
             <input type="button" class="btn btn-secondary btn-sm" id="reset" value="Reset">
             </div>
-        </div>  
+        </div>
     </div>
     </form>
     <hr>
     <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
-        <thead>                
+        <thead>
                 <th>Id</th>
                 <th>Order Date</th>
                 <th>Customer</th>
@@ -72,18 +72,19 @@
  	$("#created_at").datepicker({});
     var table = $('#dataTable').DataTable({
          dom: "lBfrtip",
+         order: [[1,'desc']],
             buttons: [
-            ],  
+            ],
             processing: true,
             serverSide: true,
         ajax:{ url:"{{ route('seller-order-datatable') }}",
-        
+
         data: function (d) {
             d.start_date = $("#start_date").val();
             d.end_date = $("#end_date").val();
             d.service_id = $("#service_id :selected").val();
-            d.user_id = $("#user_id :selected").val();
-            } 
+            d.seller_id = $("#user_id :selected").val();
+            }
         },
         columns: [
 
@@ -95,7 +96,7 @@
             { data: 'discount', name: 'discount',class:'text-right' },
             { data: 'total_charge', name: 'total_charge',class:'text-right' },
             { data: 'seller', name: 'seller' },
-            { data: 'information', name: 'information'},                
+            { data: 'information', name: 'information'},
                   // { data: 'action' , name:'action' ,orderable: false, searcheble: false ,class:'text-center'}
         ],
     });

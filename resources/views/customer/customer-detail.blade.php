@@ -112,7 +112,7 @@
                 <thead  class="thead-light">
                 <tr class="text-center">
                     <th>Place Name</th>
-                    <th>Serivce Name</th>
+                    <th>Service Name</th>
                     <th>Expired date</th>
                     <th>Created At</th>
                     <th></th>
@@ -166,6 +166,7 @@
     <p>(The maximum upload file size: 100M)</p>
     <div style="height: 10px" class="bg-info">
     </div>
+    <input type="hidden" value="" id="receiver_id">
     <hr style="border-top: 1px dotted grey;">
     <div class="input-group mb-2 mr-sm-2">
         <div class="input-group-prepend">
@@ -184,7 +185,17 @@
             $("#file_image_list_2").click();
         }
         $(document).ready(function () {
-            $('#summernote2').summernote();
+            $('#summernote2').summernote({
+                toolbar: [
+                    // [groupName, [list of button]]
+                    ['style', ['bold', 'italic', 'underline', 'clear']],
+                    ['font', ['strikethrough', 'superscript', 'subscript']],
+                    ['fontsize', ['fontsize']],
+                    ['color', ['color']],
+                    ['para', ['ul', 'ol', 'paragraph']],
+                    ['height', ['height']]
+                ]
+            });
             var table = $('#tracking-datatable').DataTable({
                 // dom: "lBfrtip",
                 order:[[0,'desc']],
@@ -273,6 +284,7 @@
                         $(".email_seller").text(" ("+data.email+")");
                         $(".fullname_seller").text(data.fullname);
                         $("#email_seller").val(data.email);
+                        $("#receiver_id").val(data.receiver_id);
                     }
                 })
                 .fail(function() {

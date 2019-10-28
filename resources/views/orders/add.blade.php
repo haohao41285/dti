@@ -78,15 +78,52 @@
         <div class="col-md-2">
             <label class="required">Services</label>
         </div>
-             <div class="col-md-5">
-                @foreach($combo_service_list as $key => $cs)
-                @if($key == $count)
+        <div class="col-md-10">
+            <div id="accordion">
+                @foreach($combo_service_type as $key =>  $type)
+                <div class="card">
+                    <div class="card-header">
+                        <a class="card-link" data-toggle="collapse" href="#t{{$type->id}}">
+                            <div class="text-uppercase text-info">{{$type->name}}</div>
+                        </a>
+                    </div>
+                    <div id="t{{$type->id}}" class="collapse " data-parent="#accordion">
+                        <div class="card-body row">
+{{--                            {{dd($service_permission_arr)}}--}}
+                             @foreach($type->getComboService as $service)
+                                 @if(in_array($service->id,$service_permission_arr))
+                                <label class="col-md-6"><input style="width:20px;height: 20px" type="checkbox" class="combo_service" cs_price="{{$service->cs_price}}" name="cs_id[]"  value="{{$service->id}}"> {{$service->cs_name}}{{$service->cs_type==1?"(Combo)":"(Service)"}} - ${{$service->cs_price}}</label><br>
+                                @endif
+                            @endforeach
+                        </div>
+                    </div>
                 </div>
-                <div class="col-md-5">
-                @endif
-                <label><input style="width:20px;height: 20px" type="checkbox" class="combo_service" cs_price="{{$cs->cs_price}}" name="cs_id[]"  value="{{$cs->id}}"> {{$cs->cs_name}}{{$cs->cs_type==1?"(Combo)":"(Service)"}} - ${{$cs->cs_price}}</label><br>
                 @endforeach
+                    <div class="card">
+                        <div class="card-header">
+                            <a class="card-link" data-toggle="collapse" href="#other">
+                                <div class="text-uppercase text-info">Others</div>
+                            </a>
+                        </div>
+                        <div id="other" class="collapse " data-parent="#accordion">
+                            <div class="card-body row">
+                                @foreach($combo_service_orther as $service)
+                                    <label class="col-md-6"><input style="width:20px;height: 20px" type="checkbox" class="combo_service" cs_price="{{$service->cs_price}}" name="cs_id[]"  value="{{$service->id}}"> {{$service->cs_name}}{{$service->cs_type==1?"(Combo)":"(Service)"}} - ${{$service->cs_price}}</label><br>
+                                @endforeach
+                            </div>
+                        </div>
+                    </div>
+            </div>
         </div>
+{{--             <div class="col-md-5">--}}
+{{--                @foreach($combo_service_list as $key => $cs)--}}
+{{--                @if($key == $count)--}}
+{{--                </div>--}}
+{{--                <div class="col-md-5">--}}
+{{--                @endif--}}
+{{--                <label><input style="width:20px;height: 20px" type="checkbox" class="combo_service" cs_price="{{$cs->cs_price}}" name="cs_id[]"  value="{{$cs->id}}"> {{$cs->cs_name}}{{$cs->cs_type==1?"(Combo)":"(Service)"}} - ${{$cs->cs_price}}</label><br>--}}
+{{--                @endforeach--}}
+{{--        </div>--}}
     </div>
     <hr>
     <div class="col-md-12 form-group row">
@@ -99,7 +136,11 @@
     </div>
     <div class="col-md-12 form-group row">
         <label class="col-md-2 required">Payment Amount($)</label>
-        <div class="col-md-4"><input class="form-control form-control-sm" type="number" id="payment_amount" name="payment_amount" value="{{old('payment_amount')}}"><input class="form-control form-control-sm" type="hidden" id="payment_amount_hidden" name="payment_amount_hidden" value="{{old('payment_amount_hidden')}}"></div>
+        <div class="col-md-4">
+            <input class="form-control form-control-sm" type="hidden" id="payment_amount" name="payment_amount" value="{{old('payment_amount')}}">
+            <input class="form-control form-control-sm" type="number" disabled id="payment_amount_disable" name="payment_amount_disable" value="{{old('payment_amount')}}">
+            <input class="form-control form-control-sm" type="hidden" id="payment_amount_hidden" name="payment_amount_hidden" value="{{old('payment_amount_hidden')}}">
+        </div>
     </div>
     <div class="col-md-12 form-group row">
         <label class="col-md-2 required">Credit Card Type</label>
@@ -146,8 +187,7 @@
     </div>
     <div class="col-md-12 form-group row">
         <label class="col-md-2 required">Name On Card</label>
-        <div class="col-md-2"><input class="form-control form-control-sm" type="text" value="{{old('first_name')}}" name="first_name" placeholder="First Name"></div>
-        <div class="col-md-2"><input class="form-control form-control-sm" type="text" value="{{old('last_name')}}" name="last_name" placeholder="Last Name"></div>
+        <div class="col-md-4"><input class="form-control form-control-sm" type="text" value="{{old('fullname')}}" name="fullname" placeholder="Last Name"></div>
     </div>
     <div class="col-md-12 form-group row">
         <label class="col-md-2">Address</label>
@@ -209,6 +249,7 @@
     }
 
     $("#payment_amount").val(total_price-parseFloat(discount));
+    $("#payment_amount_disable").val(total_price-parseFloat(discount));
     $("#payment_amount_hidden").val(total_price-parseFloat(discount));
     $("#service_price").val(total_price);
     $("#service_price_hidden").val(total_price);
@@ -226,8 +267,9 @@
         $("#discount").val(max_discount);
         toastr.error('Max discount is 10% Service Price');
     }
-    $("#payment_amount").val(total_price-parseInt(discount));
-    $("#payment_amount_hidden").val(total_price-parseFloat(discount));
+     $("#payment_amount_disable").val(total_price-parseInt(discount));
+     $("#payment_amount").val(total_price-parseInt(discount));
+     $("#payment_amount_hidden").val(total_price-parseFloat(discount));
    });
 
    $(".btn-search").click(function(){

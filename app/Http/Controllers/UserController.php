@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 
 use App\Http\Controllers\Controller;
+use App\Models\MainComboService;
 use App\Models\MainGroupUser;
 use App\Models\MainTeam;
 use Illuminate\Http\Request;
@@ -90,7 +91,7 @@ class UserController extends Controller
                 })
                ->addColumn('action',function($row){
                     return '<a class="btn btn-sm btn-secondary edit-user" href="'.route('user-add',$row->user_id).'"><i class="fas fa-edit"></i></a>
-                    <a class="btn btn-sm btn-secondary delete-user" href="#"><i class="fas fa-trash"></i></a>';
+                    <a class="btn btn-sm btn-secondary delete-user" user_id="'.$row->user_id.'" href="javascript:void(0)"><i class="fas fa-trash"></i></a>';
                })
                ->rawColumns(['user_status','action'])
                ->make(true);
@@ -105,7 +106,11 @@ class UserController extends Controller
         else
             $user_status = 1;
 
-        MainUser::where('user_id',$user_id)->update(['user_status'=>$user_status]);
+        $update_user = MainUser::where('user_id',$user_id)->update(['user_status'=>$user_status]);
+        if(!isset($update_user))
+            return response(['status'=>'error','message'=>'Change Failed!']);
+        else
+            return response(['status'=>'success','message'=>'Change Successfully!']);
     }
     //ROLES
     public function roleList(){
@@ -284,11 +289,13 @@ class UserController extends Controller
         return view('user.user-add',$data);
     }
     public function userSave(Request $request){
+
+        $user_id = $request->user_id;
+
         $rule = [
             'user_firstname' => 'required',
             'user_lastname' => 'required',
             'user_nickname' => 'required',
-            'new_password' =>'required|min:6',
             'user_phone' => 'required|min:10|max:15',
             'user_email' =>'required|email'
         ];
@@ -296,8 +303,6 @@ class UserController extends Controller
             'user_firstname.required' => 'Enter Firstname',
             'user_lastname.required' => 'Enter Lastname',
             'user_nickname.required' => 'Enter Nickname',
-            'new_password.required' => 'Enter Pasword',
-            'new_password.min' => 'Password at least 6 characters',
             'user_phone.required' => 'Enter Phone',
             'user_phone.min' => 'Phone not True',
             'user_phone.max' => 'Phone not True',
@@ -305,28 +310,128 @@ class UserController extends Controller
             'user_email.email' => 'Enter Enable Mail',
 
         ];
+        if($user_id == 0){
+            $rule['new_password'] = 'required|min:6';
+            $message['new_password.required'] = 'Enter Pasword';
+            $message['new_password.min'] = 'Password at least 6 characters';
+        }
+
         $validator = Validator::make($request->all(),$rule,$message);
         if($validator->fails()){
             return back()->withErrors($validator)->withInput();
         }
         $input = $request->all();
-        $max_user_id = MainUser::max('user_id')+1;
-        $input['user_id'] = $max_user_id;
-        $input['user_password'] = Hash::make($request->new_password);
-        $input['user_country_code'] = '84';
-        if($request->user_birthdate != ""){
-            $input['user_birthdate'] = format_date_db($request->user_birthdate);
-        }
 
         if($request->hasFile('avatar')){
             $input['user_avatar'] = ImagesHelper::uploadImage($request->hasFile('avatar'),$request->avatar,"");
             // dd($user->user_avatar);
         }
-        $save_user = MainUser::create($input);
+        if($request->new_password != ""){
+            $input['user_password'] = Hash::make($request->new_password);
+        }
+        if($request->user_birthdate != ""){
+            $input['user_birthdate'] = format_date_db($request->user_birthdate);
+        }
+        if($user_id == 0){
+            $max_user_id = MainUser::max('user_id')+1;
+            $input['user_id'] = $max_user_id;
+            $input['user_country_code'] = '84';
+            $save_user = MainUser::create($input);
+        }else{
+            unset($input['_token']);
+            unset($input['new_password']);
+            unset($input['confirm_password']);
+            unset($input['avatar']);
+
+            $save_user = MainUser::where('user_id',$user_id)->update($input);
+        }
+
         if(!isset($save_user)){
             return back()->with(['error'=>'Save User Failed']);
         }else
             return redirect()->route('userList')->with(['success'=>'Save User Successfully!']);
+    }
+    public function userDelete(Request $request){
+        $user_id = $request->user_id;
+        $delete_user = MainUser::where('user_id',$user_id)->delete();
+        if(!isset($delete_user)){
+            return response(['status'=>'error','message'=>'Delete Failed!']);
+        }else{
+            return response(['status'=>'success','message'=>'Delete Successfully!']);
+        }
+    }
+    public function userExport(Request $request)
+    {
+        $user_list = MainUser::orderBy('user_firstname','asc')->get();
 
+        $date = \Carbon\Carbon::now()->format('Y_m_d_His');
+        // dd($data);
+        return \Excel::create('user_list_'.$date,function($excel) use ($user_list){
+
+            $excel ->sheet('User List', function ($sheet) use ($user_list)
+            {
+                $sheet->cell('A1', function($cell) {$cell->setValue('Stt');$cell->setFontWeight('bold'); });
+                $sheet->cell('B1', function($cell) {$cell->setValue('Last Name');$cell->setFontWeight('bold'); });
+                $sheet->cell('C1', function($cell) {$cell->setValue('First Name');$cell->setFontWeight('bold'); });
+                $sheet->cell('D1', function($cell) {$cell->setValue('Birthdate');$cell->setFontWeight('bold'); });
+                $sheet->cell('E1', function($cell) {$cell->setValue('Phone');$cell->setFontWeight('bold'); });
+                $sheet->cell('F1', function($cell) {$cell->setValue('Mail');$cell->setFontWeight('bold'); });
+                $sheet->cell('G1', function($cell) {$cell->setValue('Role');$cell->setFontWeight('bold'); });
+                $sheet->cell('H1', function($cell) {$cell->setValue('Team');$cell->setFontWeight('bold'); });
+                $sheet->cell('I1', function($cell) {$cell->setValue('Status');$cell->setFontWeight('bold'); });
+
+                if (!empty($user_list)) {
+                    $stt = 1;
+                    foreach ($user_list as $key => $value) {
+                        $i=$key+2;
+                        $sheet->cell('A'.$i,function ($cell) use($stt) {$cell->setValue($stt);$cell->setValignment('center'); });
+                        $sheet->cell('B'.$i, ucwords($value->user_lastname));
+                        $sheet->cell('C'.$i, ucwords($value->user_firstname));
+                        $sheet->cell('D'.$i, $value->user_birthdate);
+                        $sheet->cell('E'.$i, $value->user_phone);
+                        $sheet->cell('F'.$i, $value->user_email);
+                        $sheet->cell('G'.$i, $value->getUserGroup->gu_name);
+                        $sheet->cell('H'.$i, $value->getTeam->team_name);
+                        $sheet->cell('I'.$i, $value->user_status==1?"Enable":"Disable");
+
+                        $stt++;
+                    }
+                }
+            });
+        })->download("xlsx");
+    }
+    public function servicePermission(){
+
+        $data['role_list'] = MainGroupUser::active()->get();
+        $data['service_list'] = MainComboService::where('cs_status',1)->get();
+
+        return view('user.service-permission',$data);
+    }
+    public function changeServicePermission(Request $request){
+        $role_id = $request->role_id;
+        $service_id = $request->service_id;
+
+        $service_permission = MainGroupUser::where('gu_id',$role_id)->first();
+        $service_permission_list = $service_permission->service_permission;
+
+        if($service_permission_list == ""){
+            $service_permission_list = $service_id;
+
+        }else{
+            $service_permission_arr = explode(';',$service_permission_list);
+
+            if (($key = array_search($service_id, $service_permission_arr)) !== false) {
+                unset($service_permission_arr[$key]);
+                $service_permission_list = implode(';',$service_permission_arr);
+            }
+            else
+                $service_permission_list = $service_permission_list.";".$service_id;
+        }
+        $service_update = MainGroupUser::where('gu_id',$role_id)->update(['service_permission'=> $service_permission_list]);
+
+        if(!isset($service_update))
+            return response(['status'=>'error','message'=>'Failed!']);
+        else
+            return response(['status'=>'success','message'=>'Successfully!']);
     }
 }

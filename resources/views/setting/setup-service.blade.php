@@ -27,7 +27,7 @@ Combo/Service List
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-body" id="body-add-edit">
-         
+
       </div>
     </div>
   </div>
@@ -44,7 +44,7 @@ Combo/Service List
             serverSide: true,
             autoWidth: true,
        buttons: [
-                 {   
+                 {
                      text: '<i class="fas fa-plus"></i>Add New',
                      className: "btn-sm add-new-cs",
                  }
@@ -67,7 +67,7 @@ Combo/Service List
                     elems.forEach(function (html) {
                         var switchery = new Switchery(html, {
                             color: '#0874e8',
-                            className : 'switchery switchery-small'                
+                            className : 'switchery switchery-small'
                         });
                     });
                 }
@@ -101,7 +101,7 @@ Combo/Service List
         alert(data.message);
         dataTable.draw();
       });
-      
+
     });
     $('#dataTable tbody').on( 'click', 'tr', function () {
 
@@ -111,7 +111,7 @@ Combo/Service List
       gu_id = dataTable.row(this).data()['gu_id'];
 
     });
-    
+
     function clearView(){
       cs_assign_to = 0;
       $("#body-add-edit").html("");
@@ -124,6 +124,8 @@ Combo/Service List
       var cs_name = $(this).attr('cs_name');
       var cs_price = $(this).attr('cs_price');
       var cs_description = $(this).attr('cs_description');
+      var cs_form_type = $(this).attr('cs_form_type');
+      var cs_combo_service_type = $(this).attr('cs_combo_service_type')
       cs_assign_id = $(this).attr('cs_assign_id');
 
       $.ajax({
@@ -146,22 +148,44 @@ Combo/Service List
           var service_list_html = "";
           var user_html = "";
           var selected = "";
+          var service_form = "";
+          var service_type_htm = "";
 
+          //GET ASSIGN LIST
           $.each(data.user, function(index, val) {
             if(cs_assign_id == val.user_id) var selected = "selected";
             user_html += `<option `+selected+` value="`+val.user_id+`">`+val.user_nickname+`</option>`;
           });
+
+          //GET FORM SERVICE LIST
+           var selected_form = '';
+          $.each(data.service_form,function (ind,value) {
+            if(cs_form_type == parseInt(ind)+1){
+                selected_form = 'selected';
+            }
+            service_form += `<option `+selected_form+` value="`+ind+`">`+value+`</option>`;
+          });
+          //GET COMBO SERVICE TYPE LIST
+            var selected_type = '';
+            $.each(data.combo_service_type_list,function (ind,value) {
+                if(cs_combo_service_type == parseInt(ind)+1){
+                    selected_type = 'selected';
+                }
+                service_type_htm += `<option `+selected_type+` value="`+ind+`">`+value+`</option>`;
+            });
 
           if(cs_type == 1){
             $.each(serivece_list_all, function(index, val)
             {
               var id = ''+val['id'];
               let checked = "";
+
               if(service_arr.includes(id))
                 checked = "checked";
               service_list_html += `<div class="checkbox">
                     <label><input type="checkbox" `+checked+` class="service_id"  style="height: 20px;width: 20px" value="`+val['id']+`">`+val['cs_name']+`</label>
                 </div>`;
+
             });
             content_body_html = `<div class="form-group">
               <h6 for="cs_name" ><b>Combo Name</b></h6>
@@ -171,10 +195,17 @@ Combo/Service List
               <h6><b>Price</b></h6>
               <input type="text" name="cs_price"  class="form-control form-control-sm cs_price" value="`+cs_price+`" placeholder="">
             </div>
-            <div class="form-group">
-              <h6><b>Assign To</b></h6>
-              <select name="" id="assign_to" class="form-control form-control-sm">
-                <option value="">Choose User</option>
+           <div class="form-group">
+            <h6><b>Combo Service type</b></h6>
+            <select name="cs_combo_service_type" id="cs_combo_service_type" class="form-control form-control-sm">
+              <option value="">Choose Service Type</option>
+                `+service_type_htm+`
+             </select>
+           </div>
+          <div class="form-group">
+            <h6><b>Assign To</b></h6>
+            <select name="" id="assign_to" class="form-control form-control-sm">
+              <option value="">Choose User</option>
                 `+user_html+`
               </select>
             </div>
@@ -197,6 +228,19 @@ Combo/Service List
             <div class="form-group">
               <h6><b>Price</b></h6>
               <input type="text" name="cs_price"  class="form-control form-control-sm cs_price" value="`+cs_price+`" placeholder="">
+            </div>
+            <div class="form-group">
+                <h6><b>Combo Service type</b></h6>
+                <select name="cs_combo_service_type" id="cs_combo_service_type" class="form-control form-control-sm">
+                  <option value="">Choose Service Type</option>
+                    `+service_type_htm+`
+                 </select>
+           </div>
+            <div class="form-group">
+              <h6><b>Service Form</b></h6>
+              <select name="cs_form_type" id="cs_form_type" class="form-control form-control-sm">
+                `+service_form+`
+              </select>
             </div>
             <div class="form-group">
               <h6><b>Assign To</b></h6>
@@ -234,6 +278,8 @@ Combo/Service List
       var cs_price = $(".cs_price").val();
       var cs_description = $(".cs_description").val();
       var cs_assign_to = $("#assign_to :selected").val();
+      var cs_combo_service_type = $("#cs_combo_service_type").val();
+      var cs_form_type = $("#cs_form_type").val();
       var service_id_arr = [];
 
       $('.service_id:checked').each(function() {
@@ -250,7 +296,9 @@ Combo/Service List
           cs_type: cs_type,
           cs_description: cs_description,
           service_id_arr: service_id_arr,
-          cs_assign_to: cs_assign_to
+          cs_assign_to: cs_assign_to,
+          cs_form_type :cs_form_type,
+          cs_combo_service_type: cs_combo_service_type
         },
       })
       .done(function(data) {
@@ -345,6 +393,14 @@ Combo/Service List
             <div class="form-group">
               <h6><b>Price</b></h6>
               <input type="text" name="cs_price"  class="form-control form-control-sm cs_price" value="" placeholder="">
+            </div>
+            <div class="form-group">
+              <h6><b>Service Form</b></h6>
+              <select name="cs_form_type" id="cs_form_type" class="form-control form-control-sm">
+                @foreach(getFormService() as $key => $form)
+                <option value="{{$key}}">{{$form}}</option>
+                @endforeach
+              </select>
             </div>
             <div class="form-group">
               <h6><b>Assign To</b></h6>

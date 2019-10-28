@@ -4,6 +4,7 @@ namespace App\Observers;
 
 use App\Jobs\SendNotification;
 use App\Models\MainTrackingHistory;
+use OneSignal;
 
 class TrackingHistoryObserver
 {
@@ -15,6 +16,7 @@ class TrackingHistoryObserver
      */
     public function created(MainTrackingHistory $mainTrackingHistory)
     {
+        //SEND MAIL
         $name_created = $mainTrackingHistory->getUserCreated->user_nickname;
         $email_list = $mainTrackingHistory->email_list;
 
@@ -29,7 +31,7 @@ class TrackingHistoryObserver
         if($mainTrackingHistory->subtask_id != "")
             $task_id = $mainTrackingHistory->subtask_id;
 
-        if($mainTrackingHistory->getUserCreated->user_email != ""){
+        if( $mainTrackingHistory->receiver_id != null && $mainTrackingHistory->getReceiver->user_email != ""){
             if($task_id != "") {
                 $content = "Dear Sir/Madam,<br>";
                 $content .= $name_created . " have just created a comment on task#" . $task_id . "<hr>" . $mainTrackingHistory->content;
@@ -46,13 +48,23 @@ class TrackingHistoryObserver
             }
 
             $input['subject'] = 'New Comment';
-            $input['email'] = $mainTrackingHistory->getUserCreated->user_email;
+            $input['email'] = $mainTrackingHistory->getReceiver->user_email;
             $input['email_arr'] = $email_arr;
-            $input['name'] = $mainTrackingHistory->getUserCreated->user_firstname." ".$mainTrackingHistory->getUserCreated->user_lastname;
+            $input['name'] = $mainTrackingHistory->getReceiver->user_firstname." ".$mainTrackingHistory->getReceiver->user_lastname;
             $input['message'] = $content;
 
             dispatch(new SendNotification($input));
         }
+        //END SEND MAIL
+
+        //SEND NOTIFICATION WITH ONESIGNAL
+        $receiver_id = $mainTrackingHistory->receiver_id;
+        if($receiver_id != "")
+            OneSignal::sendNotificationUsingTags($name_created . " have just created a comment on task#" . $task_id,
+                array(["field" => "tag", "key" => "user_id", "relation" => "=", "value" => $receiver_id]),
+                $url = route('task-detail',$task_id)
+            );
+        //END SEND NOTIFICATION
     }
 
     /**

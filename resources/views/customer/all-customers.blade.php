@@ -15,7 +15,7 @@
         </style>
     @endif
 <div class="table-responsive">
-
+    <form>
     <div class="form-group col-md-12 row">
         <div class="col-md-4">
             <label for="">Created date</label>
@@ -25,7 +25,7 @@
               <input type="text" class="input-sm form-control form-control-sm" id="end_date" name="end" />
             </div>
         </div>
-        <div class="col-md-3">
+        <div class="col-md-2">
             <label for="">Address</label>
             <input type="text" id="address" name="address" class="form-control form-control-sm">
         </div>
@@ -42,16 +42,28 @@
                 @endif
             </select>
         </div>
+        @if(\Illuminate\Support\Facades\Auth::user()->user_group_id == 1)
+        <div class="col-md-2">
+            <label for="">Team</label>
+            <select id="team_id" name="team_id" class="form-control form-control-sm">
+                    @foreach ($teams as $key =>  $team)
+                        <option value="{{$team->id}}">{{$team->team_name}}</option>
+                    @endforeach
+            </select>
+        </div>
+        @endif
         <div class="col-2 " style="position: relative;">
             <div style="position: absolute;top: 50%;" class="">
             <input type="button" class="btn btn-primary btn-sm" id="search-button" value="Search">
-            <input type="button" class="btn btn-secondary btn-sm" id="reset" value="Reset">
+            <input type="button" class="btn btn-secondary btn-sm" id="formReset" value="Reset">
             </div>
         </div>
     </div>
+    </form>
     <hr>
     <table class="table table-striped table-hover" id="dataTableAllCustomer" width="100%" cellspacing="0">
         <thead>
+            <tr>
                 <th>ID</th>
                 <th>Business</th>
                 <th>Contact Name</th>
@@ -60,7 +72,7 @@
                 <th>Note</th>
                 <th>Status</th>
                 <th>Created Date</th>
-                <th>Action</th>
+                <th style="width: 10%">Action</th>
             </tr>
         </thead>
     </table>
@@ -115,6 +127,14 @@
        // dom: "lBfrtip",
        order:[[7,'desc']],
        buttons: [
+
+           {
+               text: '<i class="fas fa-exchange-alt"></i> Move Customer',
+               className: "btn-sm an",
+               action: function () {
+                   document.location.href = "{{route('move-customer-all')}}";
+               }
+           },
            {
                text: '<i class="fas fa-download"></i> Import',
                className: "btn-sm import-show an",
@@ -122,7 +142,7 @@
            {
                text: '<i class="fas fa-upload"></i> Export',
                className: "btn-sm an",
-               action: function ( e, dt, node, config ) {
+               action: function () {
                   document.location.href = "{{route('export-customer')}}";
               }
            }
@@ -135,6 +155,7 @@
           d.end_date = $("#end_date").val();
           d.address = $("#address").val();
           d.status_customer = $("#status-customer :selected").val();
+          d.team_id = $("#team_id :selected").val();
             }
         },
        columns: [
@@ -151,13 +172,14 @@
         ],
     });
 
-    $("#reset").on('click',function(e){
-        $("#start_date").val("");
-        $("#end_date").val("");
-        $("#address").val("");
-        e.preventDefault();
-        table.ajax.reload(null, false);
-    });
+    // $("#formReset").on('click',function(e){
+    //    $(this).parents('form')[0].reset();
+    //     table.ajax.reload(null, false);
+    // });
+     $("#formReset").click(function () {
+         $(this).parents('form')[0].reset();
+         table.draw();
+     });
 
     $(document).on("click",".view",function(){
 
@@ -299,6 +321,15 @@
           toastr.error('Getting Error! Check again!');
         }else{
           data = JSON.parse(data);
+            if(data.ct_salon_name==null)data.ct_salon_name="";
+            if(data.ct_contact_name==null)data.ct_contact_name="";
+            if(data.ct_business_phone==null)data.ct_business_phone="";
+            if(data.ct_cell_phone==null)data.ct_cell_phone="";
+            if(data.ct_email==null)data.ct_email="";
+            if(data.ct_address==null)data.ct_address="";
+            if(data.ct_website==null)data.ct_website="";
+            if(data.ct_note==null)data.ct_note="";
+            if(data.ct_status==null)data.ct_status="";
 
           $(".modal-content").html(`
              <div class="modal-header">
@@ -322,11 +353,11 @@
               </div>
               <div class="form-group row">
                 <label class="col-md-4" for="ct_business_phone">Business Phone<i class="text-danger">*</i></label>
-                <input type="text" class="col-md-8 form-control form-control-sm" name="ct_business_phone" id="ct_business_phone" value="`+data.ct_business_phone+`" placeholder="">
+                <input type="number" class="col-md-8 form-control form-control-sm" name="ct_business_phone" id="ct_business_phone" value="`+data.ct_business_phone+`" placeholder="">
               </div>
               <div class="form-group row">
                 <label class="col-md-4" for="ct_cell_phone">Cell Phone<i class="text-danger">*</i></label>
-                <input type="text" class="col-md-8 form-control form-control-sm" name="ct_cell_phone" id="ct_cell_phone" value="`+data.ct_cell_phone+`" placeholder="">
+                <input type="number" class="col-md-8 form-control form-control-sm" name="ct_cell_phone" id="ct_cell_phone" value="`+data.ct_cell_phone+`" placeholder="">
               </div>
               <div class="form-group row">
                 <label class="col-md-4" for="ct_email">Email</label>

@@ -12,4 +12,7 @@ class MainTeamType extends Model
     public function getTeams(){
         return $this->hasMany(MainTeam::class,'team_type','id');
     }
+    public function scopeActive($query){
+        return $query->where('team_type_status',1);
+    }
 }

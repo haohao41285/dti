@@ -45,6 +45,9 @@ class MainUser extends Model
 		return $this->hasManyThrough(MainFile::class,MainTrackingHistory::class,'created_by','tracking_id','user_id','id');
 	}
 	public function getUserGroup(){
-	    return $this->hasOne(MainGroupUser::class,'user_group_id','gu_id');
+	    return $this->belongsTo(MainGroupUser::class,'user_group_id','gu_id');
+    }
+    public function scopeActive($query){
+	    return $query->where('user_status',1);
     }
 }

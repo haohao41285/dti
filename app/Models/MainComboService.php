@@ -15,14 +15,21 @@ class MainComboService extends Model
     	'cs_menu_id',
     	'cs_description',
     	'cs_status',
-    	'cs_type',
+    	'cs_type', // Service or Combo
     	'cs_assign_to',
-        'cs_form_type'
+        'cs_form_type',
+        'cs_combo_service_type' //main_combo_service_type
     ];
+<<<<<<< .merge_file_a07128
 
     public static function getByArrId($arr){
         return self::select('id','cs_name','cs_price')
                     ->whereIn('id',$arr)
                     ->get();
     } 
+=======
+    public function getComboServiceType(){
+        return $this->belongsTo(MainComboServiceType::class,'cs_combo_service_type','id');
+    }
+>>>>>>> .merge_file_a12236
 }

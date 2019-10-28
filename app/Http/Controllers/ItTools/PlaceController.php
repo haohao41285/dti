@@ -12,8 +12,9 @@ use App\Helpers\RunShFileHelper;
 use Validator;
 // use App\Http\Controllers\ItTools\WebsiteThemeController;
 use App\Models\MainTheme;
+use Symfony\Component\Process\Process;
+use Symfony\Component\Process\Exception\ProcessFailedException;
 use App\Models\PosWebsiteProperty;
-
 
 class PlaceController extends Controller
 {
@@ -22,6 +23,7 @@ class PlaceController extends Controller
     }
     public function cloneUpdateWebsite(Request $request)
     {
+
         $place = PosPlace::getPlaceIdByLicense($request->get_license);
 
         $place->place_theme_code = $request->get_code;
@@ -31,10 +33,7 @@ class PlaceController extends Controller
 
         PosWebsiteProperty::cloneUpdate($request->id_properties,$placeId);
 
-
-
         //run sh file 
-        
         return response()->json(['status'=>1,'msg'=>"Clone website successfully!"]); 
     }
 
