@@ -26,6 +26,7 @@
             processing: true,
             serverSide: true,
             autoWidth: true,
+            order: [[0,'desc']],
 			buttons: [
               {
                   text: '<i class="fas fa-plus"></i> Add User',
