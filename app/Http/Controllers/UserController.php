@@ -302,20 +302,22 @@ class UserController extends Controller
             'user_email' =>'required|email'
         ];
         $message = [
-            'user_firstname.required' => 'Enter Firstname',
-            'user_lastname.required' => 'Enter Lastname',
-            'user_nickname.required' => 'Enter Nickname',
-            'user_phone.required' => 'Enter Phone',
             'user_phone.min' => 'Phone not True',
             'user_phone.max' => 'Phone not True',
-            'user_email.required' => 'Enter Mail',
-            'user_email.email' => 'Enter Enable Mail',
-
         ];
         if($user_id == 0){
             $rule['new_password'] = 'required|min:6';
+            $rule['user_phone'] = 'required|min:10|max:15|unique:main_user,user_phone';
+            $rule['user_email'] = 'required|email|unique:main_user,user_email';
             $message['new_password.required'] = 'Enter Pasword';
             $message['new_password.min'] = 'Password at least 6 characters';
+        }else{
+            //CHECK USER PHONE OR USER EMAIL EXISTED
+            $count = MainUser::where('user_id','!=',$user_id)->where(function($query) use ($request){
+                $query->where('user_phone',$request->user_phone)->orWhere('user_email',$request->user_email);
+            })->count();
+            if($count != 0)
+                return back()->with(['error'=>'User phone or user email has already been taken. !']);
         }
 
         $validator = Validator::make($request->all(),$rule,$message);
