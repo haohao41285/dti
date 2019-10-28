@@ -109,6 +109,20 @@ if (!function_exists('get_endOfMonth')) {
     }
 }
 
+if (!function_exists('getStartMonthByDate')) {
+    function getStartMonthByDate($date)
+    {
+        return Carbon::parse($date)->startOfMonth() ;
+    }
+}
+
+if (!function_exists('getEndMonthByDate')) {
+    function getEndMonthByDate($date)
+    {
+        return Carbon::parse($date)->endOfMonth() ;
+    }
+}
+
 
 
 ?>

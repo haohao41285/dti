@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\MainCustomer;
 use App\Http\Controllers\Controller;
 use App\Models\MainComboServiceBought;
+use App\Traits\StatisticsTrait;
 
 class CustomerController extends Controller
 {
@@ -18,12 +19,10 @@ class CustomerController extends Controller
 	}
 
 	public function datatable(Request $request){
-		if(!$request->date){
-			$year = format_year(get_nowDate());
-		} else {
-			$year = format_year($request->date);
-		}		
+		$type = $request->type;
+		$valueQuarter = $request->valueQuarter;
+		$date = format_date_db($request->date) ?? null;	
 
-		return MainCustomer::getDatatableNewCustomerByYear($year);
+		return MainCustomer::getDatatableStatistic($type, $valueQuarter, $date);
 	}
 }

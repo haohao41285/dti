@@ -18,14 +18,22 @@ class ServiceController extends Controller
 	public function index(){
 		return view('statistics.service');
 	}
-
+	/**
+	 * datatable statisic services
+	 * @param  int $request->start
+	 * @param  int $request->length
+	 * @param  string $request->type
+	 * @param  string $request->date
+	 * @return mixed datatable
+	 */
 	public function datatable(Request $request){
 		$start = $request->start;
 		$length = $request->length;
-		// dd( $request->search['value'] );
-
+		$type = $request->type;
+		$valueQuarter = $request->valueQuarter;
+		$date = format_date_db($request->date) ?? null;
 		
-		return MainComboServiceBought::getDatatable($start, $length);
+		return MainComboServiceBought::getDatatable($start, $length, $type, $valueQuarter, $date);
 	}	
 
 	

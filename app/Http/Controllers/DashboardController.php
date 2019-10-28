@@ -32,7 +32,7 @@ class DashboardController extends Controller {
         $data['earnings'] = MainComboServiceBought::getSumChargeByYear($yearNow);
         $data['pendingTasks'] = MainTask::getPendingTasks();
         $data['nearlyExpired'] = MainCustomerBought::getNearlyExpired();
-        $data['popularServices'] = MainComboServiceBought::get10popularServicesByMonth($now);
+        $data['popularServices'] = MainComboServiceBought::getServicesByMonth($now);
 
         $newCustomer = MainCustomer::getTotalNewCustomersEveryMonthByYear($yearNow);
 
