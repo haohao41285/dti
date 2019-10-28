@@ -6,6 +6,8 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use App\Models\MainComboService;
 use App\Models\MainGroupUser;
+use App\Models\MainMenuDti;
+use App\Models\MainPermissionDti;
 use App\Models\MainTeam;
 use Illuminate\Http\Request;
 use App\Helpers\MenuHelper;
@@ -433,5 +435,15 @@ class UserController extends Controller
             return response(['status'=>'error','message'=>'Failed!']);
         else
             return response(['status'=>'success','message'=>'Successfully!']);
+    }
+    public function userPermission(){
+
+        $data['role_list'] = MainGroupUser::active()->get();
+
+        $data['permission_other'] = MainPermissionDti::active()->whereNull('menu_id')->get();
+
+        $data['menu_parent'] = MainMenuDti::active()->where('parent_id',0)->with('getMenuChild')->with('getPermission')->get();
+
+        return view('user.user-permission',$data);
     }
 }
