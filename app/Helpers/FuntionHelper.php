@@ -55,5 +55,18 @@ function cutString($str, $length = 15, $end = '...')
     }
     return $sub . (($len < strlen($str)) ? $end : '');
 }
+function checkPermission($role,$permission){
 
+    $permission_list = $role->gu_role_new;
+    if($permission_list == "")
+        $check = "";
+    else{
+        $permission_arr = explode(';',$permission_list);
+        if(in_array($permission->id,$permission_arr))
+            $check = "checked";
+        else
+            $check = "";
+    }
+    return $check;
+}
 ?>

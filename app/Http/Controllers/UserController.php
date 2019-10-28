@@ -446,4 +446,30 @@ class UserController extends Controller
 
         return view('user.user-permission',$data);
     }
+    public function changePermissionRole(Request $request){
+
+        $permission_id = $request->permission_id;
+        $role_id = $request->role_id;
+        $check = $request->check;
+
+        $permission_role = MainGroupUser::where('gu_id',$role_id)->first()->gu_role_new;
+        if($permission_role == "")
+            $permission_list = $permission_id;
+        else{
+            if($check == 0)
+                $permission_list = $permission_role.';'.$permission_id;
+            else{
+                $permission_role_arr = explode(';',$permission_role);
+                $key = array_search($permission_id,$permission_role_arr);
+                unset($permission_role_arr[$key]);
+                $permission_list = implode(';',$permission_role_arr);
+            }
+        }
+        $role_permission_update = MainGroupUser::where('gu_id',$role_id)->update(['gu_role_new'=>$permission_list]);
+
+        if(!isset($role_permission_update))
+            return response(['status'=>'error','message'=>'Set Permission Failed!']);
+        else
+            return response(['status'=>'success','message'=>'Set Successfully!']);
+    }
 }

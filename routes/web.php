@@ -251,8 +251,7 @@ Route::group(['middleware' => ['auth']], function () {
         Route::get('change-service-permission','UserController@changeServicePermission')->name('change-service-permission');
 
         Route::get('user-permission','UserController@userPermission')->name('user-permission');
-
-
+        Route::post('change-permission-role','UserController@changePermissionRole')->name('change-permission-role');
 
     });
 
