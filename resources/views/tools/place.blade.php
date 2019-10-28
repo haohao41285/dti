@@ -22,13 +22,13 @@
                         <tr>
                             <th>ID</th>
                             <th>Name</th>
-                            <th>Address</th>
-                            {{-- 
+                            {{-- <th>Address</th> --}}
+                            {{--
                             <th>Email</th>
                             --}}
                             <th>Phone</th>
                             <th>License</th>
-                            <th>Created Date</th>
+                            {{-- <th>Created Date</th> --}}
                             <th width="200">Action</th>
                         </tr>
                     </thead>
@@ -37,15 +37,13 @@
         </div>
     </div>
 </div>
-
-
 <div class="modal fade" id="view" tabindex="-1" role="dialog">
     <div style="max-width: 90%" class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title">Change a user password</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                <span aria-hidden="true">&times;</span>
+                    <span aria-hidden="true">&times;</span>
                 </button>
             </div>
             <div class="modal-body row">
@@ -96,7 +94,7 @@
                     </div>
                 </div>
             </div>
-            {{-- 
+            {{--
             <div class="modal-footer">
                 <button type="button" class="btn-sm btn btn-primary">Save changes</button>
                 <button type="button" class="btn-sm btn btn-secondary" data-dismiss="modal">Close</button>
@@ -110,11 +108,11 @@
     <div style="max-width: 90%" class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                {{-- 
+                {{--
                 <h5 class="modal-title">Detail place</h5>
                 --}}
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                <span aria-hidden="true">&times;</span>
+                    <span aria-hidden="true">&times;</span>
                 </button>
             </div>
             <div class="modal-body row">
@@ -132,7 +130,7 @@
                                             <img id="previewImageAppbanner" src="http://localhost:8000/images/no-image.png">
                                         </div>
                                     </div>
-                                    <div class="row col-12 row-detail" >
+                                    <div class="row col-12 row-detail">
                                         <label class="col-sm-4">Business name</label>
                                         <label class="col-sm-8" id="bussiness-name">Business name</label>
                                     </div>
@@ -176,21 +174,21 @@
                             </div>
                             <div class="col-12">
                                 <div class="row col-12 row-detail">
-                                    <label class="col-sm-2">Hide service price</label>                              
-                                    <label class="col-sm-8 row" id="hide-service-price">Hide service price</label>                              
+                                    <label class="col-sm-2">Hide service price</label>
+                                    <label class="col-sm-8 row" id="hide-service-price">Hide service price</label>
                                 </div>
                                 <div class=" form-group">
                                     <div class="col-md-12 row row-detail">
                                         <label class="col-sm-2" ">Working Day</label>
-                                        <div class="col-sm-10 workingtime">
+                                        <div class=" col-sm-10 workingtime">
                                             <div class="col-day">
                                                 <label>Monday</label>
                                                 <div class="btn-group btn-group-toggle working-day" rel="monday">
                                                     <label class="btn btn-sm btn-day " rel="open">
-                                                    <input disabled value="1" type="radio" > Open
+                                                        <input disabled value="1" type="radio"> Open
                                                     </label>
                                                     <label class="btn btn-sm btn-day " rel="close">
-                                                    <input disabled  value="0" type="radio" > Close
+                                                        <input disabled value="0" type="radio"> Close
                                                     </label>
                                                 </div>
                                             </div>
@@ -198,10 +196,10 @@
                                                 <label>Tuesday</label>
                                                 <div class="btn-group btn-group-toggle working-day" rel="tuesday">
                                                     <label class="btn btn-sm btn-day " rel="open">
-                                                    <input disabled name="work_tue"  value="1" type="radio" > Open
+                                                        <input disabled name="work_tue" value="1" type="radio"> Open
                                                     </label>
                                                     <label class="btn btn-sm btn-day " rel="close">
-                                                    <input disabled name="work_tue" value="0" type="radio"> Close
+                                                        <input disabled name="work_tue" value="0" type="radio"> Close
                                                     </label>
                                                 </div>
                                             </div>
@@ -209,10 +207,10 @@
                                                 <label>Wednesday</label>
                                                 <div class="btn-group btn-group-toggle working-day" rel="wednesday">
                                                     <label class="btn btn-sm btn-day  " rel="open">
-                                                    <input disabled name="work_wed"  value="1" type="radio" > Open
+                                                        <input disabled name="work_wed" value="1" type="radio"> Open
                                                     </label>
                                                     <label class="btn btn-sm btn-day " rel="close">
-                                                    <input disabled name="work_wed" value="0" type="radio" > Close
+                                                        <input disabled name="work_wed" value="0" type="radio"> Close
                                                     </label>
                                                 </div>
                                             </div>
@@ -220,10 +218,10 @@
                                                 <label>Thursday</label>
                                                 <div class="btn-group btn-group-toggle working-day" rel="thursday">
                                                     <label class="btn btn-sm btn-day " rel="open">
-                                                    <input disabled name="work_thur"  value="1" type="radio"> Open
+                                                        <input disabled name="work_thur" value="1" type="radio"> Open
                                                     </label>
                                                     <label class="btn btn-sm btn-day " rel="close">
-                                                    <input disabled name="work_thur" value="0" type="radio" > Close
+                                                        <input disabled name="work_thur" value="0" type="radio"> Close
                                                     </label>
                                                 </div>
                                             </div>
@@ -231,10 +229,10 @@
                                                 <label>Friday</label>
                                                 <div class="btn-group btn-group-toggle working-day" rel="friday">
                                                     <label class="btn btn-sm btn-day " rel="open">
-                                                    <input disabled name="work_fri"  value="1" type="radio" > Open
+                                                        <input disabled name="work_fri" value="1" type="radio"> Open
                                                     </label>
                                                     <label class="btn btn-sm btn-day" rel="close">
-                                                    <input disabled name="work_fri" value="0" type="radio" > Close
+                                                        <input disabled name="work_fri" value="0" type="radio"> Close
                                                     </label>
                                                 </div>
                                             </div>
@@ -242,10 +240,10 @@
                                                 <label>Saturday</label>
                                                 <div class="btn-group btn-group-toggle working-day" rel="saturday">
                                                     <label class="btn btn-sm btn-day " rel="open">
-                                                    <input disabled name="work_sat"  value="1" type="radio" > Open
+                                                        <input disabled name="work_sat" value="1" type="radio"> Open
                                                     </label>
                                                     <label class="btn btn-sm btn-day " rel="close">
-                                                    <input disabled name="work_sat" value="0" type="radio" > Close
+                                                        <input disabled name="work_sat" value="0" type="radio"> Close
                                                     </label>
                                                 </div>
                                             </div>
@@ -253,161 +251,161 @@
                                                 <label>Sunday</label>
                                                 <div class="btn-group btn-group-toggle working-day" rel="sunday">
                                                     <label class="btn btn-sm btn-day" rel="open">
-                                                    <input disabled name="work_sun"  value="1" type="radio" > Open
+                                                        <input disabled name="work_sun" value="1" type="radio"> Open
                                                     </label>
                                                     <label class="btn btn-sm btn-day " rel="close">
-                                                    <input disabled name="work_sun" value="0" type="radio" > Close
+                                                        <input disabled name="work_sun" value="0" type="radio"> Close
                                                     </label>
+                                                </div>
+                                            </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div>
+                                <div class=" form-group">
+                                    <div class="col-md-12 row">
+                                        <label class="col-sm-2">Time Start</label>
+                                        <div class="col-sm-10 time-start workingtime">
+                                            <div class="col-day input-group-spaddon day_monday">
+                                                <div class="input-group date">
+                                                    <input disabled type="text" id="mon-start" value="19:00" class="form-control form-control-sm timepicker">
+                                                    <span class="input-group-addon">
+                                                        <span class="glyphicon glyphicon-time"></span>
+                                                    </span>
+                                                </div>
+                                            </div>
+                                            <div class="col-day input-group-spaddon day_tuesday">
+                                                <div class="input-group date">
+                                                    <input disabled type="text" id="tue-start" value="21:00" class="form-control form-control-sm timepicker">
+                                                    <span class="input-group-addon">
+                                                        <span class="glyphicon glyphicon-time"></span>
+                                                    </span>
+                                                </div>
+                                            </div>
+                                            <div class="col-day input-group-spaddon day_wednesday">
+                                                <div class="input-group date">
+                                                    <input disabled type="text" id="wed-start" value="21:00" class="form-control form-control-sm timepicker">
+                                                    <span class="input-group-addon">
+                                                        <span class="glyphicon glyphicon-time"></span>
+                                                    </span>
+                                                </div>
+                                            </div>
+                                            <div class="col-day input-group-spaddon day_thursday">
+                                                <div class="input-group date">
+                                                    <input disabled type="text" id="thustart" value="21:00" class="form-control form-control-sm timepicker">
+                                                    <span class="input-group-addon">
+                                                        <span class="glyphicon glyphicon-time"></span>
+                                                    </span>
+                                                </div>
+                                            </div>
+                                            <div class="col-day input-group-spaddon day_friday">
+                                                <div class="input-group date">
+                                                    <input disabled type="text" id="fri-start" value="21:00" class="form-control form-control-sm timepicker">
+                                                    <span class="input-group-addon">
+                                                        <span class="glyphicon glyphicon-time"></span>
+                                                    </span>
+                                                </div>
+                                            </div>
+                                            <div class="col-day input-group-spaddon day_saturday">
+                                                <div class="input-group date">
+                                                    <input disabled type="text" id="sat-start" value="21:00" class="form-control form-control-sm timepicker">
+                                                    <span class="input-group-addon">
+                                                        <span class="glyphicon glyphicon-time"></span>
+                                                    </span>
+                                                </div>
+                                            </div>
+                                            <div class="col-day input-group-spaddon day_sunday">
+                                                <div class="input-group date">
+                                                    <input disabled type="text" id="sun-start" value="23:00" class="form-control form-control-sm timepicker">
+                                                    <span class="input-group-addon">
+                                                        <span class="glyphicon glyphicon-time"></span>
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class=" form-group">
+                                    <div class="col-md-12 row">
+                                        <label class="col-sm-2">Time End</label>
+                                        <div class="col-sm-10 time-end workingtime">
+                                            <div class="col-day input-group-spaddon day_monday">
+                                                <div class="input-group date">
+                                                    <input disabled type="text" id="mon-end" value="19:00" class="form-control form-control-sm timepicker">
+                                                    <span class="input-group-addon">
+                                                        <span class="glyphicon glyphicon-time"></span>
+                                                    </span>
+                                                </div>
+                                            </div>
+                                            <div class="col-day input-group-spaddon day_tuesday">
+                                                <div class="input-group date">
+                                                    <input disabled type="text" id="tue-end" value="21:00" class="form-control form-control-sm timepicker">
+                                                    <span class="input-group-addon">
+                                                        <span class="glyphicon glyphicon-time"></span>
+                                                    </span>
+                                                </div>
+                                            </div>
+                                            <div class="col-day input-group-spaddon day_wednesday">
+                                                <div class="input-group date">
+                                                    <input disabled type="text" id="wed-end" value="21:00" class="form-control form-control-sm timepicker">
+                                                    <span class="input-group-addon">
+                                                        <span class="glyphicon glyphicon-time"></span>
+                                                    </span>
+                                                </div>
+                                            </div>
+                                            <div class="col-day input-group-spaddon day_thursday">
+                                                <div class="input-group date">
+                                                    <input disabled type="text" id="thu-end" value="21:00" class="form-control form-control-sm timepicker">
+                                                    <span class="input-group-addon">
+                                                        <span class="glyphicon glyphicon-time"></span>
+                                                    </span>
+                                                </div>
+                                            </div>
+                                            <div class="col-day input-group-spaddon day_friday">
+                                                <div class="input-group date">
+                                                    <input disabled type="text" id="fri-end" value="21:00" class="form-control form-control-sm timepicker">
+                                                    <span class="input-group-addon">
+                                                        <span class="glyphicon glyphicon-time"></span>
+                                                    </span>
+                                                </div>
+                                            </div>
+                                            <div class="col-day input-group-spaddon day_saturday">
+                                                <div class="input-group date">
+                                                    <input disabled type="text" id="sat-end" value="21:00" class="form-control form-control-sm timepicker">
+                                                    <span class="input-group-addon">
+                                                        <span class="glyphicon glyphicon-time"></span>
+                                                    </span>
+                                                </div>
+                                            </div>
+                                            <div class="col-day input-group-spaddon day_sunday">
+                                                <div class="input-group date">
+                                                    <input disabled type="text" id="sun-end" value="23:00" class="form-control form-control-sm timepicker">
+                                                    <span class="input-group-addon">
+                                                        <span class="glyphicon glyphicon-time"></span>
+                                                    </span>
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
                                 <div>
-                                    <div class=" form-group">
-                                        <div class="col-md-12 row">
-                                            <label class="col-sm-2">Time Start</label>
-                                            <div class="col-sm-10 time-start workingtime">
-                                                <div class="col-day input-group-spaddon day_monday" >
-                                                    <div class="input-group date">
-                                                        <input disabled type="text" id="mon-start" value="19:00" class="form-control form-control-sm timepicker">
-                                                        <span class="input-group-addon">
-                                                        <span class="glyphicon glyphicon-time"></span>
-                                                        </span>                            
-                                                    </div>
-                                                </div>
-                                                <div class="col-day input-group-spaddon day_tuesday" >
-                                                    <div class="input-group date">
-                                                        <input disabled type="text" id="tue-start" value="21:00" class="form-control form-control-sm timepicker">
-                                                        <span class="input-group-addon">
-                                                        <span class="glyphicon glyphicon-time"></span>
-                                                        </span>                            
-                                                    </div>
-                                                </div>
-                                                <div class="col-day input-group-spaddon day_wednesday" >
-                                                    <div class="input-group date">
-                                                        <input disabled type="text" id="wed-start" value="21:00" class="form-control form-control-sm timepicker">
-                                                        <span class="input-group-addon">
-                                                        <span class="glyphicon glyphicon-time"></span>
-                                                        </span>                            
-                                                    </div>
-                                                </div>
-                                                <div class="col-day input-group-spaddon day_thursday" >
-                                                    <div class="input-group date">
-                                                        <input disabled type="text" id="thustart" value="21:00" class="form-control form-control-sm timepicker">
-                                                        <span class="input-group-addon">
-                                                        <span class="glyphicon glyphicon-time"></span>
-                                                        </span>                            
-                                                    </div>
-                                                </div>
-                                                <div class="col-day input-group-spaddon day_friday" >
-                                                    <div class="input-group date">
-                                                        <input disabled type="text" id="fri-start" value="21:00" class="form-control form-control-sm timepicker">
-                                                        <span class="input-group-addon">
-                                                        <span class="glyphicon glyphicon-time"></span>
-                                                        </span>                            
-                                                    </div>
-                                                </div>
-                                                <div class="col-day input-group-spaddon day_saturday" >
-                                                    <div class="input-group date">
-                                                        <input disabled type="text" id="sat-start" value="21:00" class="form-control form-control-sm timepicker">
-                                                        <span class="input-group-addon">
-                                                        <span class="glyphicon glyphicon-time"></span>
-                                                        </span>                            
-                                                    </div>
-                                                </div>
-                                                <div class="col-day input-group-spaddon day_sunday" >
-                                                    <div class="input-group date">
-                                                        <input disabled type="text" id="sun-start" value="23:00" class="form-control form-control-sm timepicker">
-                                                        <span class="input-group-addon">
-                                                        <span class="glyphicon glyphicon-time"></span>
-                                                        </span>                            
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class=" form-group">
-                                        <div class="col-md-12 row">
-                                            <label class="col-sm-2">Time End</label>
-                                            <div class="col-sm-10 time-end workingtime">
-                                                <div class="col-day input-group-spaddon day_monday" >
-                                                    <div class="input-group date">
-                                                        <input disabled type="text" id="mon-end" value="19:00" class="form-control form-control-sm timepicker">
-                                                        <span class="input-group-addon">
-                                                        <span class="glyphicon glyphicon-time"></span>
-                                                        </span>                            
-                                                    </div>
-                                                </div>
-                                                <div class="col-day input-group-spaddon day_tuesday" >
-                                                    <div class="input-group date">
-                                                        <input disabled type="text" id="tue-end" value="21:00" class="form-control form-control-sm timepicker">
-                                                        <span class="input-group-addon">
-                                                        <span class="glyphicon glyphicon-time"></span>
-                                                        </span>                            
-                                                    </div>
-                                                </div>
-                                                <div class="col-day input-group-spaddon day_wednesday" >
-                                                    <div class="input-group date">
-                                                        <input disabled type="text" id="wed-end" value="21:00" class="form-control form-control-sm timepicker">
-                                                        <span class="input-group-addon">
-                                                        <span class="glyphicon glyphicon-time"></span>
-                                                        </span>                            
-                                                    </div>
-                                                </div>
-                                                <div class="col-day input-group-spaddon day_thursday" >
-                                                    <div class="input-group date">
-                                                        <input disabled type="text" id="thu-end" value="21:00" class="form-control form-control-sm timepicker">
-                                                        <span class="input-group-addon">
-                                                        <span class="glyphicon glyphicon-time"></span>
-                                                        </span>                            
-                                                    </div>
-                                                </div>
-                                                <div class="col-day input-group-spaddon day_friday" >
-                                                    <div class="input-group date">
-                                                        <input disabled type="text" id="fri-end" value="21:00" class="form-control form-control-sm timepicker">
-                                                        <span class="input-group-addon">
-                                                        <span class="glyphicon glyphicon-time"></span>
-                                                        </span>                            
-                                                    </div>
-                                                </div>
-                                                <div class="col-day input-group-spaddon day_saturday" >
-                                                    <div class="input-group date">
-                                                        <input disabled type="text" id="sat-end" value="21:00" class="form-control form-control-sm timepicker">
-                                                        <span class="input-group-addon">
-                                                        <span class="glyphicon glyphicon-time"></span>
-                                                        </span>                            
-                                                    </div>
-                                                </div>
-                                                <div class="col-day input-group-spaddon day_sunday" >
-                                                    <div class="input-group date">
-                                                        <input disabled type="text" id="sun-end" value="23:00" class="form-control form-control-sm timepicker">
-                                                        <span class="input-group-addon">
-                                                        <span class="glyphicon glyphicon-time"></span>
-                                                        </span>                            
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div>
-                                        <label class="col-sm-2">Description</label>
-                                        <label class="col-sm-8" id="description">Description</label>
-                                    </div>
+                                    <label class="col-sm-2">Description</label>
+                                    <label class="col-sm-8" id="description">Description</label>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-            {{-- 
-            <div class="modal-footer">
-                <button type="button" class="btn-sm btn btn-primary">Save changes</button>
-                <button type="button" class="btn-sm btn btn-secondary" data-dismiss="modal">Close</button>
-            </div>
-            --}}
         </div>
+        {{--
+        <div class="modal-footer">
+            <button type="button" class="btn-sm btn btn-primary">Save changes</button>
+            <button type="button" class="btn-sm btn btn-secondary" data-dismiss="modal">Close</button>
+        </div>
+        --}}
     </div>
+</div>
 </div>
 {{-- modal setting --}}
 <div class="modal fade" id="setting" tabindex="-1" role="dialog">
@@ -416,14 +414,14 @@
             <div class="modal-header">
                 <h5 class="modal-title">Setting place theme</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                <span aria-hidden="true">&times;</span>
+                    <span aria-hidden="true">&times;</span>
                 </button>
             </div>
             <div class="modal-body row">
                 <div class="col-4">
                     <div class="card shadow mb-4">
                         <div class="card-header py-2">
-                            <h6 class="m-0 font-weight-bold text-primary " >Website themes </h6>
+                            <h6 class="m-0 font-weight-bold text-primary ">Website themes </h6>
                         </div>
                         <div class="card-body">
                             <div class="table-responsive">
@@ -439,15 +437,14 @@
                         </div>
                     </div>
                 </div>
-
                 <div class="col-4">
                     <div class="card shadow mb-4">
                         <div class="card-header py-2">
-                            <h6 class="m-0 font-weight-bold text-primary " >Website properties </h6>
+                            <h6 class="m-0 font-weight-bold text-primary ">Website properties </h6>
                         </div>
                         <div class="card-body">
                             <div class="table-responsive" style="position: relative; overflow: auto; max-height: 70vh; width: 100%;">
-                                <table  class="dataTable  table table-bordered table-hover dataTables_scrollBody dataTables_scroll" id="themeProperties" width="100%" cellspacing="0">
+                                <table class="dataTable  table table-bordered table-hover dataTables_scrollBody dataTables_scroll" id="themeProperties" width="100%" cellspacing="0">
                                     <thead>
                                         <th>ID</th>
                                         <th>Name</th>
@@ -460,7 +457,6 @@
                         </div>
                     </div>
                 </div>
-
                 <div class="col-4">
                     {{-- <div class="form-group">
                         <button class="btn-sm btn btn-success btn-copy-theme">Clone Website</button>
@@ -468,14 +464,14 @@
                     </div> --}}
                     <div class="card shadow mb-4 copy-theme">
                         <div class="card-header py-2">
-                            <h6 class="m-0 font-weight-bold text-primary text-form" >Clone Website </h6>
+                            <h6 class="m-0 font-weight-bold text-primary text-form">Clone Website </h6>
                         </div>
                         <div class="card-body">
                             <form method="post" id="clone-update-form">
                                 @csrf
                                 <div class="form-group row">
                                     <label class="col-3">License</label>
-                                    <input readonly="true" name="get_license" id="get-license" class="col-9 form-control-sm form-control" type="text" >
+                                    <input readonly="true" name="get_license" id="get-license" class="col-9 form-control-sm form-control" type="text">
                                 </div>
                                 <div class="form-group row">
                                     <label class="col-3">Website</label>
@@ -487,11 +483,11 @@
                                 </div>
                                 <div class="form-group row">
                                     <label class="col-3">Theme</label>
-                                    <input id="get-code" name ="get_code" class="col-9 form-control-sm form-control" type="text" readonly="true">
+                                    <input id="get-code" name="get_code" class="col-9 form-control-sm form-control" type="text" readonly="true">
                                 </div>
                                 <div class="form-group row">
                                     <label class="col-3">ID Properties</label>
-                                    <input  name ="id_properties" class="col-9 form-control-sm form-control" type="text" readonly="true">
+                                    <input name="id_properties" class="col-9 form-control-sm form-control" type="text" readonly="true">
                                 </div>
                                 <div class="form-group row">
                                     <label class="col-3"></label>
@@ -502,38 +498,37 @@
                         </div>
                     </div>
                     <!-- properties -->
-                   {{--  <div class="copy-properties" style="display: none">
-                    <div class="card shadow mb-4">
-                        <div class="card-header py-2">
-                            <h6 class="m-0 font-weight-bold text-primary " >Update Website </h6>
+                    {{-- <div class="copy-properties" style="display: none">
+                        <div class="card shadow mb-4">
+                            <div class="card-header py-2">
+                                <h6 class="m-0 font-weight-bold text-primary ">Update Website </h6>
+                            </div>
+                            <div class="card-body">
+                                <form method="post" id="copy-properties-form">
+                                    @csrf
+                                    <div class="form-group row">
+                                        <label class="col-3">License</label>
+                                        <label id="get-license"><b></b></label>
+                                    </div>
+                                    <div class="form-group row">
+                                        <label class="col-3">Website</label>
+                                        <input class="col-9 form-control-sm form-control" type="text" name="website">
+                                    </div>
+                                    <div class="form-group row">
+                                        <label class="col-3">Branch</label>
+                                        <input class="col-9 form-control-sm form-control" type="text" name="branch">
+                                    </div>
+                                    <div class="form-group row">
+                                        <label class="col-3">Theme</label>
+                                        <label id="get-code"><b></b></label>
+                                    </div>
+                                    <div class="form-group row">
+                                        <label class="col-3"></label>
+                                        <input class="btn-sm btn btn-primary" type="submit" value="Update Code">
+                                    </div>
+                                </form>
+                            </div>
                         </div>
-                        <div class="card-body">
-                            <form method="post" id="copy-properties-form">
-                                @csrf
-                                <div class="form-group row">
-                                    <label class="col-3">License</label>
-                                    <label id="get-license"><b></b></label>
-                                </div>
-                                <div class="form-group row">
-                                    <label class="col-3">Website</label>
-                                    <input class="col-9 form-control-sm form-control" type="text" name="website">
-                                </div>
-                                <div class="form-group row">
-                                    <label class="col-3">Branch</label>
-                                    <input class="col-9 form-control-sm form-control" type="text" name="branch">
-                                </div>
-                                <div class="form-group row">
-                                    <label class="col-3">Theme</label>
-                                    <label id="get-code"><b></b></label>
-                                </div>
-                                <div class="form-group row">
-                                    <label class="col-3"></label>
-                                    <input class="btn-sm btn btn-primary" type="submit" value="Update Code">
-                                </div>
-                            </form>
-                        </div>
-                    </div>
-                    
                     </div> --}}
                 </div>
             </div>
@@ -544,14 +539,13 @@
         </div>
     </div>
 </div>
-
 <div class="modal fade" id="custom-properties-modal" tabindex="-1" role="dialog">
     <div style="max-width: 95%" class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title">Custom value property</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                <span aria-hidden="true">&times;</span>
+                    <span aria-hidden="true">&times;</span>
                 </button>
             </div>
             <div class="modal-body row">
@@ -567,8 +561,8 @@
                                         <tr>
                                             <th>Variable</th>
                                             <th>Name</th>
-                                            <th >Value</th>
-                                            <th >Action</th>
+                                            <th>Value</th>
+                                            <th>Action</th>
                                         </tr>
                                     </thead>
                                 </table>
@@ -619,7 +613,7 @@
                     </div>
                 </div>
             </div>
-            {{-- 
+            {{--
             <div class="modal-footer">
                 <button type="button" class="btn-sm btn btn-primary">Save changes</button>
                 <button type="button" class="btn-sm btn btn-secondary" data-dismiss="modal">Close</button>
@@ -631,335 +625,335 @@
 @endsection
 @push('scripts')
 <script type="text/javascript">
-    function clear(){
-      $("#change-password-form")[0].reset();
-      $("#clone-update-form")[0].reset();
-      $("#user_nickname").html("Change password");
-      $("#custom-properties-form")[0].reset();
-      $(".previewImage img").attr("src","{{ asset('images/no-image.png') }}");
+function clear() {
+    $("#change-password-form")[0].reset();
+    $("#clone-update-form")[0].reset();
+    $("#user_nickname").html("Change password");
+    $("#custom-properties-form")[0].reset();
+    $(".previewImage img").attr("src", "{{ asset('images/no-image.png') }}");
 
-      $('#themes-datatable tbody tr.selected').removeClass('selected');
-      $("#custom-properties-form").find("input[name='variable']").attr("readonly",false);
-    }
+    $('#themes-datatable tbody tr.selected').removeClass('selected');
+    $("#custom-properties-form").find("input[name='variable']").attr("readonly", false);
+}
 
-    function listThemePropertiesByThemeId(theme_id){
-        $.ajax({
-            url:"{{ route('listThemePropertiesByThemeId') }}",
-            method:"get",
-            dataType:"json",
-            data:{theme_id},
-            success:function(data){
-                if(data.status == 1){
-                    var html = '';
-                    for(var i = 0; i < data.data.length; i++){
-                            html    +='<tr properties-id='+data.data[i].theme_properties_id+'>'
-                                    +'<td>'+data.data[i].theme_properties_id+'</td>'
-                                    +'<td>'+data.data[i].theme_properties_name +'</td>'
-                                    +'<td><img style="height: 5rem;" src="'+"{{env('URL_FILE_VIEW')}}" + data.data[i].theme_properties_image+'" /></td>'
-                                    +'</tr>'
-                    }
-
-                    $("#themeProperties tbody").html(html);
+function listThemePropertiesByThemeId(theme_id) {
+    $.ajax({
+        url: "{{ route('listThemePropertiesByThemeId') }}",
+        method: "get",
+        dataType: "json",
+        data: { theme_id },
+        success: function(data) {
+            if (data.status == 1) {
+                var html = '';
+                for (var i = 0; i < data.data.length; i++) {
+                    html += '<tr properties-id=' + data.data[i].theme_properties_id + '>' +
+                        '<td>' + data.data[i].theme_properties_id + '</td>' +
+                        '<td>' + data.data[i].theme_properties_name + '</td>' +
+                        '<td><img style="height: 5rem;" src="' + "{{env('URL_FILE_VIEW')}}" + data.data[i].theme_properties_image + '" /></td>' +
+                        '</tr>'
                 }
-            }, 
-            error:function(){
-                toastr.error("Failed to load Properties!");
+
+                $("#themeProperties tbody").html(html);
             }
-        });
-    }
-    
-    $(document).ready(function() {
-      perviewImage();
-      var placeId = null;
-      var userId = null;
-      var license = null;
-      var themeId = null;
-    
-      var placeTable = $('#places-datatable').DataTable({
-           // dom: "lfrtip",    
-           processing: true,
-           serverSide: true,
-           ajax:{ url:"{{ route('getPlacesDatatable') }}" },
-           columns: [
-    
-                    { data: 'place_id', name: 'place_id',class:'text-center' },
-                    { data: 'place_name', name: 'place_name' },
-                    { data: 'place_address', name: 'place_address'},
-                    // { data: 'place_email', name: 'place_email' },
-                    { data: 'place_phone', name: 'place_phone',class:'text-center' },
-                    { data: 'place_ip_license', name: 'place_ip_license' },
-                    { data: 'created_at', name: 'created_at' ,class:'text-center'},                
-                    { data: 'action' , name:'action' ,orderable: false, searcheble: false ,class:'text-center'}
-            ], 
-            buttons: [
-    
-                ],      
-      });
-    
-      var customerTable = $('#user-datatable').DataTable({
-           // dom: "lfrtip",    
-           processing: true,
-           serverSide: true,
-           ajax:{
-              url:"{{ route('getUsersDatatable') }}",
-              data:function(data){
+        },
+        error: function() {
+            toastr.error("Failed to load Properties!");
+        }
+    });
+}
+
+$(document).ready(function() {
+    perviewImage();
+    var placeId = null;
+    var userId = null;
+    var license = null;
+    var themeId = null;
+
+    var placeTable = $('#places-datatable').DataTable({
+        // dom: "lfrtip",    
+        processing: true,
+        serverSide: true,
+        ajax: { url: "{{ route('getPlacesDatatable') }}" },
+        columns: [
+
+            { data: 'place_id', name: 'place_id', class: 'text-center' },
+            { data: 'place_name', name: 'place_name' },
+            // { data: 'place_address', name: 'place_address' },
+            // { data: 'place_email', name: 'place_email' },
+            { data: 'place_phone', name: 'place_phone', class: 'text-center' },
+            { data: 'place_ip_license', name: 'place_ip_license' },
+            // { data: 'created_at', name: 'created_at', class: 'text-center' },
+            { data: 'action', name: 'action', orderable: false, searcheble: false, class: 'text-center' }
+        ],
+        buttons: [
+
+        ],
+    });
+
+    var customerTable = $('#user-datatable').DataTable({
+        // dom: "lfrtip",    
+        processing: true,
+        serverSide: true,
+        ajax: {
+            url: "{{ route('getUsersDatatable') }}",
+            data: function(data) {
                 data.placeId = placeId;
-              },
             },
-           columns: [
-    
-                    { data: 'user_id', name: 'user_id',class:'text-center' },
-                    { data: 'user_nickname', name: 'user_nickname', class:'user_nickname' },
-                    { data: 'user_phone', name: 'user_phone',class:'text-center' },
-                    { data: 'user_email', name: 'user_email' },
-                    { data: 'created_at', name: 'created_at' ,class:'text-center'},                
-                    // { data: 'action' , name:'action' ,orderable: false, searcheble: false ,class:'text-center'}
-            ], 
-            buttons: [
-    
-                ],      
-      });
-       
-    
-       var themesTable = $('#themes-dataTable').DataTable({
-                 processing: true,
-                 serverSide: true,
-                 ajax:{ url:"{{ route('getDatatableWebsiteThemes') }}",},
-                 columns: [
-                      { data: 'theme_id', name: 'theme_id' ,class:"id"},
-                      { data: 'theme_name_temp', name: 'theme_name_temp' ,class:"code"},
-                      { data: 'theme_image', name: 'theme_image' },
-     
-                ],       
-                 buttons: [
-    
-                   ],
-          });
+        },
+        columns: [
 
-        customPropertytable = $('#value-property-datatable').DataTable({
-             // dom: "lBfrtip",
-             processing: true,
-             serverSide: true, 
-             responsive: true,
-             autoWidth: true,
-             buttons: [            
+            { data: 'user_id', name: 'user_id', class: 'text-center' },
+            { data: 'user_nickname', name: 'user_nickname', class: 'user_nickname' },
+            { data: 'user_phone', name: 'user_phone', class: 'text-center' },
+            { data: 'user_email', name: 'user_email' },
+            { data: 'created_at', name: 'created_at', class: 'text-center' },
+            // { data: 'action' , name:'action' ,orderable: false, searcheble: false ,class:'text-center'}
+        ],
+        buttons: [
 
-             ],
+        ],
+    });
 
-             ajax:{ 
-                url:"{{ route('getWpDatableByPlaceId') }}",
-                data:function(data){
-                    data.placeId = placeId;
-                },
+
+    var themesTable = $('#themes-dataTable').DataTable({
+        processing: true,
+        serverSide: true,
+        ajax: { url: "{{ route('getDatatableWebsiteThemes') }}", },
+        columns: [
+            { data: 'theme_id', name: 'theme_id', class: "id" },
+            { data: 'theme_name_temp', name: 'theme_name_temp', class: "code" },
+            { data: 'theme_image', name: 'theme_image' },
+
+        ],
+        buttons: [
+
+        ],
+    });
+
+    customPropertytable = $('#value-property-datatable').DataTable({
+        // dom: "lBfrtip",
+        processing: true,
+        serverSide: true,
+        responsive: true,
+        autoWidth: true,
+        buttons: [
+
+        ],
+
+        ajax: {
+            url: "{{ route('getWpDatableByPlaceId') }}",
+            data: function(data) {
+                data.placeId = placeId;
             },
-                 columns: [
-                          { data: 'wp_variable', name: 'wp_variable',class:"wp_variable" },
-                          { data: 'wp_name', name: 'wp_name',class:"wp_name" },
-                          { data: 'wp_value', name: 'wp_value',class:"wp_value"  },
-                          { data: 'action' , name: 'action',  orderable: false, searchable: false , class:'text-center'}
-                       ]    
-       });
-    
-    
-      $(document).on('click','.view',function(e){
+        },
+        columns: [
+            { data: 'wp_variable', name: 'wp_variable', class: "wp_variable" },
+            { data: 'wp_name', name: 'wp_name', class: "wp_name" },
+            { data: 'wp_value', name: 'wp_value', class: "wp_value" },
+            { data: 'action', name: 'action', orderable: false, searchable: false, class: 'text-center' }
+        ]
+    });
+
+
+    $(document).on('click', '.view', function(e) {
         e.preventDefault();
         placeId = $(this).attr('data-id');
         customerTable.draw();
         $("#view").modal("show");
         clear();
-      });
-    
-      $("#user-datatable tbody").on('click',"tr",function(){
-          $('#user-datatable tbody tr.selected').removeClass('selected');
-          $(this).addClass('selected');
-          userId = $(this).find("td.sorting_1").text();
-          var user_nickname = $(this).find("td.user_nickname").text();
-    
-          $("#user_nickname").html("Change password of <b>"+user_nickname+"</b>");
-      });
-    
-      $("#change-password-form").on('submit',function(e){
+    });
+
+    $("#user-datatable tbody").on('click', "tr", function() {
+        $('#user-datatable tbody tr.selected').removeClass('selected');
+        $(this).addClass('selected');
+        userId = $(this).find("td.sorting_1").text();
+        var user_nickname = $(this).find("td.user_nickname").text();
+
+        $("#user_nickname").html("Change password of <b>" + user_nickname + "</b>");
+    });
+
+    $("#change-password-form").on('submit', function(e) {
         e.preventDefault();
-    
+
         var checkSelected = $('#user-datatable tbody tr.selected');
-        if(checkSelected.length == 0){
-          toastr.error("Please select the user!");
-          return false;
+        if (checkSelected.length == 0) {
+            toastr.error("Please select the user!");
+            return false;
         }
-    
+
         var form = $(this).serialize();
-        form += "&placeId="+placeId;
-        form += "&userId="+userId;
-    
+        form += "&placeId=" + placeId;
+        form += "&userId=" + userId;
+
         $.ajax({
-          url:"{{ route('changeNewPassword') }}",
-          method:"post",
-          data:form,
-          dataType:"json",
-          success:function(data){
-            if(data.status == 1){
-              toastr.success("Changed successfully!");
-              clear()
-            } else {
-              toastr.error(data.msg);
+            url: "{{ route('changeNewPassword') }}",
+            method: "post",
+            data: form,
+            dataType: "json",
+            success: function(data) {
+                if (data.status == 1) {
+                    toastr.success("Changed successfully!");
+                    clear()
+                } else {
+                    toastr.error(data.msg);
+                }
+            },
+            error: function() {
+                toastr.error("Failed to change!");
             }
-          },
-          error:function(){
-            toastr.error("Failed to change!");
-          }
         });
-      });
-    
-      $(document).on('click',".detail",function(e){
+    });
+
+    $(document).on('click', ".detail", function(e) {
         e.preventDefault();
         var placeId = $(this).attr('data-id');
         $.ajax({
-          url:"{{ route('getDetailPlace') }}",
-          method:"get",
-          dataType:"json",
-          data:{placeId},
-          success:function(data){
-            if(data.status == 1){
-              var hide_service_price = data.data.place.hide_service_price == 1 ? "On" : "Off" ;
-              $("#detail").modal("show");
-    
-              $("#logo img").attr('src',"{{env('URL_FILE_VIEW')}}"+data.data.place.place_logo);
-              $("#Favicon img").attr('src',"{{env('URL_FILE_VIEW')}}"+data.data.place.place_favicon);
-              $("#business-name").text(data.data.place.place_name);
-              $("#tax-code").text(data.data.place.place_taxcode);
-              $("#price-floor").text(data.data.place.place_worker_mark_bonus);
-              $("#hide-service-price").text(hide_service_price);
-              $("#address").text(data.data.place.place_address);
-              $("#email").text(data.data.place.place_email);
-              $("#interest").text(data.data.place.place_interest);
-              $("#description").text(data.data.place.place_description);
-              $("#business-phone").text(data.data.place.place_phone);
-              $("#website").text(data.data.place.place_website);
-    
-              var monClosed = data.data.place_actiondate.mon.closed;
-              var tueClosed = data.data.place_actiondate.tue.closed;
-              var wedClosed = data.data.place_actiondate.wed.closed;
-              var thuClosed = data.data.place_actiondate.thur.closed;
-              var friClosed = data.data.place_actiondate.fri.closed;
-              var satClosed = data.data.place_actiondate.sat.closed;
-              var sunClosed = data.data.place_actiondate.sun.closed;
-    
-              var monStart = data.data.place_actiondate.mon.start;
-              var tueStart = data.data.place_actiondate.tue.start;
-              var wedStart = data.data.place_actiondate.wed.start;
-              var thuStart = data.data.place_actiondate.thur.start;
-              var friStart = data.data.place_actiondate.fri.start;
-              var satStart = data.data.place_actiondate.sat.start;
-              var sunStart = data.data.place_actiondate.sun.start;
-    
-              var monEnd = data.data.place_actiondate.mon.end;
-              var tueEnd = data.data.place_actiondate.tue.end;
-              var wedEnd = data.data.place_actiondate.wed.end;
-              var thuEnd = data.data.place_actiondate.thur.end;
-              var friEnd = data.data.place_actiondate.fri.end;
-              var satEnd = data.data.place_actiondate.sat.end;
-              var sunEnd = data.data.place_actiondate.sun.end;
-    
-              $("label").removeClass("active")
-              $(".time-start input").css("visibility","");
-              $(".time-end input").css("visibility","");
-    
-              if(monClosed == true){
-                 $("div[rel='monday']").find("label[rel='close']").addClass("active");
-                 $("#mon-start").css("visibility","hidden");
-                 $("#mon-end").css("visibility","hidden");
-              } else {
-                 $("div[rel='monday']").find("label[rel='open']").addClass("active");
-                 $("#mon-start").val(monStart);
-                 $("#mon-end").val(monEnd);
-              }
-    
-              if(tueClosed == true){
-                 $("div[rel='tuesday']").find("label[rel='close']").addClass("active");
-                 $("#tue-start").css("visibility","hidden");
-                 $("#tue-end").css("visibility","hidden");
-              } else {
-                 $("div[rel='tuesday']").find("label[rel='open']").addClass("active");
-                 $("#tue-start").val(tueStart);
-                 $("#tue-end").val(tueEnd);
-              }
-    
-              if(wedClosed == true){
-                 $("div[rel='wednesday']").find("label[rel='close']").addClass("active");
-                 $("#wed-start").css("visibility","hidden");
-                 $("#wed-end").css("visibility","hidden");
-              } else {
-                 $("div[rel='wednesday']").find("label[rel='open']").addClass("active");
-                 $("#wed-start").val(wedStart);
-                 $("#wed-end").val(wedEnd);
-              }
-    
-              if(thuClosed == true){
-                 $("div[rel='thursday']").find("label[rel='close']").addClass("active");
-                 $("#thu-start").css("visibility","hidden");
-                 $("#thu-end").css("visibility","hidden");
-              } else {
-                 $("div[rel='thursday']").find("label[rel='open']").addClass("active");
-                 $("#thu-start").val(thuStart);
-                 $("#thu-end").val(thuEnd);
-              }
-    
-              if(friClosed == true){
-                 $("div[rel='friday']").find("label[rel='close']").addClass("active");
-                 $("#fri-start").css("visibility","hidden");
-                 $("#fri-end").css("visibility","hidden");
-              } else {
-                 $("div[rel='friday']").find("label[rel='open']").addClass("active");
-                 $("#fri-start").val(friStart);
-                 $("#fri-end").val(friEnd);
-              }
-    
-              if(satClosed == true){
-                 $("div[rel='saturday']").find("label[rel='close']").addClass("active");
-                 $("#sat-start").css("visibility","hidden");
-                 $("#sat-end").css("visibility","hidden");
-              } else {
-                 $("div[rel='saturday']").find("label[rel='open']").addClass("active");
-                 $("#sat-start").val(satStart);
-                 $("#sat-end").val(satEnd);
-              }
-    
-              if(sunClosed == true){
-                 $("div[rel='sunday']").find("label[rel='close']").addClass("active");
-                 $("#sun-start").css("visibility","hidden");
-                 $("#sun-end").css("visibility","hidden");
-              } else {
-                 $("div[rel='sunday']").find("label[rel='open']").addClass("active");
-                 $("#sun-start").val(sunStart);
-                 $("#sun-end").val(sunEnd);
-              }
-    
-    
+            url: "{{ route('getDetailPlace') }}",
+            method: "get",
+            dataType: "json",
+            data: { placeId },
+            success: function(data) {
+                if (data.status == 1) {
+                    var hide_service_price = data.data.place.hide_service_price == 1 ? "On" : "Off";
+                    $("#detail").modal("show");
+
+                    $("#logo img").attr('src', "{{env('URL_FILE_VIEW')}}" + data.data.place.place_logo);
+                    $("#Favicon img").attr('src', "{{env('URL_FILE_VIEW')}}" + data.data.place.place_favicon);
+                    $("#business-name").text(data.data.place.place_name);
+                    $("#tax-code").text(data.data.place.place_taxcode);
+                    $("#price-floor").text(data.data.place.place_worker_mark_bonus);
+                    $("#hide-service-price").text(hide_service_price);
+                    $("#address").text(data.data.place.place_address);
+                    $("#email").text(data.data.place.place_email);
+                    $("#interest").text(data.data.place.place_interest);
+                    $("#description").text(data.data.place.place_description);
+                    $("#business-phone").text(data.data.place.place_phone);
+                    $("#website").text(data.data.place.place_website);
+
+                    var monClosed = data.data.place_actiondate.mon.closed;
+                    var tueClosed = data.data.place_actiondate.tue.closed;
+                    var wedClosed = data.data.place_actiondate.wed.closed;
+                    var thuClosed = data.data.place_actiondate.thur.closed;
+                    var friClosed = data.data.place_actiondate.fri.closed;
+                    var satClosed = data.data.place_actiondate.sat.closed;
+                    var sunClosed = data.data.place_actiondate.sun.closed;
+
+                    var monStart = data.data.place_actiondate.mon.start;
+                    var tueStart = data.data.place_actiondate.tue.start;
+                    var wedStart = data.data.place_actiondate.wed.start;
+                    var thuStart = data.data.place_actiondate.thur.start;
+                    var friStart = data.data.place_actiondate.fri.start;
+                    var satStart = data.data.place_actiondate.sat.start;
+                    var sunStart = data.data.place_actiondate.sun.start;
+
+                    var monEnd = data.data.place_actiondate.mon.end;
+                    var tueEnd = data.data.place_actiondate.tue.end;
+                    var wedEnd = data.data.place_actiondate.wed.end;
+                    var thuEnd = data.data.place_actiondate.thur.end;
+                    var friEnd = data.data.place_actiondate.fri.end;
+                    var satEnd = data.data.place_actiondate.sat.end;
+                    var sunEnd = data.data.place_actiondate.sun.end;
+
+                    $("label").removeClass("active")
+                    $(".time-start input").css("visibility", "");
+                    $(".time-end input").css("visibility", "");
+
+                    if (monClosed == true) {
+                        $("div[rel='monday']").find("label[rel='close']").addClass("active");
+                        $("#mon-start").css("visibility", "hidden");
+                        $("#mon-end").css("visibility", "hidden");
+                    } else {
+                        $("div[rel='monday']").find("label[rel='open']").addClass("active");
+                        $("#mon-start").val(monStart);
+                        $("#mon-end").val(monEnd);
+                    }
+
+                    if (tueClosed == true) {
+                        $("div[rel='tuesday']").find("label[rel='close']").addClass("active");
+                        $("#tue-start").css("visibility", "hidden");
+                        $("#tue-end").css("visibility", "hidden");
+                    } else {
+                        $("div[rel='tuesday']").find("label[rel='open']").addClass("active");
+                        $("#tue-start").val(tueStart);
+                        $("#tue-end").val(tueEnd);
+                    }
+
+                    if (wedClosed == true) {
+                        $("div[rel='wednesday']").find("label[rel='close']").addClass("active");
+                        $("#wed-start").css("visibility", "hidden");
+                        $("#wed-end").css("visibility", "hidden");
+                    } else {
+                        $("div[rel='wednesday']").find("label[rel='open']").addClass("active");
+                        $("#wed-start").val(wedStart);
+                        $("#wed-end").val(wedEnd);
+                    }
+
+                    if (thuClosed == true) {
+                        $("div[rel='thursday']").find("label[rel='close']").addClass("active");
+                        $("#thu-start").css("visibility", "hidden");
+                        $("#thu-end").css("visibility", "hidden");
+                    } else {
+                        $("div[rel='thursday']").find("label[rel='open']").addClass("active");
+                        $("#thu-start").val(thuStart);
+                        $("#thu-end").val(thuEnd);
+                    }
+
+                    if (friClosed == true) {
+                        $("div[rel='friday']").find("label[rel='close']").addClass("active");
+                        $("#fri-start").css("visibility", "hidden");
+                        $("#fri-end").css("visibility", "hidden");
+                    } else {
+                        $("div[rel='friday']").find("label[rel='open']").addClass("active");
+                        $("#fri-start").val(friStart);
+                        $("#fri-end").val(friEnd);
+                    }
+
+                    if (satClosed == true) {
+                        $("div[rel='saturday']").find("label[rel='close']").addClass("active");
+                        $("#sat-start").css("visibility", "hidden");
+                        $("#sat-end").css("visibility", "hidden");
+                    } else {
+                        $("div[rel='saturday']").find("label[rel='open']").addClass("active");
+                        $("#sat-start").val(satStart);
+                        $("#sat-end").val(satEnd);
+                    }
+
+                    if (sunClosed == true) {
+                        $("div[rel='sunday']").find("label[rel='close']").addClass("active");
+                        $("#sun-start").css("visibility", "hidden");
+                        $("#sun-end").css("visibility", "hidden");
+                    } else {
+                        $("div[rel='sunday']").find("label[rel='open']").addClass("active");
+                        $("#sun-start").val(sunStart);
+                        $("#sun-end").val(sunEnd);
+                    }
+
+
+                }
+            },
+            error: function() {
+                toastr.error("Failed to get data");
             }
-          },
-          error:function(){
-            toastr.error("Failed to get data");
-          }
         });
-      });
-    
-      
-      $(document).on('click','.setting',function(e){
-          e.preventDefault();
-          clear();
-          $("#setting").modal("show");
-          license = $(this).attr("data-license");
-          $("input#get-license").val(license);
-      });
-      //Create New Website
-      $("#clone-update-form").on('submit',function(e){
+    });
+
+
+    $(document).on('click', '.setting', function(e) {
+        e.preventDefault();
+        clear();
+        $("#setting").modal("show");
+        license = $(this).attr("data-license");
+        $("input#get-license").val(license);
+    });
+    //Create New Website
+    $("#clone-update-form").on('submit', function(e) {
         e.preventDefault();
 
         var checkThemeProperties = $('#themeProperties tr');
 
-        if(checkThemeProperties.length > 1){
+        if (checkThemeProperties.length > 1) {
             var checkSelected = $('#themeProperties tr.selected');
-            if(checkSelected.length == 0){
+            if (checkSelected.length == 0) {
                 toastr.error("You have not selected website properties");
                 return false;
             }
@@ -967,87 +961,87 @@
 
         var form = $(this).serialize();
 
-          $.ajax({
-              url:"{{ route('cloneUpdateWebsite') }}",
-              method:"post",
-              data:form,
-              dataType:"json",
-              success:function(data){
-                if(data.status == 1){
-                  toastr.success(data.msg);
+        $.ajax({
+            url: "{{ route('cloneUpdateWebsite') }}",
+            method: "post",
+            data: form,
+            dataType: "json",
+            success: function(data) {
+                if (data.status == 1) {
+                    toastr.success(data.msg);
                 } else {
-                  toastr.error(data.msg);
+                    toastr.error(data.msg);
                 }
-              },
-              error:function(){
+            },
+            error: function() {
                 toastr.error("Failed to change!");
-              }
-            });
-      });
-    
-      $("#themes-datatable tbody").on('click',"tr",function(){
-             $('#themes-datatable tbody tr.selected').removeClass('selected');
-             $(this).addClass('selected');
-             themeId = $(this).find("td.id").text();
-             var code = $(this).find("td.code").text();
-             $("input#get-code").val(code);
-             listThemePropertiesByThemeId(themeId);
+            }
+        });
+    });
 
-             $("input[name='id_properties']").val('');
-       });
+    $("#themes-datatable tbody").on('click', "tr", function() {
+        $('#themes-datatable tbody tr.selected').removeClass('selected');
+        $(this).addClass('selected');
+        themeId = $(this).find("td.id").text();
+        var code = $(this).find("td.code").text();
+        $("input#get-code").val(code);
+        listThemePropertiesByThemeId(themeId);
 
-      $(".btn-copy-theme").on('click',function(){
-            $(".text-form").text("Clone Website");
-            $("#clone-update-form").find("input[type=submit]").val("Clone Website");
-            $("#clone-update-form").find("input[name=action]").val("clone");
-      });
-      $(".btn-copy-properties").on('click',function(){
-            $(".text-form").text("Update Website");
-            $("#clone-update-form").find("input[type=submit]").val("Update Website");
-            $("#clone-update-form").find("input[name=action]").val("update");
-      });
+        $("input[name='id_properties']").val('');
+    });
 
-      $("#themeProperties tbody").on('click',"tr",function(){
-            $('#themeProperties tbody tr.selected').removeClass('selected');
-            $(this).addClass('selected');
-            id = $(this).attr("properties-id");
-            $("input[name='id_properties']").val(id);
-       });
+    $(".btn-copy-theme").on('click', function() {
+        $(".text-form").text("Clone Website");
+        $("#clone-update-form").find("input[type=submit]").val("Clone Website");
+        $("#clone-update-form").find("input[name=action]").val("clone");
+    });
+    $(".btn-copy-properties").on('click', function() {
+        $(".text-form").text("Update Website");
+        $("#clone-update-form").find("input[type=submit]").val("Update Website");
+        $("#clone-update-form").find("input[name=action]").val("update");
+    });
 
-      // custom properties
-      $(document).on('click',".btn-custom-properties",function(e){
-            e.preventDefault();
-            placeId = $(this).attr('data-id');
-            customPropertytable.draw();
-            $("#custom-properties-modal").modal("show");
-            $(".resetAddProperty").trigger('click');
-      });
+    $("#themeProperties tbody").on('click', "tr", function() {
+        $('#themeProperties tbody tr.selected').removeClass('selected');
+        $(this).addClass('selected');
+        id = $(this).attr("properties-id");
+        $("input[name='id_properties']").val(id);
+    });
 
-      $("#addText").on('click',function(){
-            $(".addText").show(200);
-            $(".addImage").hide(200);
-      });
+    // custom properties
+    $(document).on('click', ".btn-custom-properties", function(e) {
+        e.preventDefault();
+        placeId = $(this).attr('data-id');
+        customPropertytable.draw();
+        $("#custom-properties-modal").modal("show");
+        $(".resetAddProperty").trigger('click');
+    });
 
-      $("#addImage").on('click',function(){
-            $(".addImage").show(200);
-            $(".addText").hide(200);
-      });
+    $("#addText").on('click', function() {
+        $(".addText").show(200);
+        $(".addImage").hide(200);
+    });
 
-      $(".resetAddProperty").on('click',function(){
+    $("#addImage").on('click', function() {
+        $(".addImage").show(200);
+        $(".addText").hide(200);
+    });
+
+    $(".resetAddProperty").on('click', function() {
         clear();
         $("#custom-properties-title").text("Add");
         $("#custom-properties-form").find("input[name='action']").val("create");
 
-      });
+    });
 
-    $(document).on("click",".editValueProperty",function(e){
+    $(document).on("click", ".editValueProperty", function(e) {
         e.preventDefault();
         var variable = $(this).attr('data-id');
         var name = $(this).parent().parent().find(".wp_name").text();
         var value = $(this).parent().parent().find(".wp_value").text();
         var img = $(this).parent().parent().find(".wp_value img").attr('src');
 
-        if(img){
+        if (img) {
             $("#addImage").trigger("click");
         } else {
             $("#addText").trigger("click");
@@ -1060,64 +1054,63 @@
         $("#custom-properties-form").find("input[name='variable']").val(variable);
         $("#custom-properties-form").find("input[name='name']").val(name);
         $("#custom-properties-form").find("input[name='value']").val(value);
-        $("#custom-properties-form").find("#previewImageValue").attr("src",img);
+        $("#custom-properties-form").find("#previewImageValue").attr("src", img);
 
-        $("#custom-properties-form").find("input[name='variable']").attr("readonly",true);
+        $("#custom-properties-form").find("input[name='variable']").attr("readonly", true);
     });
-    
-    $(document).on("click",".deleteValueProperty",function(e){
+
+    $(document).on("click", ".deleteValueProperty", function(e) {
         e.preventDefault();
-        if(confirm("Are you sure do you want to delete this data?")){
+        if (confirm("Are you sure do you want to delete this data?")) {
             var id = $(this).attr('data-id');
             $.ajax({
-                url:"{{ route('deleteValueProperty') }}",
-                method:"get",
-                data:{
-                    __token:"{{csrf_token()}}",
+                url: "{{ route('deleteValueProperty') }}",
+                method: "get",
+                data: {
+                    __token: "{{csrf_token()}}",
                     id,
                     placeId,
                 },
-                dataType:"json",
-                success:function(data){
-                    if(data.status == 1){
+                dataType: "json",
+                success: function(data) {
+                    if (data.status == 1) {
                         toastr.success("Deleted successfully!");
                         customPropertytable.draw();
                     }
                 },
-                error:function(){
+                error: function() {
                     toastr.error("Failed to delete!");
                 }
             });
         };
     });
 
-    $("#custom-properties-form").on("submit",function(e){
+    $("#custom-properties-form").on("submit", function(e) {
         e.preventDefault();
         var form = $(this)[0];
         var form_data = new FormData(form);
-        form_data.append('placeId',placeId);
+        form_data.append('placeId', placeId);
         $.ajax({
-            url:"{{ route('saveCustomValueProperty') }}",
-            method:"post",
-            dataType:"json",
-            data:form_data,
-            cache:false,
+            url: "{{ route('saveCustomValueProperty') }}",
+            method: "post",
+            dataType: "json",
+            data: form_data,
+            cache: false,
             contentType: false,
             processData: false,
-            success:function(data){
+            success: function(data) {
                 customPropertytable.draw();
                 toastr.success("Saved successfully!");
                 clear();
 
-            }, 
-            error:function(){   
+            },
+            error: function() {
                 toastr.error("Failed to save!");
             }
         });
     });
-    
-    });
-    
-    
+
+});
+
 </script>
 @endpush

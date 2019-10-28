@@ -230,6 +230,13 @@ Route::group(['middleware' => ['auth']], function () {
         Route::get('menu','MenuController@setupMenu')->name('menu');
         Route::get('setup-permission','MenuController@permission')->name('setup-permission');
 
+        Route::group(['prefix' => 'setup-type-template'], function() {
+            Route::get('/', 'SetupTypeTemplateController@index')->name('setupTypeTemplate');
+            Route::get('datatable', 'SetupTypeTemplateController@getDatatable')->name('getDatatableSetupTypeTemplate');
+            Route::post('save', 'SetupTypeTemplateController@save')->name('saveSetupTypeTemplate');
+            Route::post('delete', 'SetupTypeTemplateController@delete')->name('deleteSetupTypeTemplate');
+        });
+
     });
 
     Route::group(['prefix'=>'user'],function(){

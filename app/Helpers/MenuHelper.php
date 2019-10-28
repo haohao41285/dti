@@ -64,6 +64,7 @@ class MenuHelper{
                 ['text' => 'Setup Event Holiday', 'link'=> 'setting/setup-event-holiday'],
                 ['text' => 'Setup Menu', 'link'=> 'setting/menu'],
                 ['text' => 'Setup Permission', 'link'=> 'setting/setup-permission'],
+                ['text' => 'Setup Type Template', 'link'=> 'setting/setup-type-template'],
 		    ]],
             ['text' => 'Notification', 'icon'=>'fas fa-sms', 'link' => 'notification'],
 		    ['text' => 'Recent Logs', 'icon'=>'fas fa-list-alt', 'link' => 'recentlog'],
