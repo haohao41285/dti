@@ -228,11 +228,11 @@ class UserController extends Controller
     }
     public function permission($role_id){
 
-        if(Gate::forUser("Roles")->denies('permission',"Update")){
-
-            return back()->with('error',"You don't have permission!");
-
-        }else{
+//        if(Gate::forUser("Roles")->denies('permission',"Update")){
+//
+//            return back()->with('error',"You don't have permission!");
+//
+//        }else{
 
             $permission_arr = ['Read','Create','Update','Delete'];
 
@@ -253,7 +253,7 @@ class UserController extends Controller
             $menu_list = MenuHelper::getMenuList();
 
             return view('user.role-permission',compact('menu_list','role_permission_arr','permission_arr','role_id','role_name'));
-        }
+//        }
     }
     public function changePermission(Request $request){
 

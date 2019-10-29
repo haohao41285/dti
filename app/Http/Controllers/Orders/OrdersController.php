@@ -33,6 +33,7 @@ use DB;
 use Hash;
 use ZipArchive;
 use Dompdf\Dompdf;
+use Gate;
 
 class OrdersController extends Controller
 {
@@ -49,6 +50,11 @@ class OrdersController extends Controller
 	}
 
 	public function getMyOrders(){
+	    //CHECK PERMISSION
+        if(Gate::denies('permission','my-orders-read'))
+            return back()->with('error',"You don't have permission!");
+        //END CHECK
+
 		$data['state'] = Option::state();
         $data['status'] = GeneralHelper::getOrdersStatus();
 		return view('orders.my-orders',$data);
@@ -297,42 +303,50 @@ class OrdersController extends Controller
 					'place_status' => 1
 				];
 				// return $place_arr;
-				PosPlace::insert($place_arr);
+				$update_place = PosPlace::insert($place_arr);
 
 				//INSERT POS_USER
 				//FORMAT PHONE NUMBER
 				$phone = preg_replace("/[^0-9]/", "", $customer_info->ct_business_phone );
 	            $start_phone = substr($phone,0,1);
 	            if( $start_phone == '0' )
-	            {
 	                $phone = "1".substr($phone,1);
-	            }
 	            else
-	            {
 	                $phone = "1".$phone;
-	            }
 
-				$user_arr = [
-					'user_id' => 1,
-					'user_place_id' => $place_id,
-					'user_default_place_id' => 0,
-					'user_usergroup_id' => 1,
-					'user_password' => Hash::make('abc123'),
-					'user_pin' => 123456,
-					'user_fullname' => $customer_info->ct_firstname.";".$customer_info->ct_lastname,
-					'user_phone' => $phone,
-					'user_email' => $customer_info->ct_email,
-					'user_token' => csrf_token(),
-					'remember_token' => csrf_token(),
-					'created_by' => Auth::user()->user_id,
-					'updated_by' => Auth::user()->user_id,
-					'enable_status' => 1,
-					'user_status' => 1
-				];
-				PosUser::create($user_arr);
-			}else{
-			    //INSERT
-            }
+	            //CHECK USER EXISTED
+                $check_user = PosUser::where('user_phone',$phone)->count();
+                if($check_user == 0){
+                    $user_arr = [
+                        'user_id' => 1,
+                        'user_place_id' => $place_id,
+                        'user_default_place_id' => 0,
+                        'user_usergroup_id' => 1,
+                        'user_password' => Hash::make('abc123'),
+                        'user_pin' => 123456,
+                        'user_fullname' => $customer_info->ct_firstname.";".$customer_info->ct_lastname,
+                        'user_phone' => $phone,
+                        'user_email' => $customer_info->ct_email,
+                        'user_token' => csrf_token(),
+                        'remember_token' => csrf_token(),
+                        'created_by' => Auth::user()->user_id,
+                        'updated_by' => Auth::user()->user_id,
+                        'enable_status' => 1,
+                        'user_status' => 1
+                    ];
+                    PosUser::create($user_arr);
+                }else{
+                    $user_info = PosUser::where('user_phone',$phone)->first();
+                    if($user_info->user_places_id == null ){
+                        $user_places_id = $user_info->user_place_id.','.$place_id;
+                        $user_default_place_id = $place_id;
+                        PosUser::where('user_phone',$phone)->update(['user_places_id'=>$user_places_id,'user_default_place_id'=>$user_default_place_id]);
+                    }else{
+                        $user_places_id = $user_info->user_places_id.','.$place_id;
+                        PosUser::where('user_phone',$phone)->update(['user_places_id'=>$user_places_id]);
+                    }
+                }
+			}
 
 			//UPDATE CUSTOMER STATUS
 			$team_customer_status = MainTeam::find(Auth::user()->user_team)->getTeamType->team_customer_status;

@@ -5,6 +5,7 @@ namespace App\Providers;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 use Session;
 use Gate;
+use App\Models\MainPermissionDti;
 
 class AuthServiceProvider extends ServiceProvider
 {
@@ -30,15 +31,19 @@ class AuthServiceProvider extends ServiceProvider
             return new CustomUserProvider($app['hash'], $config['model']);
         });
 
-        Gate::define('permission',function($name,$permission)
-            {
+        Gate::define('permission',function($user,$permission)
+        {
+            $permission_list = MainPermissionDti::where('permission_slug',$permission)->first();
+
+            if($permission_list != ""){
                 $permission_list_session = Session::get('permission_list_session');
-
-                if(isset($permission_list_session[$name][$permission]))
-
-                    return $permission_list_session[$name][$permission] == 1 ;
-                else
-                    return 1 == 0;
-            });
+                $permission_id = $permission_list->id;
+                if(in_array(intval($permission_id),$permission_list_session)){
+                    return true;
+                }
+                else return false;
+            }else
+                return false;
+        });
     }
 }
