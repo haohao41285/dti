@@ -16,6 +16,7 @@ use App\Models\MainCustomer;
 use Illuminate\Http\Request;
 use Auth;
 use DataTables;
+use Gate;
 
 
 class DashboardController extends Controller {
@@ -142,7 +143,7 @@ class DashboardController extends Controller {
             ->whereBetween('cs_date_expire',[$today,$date_expired])
            ->where('main_customer_service.cs_customer_id','!=',null);
 
-        if(Auth::user()->user_group_id != 1)
+        if(Gate::denies('permission','dashboard-admin'))
             $customer_service_list = $customer_service_list->where('main_customer_service.created_by',Auth::user()->user_id);
 
         $customer_service_list = $customer_service_list->get();

@@ -24,6 +24,7 @@ use DataTables;
 use DB;
 use Validator;
 use ZipArchive;
+use Gate;
 
 class CustomerController extends Controller
 {
@@ -31,8 +32,14 @@ class CustomerController extends Controller
     {
         $data['state'] = Option::state();
         $data['status'] = GeneralHelper::getCustomerStatusList();
-        if(Auth::user()->user_group_id == 1)
+
+        if(Gate::allows('permission','customer-admin')){
             $data['teams'] = MainTeam::active()->get();
+            $data['customer_status'] = GeneralHelper::getCustomerStatusList();
+        }
+        else
+            $data['customer_status'] = ['3'=>'New Arrivals'];
+
         return view('customer.all-customers',$data);
     }
 
@@ -116,7 +123,7 @@ class CustomerController extends Controller
             else
                 $ct_status = GeneralHelper::getCustomerStatus($customer_status_arr[$customer->id]);
             //ADMIN CAN SEE ALL
-            if(Auth::user()->user_group_id == 1){
+            if(Gate::allows('permission','customer-admin')){
                 if($status_customer != "" && intval($customer_status_arr[$customer->id]) ==  intval($status_customer)){
                     $customer_arr[] = [
                         'id' => $customer->id,
@@ -144,7 +151,7 @@ class CustomerController extends Controller
                 ];
                 }
             }
-            elseif(Auth::user()->user_group_id != 1 && $ct_status = 'New Arrivals'){
+            elseif(Gate::denies('permission','customer-admin') && $ct_status = 'New Arrivals'){
                 $customer_arr[] = [
                     'id' => $customer->id,
                     'ct_salon_name' => $customer->ct_salon_name,
@@ -169,17 +176,17 @@ class CustomerController extends Controller
                 return Carbon::parse($row['created_at'])->format('m/d/Y H:i:s')." by ".$row['user_nickname'];
             })
             ->editColumn('ct_business_phone',function($row){
-                if($row['ct_business_phone'] != null && Auth::user()->user_group_id != 1)
+                if($row['ct_business_phone'] != null && Gate::denies('permission','customer-admin'))
                     return substr($row['ct_business_phone'],0,3)."########";
                 else return $row['ct_business_phone'];
             })
             ->editColumn('ct_cell_phone',function($row){
-                if($row['ct_cell_phone'] != null && Auth::user()->user_group_id != 1)
+                if($row['ct_cell_phone'] != null  && Gate::denies('permission','customer-admin'))
                     return substr($row['ct_cell_phone'],0,3)."########";
                 else return $row['ct_cell_phone'];
             })
             ->addColumn('action', function ($row){
-                if(Auth::user()->user_id == 1)
+                if( Gate::allows('permission','customer-admin'))
                     return '<a class="btn btn-sm btn-secondary view" customer_id="'.$row['id'].'" href="javascript:void(0)"><i class="fas fa-eye"></i></a>
                         <a class="btn btn-sm btn-secondary edit-customer" customer_id="'.$row['id'].'" href="javascript:void(0)"><i class="fas fa-edit"></i></a>
                         <a class="btn btn-sm btn-secondary delete-customer" customer_id="'.$row['id'].'" href="javascript:void(0)"><i class="fas fa-trash"></i></a>';
@@ -234,9 +241,9 @@ class CustomerController extends Controller
             }
 
             if(!isset($request->my_customer)){
-                if($customer_list->ct_business_phone != null && Auth::user()->user_group_id != 1)
+                if($customer_list->ct_business_phone != null  && Gate::denies('permission','customer-admin'))
                     $customer_list['ct_business_phone'] = substr($customer_list->ct_business_phone,0,3)."########";
-                if($customer_list->ct_cell_phone != null && Auth::user()->user_group_id != 1)
+                if($customer_list->ct_cell_phone != null  && Gate::denies('permission','customer-admin'))
                 $customer_list['ct_cell_phone'] = substr($customer_list->ct_cell_phone,0,3)."########";
             }
             //GET PALCE, SERVICE
