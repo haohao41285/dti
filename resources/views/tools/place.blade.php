@@ -539,6 +539,7 @@
         </div>
     </div>
 </div>
+{{-- custom properties modal --}}
 <div class="modal fade" id="custom-properties-modal" tabindex="-1" role="dialog">
     <div style="max-width: 95%" class="modal-dialog" role="document">
         <div class="modal-content">
@@ -613,12 +614,95 @@
                     </div>
                 </div>
             </div>
-            {{--
-            <div class="modal-footer">
-                <button type="button" class="btn-sm btn btn-primary">Save changes</button>
-                <button type="button" class="btn-sm btn btn-secondary" data-dismiss="modal">Close</button>
+        </div>
+    </div>
+</div>
+{{-- auto coupon modal --}}
+<div class="modal fade" id="auto-coupon-modal" tabindex="-1" role="dialog">
+    <div style="max-width: 95%" class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Auto Coupon</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
             </div>
-            --}}
+            <div class="modal-body row">
+                <div class="col-8 ">
+                    <div class="card shadow mb-4 ">
+                        <div class="card-header py-2">
+                            <h6 class="m-0 font-weight-bold text-primary">Auto coupon list </h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-bordered table-hover" id="auto-coupon-datatable" width="100%" cellspacing="0">
+                                    <thead>
+                                        <tr>
+                                            <th>Id</th>
+                                            <th>Title</th>
+                                            <th>Discount</th>
+                                            <th>Image</th>
+                                            <th>Services</th>
+                                            <th>Type</th>
+                                            <th>Action</th>
+                                        </tr>
+                                    </thead>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-4">
+                    <div class="form-group" id="buttonSetupProperties">
+                        {{-- <button class="btn-sm btn-primary btn showAdd" id="addText">Add Text</button> --}}
+                        {{-- <button class="btn-sm btn-danger btn showAdd" id="addImage">Add Image</button> --}}
+                        <button class="btn btn-sm btn-warning resetAddAutoCoupon">Reset Add</button>
+                    </div>
+                    <div class="card shadow mb-4 ">
+                        <div class="card-header py-2">
+                            <h6 class="m-0 font-weight-bold text-primary " id="auto-coupon-title">Add</h6>
+                        </div>
+                        <div class="card-body">
+                            <form method="post" id="auto-coupon-form" enctype="multipart/form-data">
+                                @csrf
+                                <div class="form-group row col-12">
+                                    <label class="col-5">Title</label>
+                                    <input class="col-7 form-control-sm form-control" type="text" name="variable">
+                                </div>
+                                <div class="form-group row col-12">
+                                    <label class="col-5">Discount</label>
+                                    <input class="col-7 form-control-sm form-control" type="text" name="name">
+                                </div>
+                                <div class=" form-group row col-12">
+                                    <label class="col-5">Discount Type </label>
+                                    <input class="col-7 form-control-sm form-control" type="text" name="value">
+                                </div>
+                                <div class="form-group col-12">
+                                    <label>Image</label>
+                                    <div class="previewImage">
+                                        <img id="previewImageAutoCoupon" src="{{ asset('/images/no-image.png') }}">
+                                        <input type="file" class="custom-file-input" name="image" previewimageid="previewImageAutoCoupon">
+                                    </div>
+                                </div>
+                                <div class=" form-group row col-12">
+                                    <label class="col-5">Services</label>
+                                    <input class="col-7 form-control-sm form-control" type="text" name="value">
+                                </div>
+                                <div class=" form-group row col-12">
+                                    <label class="col-5">Coupon Type </label>
+                                    <input class="col-7 form-control-sm form-control" type="text" name="value">
+                                </div>
+                                <div class="form-group col-12 row">
+                                    <label class="col-5"></label>
+                                    <input class="btn-sm btn btn-primary" type="submit" value="Save">
+                                    <input type="hidden" name="action" value="create">
+                                    <input type="hidden" name="valuePropertyId">
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </div>
@@ -630,6 +714,8 @@ function clear() {
     $("#clone-update-form")[0].reset();
     $("#user_nickname").html("Change password");
     $("#custom-properties-form")[0].reset();
+    $("#auto-coupon-form")[0].reset();
+
     $(".previewImage img").attr("src", "{{ asset('images/no-image.png') }}");
 
     $('#themes-datatable tbody tr.selected').removeClass('selected');
@@ -678,11 +764,8 @@ $(document).ready(function() {
 
             { data: 'place_id', name: 'place_id', class: 'text-center' },
             { data: 'place_name', name: 'place_name' },
-            // { data: 'place_address', name: 'place_address' },
-            // { data: 'place_email', name: 'place_email' },
             { data: 'place_phone', name: 'place_phone', class: 'text-center' },
             { data: 'place_ip_license', name: 'place_ip_license' },
-            // { data: 'created_at', name: 'created_at', class: 'text-center' },
             { data: 'action', name: 'action', orderable: false, searcheble: false, class: 'text-center' }
         ],
         buttons: [
@@ -1106,6 +1189,103 @@ $(document).ready(function() {
             },
             error: function() {
                 toastr.error("Failed to save!");
+            }
+        });
+    });
+
+    //=============================
+    //auto coupon
+    $(document).on('click', ".btn-auto-coupon", function(e) {
+        e.preventDefault();
+        placeId = $(this).attr('data-id');
+        autoCouponTable.draw();
+        $("#auto-coupon-modal").modal("show");
+        $(".resetAddAutoCoupon").trigger("click");
+    });
+
+    $(".resetAddAutoCoupon").on('click', function() {
+        clear();
+        $("#auto-coupon-title").text("Add");
+    });
+
+    autoCouponTable = $('#auto-coupon-datatable').DataTable({
+        // dom: "lBfrtip",
+        processing: true,
+        serverSide: true,
+        responsive: true,
+        autoWidth: true,
+        buttons: [
+
+        ],
+
+        ajax: {
+            url: "{{ route('getAutoCouponDatatable') }}",
+            data: function(data) {
+                data.placeId = placeId;
+            },
+        },
+        columns: [
+            { data: 'template_id', name: 'template_id', class: "template_id" },
+            { data: 'template_title', name: 'template_title', class: "template_title" },
+            { data: 'template_discount', name: 'template_discount', class: "template_discount" },
+            { data: 'template_linkimage', name: 'template_linkimage', class: "template_linkimage" },
+            { data: 'template_list_service', name: 'template_list_service', class: "template_list_service" },
+            { data: 'template_type_id', name: 'template_type_id', class: "template_type_id" },
+            { data: 'action', name: 'action', orderable: false, searchable: false, class: 'text-center' }
+        ]
+    });
+    //save
+    $("#auto-coupon-form").on("submit", function(e) {
+        e.preventDefault();
+        var form = $(this)[0];
+        var form_data = new FormData(form);
+        form_data.append('placeId', placeId);
+        $.ajax({
+            url: "{{ route('saveAutoCoupon') }}",
+            method: "post",
+            dataType: "json",
+            data: form_data,
+            cache: false,
+            contentType: false,
+            processData: false,
+            success: function(data) {
+                autoCouponTable.draw();
+                toastr.success("Saved successfully!");
+                clear();
+
+            },
+            error: function() {
+                toastr.error("Failed to save!");
+            }
+        });
+    });
+
+    $(document).on("click", ".editAutoCoupon", function(e) {
+        var id = $(this).attr("data-id");
+    });
+
+    $(document).on("click", ".deleteAutoCoupon", function(e) {
+        if (!confirm("Are you sure you want to delete this data?")) {
+            return false;
+        }
+
+        var id = $(this).attr("data-id");
+        $.ajax({
+            url: "{{ route('deleteAutoCoupon') }}",
+            method: "get",
+            data: {
+                id,
+                placeId,
+            },
+            dataType: "json",
+            success: function(data) {
+                if (data.status) {
+                    toastr.success("Deleted successfully!");
+                    autoCouponTable.draw();
+                }
+            },
+            error: function() {
+                toastr.error("Failed to delete!");
             }
         });
     });

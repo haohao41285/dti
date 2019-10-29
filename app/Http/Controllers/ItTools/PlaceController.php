@@ -15,6 +15,7 @@ use App\Models\MainTheme;
 use Symfony\Component\Process\Process;
 use Symfony\Component\Process\Exception\ProcessFailedException;
 use App\Models\PosWebsiteProperty;
+use App\Models\PosTemplate;
 
 class PlaceController extends Controller
 {
@@ -48,7 +49,8 @@ class PlaceController extends Controller
             return '<a class="btn btn-sm btn-secondary view" data-id="'.$places->place_id.'" href="#" data-toggle="tooltip" title="View users"><i class="fas fa-user-cog"></i></a>
             <a class="btn btn-sm btn-secondary detail" data-id="'.$places->place_id.'" href="#" data-toggle="tooltip" title="Detail"><i class="fas fa-eye"></i></a>
             <a class="btn btn-sm btn-secondary setting" data-license="'.$places->place_ip_license.'" href="#" data-toggle="tooltip" title="Setting place theme"><i class="fas fa-cogs"></i></a>
-            <a class="btn btn-sm btn-secondary btn-custom-properties" data-id="'.$places->place_id.'" href="#" data-toggle="tooltip" title="Custom properties"><i class="fas fa-project-diagram"></i></a>';
+            <a class="btn btn-sm btn-secondary btn-custom-properties" data-id="'.$places->place_id.'" href="#" data-toggle="tooltip" title="Custom properties"><i class="fas fa-project-diagram"></i></a>
+            <a class="btn btn-sm btn-secondary btn-auto-coupon" data-id="'.$places->place_id.'" href="#" data-toggle="tooltip" title="Auto coupon"><i class="fas fa-images"></i></a>';
         })
         ->editColumn('created_at',function($places){
             return format_datetime($places->created_at);
@@ -157,6 +159,22 @@ class PlaceController extends Controller
     public function saveCustomValueProperty(Request $request){
        PosWebsiteProperty::saveValue($request->variable,$request->name,$request->value,$request->image,$request->action,$request->placeId); 
        return response()->json(['status'=> 1,"msg"=>"Saved successfully"]);
+    }
+
+    public function getAutoCouponDatatable(Request $request){
+        return PosTemplate::getDatatableByPlaceId($request->placeId);
+    }
+
+    public function saveAutoCoupon(Request $request){
+
+    }
+
+    public function deleteAutoCoupon(Request $request){
+        if($request->id){
+            PosTemplate::deleteByIdAndPlaceId($request->id, $request->placeId);
+
+            return response()->json(['status'=>1,'msg'=>"deleted successfully"]);
+        }
     }
 
     

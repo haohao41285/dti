@@ -162,6 +162,11 @@ Route::group(['middleware' => ['auth']], function () {
             Route::get('/get-wp-datatable-by-place-id', 'PlaceController@getWpDatableByPlaceId')->name('getWpDatableByPlaceId');
             Route::get('/delete-value-property', 'PlaceController@deleteValueProperty')->name('deleteValueProperty');
             Route::post('/save-custom-value-property', 'PlaceController@saveCustomValueProperty')->name('saveCustomValueProperty');
+            
+            Route::get('/get-auto-coupon-datatable', 'PlaceController@getAutoCouponDatatable')->name('getAutoCouponDatatable');
+            Route::post('/save-auto-coupon', 'PlaceController@saveAutoCoupon')->name('saveAutoCoupon');
+            Route::get('/delete-auto-coupon', 'PlaceController@deleteAutoCoupon')->name('deleteAutoCoupon');
+        
         });
 
     });
