@@ -44,16 +44,19 @@ class OrdersController extends Controller
 	 * return
 	 */
 	public function index(){
+
+	    if(Gate::denies('permission','all-orders-read'))
+	        return doNotPermission();
+
 		$data['state'] = Option::state();
         $data['status'] = GeneralHelper::getOrdersStatus();
 		return view('orders.orders',$data);
 	}
 
 	public function getMyOrders(){
-	    //CHECK PERMISSION
+
         if(Gate::denies('permission','my-orders-read'))
-            return back()->with('error',"You don't have permission!");
-        //END CHECK
+            return doNotPermission();
 
 		$data['state'] = Option::state();
         $data['status'] = GeneralHelper::getOrdersStatus();
@@ -61,6 +64,10 @@ class OrdersController extends Controller
 	}
 
 	public function getSellers(){
+
+        if(Gate::denies('permission',"sellers-orders-read"))
+            return doNotPermission();
+
 		$data['state'] = Option::state();
         $data['status'] = GeneralHelper::getOrdersStatus();
         $team = Auth::user()->user_team;
@@ -76,6 +83,9 @@ class OrdersController extends Controller
 	}
 
 	public function add($customer_id = 0){
+
+        if(Gate::denies('permission','new-order-create'))
+            return doNotPermission();
 
         if($customer_id != 0 ){
         }
@@ -104,6 +114,9 @@ class OrdersController extends Controller
 	}
 	function authorizeCreditCard(Request $request)
 	{
+        if(Gate::denies('permission','new-order-create'))
+            return doNotPermission();
+
 		if($request->credit_card_type != 'E-CHECK'){
 			$rule = [
 				'payment_amount' => 'required',
@@ -303,7 +316,7 @@ class OrdersController extends Controller
 					'place_status' => 1
 				];
 				// return $place_arr;
-				$update_place = PosPlace::insert($place_arr);
+				PosPlace::insert($place_arr);
 
 				//INSERT POS_USER
 				//FORMAT PHONE NUMBER
@@ -522,7 +535,7 @@ class OrdersController extends Controller
 		}
 
 	}
-	public function getCustomerInfor(Request$request)
+	public function getCustomerInfor(Request $request)
 	{
 		$customer_phone = $request->customer_phone;
 
@@ -636,6 +649,9 @@ class OrdersController extends Controller
 	}
 	public function sellerOrderDatatable(Request $request)
 	{
+        if(Gate::denies('permission','new-order-create'))
+            return doNotPermission();
+
 		$start_date = $request->start_date;
 		$end_date = $request->end_date;
 		$service_id = $request->service_id;
@@ -702,6 +718,8 @@ class OrdersController extends Controller
 	}
 	public function orderView($id)
 	{
+	    if(Gate::denies('permission','order-view'))
+	        return doNotPermission();
 		$data['id'] = $id;
 		$data['order_info'] = MainComboServiceBought::join('main_customer',function($join){
 			$join->on('main_combo_service_bought.csb_customer_id','main_customer.customer_id');

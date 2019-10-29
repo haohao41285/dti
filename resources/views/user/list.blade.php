@@ -42,35 +42,17 @@
                   }
               }
             ],
-            columnDefs: [
-                {
-                    "targets": 0,
-                    "className": "text-center"
-                },
-	            {
-	                "targets": 3,
-	                "className": "text-center",
-	            },
-	            {
-	                "targets": 6,
-	                "className": "text-center",
-	            },
-	            {
-	                "targets": 7,
-	                "className": "text-center",
-	            }
-            ],
           ajax:{ url:"{{route('user-datatable')}}"},
                 columns:[
-                {data:'user_id', name:'user_id'},
+                {data:'user_id', name:'user_id',class:'text-center'},
                 {data:'user_fullname', name:'user_fullname',orderable: false, searchable: false},
                 {data:'user_nickname', name:'user_nickname'},
-                {data:'user_birthdate', name:'user_birthdate'},
+                {data:'user_birthdate', name:'user_birthdate',class:'text-center'},
                 {data:'user_phone', name:'user_phone'},
                 {data:'user_email', name:'user_email'},
-                {data:'gu_name', name:'gu_name',orderable: false, searchable: false},
-                {data:'user_status', name:'user_status'},
-                {data:'action', name:'action',orderable: false, searchable: false},
+                {data:'gu_name', name:'gu_name',orderable: false, searchable: false,class:'text-center'},
+                {data:'user_status', name:'user_status',class:'text-center'},
+                {data:'action', name:'action',orderable: false, searchable: false,class:'text-center'},
                 ],
 
                 fnDrawCallback:function (oSettings) {
@@ -103,12 +85,13 @@
 		    if(data.status == 'error')
 		        toastr.error(data.message);
 		    else{
-                dataTable.draw();
                 toastr.success(data.message);
             }
+            dataTable.draw();
 		})
 		.fail(function() {
 		    toastr.error('Change Failed!');
+            dataTable.draw();
 		});
 	});
     $(document).on('click','.delete-user',function () {

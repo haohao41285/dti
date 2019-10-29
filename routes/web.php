@@ -239,9 +239,6 @@ Route::group(['middleware' => ['auth']], function () {
         Route::get('change-status-role','UserController@changeStatusRole')->name('change-status-role');
         Route::get('add-role','UserController@addRole')->name('add-role');
 
-        Route::get('role-permission/{id}','UserController@permission')->where(['id'=>'[0-9]+'])->name('permission');
-        Route::get('change-permission','UserController@changePermission')->name('change-permission');
-
         Route::get('user-add/{id?}','UserController@userAdd')->where(['id'=>'[0-9]+'])->name('user-add');
         Route::post('user-save','UserController@userSave')->name('user-save');
         Route::post('user-delete','UserController@userDelete')->name('user-delete');

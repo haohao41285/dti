@@ -30,6 +30,9 @@ class CustomerController extends Controller
 {
     public function listCustomer()
     {
+        if(Gate::denies('permission','all-customers-read'))
+            return doNotPermission();
+
         $data['state'] = Option::state();
         $data['status'] = GeneralHelper::getCustomerStatusList();
 
@@ -55,6 +58,9 @@ class CustomerController extends Controller
 
     public function listMyCustomer(){
 
+        if(Gate::denies('permission','my-customer-read'))
+            return doNotPermission();
+
         $team_id = Auth::user()->user_team;
         $team_list_id = [];
 
@@ -77,6 +83,9 @@ class CustomerController extends Controller
     }
 
     public function customersDatatable(Request $request){
+
+        if(Gate::denies('permission','all-customers-read'))
+            return doNotPermission();
 
         $customer_arr = [];
         $start_date = $request->start_date;
@@ -207,7 +216,6 @@ class CustomerController extends Controller
                                             ->where('main_customer_template.id',$customer_id)
                                             ->select('main_customer_template.*','main_user.user_nickname')
                                             ->first();
-
         if(!isset($customer_list))
             return 0;
         else{
@@ -295,6 +303,9 @@ class CustomerController extends Controller
         }
     }
     public function getMyCustomer(Request $request){
+
+        if(Gate::denies('permission','my-customer-read'))
+            return doNotPermission();
 
         $user_id = Auth::user()->user_id;
         $team_id = Auth::user()->user_team;
@@ -401,6 +412,9 @@ class CustomerController extends Controller
     }
     public function editCustomer(Request $request){
 
+        if(Gate::denies('permission','customer-update'))
+            return doNotPermission();
+
         $customer_id = $request->customer_id;
 
         $customer_info = MainCustomerTemplate::find($customer_id);
@@ -442,6 +456,9 @@ class CustomerController extends Controller
             return 1;
     }
     public function deleteCustomer(Request $request){
+
+        if(Gate::denies('permission','customer-delete'))
+            return doNotPermission();
 
         $customer_id = $request->customer_id;
         $team_id = Auth::user()->user_team;
