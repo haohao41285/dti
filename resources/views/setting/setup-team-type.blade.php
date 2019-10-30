@@ -124,8 +124,7 @@ $(document).ready(function($) {
 
         if (team_type_name != "") {
             $.ajax({
-                    url: '{{route('
-                    add - team - type ')}}',
+                    url: '{{route('add-team-type')}}',
                     type: 'GET',
                     dataType: 'html',
                     data: {
