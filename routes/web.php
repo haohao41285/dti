@@ -162,6 +162,11 @@ Route::group(['middleware' => ['auth']], function () {
             Route::get('/get-wp-datatable-by-place-id', 'PlaceController@getWpDatableByPlaceId')->name('getWpDatableByPlaceId');
             Route::get('/delete-value-property', 'PlaceController@deleteValueProperty')->name('deleteValueProperty');
             Route::post('/save-custom-value-property', 'PlaceController@saveCustomValueProperty')->name('saveCustomValueProperty');
+            
+            Route::get('/get-auto-coupon-datatable', 'PlaceController@getAutoCouponDatatable')->name('getAutoCouponDatatable');
+            Route::post('/save-auto-coupon', 'PlaceController@saveAutoCoupon')->name('saveAutoCoupon');
+            Route::get('/delete-auto-coupon', 'PlaceController@deleteAutoCoupon')->name('deleteAutoCoupon');
+        
         });
 
     });
@@ -229,10 +234,18 @@ Route::group(['middleware' => ['auth']], function () {
 
         Route::get('menu','MenuController@setupMenu')->name('menu');
         Route::get('setup-permission','MenuController@permission')->name('setup-permission');
+
         Route::get('permission-datatable','MenuController@permissionDatatable')->name('permission-datatable');
         Route::post('change-status-permission','MenuController@changeStatusPermission')->name('change-status-permission');
         Route::get('save-permission','MenuController@savePermission')->name('save-permission');
         Route::delete('delete-permission','MenuController@deletePermission')->name('delete-permission');
+
+        Route::group(['prefix' => 'setup-type-template'], function() {
+            Route::get('/', 'SetupTypeTemplateController@index')->name('setupTypeTemplate');
+            Route::get('datatable', 'SetupTypeTemplateController@getDatatable')->name('getDatatableSetupTypeTemplate');
+            Route::post('save', 'SetupTypeTemplateController@save')->name('saveSetupTypeTemplate');
+            Route::post('delete', 'SetupTypeTemplateController@delete')->name('deleteSetupTypeTemplate');
+        });
 
     });
 
@@ -260,9 +273,6 @@ Route::group(['middleware' => ['auth']], function () {
 
         Route::get('user-permission','UserController@userPermission')->name('user-permission');
 
-
-
-    });
 
     Route::group(['prefix' => 'orders','namespace' => 'Orders'], function() {
         Route::get('/all', 'OrdersController@index');

@@ -55,6 +55,10 @@ class MainComboServiceBought extends Model
                     ->sum('csb_charge');
     }
 
+    public static function getServicesByMonth($date){
+        return self::getByMonth($date);
+    }
+
     private static function getBetween2Date($startDate,$endDate){
         $services = self::getServiceByStartAndEndDate($startDate,$endDate);
 

@@ -16,6 +16,7 @@ class MainMenuDti extends Model
         return $query->where('status',1);
     }
     public function getPermission(){
-        return $this->hasMany(MainPermissionDti::class,'menu_id','id')
-;    }
+        return $this->hasMany(MainPermissionDti::class,'menu_id','id');    
+    }
+
 }
