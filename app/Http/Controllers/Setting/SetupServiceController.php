@@ -12,15 +12,22 @@ use Validator;
 use DataTables;
 use DB;
 use Auth;
+use Gate;
 
 class SetupServiceController extends Controller
 {
 	public function setupService(Request $request){
 
+	    if(Gate::denies('permission','setup-service-read'))
+	        return doNotPermission();
+
 		return view('setting.setup-service');
 	}
     public function serviceDatabase(Request $request)
 	{
+        if(Gate::denies('permission','setup-service-read'))
+            return doNotPermission();
+
 		$combo_service_arr = [];
 		$service_combo_list = MainComboService::leftjoin('main_user',function($join){
 			$join->on('main_combo_service.cs_assign_to','main_user.user_id');
@@ -80,7 +87,10 @@ class SetupServiceController extends Controller
 	}
 	public function changeStatusCs(Request $request){
 
-		$cs_id = $request->cs_id;
+        if(Gate::denies('permission','setup-service-update'))
+            return doNotPermissionAjax();
+
+        $cs_id = $request->cs_id;
 		$cs_status = $request->cs_status;
 
 		if(!isset($cs_id))
@@ -178,7 +188,10 @@ class SetupServiceController extends Controller
 
 	public function saveServiceCombo(Request $request)
 	{
-		$cs_id = $request->cs_id;
+        if(Gate::denies('permission','setup-service-update'))
+            return doNotPermissionAjax();
+
+        $cs_id = $request->cs_id;
 		$cs_type = $request->cs_type;
 		$cs_name = $request->cs_name;
 		$cs_price = $request->cs_price;
@@ -313,6 +326,10 @@ class SetupServiceController extends Controller
 		}
 	}
     public function setServiceType (){
+
+        if(Gate::denies('permission','setup-service-type-read'))
+            return doNotPermission();
+
         return view('setting.setup-service-type');
     }
     public function serviceTypeDatatable(Request $request){
@@ -327,7 +344,11 @@ class SetupServiceController extends Controller
             ->make(true);
     }
     public function changeStatusServiceType(Request $request){
-	    $id = $request->id;
+
+        if(Gate::denies('permission','setup-service-type-update'))
+            return doNotPermissionAjax();
+
+        $id = $request->id;
 	    $status = $request->status;
 	    if($status == 1)
 	        $status_update = 0;

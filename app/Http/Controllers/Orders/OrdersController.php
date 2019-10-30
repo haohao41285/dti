@@ -274,7 +274,6 @@ class OrdersController extends Controller
 					$customer_service_update = MainCustomerService::insert($order_arr);
 					$cs_id++;
 				}
-
 			}
 			//END UPDATE MAIN_CUSTOMER_SERVICE
 

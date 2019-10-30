@@ -9,11 +9,15 @@ use App\Models\MainUser;
 use DataTables;
 use Auth;
 use Validator;
+use Gate;
 
 class SetupSmsController extends Controller
 {
     public function setupTemplateSms(Request $request)
     {
+        if(Gate::denies('permission','setup-template-sms'))
+            return doNotPermission();
+
         return view('setting.template_sms');
     }
     public function smsTemplateDatatable(Request $request)
@@ -57,7 +61,7 @@ class SetupSmsController extends Controller
     			'status' =>'error',
     			'message' => $validator->getMessageBag()->toArray()
     		]);
-    	
+
     	$template_id = $request->template_id;
     	$template_title = $request->template_title;
     	$sms_content_template = $request->sms_content_template;
@@ -80,5 +84,5 @@ class SetupSmsController extends Controller
 		else
 			return response(['status'=>'success','message'=>'Saving Success']);
     }
-    
+
 }

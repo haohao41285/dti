@@ -12,11 +12,16 @@ use DataTables;
 use Auth;
 use Validator;
 use OneSignal;
+use Gate;
 
 
 class NotificationController extends Controller
 {
     public function index(){
+
+        if(Gate::denies('permission','notification-read'))
+            return doNotPermission();
+
         $data['teams'] = MainTeam::active()->get();
         return view('notification.notification-list',$data);
     }

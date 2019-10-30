@@ -9,6 +9,7 @@ use App\Models\MainPermissionDti;
 
 use Yajra\DataTables\DataTables;
 use Validator;
+use Gate;
 
 
 class MenuController extends Controller
@@ -69,10 +70,17 @@ class MenuController extends Controller
         MainPermissionDti::insert($permission_arr);
     }
     public function permission(){
+
+        if(Gate::denies('permission','setup-permission-read'))
+            return doNotPermission();
+
         $data['menu_list'] = MainMenuDti::all();
         return view('permission.list',$data);
     }
     public function permissionDatatable(Request $request){
+
+        if(Gate::denies('permission','setup-permission-read'))
+            return doNotPermission();
 
         $permission_list = MainPermissionDti::with('getMenu');
         $permission_list = $permission_list->orderBy('menu_id','asc');
@@ -98,6 +106,9 @@ class MenuController extends Controller
              ->make(true);
     }
     public function savePermission(Request $request){
+
+        if(Gate::denies('permission','setup-permission-update'))
+            return doNotPermissionAjax();
 
         $permission_id = $request->permission_id;
         $menu_id = $request->menu_id;
@@ -137,6 +148,10 @@ class MenuController extends Controller
             return response(['status'=>'success','message'=>'Save Permission Successfully!']);
     }
     public function changeStatusPermission(Request $request){
+
+        if(Gate::denies('permission','setup-permission-update'))
+            return doNotPermissionAjax();
+
         $permission_id = $request->permission_id;
 
         if($request->status == 1)
