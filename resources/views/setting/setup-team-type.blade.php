@@ -167,8 +167,7 @@ $(document).ready(function($) {
             var tt_id = $(this).attr('tt_id');
 
             $.ajax({
-                    url: '{{route('
-                    delete - team - type ')}}',
+                    url: '{{route('delete-team-type')}}',
                     type: 'GET',
                     dataType: 'html',
                     data: { tt_id: tt_id },
