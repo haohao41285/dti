@@ -101,7 +101,7 @@ class OrdersController extends Controller
 			        ->get();
         }
         //GET COMBO SERVICE WITH ROLE
-        $service_permission_list = MainGroupUser::where('gu_id',Auth::user()->user_group_id)->first()->service_permission;
+        $service_permission_list = MainTeam::find(Auth::user()->user_team)->service_permission;
         $service_permission_arr = explode(';',$service_permission_list);
         $data['service_permission_arr'] = $service_permission_arr;
 //        return $service_permission_arr;
