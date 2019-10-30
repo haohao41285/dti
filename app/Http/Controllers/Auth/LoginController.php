@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Models\MainPermissionDti;
 use App\Models\MainUser;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
 use Illuminate\Support\Facades\Auth;
@@ -67,23 +68,25 @@ class LoginController extends Controller
 
          $credentials = ($request->only('user_phone', 'user_password'));
         if (Auth::attempt($credentials)){
+
             //GET PERMISSION
             $user_list = DB::table('main_user')->leftjoin('main_group_user',function($join){
                 $join->on('main_user.user_group_id','main_group_user.gu_id');
             })
                 ->where('user_phone',$request->user_phone)
                 ->get();
-            if($user_list[0]->user_group_id == 1) $permission = 1;
-            else $permission = 0;
+            if($user_list[0]->user_group_id == 1) $role = 1;
+            else $role = 0;
 
             //CHECK PERMISSION EXIST IN GU_ROLE_NEW
-            if($user_list[0]->gu_role_new == null || $permission == 1){
-                $permission_list_session = self::setPermissionList($permission);
+            if($user_list[0]->gu_role_new == null || $role == 1){
+                $permission_list_session = self::setPermissionList($role);
                 //INSERT PERMISSION ROLE TO DATABASE
                 DB::table('main_group_user')->where('gu_id',$user_list[0]->gu_id)->update(['gu_role_new'=>$permission_list_session]);
-                Session::put('permission_list_session',json_decode($permission_list_session,TRUE));
+                Session::put('permission_list_session',explode(';',$permission_list_session));
             }else{
-                Session::put('permission_list_session',json_decode($user_list[0]->gu_role_new,TRUE));
+                $permission_list_session = DB::table('main_group_user')->where('gu_id',$user_list[0]->gu_id)->first()->gu_role_new;
+                Session::put('permission_list_session',explode(';',$permission_list_session));
             }
             return redirect()->intended('/');
         } else {
@@ -123,28 +126,24 @@ class LoginController extends Controller
     {
         return $request->only($this->username(), 'user_password');
     }
-    public static function setPermissionList($permission){
+    public static function setPermissionList($role){
 
-        $permission_arr = [];
+        $permission_list = '';
 
-        $menu_list = MenuHelper::getMenuList();
+        if($role == 1){
 
+            $permission_arr = [];
 
-        foreach ($menu_list as $number => $menu) {
+            $permission_list = MainPermissionDti::select('id')->active()->get();
 
-            $menu_arr = self::getChildrenMenu($menu);
+            foreach($permission_list as $permission){
 
-            foreach ($menu_arr as $key => $value) {
-
-                $permission_arr[$value] = [
-                    'Create' => $permission,
-                    'Read' => $permission,
-                    'Update' => $permission,
-                    'Delete' => $permission
-                ];
+                $permission_arr[] = $permission->id;
             }
+            $permission_list = implode(';',$permission_arr);
         }
-        return json_encode($permission_arr);
+        return $permission_list;
+
     }
     public static function getChildrenMenu($menu){
 

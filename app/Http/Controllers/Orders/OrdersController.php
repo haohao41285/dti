@@ -33,6 +33,7 @@ use DB;
 use Hash;
 use ZipArchive;
 use Dompdf\Dompdf;
+use Gate;
 
 class OrdersController extends Controller
 {
@@ -43,18 +44,30 @@ class OrdersController extends Controller
 	 * return
 	 */
 	public function index(){
+
+	    if(Gate::denies('permission','all-orders-read'))
+	        return doNotPermission();
+
 		$data['state'] = Option::state();
         $data['status'] = GeneralHelper::getOrdersStatus();
 		return view('orders.orders',$data);
 	}
 
 	public function getMyOrders(){
+
+        if(Gate::denies('permission','my-orders-read'))
+            return doNotPermission();
+
 		$data['state'] = Option::state();
         $data['status'] = GeneralHelper::getOrdersStatus();
 		return view('orders.my-orders',$data);
 	}
 
 	public function getSellers(){
+
+        if(Gate::denies('permission',"sellers-orders-read"))
+            return doNotPermission();
+
 		$data['state'] = Option::state();
         $data['status'] = GeneralHelper::getOrdersStatus();
         $team = Auth::user()->user_team;
@@ -70,6 +83,9 @@ class OrdersController extends Controller
 	}
 
 	public function add($customer_id = 0){
+
+        if(Gate::denies('permission','new-order-create'))
+            return doNotPermission();
 
         if($customer_id != 0 ){
         }
@@ -98,6 +114,9 @@ class OrdersController extends Controller
 	}
 	function authorizeCreditCard(Request $request)
 	{
+        if(Gate::denies('permission','new-order-create'))
+            return doNotPermission();
+
 		if($request->credit_card_type != 'E-CHECK'){
 			$rule = [
 				'payment_amount' => 'required',
@@ -304,32 +323,42 @@ class OrdersController extends Controller
 				$phone = preg_replace("/[^0-9]/", "", $customer_info->ct_business_phone );
 	            $start_phone = substr($phone,0,1);
 	            if( $start_phone == '0' )
-	            {
 	                $phone = "1".substr($phone,1);
-	            }
 	            else
-	            {
 	                $phone = "1".$phone;
-	            }
 
-				$user_arr = [
-					'user_id' => 1,
-					'user_place_id' => $place_id,
-					'user_default_place_id' => 0,
-					'user_usergroup_id' => 1,
-					'user_password' => Hash::make('abc123'),
-					'user_pin' => 123456,
-					'user_fullname' => $customer_info->ct_firstname.";".$customer_info->ct_lastname,
-					'user_phone' => $phone,
-					'user_email' => $customer_info->ct_email,
-					'user_token' => csrf_token(),
-					'remember_token' => csrf_token(),
-					'created_by' => Auth::user()->user_id,
-					'updated_by' => Auth::user()->user_id,
-					'enable_status' => 1,
-					'user_status' => 1
-				];
-				PosUser::create($user_arr);
+	            //CHECK USER EXISTED
+                $check_user = PosUser::where('user_phone',$phone)->count();
+                if($check_user == 0){
+                    $user_arr = [
+                        'user_id' => 1,
+                        'user_place_id' => $place_id,
+                        'user_default_place_id' => 0,
+                        'user_usergroup_id' => 1,
+                        'user_password' => Hash::make('abc123'),
+                        'user_pin' => 123456,
+                        'user_fullname' => $customer_info->ct_firstname.";".$customer_info->ct_lastname,
+                        'user_phone' => $phone,
+                        'user_email' => $customer_info->ct_email,
+                        'user_token' => csrf_token(),
+                        'remember_token' => csrf_token(),
+                        'created_by' => Auth::user()->user_id,
+                        'updated_by' => Auth::user()->user_id,
+                        'enable_status' => 1,
+                        'user_status' => 1
+                    ];
+                    PosUser::create($user_arr);
+                }else{
+                    $user_info = PosUser::where('user_phone',$phone)->first();
+                    if($user_info->user_places_id == null ){
+                        $user_places_id = $user_info->user_place_id.','.$place_id;
+                        $user_default_place_id = $place_id;
+                        PosUser::where('user_phone',$phone)->update(['user_places_id'=>$user_places_id,'user_default_place_id'=>$user_default_place_id]);
+                    }else{
+                        $user_places_id = $user_info->user_places_id.','.$place_id;
+                        PosUser::where('user_phone',$phone)->update(['user_places_id'=>$user_places_id]);
+                    }
+                }
 			}
 
 			//UPDATE CUSTOMER STATUS
@@ -506,7 +535,7 @@ class OrdersController extends Controller
 		}
 
 	}
-	public function getCustomerInfor(Request$request)
+	public function getCustomerInfor(Request $request)
 	{
 		$customer_phone = $request->customer_phone;
 
@@ -620,6 +649,9 @@ class OrdersController extends Controller
 	}
 	public function sellerOrderDatatable(Request $request)
 	{
+        if(Gate::denies('permission','new-order-create'))
+            return doNotPermission();
+
 		$start_date = $request->start_date;
 		$end_date = $request->end_date;
 		$service_id = $request->service_id;
@@ -686,6 +718,8 @@ class OrdersController extends Controller
 	}
 	public function orderView($id)
 	{
+	    if(Gate::denies('permission','order-view'))
+	        return doNotPermission();
 		$data['id'] = $id;
 		$data['order_info'] = MainComboServiceBought::join('main_customer',function($join){
 			$join->on('main_combo_service_bought.csb_customer_id','main_customer.customer_id');

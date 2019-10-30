@@ -27,6 +27,7 @@ class MenuController extends Controller
                 'parent_id' => 0,
                 'status' => 1
             ];
+            $stt_2 = 1;
             if(isset($menu['childrens'])){
 
                 foreach ($menu['childrens'] as $child){
@@ -38,11 +39,11 @@ class MenuController extends Controller
                         'parent_id' => $stt,
                         'status' => 1
                     ];
+                    $stt_2++;
                 }
             }
-            $stt++;
+            $stt += $stt_2;
         }
-//        return $menu_arr;
         MainMenuDti::truncate();
         MainMenuDti::insert($menu_arr);
     }

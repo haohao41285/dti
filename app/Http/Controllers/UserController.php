@@ -26,7 +26,10 @@ class UserController extends Controller
     private $validator;
 
     public function index(){
-        return view('user.list');
+        if(Gate::allows('permission','users-read'))
+             return view('user.list');
+        else
+            return back()->with('error',"You don't have permission");
     }
 
     public function editProfile(){
@@ -67,12 +70,16 @@ class UserController extends Controller
     }
 
     public function userDataTable(Request $request){
-
         $user_list = MainUser::join('main_group_user',function($join){
                     $join->on('main_user.user_group_id','main_group_user.gu_id');
                     })
-                    ->where('main_group_user.gu_status',1)
-                    ->select('main_user.user_birthdate','main_group_user.gu_name','main_user.user_firstname','main_user.user_lastname','main_user.user_nickname','main_user.user_phone','main_user.user_status','main_user.user_email','main_user.user_id');
+                    ->where('main_group_user.gu_status',1);
+
+        if(Gate::allows('permission','user-admin')){}
+        elseif(Gate::allows('permission','user-leader'))
+            $user_list =  $user_list->where('main_user.user_team',Auth::user()->user_team);
+
+        $user_list = $user_list->select('main_user.user_birthdate','main_group_user.gu_name','main_user.user_firstname','main_user.user_lastname','main_user.user_nickname','main_user.user_phone','main_user.user_status','main_user.user_email','main_user.user_id');
 
         return DataTables::of($user_list)
 
@@ -99,7 +106,8 @@ class UserController extends Controller
                ->make(true);
     }
     public function changeStatusUser(Request $request){
-
+        if(Gate::denies('permission','users-update'))
+            return response(['status'=>'error','message'=>'You do Not have permission']);
         $user_status = $request->user_status;
         $user_id = $request->user_id;
 
@@ -116,7 +124,10 @@ class UserController extends Controller
     }
     //ROLES
     public function roleList(){
-        return view('user.roles');
+        if(Gate::allows('permission','roles-read'))
+            return view('user.roles');
+        else
+            return doNotPermission();
     }
     public function roleDatatable(Request $request){
 
@@ -129,13 +140,16 @@ class UserController extends Controller
     				return '<input type="checkbox" gu_id="'.$row->gu_id.'" gu_status="'.$row->gu_status.'" class="js-switch"'.$checked.'/>';
     			})
     			->addColumn('action',function($row){
-    				return '<a class="btn btn-sm btn-secondary role-edit" href="'.route('permission',$row->gu_id).'"><i class="fas fa-edit"></i></a>';
+    				return '<a class="btn btn-sm btn-secondary role-edit" href="javascript:void(0)"><i class="fas fa-edit"></i></a>';
     	        })
     	        ->rawColumns(['gu_status','action'])
     	        ->make(true);
 
     }
     public function changeStatusRole(Request $request){
+
+        if(Gate::denies('permission','roles-update'))
+            return doNotPermissionAjax();
 
         $gu_id = $request->gu_id;
         $gu_status = $request->gu_status;
@@ -145,16 +159,21 @@ class UserController extends Controller
             //CHECK USER USE THIS ROLE
             $count_user = DB::table('main_user')->where('user_group_id',$gu_id)->where('user_status',1)->count();
             if($count_user > 0){
-                return response()->json(['message'=>'Can delete this role. Cause users are using it!']);
+                return response()->json(['status'=>'error','message'=>'Can delete this role. Cause users are using it!']);
             }
         }
     	else
     		$gu_status = 1;
-
-
-        DB::table('main_group_user')->where('gu_id',$gu_id)->update(['gu_status'=>$gu_status]);
+        $role_update = DB::table('main_group_user')->where('gu_id',$gu_id)->update(['gu_status'=>$gu_status]);
+        if(!isset($role_update))
+            return response(['status'=>'error','message'=>'Change Status Failed!']);
+        else
+            return response(['status'=>'success','message'=>'Change Status Successfully!']);
     }
     public function addRole(Request $request){
+
+        if(Gate::denies('permission','roles-create'))
+            return doNotPermissionAjax();
 
     	$gu_id = $request->gu_id;
     	$gu_name = $request->gu_name;
@@ -175,12 +194,10 @@ class UserController extends Controller
     		];
     		$gu_insert = DB::table('main_group_user')->insert($gu_arr);
     	}
-    	if(!isset($gu_insert)){
-			return 0;
-		}
-		else{
-			return 1;
-		}
+    	if(!isset($gu_insert))
+    	    return response(['status'=>'error','message'=>'Save Role Failed!']);
+		else
+            return response(['status'=>'success','message'=>'Save Role Successfully!']);
     }
     public static function setPermissionList(){
 
@@ -226,63 +243,10 @@ class UserController extends Controller
         }
         return $menu_arr;
     }
-    public function permission($role_id){
-
-        if(Gate::forUser("Roles")->denies('permission',"Update")){
-
-            return back()->with('error',"You don't have permission!");
-
-        }else{
-
-            $permission_arr = ['Read','Create','Update','Delete'];
-
-            $permission_check = DB::table('main_group_user')
-                                ->where('gu_id',$role_id)
-                                ->where('gu_status',1)
-                                ->first();
-
-            if(!isset($permission_check)){
-                return back()->with(['error'=>'Turn On This Status Role!']);
-            }else
-                $permission_list = $permission_check->gu_role_new;
-
-            $role_name = $permission_check->gu_name;
-
-            $role_permission_arr = json_decode($permission_list,TRUE);
-
-            $menu_list = MenuHelper::getMenuList();
-
-            return view('user.role-permission',compact('menu_list','role_permission_arr','permission_arr','role_id','role_name'));
-        }
-    }
-    public function changePermission(Request $request){
-
-        $permission_name = $request->permission_name;
-        $permission_status = $request->permission_status;
-        $menu = $request->menu;
-        $role_id = $request->role_id;
-
-        if($permission_status == 1)
-            $permission_status = 0;
-        else
-            $permission_status = 1;
-
-        $permission_list =  DB::table('main_group_user')->where('gu_id',$role_id)->first()->gu_role_new;
-
-        $permission_list = json_decode($permission_list,TRUE);
-
-        $permission_list[$menu][$permission_name] = $permission_status;
-
-        $permission_list = json_encode($permission_list);
-
-        $permission_update = DB::table('main_group_user')->where('gu_id',$role_id)->update(['gu_role_new'=>$permission_list]);
-
-        if(!isset($permission_update))
-            return 0;
-        else
-            return 1;
-    }
     public function userAdd($id = 0){
+
+        if(Gate::denies('permission','users-create'))
+            return doNotPermission();
 
         $data['user'] =MainUser::where('user_id',$id)->first();
         $data['roles'] = MainGroupUser::active()->get();
@@ -291,6 +255,9 @@ class UserController extends Controller
         return view('user.user-add',$data);
     }
     public function userSave(Request $request){
+
+        if(Gate::denies('permission','users-create'))
+            return doNotPermission();
 
         $user_id = $request->user_id;
 
@@ -302,20 +269,22 @@ class UserController extends Controller
             'user_email' =>'required|email'
         ];
         $message = [
-            'user_firstname.required' => 'Enter Firstname',
-            'user_lastname.required' => 'Enter Lastname',
-            'user_nickname.required' => 'Enter Nickname',
-            'user_phone.required' => 'Enter Phone',
             'user_phone.min' => 'Phone not True',
             'user_phone.max' => 'Phone not True',
-            'user_email.required' => 'Enter Mail',
-            'user_email.email' => 'Enter Enable Mail',
-
         ];
         if($user_id == 0){
             $rule['new_password'] = 'required|min:6';
+            $rule['user_phone'] = 'required|min:10|max:15|unique:main_user,user_phone';
+            $rule['user_email'] = 'required|email|unique:main_user,user_email';
             $message['new_password.required'] = 'Enter Pasword';
             $message['new_password.min'] = 'Password at least 6 characters';
+        }else{
+            //CHECK USER PHONE OR USER EMAIL EXISTED
+            $count = MainUser::where('user_id','!=',$user_id)->where(function($query) use ($request){
+                $query->where('user_phone',$request->user_phone)->orWhere('user_email',$request->user_email);
+            })->count();
+            if($count != 0)
+                return back()->with(['error'=>'User phone or user email has already been taken. !']);
         }
 
         $validator = Validator::make($request->all(),$rule,$message);
@@ -354,6 +323,10 @@ class UserController extends Controller
             return redirect()->route('userList')->with(['success'=>'Save User Successfully!']);
     }
     public function userDelete(Request $request){
+
+        if(Gate::denies('permission','users-delete'))
+            return doNotPermissionAjax();
+
         $user_id = $request->user_id;
         $delete_user = MainUser::where('user_id',$user_id)->delete();
         if(!isset($delete_user)){
@@ -403,6 +376,8 @@ class UserController extends Controller
         })->download("xlsx");
     }
     public function servicePermission(){
+        if(Gate::denies('permission','service-permission-read'))
+            return doNotPermission();
 
         $data['role_list'] = MainGroupUser::active()->get();
         $data['service_list'] = MainComboService::where('cs_status',1)->get();
@@ -410,6 +385,10 @@ class UserController extends Controller
         return view('user.service-permission',$data);
     }
     public function changeServicePermission(Request $request){
+
+        if(Gate::denies('permission','service-permission-update'))
+            return doNotPermissionAjax();
+
         $role_id = $request->role_id;
         $service_id = $request->service_id;
 
@@ -438,6 +417,9 @@ class UserController extends Controller
     }
     public function userPermission(){
 
+        if(Gate::denies('permission','user-permission-read'))
+            return doNotPermission();
+
         $data['role_list'] = MainGroupUser::active()->get();
 
         $data['permission_other'] = MainPermissionDti::active()->whereNull('menu_id')->get();
@@ -446,5 +428,34 @@ class UserController extends Controller
 
         return view('user.user-permission',$data);
 
+    }
+    public function changePermissionRole(Request $request){
+
+        if(Gate::denies('permission','user-permission-update'))
+            return doNotPermissionAjax();
+
+        $permission_id = $request->permission_id;
+        $role_id = $request->role_id;
+        $check = $request->check;
+
+        $permission_role = MainGroupUser::where('gu_id',$role_id)->first()->gu_role_new;
+        if($permission_role == "")
+            $permission_list = $permission_id;
+        else{
+            if($check == 0)
+                $permission_list = $permission_role.';'.$permission_id;
+            else{
+                $permission_role_arr = explode(';',$permission_role);
+                $key = array_search($permission_id,$permission_role_arr);
+                unset($permission_role_arr[$key]);
+                $permission_list = implode(';',$permission_role_arr);
+            }
+        }
+        $role_permission_update = MainGroupUser::where('gu_id',$role_id)->update(['gu_role_new'=>$permission_list]);
+
+        if(!isset($role_permission_update))
+            return response(['status'=>'error','message'=>'Set Permission Failed!']);
+        else
+            return response(['status'=>'success','message'=>'Set Successfully!']);
     }
 }

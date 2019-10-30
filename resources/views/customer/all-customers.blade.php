@@ -33,16 +33,12 @@
             <label for="">Status</label>
             <select id="status-customer" name="status_customer" class="form-control form-control-sm">
                 <option value="">-- ALL --</option>
-                @if(\Illuminate\Support\Facades\Auth::user()->user_group_id == 1)
-                @foreach ($status as $key =>  $element)
+                @foreach ($customer_status as $key =>  $element)
                     <option value="{{$key}}">{{$element}}</option>
                 @endforeach
-                @else
-                    <option value="3">Arrivals</option>
-                @endif
             </select>
         </div>
-        @if(\Illuminate\Support\Facades\Auth::user()->user_group_id == 1)
+        @if(Gate::allows('permission','customer-admin'))
         <div class="col-md-2">
             <label for="">Team</label>
             <select id="team_id" name="team_id" class="form-control form-control-sm">
@@ -209,7 +205,7 @@
           if(data.ct_status==null)data.ct_status="";
 
           var button = ``;
-          if(data.ct_status === 'Arrivals')
+          if(data.ct_status === 'New Arrivals')
             button = `<button type="button" id=`+data.id+` class="btn btn-primary btn-sm get-customer">Assign</button>`;
           $(".modal-content-view").html(`
             <div class="modal-header">

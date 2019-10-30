@@ -55,5 +55,24 @@ function cutString($str, $length = 15, $end = '...')
     }
     return $sub . (($len < strlen($str)) ? $end : '');
 }
+function checkPermission($role,$permission){
 
+    $permission_list = $role->gu_role_new;
+    if($permission_list == "")
+        $check = "";
+    else{
+        $permission_arr = explode(';',$permission_list);
+        if(in_array($permission->id,$permission_arr))
+            $check = "checked";
+        else
+            $check = "";
+    }
+    return $check;
+}
+function doNotPermission(){
+    return back()->with('error','You do Not have this Permission!');
+}
+function doNotPermissionAjax(){
+    return response(['status'=>'error','message'=>'You do Not have this Permission!']);
+}
 ?>

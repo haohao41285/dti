@@ -23,6 +23,7 @@ use DB;
 use ZipArchive;
 use Laracasts\Presenter\PresentableTrait;
 use App\Models\MainNotification;
+use Gate;
 
 class TaskController extends Controller
 {
@@ -30,11 +31,17 @@ class TaskController extends Controller
     protected $presenter = 'App\\Presenters\\ThemeMailPresenter';
 
     public function index(){
+        if(Gate::denies('permission','my-task-read'))
+            return doNotPermission();
+
         $data['user_list'] = MainUser::active()->get();
         $data['service_list'] = MainComboService::where([['cs_type',2],['cs_status',1]])->get();
     	return view('task.my-task',$data);
     }
     public function myTaskDatatable(Request $request){
+
+        if(Gate::denies('permission','my-task-read'))
+            return doNotPermission();
 
         $task_list = MainTask::where('updated_by',Auth::user()->user_id)->whereNull('task_parent_id');
         if($request->category != "")
@@ -92,7 +99,6 @@ class TaskController extends Controller
     		->make(true);
     }
     public function postComment(Request $request){
-//        return $request->all();
     	$rule = [
     		'order_id' => 'required',
             'note' => 'required'
@@ -250,6 +256,9 @@ class TaskController extends Controller
     }
     public function taskAdd($id = 0){
 
+        if(Gate::denies('permission','create-new-task'))
+            return doNotPermission();
+
         $data['user_list'] = MainUser::all();
         $data['task_parent_id'] = $id;
          $data['task_name'] = "";
@@ -276,7 +285,9 @@ class TaskController extends Controller
         }
     }
     public function saveTask(Request $request){
-        // return $request->all();
+
+        if(Gate::denies('permission','create-new-task'))
+            return doNotPermission();
 
         $subject = $request->subject;
 
@@ -396,6 +407,9 @@ class TaskController extends Controller
     }
     public function editTask($id){
 
+        if(Gate::denies('permission','task-update'))
+            return doNotPermission();
+
         $data['user_list'] = MainUser::all();
 
         $data['task_info'] = MainTask::find($id);
@@ -407,7 +421,6 @@ class TaskController extends Controller
         return view('task.edit-task',$data);
     }
     public function sendMailNotification(Request $request){
-        // return public_path('invoice9267054355559.pdf');
 
         $rule = [
             'subject' => 'required',
@@ -446,11 +459,18 @@ class TaskController extends Controller
         }
     }
     public function allTask(){
+
+        if(Gate::denies('permission','all-task-read'))
+            return doNotPermission();
+
         $data['user_list'] = MainUser::active()->get();
         $data['service_list'] = MainComboService::where([['cs_type',2],['cs_status',1]])->get();
         return view('task.all-task',$data);
     }
     public function allTaskDatatable(Request $request){
+
+        if(Gate::denies('permission','all-task-read'))
+            return doNotPermission();
 
         if(Auth::user()->user_group_id == 1)
             $task_list = MainTask::whereNull('task_parent_id');
