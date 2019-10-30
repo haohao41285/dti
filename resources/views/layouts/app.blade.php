@@ -18,6 +18,7 @@
 @endif
 {{--end check--}}
 <div id="wrapper">
+    <span id="page-top"></span>
     @include('layouts.partials.sidebar')
     <!-- Content Wrapper. Contains page content -->
         <div id="content-wrapper" class="d-flex flex-column">

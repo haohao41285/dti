@@ -12,13 +12,10 @@ use App\Helpers\RunShFileHelper;
 use Validator;
 // use App\Http\Controllers\ItTools\WebsiteThemeController;
 use App\Models\MainTheme;
-<<<<<<< HEAD
 use Symfony\Component\Process\Process;
 use Symfony\Component\Process\Exception\ProcessFailedException;
-=======
 use App\Models\PosWebsiteProperty;
 
->>>>>>> b30b2787367159b31ae08966f96aa95d65b85b7d
 
 
 class PlaceController extends Controller
@@ -32,8 +29,8 @@ class PlaceController extends Controller
 
         PosWebsiteProperty::cloneUpdate($request->id_properties,$placeId);
 
-        //run sh file 
-        return response()->json(['status'=>1,'msg'=>"Clone website successfully!"]); 
+        //run sh file
+        return response()->json(['status'=>1,'msg'=>"Clone website successfully!"]);
     }
 
 
@@ -57,7 +54,7 @@ class PlaceController extends Controller
     /**
      * get customer datatable by placeId
      * @param  $request->placeId
-     * @return 
+     * @return
      */
     public function getUsersDatatable(Request $request){
         $customers = PosUser::select('user_id','user_nickname','user_phone','user_email','created_at')
@@ -71,7 +68,7 @@ class PlaceController extends Controller
             return format_datetime($customers->created_at);
         })
         ->make(true);
-    }   
+    }
     /**
      * update new password a user of places
      * @param  $request->placeId
@@ -99,7 +96,7 @@ class PlaceController extends Controller
                             'user_password' => bcrypt($request->newPassword),
                         ]);
 
-        return response()->json(['status'=>1,'msg'=>"Changed successfully!"]); 
+        return response()->json(['status'=>1,'msg'=>"Changed successfully!"]);
 
     }
     /**
@@ -125,8 +122,8 @@ class PlaceController extends Controller
             'place' =>$place,
             'place_actiondate' => $place_actiondate,
         ];
-        
-        return response()->json(['status'=>1,'data'=>$result]); 
+
+        return response()->json(['status'=>1,'data'=>$result]);
     }
 
     public function getThemeDatatable(){
@@ -141,5 +138,5 @@ class PlaceController extends Controller
         }
     }
 
-    
+
 }

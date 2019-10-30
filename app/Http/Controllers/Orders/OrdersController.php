@@ -4,6 +4,8 @@ namespace App\Http\Controllers\Orders;
 
 use App\Models\MainComboServiceType;
 use App\Models\MainGroupUser;
+use App\Models\PosCustomertag;
+use App\Models\PosSubjectWeb;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Helpers\Option;
@@ -303,6 +305,10 @@ class OrdersController extends Controller
 					'place_code' => 'place-'.$place_id,
 					'place_logo' => 'logo',
 					'place_name' => 'New Place',
+                    'place_actiondate' => '{"mon": {"start": "09:00", "end": "21:00", "closed": false}, "tue": {"start": "09:00", "end": "21:00", "closed": false}, "wed": {"start": "09:00", "end": "21:00", "closed": false}, "thur": {"start": "09:00", "end": "21:00", "closed": false}, "fri": {"start": "09:00", "end": "21:00", "closed": false}, "sat": {"start": "09:00", "end": "21:00", "closed": false},"sun": {"start": "09:00", "end": "21:00", "closed": false} }',
+                    'place_actiondate_option' => 0,
+                    'place_period_overtime' => 1,
+                    'place_hour_overtime' => '08:00',
 					'place_address' => $customer_info->ct_address,
 					'place_website' => $customer_info->ct_website,
 					'place_phone' => $customer_info->ct_business_phone,
@@ -312,10 +318,69 @@ class OrdersController extends Controller
 					'created_by' => Auth::user()->user_id,
 					'updated_by' => Auth::user()->user_id,
 					'place_ip_license' => md5('place-'.$place_id.$customer_id),
-					'place_status' => 1
+					'place_status' => 1,
+                    'place_bill_export' => 2
 				];
 				// return $place_arr;
 				PosPlace::insert($place_arr);
+				//INSERT POS_CUSTOMERTAG
+                $arrCustomerTag = [
+                    ['customertag_id'=>1, 'customertag_name'=>'Vip', 'customertag_place_id'=>$place_id,'customertag_status'=>1],
+                    ['customertag_id'=>2, 'customertag_name'=>'Royal', 'customertag_place_id'=>$place_id,'customertag_status'=>1]
+                ];
+                PosCustomertag::insert($arrCustomerTag);
+
+                $listImageGiftcode = [
+                    [
+                        "sub_id" => 1, "sub_place_id" => $place_id, "sub_name" => "Happy birthday to you",
+                        "sub_image" => "images/giftcard-template/1.jpg","sub_type" => 0
+                    ],
+                    [
+                        "sub_id" => 2, "sub_place_id" => $place_id, "sub_name" => "Happy birthday",
+                        "sub_image" => "images/giftcard-template/2.jpg","sub_type" => 0
+                    ],
+                    [
+                        "sub_id" => 3, "sub_place_id" => $place_id, "sub_name" => "Happy wedding",
+                        "sub_image" => "images/giftcard-template/3.jpg","sub_type" => 0
+                    ],
+                    [
+                        "sub_id" => 4, "sub_place_id" => $place_id, "sub_name" => "Life good",
+                        "sub_image" => "images/giftcard-template/4.jpg","sub_type" => 0
+                    ],
+                    [
+                        "sub_id" => 5, "sub_place_id" => $place_id, "sub_name" => "Beaty",
+                        "sub_image" => "images/giftcard-template/5.jpg","sub_type" => 0
+                    ],
+                    [
+                        "sub_id" => 6, "sub_place_id" => $place_id, "sub_name" => "Merry christmas 01",
+                        "sub_image" => "images/giftcard-template/6.jpg","sub_type" => 0
+                    ],
+                    [
+                        "sub_id" => 7, "sub_place_id" => $place_id, "sub_name" => "Wedding day",
+                        "sub_image" => "images/giftcard-template/7.jpg","sub_type" => 0
+                    ],
+                    [
+                        "sub_id" => 8, "sub_place_id" => $place_id, "sub_name" => "Single",
+                        "sub_image" => "images/giftcard-template/8.jpg","sub_type" => 0
+                    ],
+                    [
+                        "sub_id" => 9, "sub_place_id" => $place_id, "sub_name" => "Employee",
+                        "sub_image" => "images/giftcard-template/9.jpg","sub_type" => 0
+                    ],
+                    [
+                        "sub_id" => 10, "sub_place_id" => $place_id, "sub_name" => "Mery christmas 02",
+                        "sub_image" => "images/giftcard-template/10.jpg","sub_type" => 0
+                    ],
+                    [
+                        "sub_id" => 11, "sub_place_id" => $place_id, "sub_name" => "Valentines",
+                        "sub_image" => "images/giftcard-template/11.jpg","sub_type" => 0
+                    ],
+                    [
+                        "sub_id" => 12, "sub_place_id" => $place_id, "sub_name" => "Beautiful",
+                        "sub_image" => "images/giftcard-template/12.jpg","sub_type" => 0
+                    ]
+                ];
+                PosSubjectWeb::insert($listImageGiftcode);
 
 				//INSERT POS_USER
 				//FORMAT PHONE NUMBER
