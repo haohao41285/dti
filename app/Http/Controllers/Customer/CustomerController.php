@@ -476,6 +476,9 @@ class CustomerController extends Controller
     }
     public function exportCustomer(Request $request)
     {
+        if(Gate::denies('permission','export-customers'))
+            return doNotPermission();
+
         $customer_list = MainCustomerTemplate::latest()->get()->toArray();
 
         $date = Carbon::now()->format('Y_m_d_His');
@@ -512,6 +515,9 @@ class CustomerController extends Controller
         })->download("xlsx");
     }
     public function importCustomer(Request $request){
+
+        if(Gate::denies('permission','import-customers'))
+            return doNotPermissionAjax();
 
         if($request->hasFile('file')){
             $path = $request->file('file')->getRealPath();
@@ -997,7 +1003,6 @@ class CustomerController extends Controller
             return response(['status'=>'success','message'=>'Add Note Successfully!']);
     }
     public function moveCustomers(Request $request){
-
         $customer_id = $request->customer_id;
         $user_own = Auth::user()->user_id;
         $count = 0;
@@ -1039,6 +1044,10 @@ class CustomerController extends Controller
         }
     }
     public function moveCustomerAll(){
+
+        if(Gate::denies('permission','move-customer'))
+            return doNotPermission();
+
         $data['team_type_list'] = MainTeamType::active()->get();
         return view('customer.move-customer',$data);
     }
