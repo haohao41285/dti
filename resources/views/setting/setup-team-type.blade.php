@@ -84,8 +84,7 @@ $(document).ready(function($) {
         clearView();
 
         $.ajax({
-                url: '{{route('
-                change - status - team - type ')}}',
+                url: '{{route('change-status-team-type')}}',
                 type: 'GET',
                 dataType: 'html',
                 data: {
