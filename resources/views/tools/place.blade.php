@@ -23,13 +23,13 @@
                             <th>ID</th>
                             <th>Name</th>
                             <th>Address</th>
-                            {{-- 
+                            {{--
                             <th>Email</th>
                             --}}
                             <th>Phone</th>
                             <th>License</th>
                             <th>Created Date</th>
-                            <th width="150">Action</th>
+                            <th width="20%">Action</th>
                         </tr>
                     </thead>
                 </table>
@@ -94,7 +94,7 @@
                     </div>
                 </div>
             </div>
-            {{-- 
+            {{--
             <div class="modal-footer">
                 <button type="button" class="btn-sm btn btn-primary">Save changes</button>
                 <button type="button" class="btn-sm btn btn-secondary" data-dismiss="modal">Close</button>
@@ -108,7 +108,7 @@
     <div style="max-width: 90%" class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                {{-- 
+                {{--
                 <h5 class="modal-title">Detail place</h5>
                 --}}
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
@@ -174,8 +174,8 @@
                             </div>
                             <div class="col-12">
                                 <div class="row col-12 row-detail">
-                                    <label class="col-sm-2">Hide service price</label>                              
-                                    <label class="col-sm-8 row" id="hide-service-price">Hide service price</label>                              
+                                    <label class="col-sm-2">Hide service price</label>
+                                    <label class="col-sm-8 row" id="hide-service-price">Hide service price</label>
                                 </div>
                                 <div class=" form-group">
                                     <div class="col-md-12 row row-detail">
@@ -271,7 +271,7 @@
                                                         <input disabled type="text" id="mon-start" value="19:00" class="form-control form-control-sm timepicker">
                                                         <span class="input-group-addon">
                                                         <span class="glyphicon glyphicon-time"></span>
-                                                        </span>                            
+                                                        </span>
                                                     </div>
                                                 </div>
                                                 <div class="col-day input-group-spaddon day_tuesday" >
@@ -279,7 +279,7 @@
                                                         <input disabled type="text" id="tue-start" value="21:00" class="form-control form-control-sm timepicker">
                                                         <span class="input-group-addon">
                                                         <span class="glyphicon glyphicon-time"></span>
-                                                        </span>                            
+                                                        </span>
                                                     </div>
                                                 </div>
                                                 <div class="col-day input-group-spaddon day_wednesday" >
@@ -287,7 +287,7 @@
                                                         <input disabled type="text" id="wed-start" value="21:00" class="form-control form-control-sm timepicker">
                                                         <span class="input-group-addon">
                                                         <span class="glyphicon glyphicon-time"></span>
-                                                        </span>                            
+                                                        </span>
                                                     </div>
                                                 </div>
                                                 <div class="col-day input-group-spaddon day_thursday" >
@@ -295,7 +295,7 @@
                                                         <input disabled type="text" id="thustart" value="21:00" class="form-control form-control-sm timepicker">
                                                         <span class="input-group-addon">
                                                         <span class="glyphicon glyphicon-time"></span>
-                                                        </span>                            
+                                                        </span>
                                                     </div>
                                                 </div>
                                                 <div class="col-day input-group-spaddon day_friday" >
@@ -303,7 +303,7 @@
                                                         <input disabled type="text" id="fri-start" value="21:00" class="form-control form-control-sm timepicker">
                                                         <span class="input-group-addon">
                                                         <span class="glyphicon glyphicon-time"></span>
-                                                        </span>                            
+                                                        </span>
                                                     </div>
                                                 </div>
                                                 <div class="col-day input-group-spaddon day_saturday" >
@@ -311,7 +311,7 @@
                                                         <input disabled type="text" id="sat-start" value="21:00" class="form-control form-control-sm timepicker">
                                                         <span class="input-group-addon">
                                                         <span class="glyphicon glyphicon-time"></span>
-                                                        </span>                            
+                                                        </span>
                                                     </div>
                                                 </div>
                                                 <div class="col-day input-group-spaddon day_sunday" >
@@ -319,7 +319,7 @@
                                                         <input disabled type="text" id="sun-start" value="23:00" class="form-control form-control-sm timepicker">
                                                         <span class="input-group-addon">
                                                         <span class="glyphicon glyphicon-time"></span>
-                                                        </span>                            
+                                                        </span>
                                                     </div>
                                                 </div>
                                             </div>
@@ -334,7 +334,7 @@
                                                         <input disabled type="text" id="mon-end" value="19:00" class="form-control form-control-sm timepicker">
                                                         <span class="input-group-addon">
                                                         <span class="glyphicon glyphicon-time"></span>
-                                                        </span>                            
+                                                        </span>
                                                     </div>
                                                 </div>
                                                 <div class="col-day input-group-spaddon day_tuesday" >
@@ -342,7 +342,7 @@
                                                         <input disabled type="text" id="tue-end" value="21:00" class="form-control form-control-sm timepicker">
                                                         <span class="input-group-addon">
                                                         <span class="glyphicon glyphicon-time"></span>
-                                                        </span>                            
+                                                        </span>
                                                     </div>
                                                 </div>
                                                 <div class="col-day input-group-spaddon day_wednesday" >
@@ -350,7 +350,7 @@
                                                         <input disabled type="text" id="wed-end" value="21:00" class="form-control form-control-sm timepicker">
                                                         <span class="input-group-addon">
                                                         <span class="glyphicon glyphicon-time"></span>
-                                                        </span>                            
+                                                        </span>
                                                     </div>
                                                 </div>
                                                 <div class="col-day input-group-spaddon day_thursday" >
@@ -358,7 +358,7 @@
                                                         <input disabled type="text" id="thu-end" value="21:00" class="form-control form-control-sm timepicker">
                                                         <span class="input-group-addon">
                                                         <span class="glyphicon glyphicon-time"></span>
-                                                        </span>                            
+                                                        </span>
                                                     </div>
                                                 </div>
                                                 <div class="col-day input-group-spaddon day_friday" >
@@ -366,7 +366,7 @@
                                                         <input disabled type="text" id="fri-end" value="21:00" class="form-control form-control-sm timepicker">
                                                         <span class="input-group-addon">
                                                         <span class="glyphicon glyphicon-time"></span>
-                                                        </span>                            
+                                                        </span>
                                                     </div>
                                                 </div>
                                                 <div class="col-day input-group-spaddon day_saturday" >
@@ -374,7 +374,7 @@
                                                         <input disabled type="text" id="sat-end" value="21:00" class="form-control form-control-sm timepicker">
                                                         <span class="input-group-addon">
                                                         <span class="glyphicon glyphicon-time"></span>
-                                                        </span>                            
+                                                        </span>
                                                     </div>
                                                 </div>
                                                 <div class="col-day input-group-spaddon day_sunday" >
@@ -382,7 +382,7 @@
                                                         <input disabled type="text" id="sun-end" value="23:00" class="form-control form-control-sm timepicker">
                                                         <span class="input-group-addon">
                                                         <span class="glyphicon glyphicon-time"></span>
-                                                        </span>                            
+                                                        </span>
                                                     </div>
                                                 </div>
                                             </div>
@@ -398,7 +398,7 @@
                     </div>
                 </div>
             </div>
-            {{-- 
+            {{--
             <div class="modal-footer">
                 <button type="button" class="btn-sm btn btn-primary">Save changes</button>
                 <button type="button" class="btn-sm btn btn-secondary" data-dismiss="modal">Close</button>
@@ -531,7 +531,7 @@
                             </form>
                         </div>
                     </div>
-                    
+
                     </div> --}}
                 </div>
             </div>
@@ -549,7 +549,7 @@
       $("#change-password-form")[0].reset();
       $("#clone-update-form")[0].reset();
       $("#user_nickname").html("Change password");
-      
+
       $('#themes-datatable tbody tr.selected').removeClass('selected');
     }
 
@@ -572,42 +572,42 @@
 
                     $("#themeProperties tbody").html(html);
                 }
-            }, 
+            },
             error:function(){
                 toastr.error("Failed to load Properties!");
             }
         });
     }
-    
+
     $(document).ready(function() {
       var placeId = null;
       var userId = null;
       var license = null;
       var themeId = null;
-    
+
       var placeTable = $('#places-datatable').DataTable({
-           // dom: "lfrtip",    
+           // dom: "lfrtip",
            processing: true,
            serverSide: true,
            ajax:{ url:"{{ route('getPlacesDatatable') }}" },
            columns: [
-    
+
                     { data: 'place_id', name: 'place_id',class:'text-center' },
                     { data: 'place_name', name: 'place_name' },
                     { data: 'place_address', name: 'place_address'},
                     // { data: 'place_email', name: 'place_email' },
                     { data: 'place_phone', name: 'place_phone',class:'text-center' },
                     { data: 'place_ip_license', name: 'place_ip_license' },
-                    { data: 'created_at', name: 'created_at' ,class:'text-center'},                
+                    { data: 'created_at', name: 'created_at' ,class:'text-center'},
                     { data: 'action' , name:'action' ,orderable: false, searcheble: false ,class:'text-center'}
-            ], 
+            ],
             buttons: [
-    
-                ],      
+
+                ],
       });
-    
+
       var customerTable = $('#user-datatable').DataTable({
-           // dom: "lfrtip",    
+           // dom: "lfrtip",
            processing: true,
            serverSide: true,
            ajax:{
@@ -617,20 +617,20 @@
               },
             },
            columns: [
-    
+
                     { data: 'user_id', name: 'user_id',class:'text-center' },
                     { data: 'user_nickname', name: 'user_nickname', class:'user_nickname' },
                     { data: 'user_phone', name: 'user_phone',class:'text-center' },
                     { data: 'user_email', name: 'user_email' },
-                    { data: 'created_at', name: 'created_at' ,class:'text-center'},                
+                    { data: 'created_at', name: 'created_at' ,class:'text-center'},
                     // { data: 'action' , name:'action' ,orderable: false, searcheble: false ,class:'text-center'}
-            ], 
+            ],
             buttons: [
-    
-                ],      
+
+                ],
       });
-       
-    
+
+
        var themesTable = $('#themes-dataTable').DataTable({
                  processing: true,
                  serverSide: true,
@@ -639,14 +639,14 @@
                       { data: 'theme_id', name: 'theme_id' ,class:"id"},
                       { data: 'theme_name_temp', name: 'theme_name_temp' ,class:"code"},
                       { data: 'theme_image', name: 'theme_image' },
-     
-                ],       
+
+                ],
                  buttons: [
-    
+
                    ],
           });
-    
-    
+
+
       $(document).on('click','.view',function(e){
         e.preventDefault();
         placeId = $(this).attr('data-id');
@@ -654,29 +654,29 @@
         $("#view").modal("show");
         clear();
       });
-    
+
       $("#user-datatable tbody").on('click',"tr",function(){
           $('#user-datatable tbody tr.selected').removeClass('selected');
           $(this).addClass('selected');
           userId = $(this).find("td.sorting_1").text();
           var user_nickname = $(this).find("td.user_nickname").text();
-    
+
           $("#user_nickname").html("Change password of <b>"+user_nickname+"</b>");
       });
-    
+
       $("#change-password-form").on('submit',function(e){
         e.preventDefault();
-    
+
         var checkSelected = $('#user-datatable tbody tr.selected');
         if(checkSelected.length == 0){
           toastr.error("Please select the user!");
           return false;
         }
-    
+
         var form = $(this).serialize();
         form += "&placeId="+placeId;
         form += "&userId="+userId;
-    
+
         $.ajax({
           url:"{{ route('changeNewPassword') }}",
           method:"post",
@@ -695,7 +695,7 @@
           }
         });
       });
-    
+
       $(document).on('click',".detail",function(e){
         e.preventDefault();
         var placeId = $(this).attr('data-id');
@@ -708,7 +708,7 @@
             if(data.status == 1){
               var hide_service_price = data.data.place.hide_service_price == 1 ? "On" : "Off" ;
               $("#detail").modal("show");
-    
+
               $("#logo img").attr('src',"{{env('URL_FILE_VIEW')}}"+data.data.place.place_logo);
               $("#Favicon img").attr('src',"{{env('URL_FILE_VIEW')}}"+data.data.place.place_favicon);
               $("#business-name").text(data.data.place.place_name);
@@ -721,7 +721,7 @@
               $("#description").text(data.data.place.place_description);
               $("#business-phone").text(data.data.place.place_phone);
               $("#website").text(data.data.place.place_website);
-    
+
               var monClosed = data.data.place_actiondate.mon.closed;
               var tueClosed = data.data.place_actiondate.tue.closed;
               var wedClosed = data.data.place_actiondate.wed.closed;
@@ -729,7 +729,7 @@
               var friClosed = data.data.place_actiondate.fri.closed;
               var satClosed = data.data.place_actiondate.sat.closed;
               var sunClosed = data.data.place_actiondate.sun.closed;
-    
+
               var monStart = data.data.place_actiondate.mon.start;
               var tueStart = data.data.place_actiondate.tue.start;
               var wedStart = data.data.place_actiondate.wed.start;
@@ -737,7 +737,7 @@
               var friStart = data.data.place_actiondate.fri.start;
               var satStart = data.data.place_actiondate.sat.start;
               var sunStart = data.data.place_actiondate.sun.start;
-    
+
               var monEnd = data.data.place_actiondate.mon.end;
               var tueEnd = data.data.place_actiondate.tue.end;
               var wedEnd = data.data.place_actiondate.wed.end;
@@ -745,11 +745,11 @@
               var friEnd = data.data.place_actiondate.fri.end;
               var satEnd = data.data.place_actiondate.sat.end;
               var sunEnd = data.data.place_actiondate.sun.end;
-    
+
               $("label").removeClass("active")
               $(".time-start input").css("visibility","");
               $(".time-end input").css("visibility","");
-    
+
               if(monClosed == true){
                  $("div[rel='monday']").find("label[rel='close']").addClass("active");
                  $("#mon-start").css("visibility","hidden");
@@ -759,7 +759,7 @@
                  $("#mon-start").val(monStart);
                  $("#mon-end").val(monEnd);
               }
-    
+
               if(tueClosed == true){
                  $("div[rel='tuesday']").find("label[rel='close']").addClass("active");
                  $("#tue-start").css("visibility","hidden");
@@ -769,7 +769,7 @@
                  $("#tue-start").val(tueStart);
                  $("#tue-end").val(tueEnd);
               }
-    
+
               if(wedClosed == true){
                  $("div[rel='wednesday']").find("label[rel='close']").addClass("active");
                  $("#wed-start").css("visibility","hidden");
@@ -779,7 +779,7 @@
                  $("#wed-start").val(wedStart);
                  $("#wed-end").val(wedEnd);
               }
-    
+
               if(thuClosed == true){
                  $("div[rel='thursday']").find("label[rel='close']").addClass("active");
                  $("#thu-start").css("visibility","hidden");
@@ -789,7 +789,7 @@
                  $("#thu-start").val(thuStart);
                  $("#thu-end").val(thuEnd);
               }
-    
+
               if(friClosed == true){
                  $("div[rel='friday']").find("label[rel='close']").addClass("active");
                  $("#fri-start").css("visibility","hidden");
@@ -799,7 +799,7 @@
                  $("#fri-start").val(friStart);
                  $("#fri-end").val(friEnd);
               }
-    
+
               if(satClosed == true){
                  $("div[rel='saturday']").find("label[rel='close']").addClass("active");
                  $("#sat-start").css("visibility","hidden");
@@ -809,7 +809,7 @@
                  $("#sat-start").val(satStart);
                  $("#sat-end").val(satEnd);
               }
-    
+
               if(sunClosed == true){
                  $("div[rel='sunday']").find("label[rel='close']").addClass("active");
                  $("#sun-start").css("visibility","hidden");
@@ -819,8 +819,8 @@
                  $("#sun-start").val(sunStart);
                  $("#sun-end").val(sunEnd);
               }
-    
-    
+
+
             }
           },
           error:function(){
@@ -828,8 +828,8 @@
           }
         });
       });
-    
-      
+
+
       $(document).on('click','.setting',function(e){
           e.preventDefault();
           clear();
@@ -870,7 +870,7 @@
               }
             });
       });
-    
+
       $("#themes-datatable tbody").on('click',"tr",function(){
              $('#themes-datatable tbody tr.selected').removeClass('selected');
              $(this).addClass('selected');
@@ -899,10 +899,10 @@
             id = $(this).attr("properties-id");
             $("input[name='id_properties']").val(id);
        });
-    
-    
+
+
     });
-    
-    
+
+
 </script>
 @endpush

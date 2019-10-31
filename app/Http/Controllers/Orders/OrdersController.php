@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Orders;
 
 use App\Models\MainComboServiceType;
 use App\Models\MainGroupUser;
+use App\Models\MainOrder;
 use App\Models\PosCustomertag;
 use App\Models\PosSubjectWeb;
 use Illuminate\Http\Request;
@@ -1108,6 +1109,26 @@ class OrdersController extends Controller
         $dompdf->render();
         // Output the generated PDF to Browser
         $dompdf->stream();
+    }
+    public function paymentOrderList(){
+
+	    if(Gate::denies('permission','payment-orders'))
+	        return doNotPermission();
+
+	    return view('orders.payment-orders-list');
+    }
+    public function paymentOrder($id){
+	    if(!$id)
+	        return back()->with('error','Payment Failed!');
+	    //CHECK ID ORDER EXIST
+        $order_info = MainComboServiceBought::find($id);
+        if(!$order_info)
+            return back()->with('error','Order not Exist');
+
+        $data['customer_info'] = $order_info->getCustomer;
+        $data['service_list'] = $order_info->getCustomer;
+
+        return view('orders.payment-order',$data);
     }
 
 }

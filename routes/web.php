@@ -268,6 +268,10 @@ Route::group(['middleware' => ['auth']], function () {
         Route::post('change-status-order', 'OrdersController@changeStatusOrder')->name('change-status-order');
         Route::post('resend-invoice', 'OrdersController@resendInvoice')->name('resend-invoice');
         Route::get('dowload-invoice/{id}', 'OrdersController@dowloadInvoice')->name('dowload-invoice');
+
+        Route::get('payment-orders-list','OrdersController@paymentOrderList')->name('payment-order-list');
+        Route::get('payment-orders/{id}','OrdersController@paymentOrder')->name('payment-order');
+
     });
     Route::group(['prefix' => 'task','namespace' => 'Task'], function() {
         Route::get('/', 'TaskController@index')->name('my-task');

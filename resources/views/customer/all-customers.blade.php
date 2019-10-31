@@ -68,7 +68,7 @@
                 <th>Note</th>
                 <th>Status</th>
                 <th>Created Date</th>
-                <th style="width: 10%">Action</th>
+                <th style="width: 15%">Action</th>
             </tr>
         </thead>
     </table>
