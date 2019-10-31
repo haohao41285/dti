@@ -2,10 +2,11 @@
 
 namespace App\Models;
 
+use App\Models\MainUser;
 use Illuminate\Database\Eloquent\Model;
 use Laracasts\Presenter\PresentableTrait;
 use DB;
-
+use Gate;
 
 class MainCustomer extends Model
 {
@@ -47,18 +48,28 @@ class MainCustomer extends Model
         $startDate = $year."-01-01";
         $endDate = $year."-12-31";
 
-        return self::select(
+        $new_customer_list = self::select(
                     DB::raw('DATE_FORMAT(created_at, "%m") as month'),
                     DB::raw('COUNT("month") as count' )
                         )
                     ->where('customer_status',1)
                     ->whereBetween('created_at',[$startDate,$endDate])
-                    ->groupBy('month')
-                    ->get();
+                    ->groupBy('month');
+        if(Gate::allows('permission','dashboard-admin')){
+        }
+        elseif(Gate::allows('permission','dashboard-leader'))
+            $new_customer_list = $new_customer_list->whereIn('customer_id',MainUser::getCustomerOfTeam());
+        else
+            $new_customer_list = $new_customer_list->whereIn('customer_id', MainUser::getCustomerOfUser());
+
+        $new_customer_list = $new_customer_list->get();
+
+        return $new_customer_list;
     }
     public function getFullname(){
         return  $this->customer_firstname. " ".$this->customer_lastname;
     }
+
 
 
 }

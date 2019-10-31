@@ -5,6 +5,9 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Laracasts\Presenter\PresentableTrait;
 use App\Models\MainService;
+use App\Models\MainUser;
+use Gate;
+use Auth;
 
 class MainComboServiceBought extends Model
 {
@@ -46,13 +49,22 @@ class MainComboServiceBought extends Model
     }
 
     public static function getSumChargeByYear($year){
-        return self::select('csb_charge')
-                    ->whereYear('created_at',$year)
-                    ->sum('csb_charge');
+        $sum_charge = self::select('csb_charge','created_by')
+            ->whereYear('created_at',$year);
+        if(Gate::allows('permission','dashboard-admin')){
+        }
+        elseif(Gate::allows('permission','dashboard-leader')){
+            $sum_charge = $sum_charge->whereIn('created_by',MainUser::getMemberTeam());
+        }else{
+            $sum_charge = $sum_charge->where('created_by',Auth::user()->user_id);
+        }
+        $sum_charge = $sum_charge->sum('csb_charge');
+
+        return $sum_charge;
     }
     /**
      * get 10 popular services by monthe of the year , (year && month of $date)
-     * @param  date $date ex: 2019-04-31 
+     * @param  date $date ex: 2019-04-31
      * @return query
      */
     public static function get10popularServicesByMonth($date){
@@ -68,7 +80,7 @@ class MainComboServiceBought extends Model
         $arrServices = self::sortTotalServices($formatArrServices);
 
         $arrServices = self::addNameServiceToArrServices($formatArrServices,$arrServices);
-        
+
         return $arrServices;
     }
 
@@ -103,7 +115,7 @@ class MainComboServiceBought extends Model
                     'count' => 1,
                     'idService' => $value,
                 ];
-            }           
+            }
         }
         arsort($arr);
         $arr = array_values($arr);
@@ -116,7 +128,7 @@ class MainComboServiceBought extends Model
                                     ->whereIn('service_id',$formatArrServices)
                                     ->get();
 
-        foreach ($arrServices as $key => $valueArrServices) {            
+        foreach ($arrServices as $key => $valueArrServices) {
             foreach ($servicesName as $valueArrServicesName) {
                if($valueArrServices['idService'] == $valueArrServicesName->service_id){
                     $arrServices[$key]['nameService'] = $valueArrServicesName->service_name;

@@ -70,9 +70,9 @@ function checkPermission($role,$permission){
     return $check;
 }
 function doNotPermission(){
-    return back()->with('error','You do Not have this Permission!');
+    return back()->with('error','Permission Denies!');
 }
 function doNotPermissionAjax(){
-    return response(['status'=>'error','message'=>'You do Not have this Permission!']);
+    return response(['status'=>'error','message'=>'Permission Denies!']);
 }
 ?>

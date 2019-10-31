@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use App\Models\MainCustomerTemplate;
 use App\Models\MainNotification;
+use App\Models\MainUser;
 use Carbon\Carbon;
 use Illuminate\Http\Response;
 
@@ -27,12 +28,16 @@ class DashboardController extends Controller {
     }
 
     public function index(){
+
+        if(Gate::denies('permission','dashboard-read'))
+            return doNotPermission();
+
         $yearNow = format_year(get_nowDate());
         $now = get_nowDate();
 
         $data['earnings'] = MainComboServiceBought::getSumChargeByYear($yearNow);
         $data['pendingTasks'] = MainTask::getPendingTasks();
-        $data['nearlyExpired'] = MainCustomerBought::getNearlyExpired();
+        $data['nearlyExpired'] = MainCustomerService::getNearlyExpired();
         $data['popularServices'] = MainComboServiceBought::get10popularServicesByMonth($now);
 
         $newCustomer = MainCustomer::getTotalNewCustomersEveryMonthByYear($yearNow);
@@ -143,7 +148,12 @@ class DashboardController extends Controller {
             ->whereBetween('cs_date_expire',[$today,$date_expired])
            ->where('main_customer_service.cs_customer_id','!=',null);
 
-        if(Gate::denies('permission','dashboard-admin'))
+        if(Gate::allows('permission','dashboard-admin')){
+
+        }
+        elseif(Gate::allows('permission','dashboard-leader'))
+             $customer_service_list = $customer_service_list->whereIn('main_customer_service.created_by',MainUser::getCustomerOfTeam());
+        else
             $customer_service_list = $customer_service_list->where('main_customer_service.created_by',Auth::user()->user_id);
 
         $customer_service_list = $customer_service_list->get();
