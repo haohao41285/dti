@@ -3,7 +3,7 @@
     Payment Orders List
 @endsection
 @section('content')
-    <h4 class="border border-info border-top-0 mb-3 border-right-0 border-left-0 text-info">ALL ORDERS</h4>
+    <h4 class="border border-info border-top-0 mb-3 border-right-0 border-left-0 text-info">PAYMENT ORDERS</h4>
     <div class="table-responsive">
         <div class="form-group col-md-12 row">
             <div class="col-md-4">
@@ -31,17 +31,18 @@
             </div>
         </div>
         <hr>
-        <table class="table table-bordered" id="dataTableAllCustomer" width="100%" cellspacing="0">
+        <table class="table table-bordered table-hover" id="dataTableAllCustomer" width="100%" cellspacing="0">
             <thead>
-            <th>Id</th>
-            <th>Order Date</th>
-            <th>Customer</th>
-            <th>Services</th>
-            <th>Subtotal($)</th>
-            <th>Discount($)</th>
-            <th>Total Charged($)</th>
-            <th>Info</th>
-            </tr>
+                <tr class="text-center">
+                    <th>Id</th>
+                    <th>Order Date</th>
+                    <th>Customer</th>
+                    <th>Services</th>
+                    <th>Subtotal($)</th>
+                    <th>Discount($)</th>
+                    <th>Total Charged($)</th>
+                    <th>Payment</th>
+                </tr>
             </thead>
         </table>
     </div>
@@ -57,7 +58,7 @@
                 ],
                 processing: true,
                 serverSide: true,
-                ajax:{ url:"{{ route('my-order-datatable') }}",
+                ajax:{ url:"{{ route('payment-order-datatable') }}",
 
                     data: function (d) {
                         d.start_date = $("#start_date").val();
@@ -73,8 +74,7 @@
                     { data: 'subtotal', name: 'subtotal',class:'text-right' },
                     { data: 'discount', name: 'discount',class:'text-right' },
                     { data: 'total_charge', name: 'total_charge',class:'text-right' },
-                    { data: 'information', name: 'information'},
-                    // { data: 'action' , name:'action' ,orderable: false, searcheble: false ,class:'text-center'}
+                    { data: 'action' , name:'action' ,orderable: false, searcheble: false ,class:'text-center'}
                 ],
             });
             $("#search-button").click(function(){

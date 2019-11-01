@@ -9,15 +9,16 @@
     </style>
 @endpush
 @section('content')
-    <h4 class="border border-info border-top-0 mb-3 border-right-0 border-left-0 text-info">PAYMENT ORDER</h4>
+    <h4 class="border border-info border-top-0 mb-3 border-right-0 border-left-0 text-info">PAYMENT ORDER #{{$order_id}}</h4>
 
     <div class="">
         <form action="{{route('authorize')}}" method="post">
+            <input type="hidden" name="order_id" value="{{$order_id}}">
             @csrf()
             <div class="col-md-12 form-group row">
                 <label class="col-md-2">Customer Phone</label>
                 <div class="col-md-4">
-                    <input disabled type="text" value="{{$customer_info->customer_phone)}}" class="form-control form-control-sm" >
+                    <input disabled type="text" value="{{$customer_info->customer_phone}}" class="form-control form-control-sm" >
                 </div>
             </div>
             <div class="col-md-12 form-group row">
@@ -27,28 +28,28 @@
                 </div>
             </div>
             <div class="col-md-12 form-group row">
-                <label class="col-md-2 ">Service</label>
-                <div class="col-md-4"><input disabled type="text" class="form-control form-control-sm" id="service_price" name="service_price" value="{{old('service_price')}}"><input type="hidden" class="form-control form-control-sm" id="service_price_hidden" name="service_price_hidden" value="{{old('service_price_hidden')}}"></div>
-            </div>
-            <div class="col-md-12 form-group row">
-                <label class="col-md-2">Discount($)</label>
-                <div class="col-md-4"><input disabled class="form-control form-control-sm" type="text" id="discount" name="discount" value="{{old('discount')}}"></div>
+                <label class="col-md-2 ">Services</label>
+                <div class="col-md-4">
+                    @foreach($service_list as $service)
+                        <span>+<b>{{$service->cs_name}}</b> - ${{$service->cs_price}}</span><br>
+                    @endforeach
+                </div>
             </div>
             <hr>
             <div class="col-md-12 form-group row">
-                <label class="col-md-2 required">Service Price</label>
-                <div class="col-md-4"><input disabled type="text" class="form-control form-control-sm" id="service_price" name="service_price" value="{{old('service_price')}}"><input type="hidden" class="form-control form-control-sm" id="service_price_hidden" name="service_price_hidden" value="{{old('service_price_hidden')}}"></div>
+                <label class="col-md-2">Service Price</label>
+                <div class="col-md-4"><input disabled type="text" class="form-control form-control-sm" id="service_price" name="service_price" value="{{$order_info->csb_amount}}"><input type="hidden" class="form-control form-control-sm" id="service_price_hidden" name="service_price_hidden" value="{{old('service_price_hidden')}}"></div>
             </div>
             <div class="col-md-12 form-group row">
                 <label class="col-md-2">Discount($)</label>
-                <div class="col-md-4"><input disabled class="form-control form-control-sm" type="text" id="discount" name="discount" value="{{old('discount')}}"></div>
+                <div class="col-md-4"><input disabled class="form-control form-control-sm" type="text" id="discount" name="discount" value="{{$order_info->csb_amount_deal}}"></div>
             </div>
             <div class="col-md-12 form-group row">
-                <label class="col-md-2 required">Payment Amount($)</label>
+                <label class="col-md-2">Payment Amount($)</label>
                 <div class="col-md-4">
-                    <input class="form-control form-control-sm" type="hidden" id="payment_amount" name="payment_amount" value="{{old('payment_amount')}}">
-                    <input class="form-control form-control-sm" type="text" disabled id="payment_amount_disable" name="payment_amount_disable" value="{{old('payment_amount')}}">
-                    <input class="form-control form-control-sm" type="hidden" id="payment_amount_hidden" name="payment_amount_hidden" value="{{old('payment_amount_hidden')}}">
+                    <input class="form-control form-control-sm" type="hidden" id="payment_amount" name="payment_amount" value="{{$order_info->csb_charge}}">
+                    <input class="form-control form-control-sm" type="text" disabled id="payment_amount_disable" name="payment_amount_disable" value="{{$order_info->csb_charge}}">
+                    <input class="form-control form-control-sm" type="hidden" id="payment_amount_hidden" name="payment_amount_hidden" value="{{$order_info->csb_charge}}">
                 </div>
             </div>
             <div class="col-md-12 form-group row">

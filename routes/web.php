@@ -271,6 +271,9 @@ Route::group(['middleware' => ['auth']], function () {
 
         Route::get('payment-orders-list','OrdersController@paymentOrderList')->name('payment-order-list');
         Route::get('payment-orders/{id}','OrdersController@paymentOrder')->name('payment-order');
+        Route::post('add-order','OrdersController@addOrder')->name('post-add-order');
+        Route::get('payment-order-datatable', 'OrdersController@paymentOrderDatatable')->name('payment-order-datatable');
+
 
     });
     Route::group(['prefix' => 'task','namespace' => 'Task'], function() {

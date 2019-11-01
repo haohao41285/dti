@@ -47,6 +47,9 @@ class MainComboServiceBought extends Model
     public function getTasks(){
         return $this->hasMany(MainTask::class,'order_id','id');
     }
+    public function getUpdatedBy(){
+        return $this->belongsTo(MainUser::class,'updated_by','user_id');
+    }
 
     public static function getSumChargeByYear($year){
         $sum_charge = self::select('csb_charge','created_by')
