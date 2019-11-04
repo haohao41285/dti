@@ -166,7 +166,7 @@ class PlaceController extends Controller
     }
 
     public function saveAutoCoupon(Request $request){
-
+        
     }
 
     public function deleteAutoCoupon(Request $request){
@@ -174,6 +174,14 @@ class PlaceController extends Controller
             PosTemplate::deleteByIdAndPlaceId($request->id, $request->placeId);
 
             return response()->json(['status'=>1,'msg'=>"deleted successfully"]);
+        }
+    }
+
+    public function getAutoCouponById(Request $request){
+        if($request->id){
+            $coupon = PosTemplate::getByPlaceIdAndId($request->id, $request->placeId);
+
+            return response()->json(['status'=>1,'data'=>$coupon]);
         }
     }
 
