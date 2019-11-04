@@ -134,7 +134,7 @@
         </div>
     </div>
     <div class="col-md-12 form-group row">
-        <label class="col-md-2">Discount($)</label>
+        <label class="col-md-2">Discount($)<span id="max-discount" class="text-danger"></span></label>
         <div class="col-md-4">
             <input class="form-control form-control-sm"  type="text" id="discount" name="discount" value="{{old('discount')}}">
         </div>
@@ -158,13 +158,6 @@
 @endsection
 @push('scripts')
 <script type="text/javascript">
-    // function inputNumberOnly(that,event){
-    //     //this.value = this.value.replace(/[^0-9\.]/g,'');
-    //     $(that).val($(that).val().replace(/[^0-9\.]/g,''));
-    //     if ((event.which != 46 || $(that).val().indexOf('.') != -1) && (event.which < 48 || event.which > 57)) {
-    //         event.preventDefault();
-    //     }
-    // }
  $(document).ready(function() {
 
     var combo_sevice_arr = [];
@@ -195,6 +188,7 @@
     $("#service_price").val(total_price);
     $("#service_price_hidden").val(total_price);
     max_discount= total_price*10/100;
+    $("#max-discount").text('( Max: $'+max_discount+' )');
 
    });
    $("#discount").keyup(function(event){
