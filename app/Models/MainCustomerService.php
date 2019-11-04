@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 use App\Models\MainComboService;
 use Gate;
 use Auth;
+use Carbon\Carbon;
 
 /**
  * Class MainCustomerService
@@ -46,6 +47,13 @@ class MainCustomerService extends Model
     }
     public function getCustomer(){
 	    return $this->belongsTo(MainCustomer::class,'cs_customer_id','customer_id');
+    }
+
+    public function getNewDateExpireAttribute(){
+        return $this->attributes['cs_date_expire'];
+    }
+    public function getCsDateExpireAttribute($value){
+	   return format_date($value);
     }
 
     public static function getNearlyExpired(){

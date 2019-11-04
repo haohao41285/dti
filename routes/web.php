@@ -151,11 +151,14 @@ Route::group(['middleware' => ['auth']], function () {
             Route::post('/change-password', 'PlaceController@changeNewPassword')->name('changeNewPassword');
             Route::get('/get-detail', 'PlaceController@getDetailPlace')->name('getDetailPlace');
             Route::get('/get-themes-datatable', 'PlaceController@getThemeDatatable')->name('getThemeDatatable');
+            Route::get('/get-service-place', 'PlaceController@getServicePlace')->name('get-service-place');
+            Route::post('/save-expire-date', 'PlaceController@saveExpireDate')->name('save-expire-date');
         });
 
         Route::group(['prefix' => 'build-code'], function() {
             Route::get('/', 'BuildCodeController@index');
         });
+
     });
 
     Route::group(['prefix' => 'recentlog'], function() {

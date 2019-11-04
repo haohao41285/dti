@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\ItTools;
 
+use App\Models\MainComboServiceBought;
+use App\Models\MainCustomerService;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use App\Models\PosPlace;
@@ -15,6 +17,7 @@ use App\Models\MainTheme;
 use Symfony\Component\Process\Process;
 use Symfony\Component\Process\Exception\ProcessFailedException;
 use App\Models\PosWebsiteProperty;
+use DB;
 
 
 
@@ -44,7 +47,7 @@ class PlaceController extends Controller
             return '<a class="btn btn-sm btn-secondary view" data-id="'.$places->place_id.'" href="#" data-toggle="tooltip" title="View users"><i class="fas fa-user-cog"></i></a>
             <a class="btn btn-sm btn-secondary detail" data-id="'.$places->place_id.'" href="#" data-toggle="tooltip" title="Detail"><i class="fas fa-eye"></i></a>
             <a class="btn btn-sm btn-secondary setting" data-license="'.$places->place_ip_license.'" href="#" data-toggle="tooltip" title="Setting place theme"><i class="fas fa-cogs"></i></a>
-            <a class="btn btn-sm btn-secondary setting" data-license="'.$places->place_ip_license.'" href="#" data-toggle="tooltip" title="Extension for Place"><i class="fas fa-shopping-cart"></i></a>';
+            <a class="btn btn-sm btn-secondary extension-service" place_id="'.$places->place_id.'" href="javascript:void(0)" title="Extension for Place"><i class="fas fa-shopping-cart"></i></a>';
         })
         ->editColumn('created_at',function($places){
             return format_datetime($places->created_at);
@@ -137,6 +140,47 @@ class PlaceController extends Controller
 
             return response()->json(['status'=>1,'data'=>$properties]);
         }
+    }
+    public function getServicePlace(Request $request){
+        $place_id = $request->place_id;
+        $service_combo_list = MainCustomerService::active()
+            ->with('getComboService')
+            ->where('cs_place_id',$place_id)
+            ->get();
+        if(!isset($service_combo_list))
+            return response(['status'=>'error','message'=>'Get Service Error']);
+        else
+            return response(['status'=>'success','service_combo_list'=>$service_combo_list]);
+    }
+    public function saveExpireDate(Request $request){
+
+        $cs_id = $request->cs_id;
+        $expire_date = $request->expire_date;
+        $count_1 = 0;
+        $count_2 = 0;
+
+        DB::beginTransaction();
+
+        foreach ($expire_date as $key => $date){
+            if($date == null){}
+            else{
+                $count_1++;
+                $update_cs = MainCustomerService::where('cs_place_id',$request->place_id)
+                    ->where('cs_service_id',$cs_id[$key])
+                    ->update(['cs_date_expire'=>format_date_db($date)]);
+                if(isset($update_cs))
+                    $count_2++;
+            }
+        }
+        if($count_1 != $count_2){
+            DB::callback();
+            return response(['status'=>'error','message'=>'Failed!']);
+        }
+        else{
+            DB::commit();
+            return response(['status'=>'success','message'=>'Successfully!']);
+        }
+
     }
 
 

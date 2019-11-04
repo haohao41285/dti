@@ -7,6 +7,9 @@
     .row-detail{
     margin-top: 12px;
     }
+    tbody tr .disabled{
+        text-decoration: line-through solid red;
+    }
 </style>
 @endpush
 @section('content')
@@ -542,6 +545,41 @@
         </div>
     </div>
 </div>
+<div class="modal fade" id="extension_service" tabindex="-1" role="dialog">
+    <div  class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Extension Services</h5>
+            </div>
+            <form id="service-form">
+                <div class="modal-body">
+                    <h6 class="m-0 font-weight-bold text-primary">Service List </h6>
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-hover" id="user-datatable" width="100%" cellspacing="0">
+                            <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Service Name</th>
+                                <th>Service Price</th>
+                                <th>Expire Date</th>
+                                <th>New Expire Date</th>
+                            </tr>
+                            </thead>
+                            <tbody id="service_table_body">
+
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn-sm btn btn-primary save-expire">Save changes</button>
+                    <button type="button" class="btn-sm btn btn-secondary cancel-change" data-dismiss="modal">Close</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
 @endsection
 @push('scripts')
 <script type="text/javascript">
@@ -580,6 +618,7 @@
     }
 
     $(document).ready(function() {
+
       var placeId = null;
       var userId = null;
       var license = null;
@@ -892,15 +931,88 @@
             $("#clone-update-form").find("input[type=submit]").val("Update Website");
             $("#clone-update-form").find("input[name=action]").val("update");
       });
-
       $("#themeProperties tbody").on('click',"tr",function(){
             $('#themeProperties tbody tr.selected').removeClass('selected');
             $(this).addClass('selected');
             id = $(this).attr("properties-id");
             $("input[name='id_properties']").val(id);
        });
+      $(document).on('click','.extension-service',function(){
+          // $("#extension_service").modal('show');
+          // return;
+          let place_id = $(this).attr('place_id');
+          $.ajax({
+              url:"{{ route('get-service-place') }}",
+              method:"get",
+              dataType:"html",
+              data:{place_id},
+              success:function(data){
+                  data = JSON.parse(data);
+                  if(data.status == 'error')
+                      toastr.error(data.message);
+                  else{
+                      let service_html = "";
+                      $.each(data.service_combo_list,function(ind,val){
+                          service_html += `
+                              <tr>
+                                  <td><input type="hidden" name="cs_id[]" value="`+val['get_combo_service']['id']+`">`+val['get_combo_service']['id']+`</td>
+                                  <td>`+val['get_combo_service']['cs_name']+`</td>
+                                  <td class="text-right">`+val['get_combo_service']['cs_price']+`</td>
+                                  <td>`+val['cs_date_expire']+`</td>
+                                  <td><input name="expire_date[]" type="text" expire_date="`+val['cs_date_expire']+`" class="new_date_expire form-control form-control-sm"></td>
+                              </tr>
+                          `;
+                      });
+                      service_html += `<input type="hidden" name="place_id" value="`+place_id+`">`;
+                      $("#service_table_body").html(service_html);
+                      $("#extension_service").modal('show');
+                  }
+              },
+              error:function(){
+                  toastr.error("Get Service List Failed!");
+              }
+          });
+      });
 
+      $(document).on('focus','.new_date_expire',function(){
+          let expire_date = $(this).attr('expire_date');
+          $(this).datepicker({
+              todayHighlight: true,
+              startDate: expire_date,
+              minDate:0,
+          });
+      });
 
+      $(".save-expire").click(function () {
+          var formData = new FormData($(this).parents('form')[0]);
+          formData.append('_token','{{csrf_token()}}');
+          $.ajax({
+              url:"{{ route('save-expire-date') }}",
+              method:"post",
+              dataType:"html",
+              data:formData,
+              contentType: false,
+              processData:false,
+
+              success:function(data){
+                  data = JSON.parse(data);
+                  if(data.status == 'error')
+                      toastr.error(data.message);
+                  else{
+                      toastr.success(data.message);
+                      $("#service-form")[0].reset();
+                      $("#extension_service").modal('hide');
+                  }
+              },
+              error:function(){
+                  toastr.error("Change Expire Date Failed!");
+              }
+          });
+      })
+        $(".cancel-change").click(function(){
+            $("#service-form")[0].reset();
+            $("#extension_service").modal('hide');
+        })
     });
 
 
