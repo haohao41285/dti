@@ -81,7 +81,7 @@ class MainComboServiceBought extends Model
     public static function get10popularServicesByMonth($date){
         $startDate = $date->format('Y-m')."-01";
         $endDate = $date->format('Y-m')."-31";
-
+    }
 
     public static function getServicesByMonth($date){
         return self::getByMonth($date);
