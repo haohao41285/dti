@@ -45,6 +45,13 @@ class PosTemplate extends Model
                     ->get();
     }
 
+    public static function getByPlaceIdAndId($id ,$placeId){
+        return self::where('template_place_id',$placeId)
+                    ->where('template_status',1)
+                    ->where('template_id',$id)
+                    ->first();
+    }
+
     public static function getDatatableByPlaceId($placeId){
         $data = self::getByPlaceIdAndType($placeId,1);
 

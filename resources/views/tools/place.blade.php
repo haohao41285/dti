@@ -667,15 +667,15 @@
                                 @csrf
                                 <div class="form-group row col-12">
                                     <label class="col-5">Title</label>
-                                    <input class="col-7 form-control-sm form-control" type="text" name="variable">
+                                    <input class="col-7 form-control-sm form-control" type="text" name="title">
                                 </div>
                                 <div class="form-group row col-12">
                                     <label class="col-5">Discount</label>
-                                    <input class="col-7 form-control-sm form-control" type="text" name="name">
+                                    <input class="col-7 form-control-sm form-control" type="text" name="discount">
                                 </div>
                                 <div class=" form-group row col-12">
                                     <label class="col-5">Discount Type </label>
-                                    <input class="col-7 form-control-sm form-control" type="text" name="value">
+                                    <input class="col-7 form-control-sm form-control" type="text" name="discountType">
                                 </div>
                                 <div class="form-group col-12">
                                     <label>Image</label>
@@ -686,17 +686,18 @@
                                 </div>
                                 <div class=" form-group row col-12">
                                     <label class="col-5">Services</label>
-                                    <input class="col-7 form-control-sm form-control" type="text" name="value">
+                                    <input class="col-7 form-control-sm form-control" type="text" name="services">
                                 </div>
                                 <div class=" form-group row col-12">
                                     <label class="col-5">Coupon Type </label>
-                                    <input class="col-7 form-control-sm form-control" type="text" name="value">
+                                    <input class="col-7 form-control-sm form-control" type="text" name="couponType">
                                 </div>
                                 <div class="form-group col-12 row">
                                     <label class="col-5"></label>
                                     <input class="btn-sm btn btn-primary" type="submit" value="Save">
                                     <input type="hidden" name="action" value="create">
                                     <input type="hidden" name="valuePropertyId">
+                                    <input type="hidden" name="id">
                                 </div>
                             </form>
                         </div>
@@ -1261,7 +1262,37 @@ $(document).ready(function() {
     });
 
     $(document).on("click", ".editAutoCoupon", function(e) {
+        e.preventDefault();
         var id = $(this).attr("data-id");
+
+        $.ajax({
+            url: "{{ route('getAutoCouponById') }}",
+            method: "get",
+            data: {
+                id,
+                placeId,
+            },
+            dataType: "json",
+            success: function(data) {
+                if (data.status) {
+                    $("#auto-coupon-title").text("Update");
+                    $("input[name='action']").val("update");
+
+                    $("input[name='title']").val(data.data.template_title);
+                    $("input[name='discount']").val(data.data.template_discount);
+                    $("input[name='discountType']").val(data.data.template_type);
+                    $("#previewImageAutoCoupon").src(data.data.template_title);
+                    $("input[name='services']").val("sada");
+                    $("input[name='couponType']").val("sdf");
+                }
+            },
+            error: function() {
+                toastr.error("Failed to get!");
+            }
+        });
+
+
+
     });
 
     $(document).on("click", ".deleteAutoCoupon", function(e) {
@@ -1289,6 +1320,7 @@ $(document).ready(function() {
             }
         });
     });
+
 
 });
 
