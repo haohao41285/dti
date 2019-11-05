@@ -10,28 +10,39 @@
                 <thead>
                 <tr>
                     <th class="text-center">ID</th>
-                    <th>Role Name</th>
-                    <th>Description</th>
+                    <th>Permission Name</th>
+                    <th>Menu Name</th>
                     <th>Status</th>
-                    <th class="text-center">Action</th>
+                    <th>Action</th>
+                    <th hidden></th>
+
                 </tr>
                 </thead>
             </table>
         </div>
         <div class="col-md-5 offset-md-1" style="padding-top: 0px">
-            <h5><b class="role-tip">Add Role</b></h5>
-            <div class="form-group">
-                <label for="">Role Name</label>
-                <input type="text" class="form-control form-control-sm" name="" id="gu_name">
-            </div>
-            <div class="form-group">
-                <label for="">Role Description</label>
-                <textarea class="form-control form-control-sm" rows="3" id="gu_descript" ></textarea>
-            </div>
-            <div class="form-group">
-                <button type="button" class="btn btn-sm btn-danger float-right cancel-role ml-2">Cancel</button>
-                <button type="button" class="btn btn-sm btn-primary float-right submit-role">Submit</button>
-            </div>
+
+            <form id="add-edit-form">
+                <h5><b class="tip">Add Permission</b></h5>
+                <div class="form-group">
+                    <label for="">Name</label>
+                    <input type="text" class="form-control form-control-sm" name="permission_name" id="permission_name">
+                </div>
+                <div class="form-group">
+                    <label for="">Menu</label>
+                    <select name="menu_id" class="form-control form-control-sm" id="menu_id">
+                        <option value="">Other</option>
+                        @foreach($menu_list as $menu)
+                             <option value="{{$menu->id}}">{{$menu->name}}</option>
+                        @endforeach
+                    </select>
+                </div>
+                <div class="form-group">
+                    <button type="button" class="btn btn-sm btn-danger float-right cancel-permission ml-2">Cancel</button>
+                    <button type="button" class="btn btn-sm btn-primary float-right submit-permission">Submit</button>
+                </div>
+            </form>
+
         </div>
     </div>
 
@@ -39,7 +50,8 @@
 @push('scripts')
     <script type="text/javascript">
         //DEFINE VAR
-        var gu_id = 0;
+        var permission_id = 0;
+
         $(document).ready(function($) {
             dataTable = $("#dataTable").DataTable({
                 processing: true,
@@ -47,27 +59,15 @@
                 autoWidth: true,
                 buttons: [
                 ],
-                columnDefs: [
-                    {
-                        "targets": 0,
-                        "className": "text-center"
-                    },
-                    {
-                        "targets": 3,
-                        "className": "text-center",
-                    },
-                    {
-                        "targets": 4,
-                        "className": "text-center",
-                    }
-                ],
-                ajax:{ url:"{{route('role-datatable')}}"},
+                ajax:{ url:"{{route('permission-datatable')}}"},
                 columns:[
-                    {data:'gu_id', name:'gu_id'},
-                    {data:'gu_name', name:'gu_name'},
-                    {data:'gu_descript', name:'gu_descript'},
-                    {data:'gu_status', name:'gu_status'},
-                    {data:'action', name:'action',orderable: false, searchable: false},
+                    {data:'id', name:'id',class: 'text-center'},
+                    {data:'permission_name', name:'permission_name'},
+                    {data:'menu_name', name:'menu_name'},
+                    {data:'status', name:'status',class:'text-center'},
+                    {data:'action', name:'action',searching:false,orderable:false,class:'text-center'},
+                    {data:'menu_id', name:'menu_id',class: 'd-none'},
+
                 ],
                 fnDrawCallback:function (oSettings) {
                     var elems = Array.prototype.slice.call(document.querySelectorAll('.js-switch'));
@@ -80,85 +80,111 @@
                 }
             })
             $(document).on('click','.switchery',function(){
-
-                var gu_id = $(this).siblings('input').attr('gu_id');
-                var gu_status = $(this).siblings('input').attr('gu_status');
-                clearView();
-
+                var status = $(this).siblings('input').attr('status');
                 $.ajax({
-                    url: '{{route('change-status-role')}}',
-                    type: 'GET',
+                    url: '{{route('change-status-permission')}}',
+                    type: 'POST',
                     dataType: 'html',
                     data: {
-                        gu_status: gu_status,
-                        gu_id: gu_id
+                        status: status,
+                        permission_id: permission_id,
+                        _token: '{{csrf_token()}}'
                     },
                 })
                     .done(function(data) {
-                        if(data != ""){
-                            data = JSON.parse(data);
-                            if(data.message != ""){
-                                alert(data.message);
-                            }
+                        data = JSON.parse(data);
+                        if(data.status == 'error'){
+                            toastr.error(data.message);
                         }
-                        dataTable.draw();
+                        else
+                            toastr.success(data.message);
+
+                        dataTable.ajax.reload(null, false);
+                        clearView();
                     })
-                    .fail(function(data) {
-                        data = JSON.parse(data.responseText);
-                        alert(data.message);
-                        dataTable.draw();
+                    .fail(function(xhr, ajaxOptions, thrownError) {
+                         toastr.error('Change Failed!');
+                        // console.log(thrownError + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText);
                     });
 
             });
             $('#dataTable tbody').on( 'click', 'tr', function () {
-
-                $("#gu_name").val(dataTable.row(this).data()['gu_name']);
-                $("#gu_descript").val(dataTable.row(this).data()['gu_descript']);
-                $(".role-tip").text("Edit Role");
-                gu_id = dataTable.row(this).data()['gu_id'];
+                $("#permission_name").val(dataTable.row(this).data()['permission_name']);
+                $("#menu_id").val(dataTable.row(this).data()['menu_id']);
+                $(".tip").text("Edit Permission");
+                permission_id = dataTable.row(this).data()['id'];
 
             });
-            $(document).on('click','.submit-role',function(){
+            $(document).on('click','.submit-permission',function(){
 
-                var gu_descript = $("#gu_descript").val();
-                var gu_name = $("#gu_name").val();
+                var formData = $("#add-edit-form").serialize();
+                formData += '&permission_id='+permission_id;
 
-                if(gu_descript != "" && gu_name != ""){
-                    $.ajax({
-                        url: '{{route('add-role')}}',
-                        type: 'GET',
-                        dataType: 'html',
-                        data: {
-                            gu_descript: gu_descript,
-                            gu_name: gu_name,
-                            gu_id: gu_id
-                        },
+                $.ajax({
+                    url: '{{route('save-permission')}}',
+                    type: 'GET',
+                    dataType: 'html',
+                    data: formData,
+                })
+                    .done(function(data) {
+                        data = JSON.parse(data);
+                        console.log(data);
+                        if(data.status == 'error'){
+                            if(typeof(data.message) == 'string')
+                                toastr.error(data.message);
+                            else
+                                $.each(data.message,function(ind,val){
+                                    toastr.error(val);
+                                });
+                        }
+                        else{
+                            toastr.success(data.message);
+                            dataTable.draw();
+                            clearView();
+                        }
                     })
-                        .done(function(data) {
-                            console.log(data);
-                            if(data == 0){
-                                alert('Error!');
-                            }else{
-                                clearView();
-                                dataTable.draw();
-                            }
-                            console.log(data);
-                        })
-                        .fail(function(xhr, ajaxOptions, thrownError) {
-                            alert('Error!');
-                            console.log(thrownError + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText);
-                        });
-                }
+                    .fail(function(xhr, ajaxOptions, thrownError) {
+                        toastr.error('Save Failed!');
+                        console.log(thrownError + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText);
+                    });
             });
-            $(".cancel-role").click(function(){
+            $(".cancel-permission").click(function(){
                 clearView();
             })
             function clearView(){
-                $(".role-tip").text("Add Role");
-                $("#gu_descript").val("");
-                $("#gu_name").val("");
-                gu_id = 0;
+                $("tip").text("Add Permission");
+                $("#add-edit-form")[0].reset();
+                permission_id = 0;
             }
+            $(document).on('click','.delete-permission',function () {
+                if(confirm("Do you want delete this permission?")){
+                    $.ajax({
+                        url: '{{route('delete-permission')}}',
+                        type: 'DELETE',
+                        dataType: 'html',
+                        data: {
+                            permission_id: permission_id,
+                            _token: '{{csrf_token()}}'
+                        },
+                    })
+                        .done(function(data) {
+                            data = JSON.parse(data);
+                            console.log(data);
+                            if(data.status == 'error'){
+                                toastr.error(data.message);
+                            }
+                            else{
+                                toastr.success(data.message);
+                                dataTable.ajax.reload(null, false);
+                                clearView();
+                            }
+                        })
+                        .fail(function(xhr, ajaxOptions, thrownError) {
+                            toastr.error('Save Failed!');
+                            console.log(thrownError + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText);
+                        });
+                }
+            })
         });
     </script>
 @endpush

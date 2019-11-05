@@ -7,6 +7,9 @@
     .row-detail{
     margin-top: 12px;
     }
+    tbody tr .disabled{
+        text-decoration: line-through solid red;
+    }
 </style>
 @endpush
 @section('content')
@@ -22,14 +25,13 @@
                         <tr>
                             <th>ID</th>
                             <th>Name</th>
-                            {{-- <th>Address</th> --}}
-                            {{--
-                            <th>Email</th>
-                            --}}
+
                             <th>Phone</th>
                             <th>License</th>
+
                             {{-- <th>Created Date</th> --}}
                             <th width="200">Action</th>
+
                         </tr>
                     </thead>
                 </table>
@@ -271,7 +273,12 @@
                                                     <input disabled type="text" id="mon-start" value="19:00" class="form-control form-control-sm timepicker">
                                                     <span class="input-group-addon">
                                                         <span class="glyphicon glyphicon-time"></span>
+<<<<<<< HEAD
                                                     </span>
+=======
+                                                        </span>
+                                                    </div>
+>>>>>>> origin/thieu
                                                 </div>
                                             </div>
                                             <div class="col-day input-group-spaddon day_tuesday">
@@ -279,7 +286,12 @@
                                                     <input disabled type="text" id="tue-start" value="21:00" class="form-control form-control-sm timepicker">
                                                     <span class="input-group-addon">
                                                         <span class="glyphicon glyphicon-time"></span>
+<<<<<<< HEAD
                                                     </span>
+=======
+                                                        </span>
+                                                    </div>
+>>>>>>> origin/thieu
                                                 </div>
                                             </div>
                                             <div class="col-day input-group-spaddon day_wednesday">
@@ -287,7 +299,12 @@
                                                     <input disabled type="text" id="wed-start" value="21:00" class="form-control form-control-sm timepicker">
                                                     <span class="input-group-addon">
                                                         <span class="glyphicon glyphicon-time"></span>
+<<<<<<< HEAD
                                                     </span>
+=======
+                                                        </span>
+                                                    </div>
+>>>>>>> origin/thieu
                                                 </div>
                                             </div>
                                             <div class="col-day input-group-spaddon day_thursday">
@@ -295,7 +312,12 @@
                                                     <input disabled type="text" id="thustart" value="21:00" class="form-control form-control-sm timepicker">
                                                     <span class="input-group-addon">
                                                         <span class="glyphicon glyphicon-time"></span>
+<<<<<<< HEAD
                                                     </span>
+=======
+                                                        </span>
+                                                    </div>
+>>>>>>> origin/thieu
                                                 </div>
                                             </div>
                                             <div class="col-day input-group-spaddon day_friday">
@@ -303,7 +325,12 @@
                                                     <input disabled type="text" id="fri-start" value="21:00" class="form-control form-control-sm timepicker">
                                                     <span class="input-group-addon">
                                                         <span class="glyphicon glyphicon-time"></span>
+<<<<<<< HEAD
                                                     </span>
+=======
+                                                        </span>
+                                                    </div>
+>>>>>>> origin/thieu
                                                 </div>
                                             </div>
                                             <div class="col-day input-group-spaddon day_saturday">
@@ -311,7 +338,12 @@
                                                     <input disabled type="text" id="sat-start" value="21:00" class="form-control form-control-sm timepicker">
                                                     <span class="input-group-addon">
                                                         <span class="glyphicon glyphicon-time"></span>
+<<<<<<< HEAD
                                                     </span>
+=======
+                                                        </span>
+                                                    </div>
+>>>>>>> origin/thieu
                                                 </div>
                                             </div>
                                             <div class="col-day input-group-spaddon day_sunday">
@@ -319,7 +351,12 @@
                                                     <input disabled type="text" id="sun-start" value="23:00" class="form-control form-control-sm timepicker">
                                                     <span class="input-group-addon">
                                                         <span class="glyphicon glyphicon-time"></span>
+<<<<<<< HEAD
                                                     </span>
+=======
+                                                        </span>
+                                                    </div>
+>>>>>>> origin/thieu
                                                 </div>
                                             </div>
                                         </div>
@@ -334,7 +371,12 @@
                                                     <input disabled type="text" id="mon-end" value="19:00" class="form-control form-control-sm timepicker">
                                                     <span class="input-group-addon">
                                                         <span class="glyphicon glyphicon-time"></span>
+<<<<<<< HEAD
                                                     </span>
+=======
+                                                        </span>
+                                                    </div>
+>>>>>>> origin/thieu
                                                 </div>
                                             </div>
                                             <div class="col-day input-group-spaddon day_tuesday">
@@ -342,7 +384,12 @@
                                                     <input disabled type="text" id="tue-end" value="21:00" class="form-control form-control-sm timepicker">
                                                     <span class="input-group-addon">
                                                         <span class="glyphicon glyphicon-time"></span>
+<<<<<<< HEAD
                                                     </span>
+=======
+                                                        </span>
+                                                    </div>
+>>>>>>> origin/thieu
                                                 </div>
                                             </div>
                                             <div class="col-day input-group-spaddon day_wednesday">
@@ -350,7 +397,12 @@
                                                     <input disabled type="text" id="wed-end" value="21:00" class="form-control form-control-sm timepicker">
                                                     <span class="input-group-addon">
                                                         <span class="glyphicon glyphicon-time"></span>
+<<<<<<< HEAD
                                                     </span>
+=======
+                                                        </span>
+                                                    </div>
+>>>>>>> origin/thieu
                                                 </div>
                                             </div>
                                             <div class="col-day input-group-spaddon day_thursday">
@@ -358,7 +410,12 @@
                                                     <input disabled type="text" id="thu-end" value="21:00" class="form-control form-control-sm timepicker">
                                                     <span class="input-group-addon">
                                                         <span class="glyphicon glyphicon-time"></span>
+<<<<<<< HEAD
                                                     </span>
+=======
+                                                        </span>
+                                                    </div>
+>>>>>>> origin/thieu
                                                 </div>
                                             </div>
                                             <div class="col-day input-group-spaddon day_friday">
@@ -366,7 +423,12 @@
                                                     <input disabled type="text" id="fri-end" value="21:00" class="form-control form-control-sm timepicker">
                                                     <span class="input-group-addon">
                                                         <span class="glyphicon glyphicon-time"></span>
+<<<<<<< HEAD
                                                     </span>
+=======
+                                                        </span>
+                                                    </div>
+>>>>>>> origin/thieu
                                                 </div>
                                             </div>
                                             <div class="col-day input-group-spaddon day_saturday">
@@ -374,7 +436,12 @@
                                                     <input disabled type="text" id="sat-end" value="21:00" class="form-control form-control-sm timepicker">
                                                     <span class="input-group-addon">
                                                         <span class="glyphicon glyphicon-time"></span>
+<<<<<<< HEAD
                                                     </span>
+=======
+                                                        </span>
+                                                    </div>
+>>>>>>> origin/thieu
                                                 </div>
                                             </div>
                                             <div class="col-day input-group-spaddon day_sunday">
@@ -382,7 +449,12 @@
                                                     <input disabled type="text" id="sun-end" value="23:00" class="form-control form-control-sm timepicker">
                                                     <span class="input-group-addon">
                                                         <span class="glyphicon glyphicon-time"></span>
+<<<<<<< HEAD
                                                     </span>
+=======
+                                                        </span>
+                                                    </div>
+>>>>>>> origin/thieu
                                                 </div>
                                             </div>
                                         </div>
@@ -397,6 +469,15 @@
                     </div>
                 </div>
             </div>
+<<<<<<< HEAD
+=======
+            {{--
+            <div class="modal-footer">
+                <button type="button" class="btn-sm btn btn-primary">Save changes</button>
+                <button type="button" class="btn-sm btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+            --}}
+>>>>>>> origin/thieu
         </div>
         {{--
         <div class="modal-footer">
@@ -612,6 +693,7 @@
                             </form>
                         </div>
                     </div>
+
                 </div>
             </div>
         </div>
@@ -716,9 +798,45 @@
         </div>
     </div>
 </div>
+<div class="modal fade" id="extension_service" tabindex="-1" role="dialog">
+    <div  class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Extension Services</h5>
+            </div>
+            <form id="service-form">
+                <div class="modal-body">
+                    <h6 class="m-0 font-weight-bold text-primary">Service List </h6>
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-hover" id="user-datatable" width="100%" cellspacing="0">
+                            <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Service Name</th>
+                                <th>Service Price</th>
+                                <th>Expire Date</th>
+                                <th>New Expire Date</th>
+                            </tr>
+                            </thead>
+                            <tbody id="service_table_body">
+
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn-sm btn btn-primary save-expire">Save changes</button>
+                    <button type="button" class="btn-sm btn btn-secondary cancel-change" data-dismiss="modal">Close</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
 @endsection
 @push('scripts')
 <script type="text/javascript">
+
 function clear() {
     $("#change-password-form")[0].reset();
     $("#clone-update-form")[0].reset();
@@ -727,7 +845,6 @@ function clear() {
     $("#auto-coupon-form")[0].reset();
 
     $(".previewImage img").attr("src", "{{ asset('images/no-image.png') }}");
-
     $('#themes-datatable tbody tr.selected').removeClass('selected');
     $("#custom-properties-form").find("input[name='variable']").attr("readonly", false);
     $("input[name='id']").val('');
@@ -837,8 +954,52 @@ $(document).ready(function() {
         ajax: {
             url: "{{ route('getWpDatableByPlaceId') }}",
             data: function(data) {
+
+            },
+            error:function(){
+                toastr.error("Failed to load Properties!");
+            }
+        });
+    }
+
+    $(document).ready(function() {
+
+      var placeId = null;
+      var userId = null;
+      var license = null;
+      var themeId = null;
+
+      var placeTable = $('#places-datatable').DataTable({
+           // dom: "lfrtip",
+           processing: true,
+           serverSide: true,
+           ajax:{ url:"{{ route('getPlacesDatatable') }}" },
+           columns: [
+
+                    { data: 'place_id', name: 'place_id',class:'text-center' },
+                    { data: 'place_name', name: 'place_name' },
+                    { data: 'place_address', name: 'place_address'},
+                    // { data: 'place_email', name: 'place_email' },
+                    { data: 'place_phone', name: 'place_phone',class:'text-center' },
+                    { data: 'place_ip_license', name: 'place_ip_license' },
+                    { data: 'created_at', name: 'created_at' ,class:'text-center'},
+                    { data: 'action' , name:'action' ,orderable: false, searcheble: false ,class:'text-center'}
+            ],
+            buttons: [
+
+                ],
+      });
+
+      var customerTable = $('#user-datatable').DataTable({
+           // dom: "lfrtip",
+           processing: true,
+           serverSide: true,
+           ajax:{
+              url:"{{ route('getUsersDatatable') }}",
+              data:function(data){
                 data.placeId = placeId;
             },
+
         },
         columns: [
             { data: 'wp_variable', name: 'wp_variable', class: "wp_variable" },
@@ -850,6 +1011,40 @@ $(document).ready(function() {
 
 
     $(document).on('click', '.view', function(e) {
+
+           columns: [
+
+                    { data: 'user_id', name: 'user_id',class:'text-center' },
+                    { data: 'user_nickname', name: 'user_nickname', class:'user_nickname' },
+                    { data: 'user_phone', name: 'user_phone',class:'text-center' },
+                    { data: 'user_email', name: 'user_email' },
+                    { data: 'created_at', name: 'created_at' ,class:'text-center'},
+                    // { data: 'action' , name:'action' ,orderable: false, searcheble: false ,class:'text-center'}
+            ],
+            buttons: [
+
+                ],
+      });
+
+
+       var themesTable = $('#themes-dataTable').DataTable({
+                 processing: true,
+                 serverSide: true,
+                 ajax:{ url:"{{ route('getDatatableWebsiteThemes') }}",},
+                 columns: [
+                      { data: 'theme_id', name: 'theme_id' ,class:"id"},
+                      { data: 'theme_name_temp', name: 'theme_name_temp' ,class:"code"},
+                      { data: 'theme_image', name: 'theme_image' },
+
+                ],
+                 buttons: [
+
+                   ],
+          });
+
+
+      $(document).on('click','.view',function(e){
+
         e.preventDefault();
         placeId = $(this).attr('data-id');
         customerTable.draw();
@@ -867,6 +1062,7 @@ $(document).ready(function() {
     });
 
     $("#change-password-form").on('submit', function(e) {
+
         e.preventDefault();
 
         var checkSelected = $('#user-datatable tbody tr.selected');
@@ -878,6 +1074,7 @@ $(document).ready(function() {
         var form = $(this).serialize();
         form += "&placeId=" + placeId;
         form += "&userId=" + userId;
+
 
         $.ajax({
             url: "{{ route('changeNewPassword') }}",
@@ -896,6 +1093,7 @@ $(document).ready(function() {
                 toastr.error("Failed to change!");
             }
         });
+
     });
 
     $(document).on('click', ".detail", function(e) {
@@ -1041,6 +1239,7 @@ $(document).ready(function() {
     });
     //Create New Website
     $("#clone-update-form").on('submit', function(e) {
+
         e.preventDefault();
 
         var checkThemeProperties = $('#themeProperties tr');
@@ -1344,6 +1543,113 @@ $(document).ready(function() {
 
 
 });
+      });
+
+      $("#themes-datatable tbody").on('click',"tr",function(){
+             $('#themes-datatable tbody tr.selected').removeClass('selected');
+             $(this).addClass('selected');
+             themeId = $(this).find("td.id").text();
+             var code = $(this).find("td.code").text();
+             $("input#get-code").val(code);
+             listThemePropertiesByThemeId(themeId);
+
+             $("input[name='id_properties']").val('');
+       });
+
+      $(".btn-copy-theme").on('click',function(){
+            $(".text-form").text("Clone Website");
+            $("#clone-update-form").find("input[type=submit]").val("Clone Website");
+            $("#clone-update-form").find("input[name=action]").val("clone");
+      });
+      $(".btn-copy-properties").on('click',function(){
+            $(".text-form").text("Update Website");
+            $("#clone-update-form").find("input[type=submit]").val("Update Website");
+            $("#clone-update-form").find("input[name=action]").val("update");
+      });
+      $("#themeProperties tbody").on('click',"tr",function(){
+            $('#themeProperties tbody tr.selected').removeClass('selected');
+            $(this).addClass('selected');
+            id = $(this).attr("properties-id");
+            $("input[name='id_properties']").val(id);
+       });
+      $(document).on('click','.extension-service',function(){
+          // $("#extension_service").modal('show');
+          // return;
+          let place_id = $(this).attr('place_id');
+          $.ajax({
+              url:"{{ route('get-service-place') }}",
+              method:"get",
+              dataType:"html",
+              data:{place_id},
+              success:function(data){
+                  data = JSON.parse(data);
+                  if(data.status == 'error')
+                      toastr.error(data.message);
+                  else{
+                      let service_html = "";
+                      $.each(data.service_combo_list,function(ind,val){
+                          service_html += `
+                              <tr>
+                                  <td><input type="hidden" name="cs_id[]" value="`+val['get_combo_service']['id']+`">`+val['get_combo_service']['id']+`</td>
+                                  <td>`+val['get_combo_service']['cs_name']+`</td>
+                                  <td class="text-right">`+val['get_combo_service']['cs_price']+`</td>
+                                  <td>`+val['cs_date_expire']+`</td>
+                                  <td><input name="expire_date[]" type="text" expire_date="`+val['cs_date_expire']+`" class="new_date_expire form-control form-control-sm"></td>
+                              </tr>
+                          `;
+                      });
+                      service_html += `<input type="hidden" name="place_id" value="`+place_id+`">`;
+                      $("#service_table_body").html(service_html);
+                      $("#extension_service").modal('show');
+                  }
+              },
+              error:function(){
+                  toastr.error("Get Service List Failed!");
+              }
+          });
+      });
+
+      $(document).on('focus','.new_date_expire',function(){
+          let expire_date = $(this).attr('expire_date');
+          $(this).datepicker({
+              todayHighlight: true,
+              startDate: expire_date,
+              minDate:0,
+          });
+      });
+
+      $(".save-expire").click(function () {
+          var formData = new FormData($(this).parents('form')[0]);
+          formData.append('_token','{{csrf_token()}}');
+          $.ajax({
+              url:"{{ route('save-expire-date') }}",
+              method:"post",
+              dataType:"html",
+              data:formData,
+              contentType: false,
+              processData:false,
+
+              success:function(data){
+                  data = JSON.parse(data);
+                  if(data.status == 'error')
+                      toastr.error(data.message);
+                  else{
+                      toastr.success(data.message);
+                      $("#service-form")[0].reset();
+                      $("#extension_service").modal('hide');
+                  }
+              },
+              error:function(){
+                  toastr.error("Change Expire Date Failed!");
+              }
+          });
+      })
+        $(".cancel-change").click(function(){
+            $("#service-form")[0].reset();
+            $("#extension_service").modal('hide');
+        })
+    });
+
 
 </script>
 @endpush

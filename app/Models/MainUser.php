@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 use App\Models\MainTeam;
 use App\Models\MainFile;
 use App\Models\MainTrackingHistory;
+use Auth;
 
 class MainUser extends Model
 {
@@ -50,4 +51,27 @@ class MainUser extends Model
     public function scopeActive($query){
 	    return $query->where('user_status',1);
     }
+
+    public static function getMemberTeam()
+    {
+        $member_list = self::where('user_team',Auth::user()->user_team)->select('user_id')->get()->toArray();
+        return array_values($member_list);
+    }
+    public static function getCustomerOfUser(){
+        $customer_list = Auth::user()->user_customer_list;
+        return explode(';',$customer_list);
+    }
+    public static function getCustomerOfTeam(){
+	    $customer_list = self::whereIn('user_id',self::getMemberTeam())->select('user_customer_list')->get();
+//	    return $customer_list;
+	    $customer_arr = "";
+	    foreach ($customer_list as $key => $customer){
+	        if($customer->user_customer_list != ""){
+                $customer_arr .= $customer->user_customer_list.";";
+            }
+        }
+        $customer_arr = array_unique(explode(';',$customer_arr));
+	    return $customer_arr;
+    }
+
 }

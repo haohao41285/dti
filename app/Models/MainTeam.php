@@ -13,7 +13,8 @@ class MainTeam extends Model
     	'team_status',
     	'team_customer_status',
     	'team_type',
-    	'team_email'
+    	'team_email',
+        'service_permission'
     ];
     public function getTeamType(){
         return $this->belongsTo(MainTeamType::class,'team_type','id');

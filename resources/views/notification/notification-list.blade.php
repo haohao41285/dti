@@ -18,9 +18,11 @@
             <li class="nav-item">
                 <a class="nav-link" data-toggle="tab" href="#menu1" id="sent-list">Sent</a>
             </li>
-            <li class="nav-item">
-                <a class="nav-link" data-toggle="tab" href="#menu2">Create</a>
-            </li>
+            @if(\Gate::allows('permission','notification-create'))
+                <li class="nav-item">
+                    <a class="nav-link" data-toggle="tab" href="#menu2">Create</a>
+                </li>
+            @endif
         </ul>
 
         <!-- Tab panes -->
@@ -52,7 +54,9 @@
                     </thead>
                 </table>
             </div>
-            <div id="menu2" class="tab-pane fade"><br>
+
+            @if(\Gate::allows('permission','notification-create'))
+                <div id="menu2" class="tab-pane fade"><br>
                 <form id="form-send-notification">
                     <label for=""><b>Content:</label></b><br>
                     <div class="ml-5">
@@ -75,6 +79,7 @@
                     <button class="btn btn-sm btn-danger" type="button" id="resetForm">Cancel</button>
                 </form>
             </div>
+            @endif
         </div>
 
     </div>

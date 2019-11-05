@@ -7,22 +7,22 @@
 
         <div class="card shadow mb-4">
             <div class="card-header py-3">
-                <h5><b>Permission for <i class="text-danger"></i> role</b></h5>
+                <h5><b>Permission for <i class="text-danger"></i> team</b></h5>
             </div>
             <table class="table table-hover table-bordered" id="service-permission">
                 <thead class="text-center thead-light">
                 <th>Services/Permissions</th>
-                @foreach($role_list as $role)
-                    <th>{{$role->gu_name}}</th>
+                @foreach($team_list as $team)
+                    <th>{{$team->team_name}}</th>
                  @endforeach
                 </thead>
                 <tbody>
                     @foreach($service_list as $service)
                     <tr>
                         <td>#{{$service->id}}-{{$service->cs_name}}</td>
-                        @foreach($role_list as $role)
+                        @foreach($team_list as $team)
                             @php
-                                $service_permission_list = $role->service_permission;
+                                $service_permission_list = $team->service_permission;
                                 if($service_permission_list == "")
                                     $checked = "";
                                 else{
@@ -35,7 +35,7 @@
                             @endphp
                             <td class="text-center">
                                 <input type="checkbox"
-                                       service_id="{{$service->id}}" role_id="{{$role->gu_id}}"
+                                       service_id="{{$service->id}}" team_id="{{$team->id}}"
                                        {{$checked}}
                                 class="js-switch"
                             /></td>
@@ -57,7 +57,7 @@
             $(document).on('click','.switchery',function(){
 
                 var service_id = $(this).siblings('input').attr('service_id');
-                var role_id = $(this).siblings('input').attr('role_id');
+                var team_id = $(this).siblings('input').attr('team_id');
 
                 $.ajax({
                     url: '{{route('change-service-permission')}}',
@@ -65,7 +65,7 @@
                     dataType: 'html',
                     data: {
                         service_id: service_id,
-                        role_id: role_id,
+                        team_id: team_id,
                     },
                 })
                     .done(function(data) {

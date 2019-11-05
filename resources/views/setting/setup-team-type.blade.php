@@ -84,8 +84,7 @@ $(document).ready(function($) {
         clearView();
 
         $.ajax({
-                url: '{{route('
-                change - status - team - type ')}}',
+                url: '{{route('change-status-team-type')}}',
                 type: 'GET',
                 dataType: 'html',
                 data: {
@@ -125,8 +124,7 @@ $(document).ready(function($) {
 
         if (team_type_name != "") {
             $.ajax({
-                    url: '{{route('
-                    add - team - type ')}}',
+                    url: '{{route('add-team-type')}}',
                     type: 'GET',
                     dataType: 'html',
                     data: {
@@ -169,8 +167,7 @@ $(document).ready(function($) {
             var tt_id = $(this).attr('tt_id');
 
             $.ajax({
-                    url: '{{route('
-                    delete - team - type ')}}',
+                    url: '{{route('delete-team-type')}}',
                     type: 'GET',
                     dataType: 'html',
                     data: { tt_id: tt_id },

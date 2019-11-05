@@ -24,15 +24,25 @@ use DataTables;
 use DB;
 use Validator;
 use ZipArchive;
+use Gate;
 
 class CustomerController extends Controller
 {
     public function listCustomer()
     {
+        if(Gate::denies('permission','all-customers-read'))
+            return doNotPermission();
+
         $data['state'] = Option::state();
         $data['status'] = GeneralHelper::getCustomerStatusList();
-        if(Auth::user()->user_group_id == 1)
+
+        if(Gate::allows('permission','customer-admin')){
             $data['teams'] = MainTeam::active()->get();
+            $data['customer_status'] = GeneralHelper::getCustomerStatusList();
+        }
+        else
+            $data['customer_status'] = ['3'=>'New Arrivals'];
+
         return view('customer.all-customers',$data);
     }
 
@@ -47,6 +57,9 @@ class CustomerController extends Controller
     }
 
     public function listMyCustomer(){
+
+        if(Gate::denies('permission','my-customer-read'))
+            return doNotPermission();
 
         $team_id = Auth::user()->user_team;
         $team_list_id = [];
@@ -70,6 +83,9 @@ class CustomerController extends Controller
     }
 
     public function customersDatatable(Request $request){
+
+        if(Gate::denies('permission','all-customers-read'))
+            return doNotPermission();
 
         $customer_arr = [];
         $start_date = $request->start_date;
@@ -111,12 +127,12 @@ class CustomerController extends Controller
 
             if(!isset($customer_status_arr[$customer->id])){
                 $customer_status_arr[$customer->id] = 1;
-                $ct_status = 'Arrivals';
+                $ct_status = 'New Arrivals';
             }
             else
                 $ct_status = GeneralHelper::getCustomerStatus($customer_status_arr[$customer->id]);
             //ADMIN CAN SEE ALL
-            if(Auth::user()->user_group_id == 1){
+            if(Gate::allows('permission','customer-admin')){
                 if($status_customer != "" && intval($customer_status_arr[$customer->id]) ==  intval($status_customer)){
                     $customer_arr[] = [
                         'id' => $customer->id,
@@ -144,7 +160,7 @@ class CustomerController extends Controller
                 ];
                 }
             }
-            elseif(Auth::user()->user_group_id != 1 && $ct_status = 'Arrivals'){
+            elseif(Gate::denies('permission','customer-admin') && $ct_status = 'New Arrivals'){
                 $customer_arr[] = [
                     'id' => $customer->id,
                     'ct_salon_name' => $customer->ct_salon_name,
@@ -166,20 +182,20 @@ class CustomerController extends Controller
                     return '<a href="javascript:void(0)">'.$row['id'].'</a>';
             })
             ->editColumn('created_at',function($row){
-                return Carbon::parse($row['created_at'])->format('m/d/Y H:i:s')." by ".$row['user_nickname'];
+                return format_date($row['created_at'])." by ".$row['user_nickname'];
             })
             ->editColumn('ct_business_phone',function($row){
-                if($row['ct_business_phone'] != null && Auth::user()->user_group_id != 1)
+                if($row['ct_business_phone'] != null && Gate::denies('permission','customer-admin'))
                     return substr($row['ct_business_phone'],0,3)."########";
                 else return $row['ct_business_phone'];
             })
             ->editColumn('ct_cell_phone',function($row){
-                if($row['ct_cell_phone'] != null && Auth::user()->user_group_id != 1)
+                if($row['ct_cell_phone'] != null  && Gate::denies('permission','customer-admin'))
                     return substr($row['ct_cell_phone'],0,3)."########";
                 else return $row['ct_cell_phone'];
             })
             ->addColumn('action', function ($row){
-                if(Auth::user()->user_id == 1)
+                if( Gate::allows('permission','customer-admin'))
                     return '<a class="btn btn-sm btn-secondary view" customer_id="'.$row['id'].'" href="javascript:void(0)"><i class="fas fa-eye"></i></a>
                         <a class="btn btn-sm btn-secondary edit-customer" customer_id="'.$row['id'].'" href="javascript:void(0)"><i class="fas fa-edit"></i></a>
                         <a class="btn btn-sm btn-secondary delete-customer" customer_id="'.$row['id'].'" href="javascript:void(0)"><i class="fas fa-trash"></i></a>';
@@ -200,7 +216,6 @@ class CustomerController extends Controller
                                             ->where('main_customer_template.id',$customer_id)
                                             ->select('main_customer_template.*','main_user.user_nickname')
                                             ->first();
-
         if(!isset($customer_list))
             return 0;
         else{
@@ -208,7 +223,7 @@ class CustomerController extends Controller
             $team_customer_status = MainTeam::find($team_id)->getTeamType->team_customer_status;
             $customer_status_arr = json_decode($team_customer_status,TRUE);
             if(!isset($customer_status_arr[$customer_list->id]))
-                $customer_status = 'Arrivals';
+                $customer_status = 'New Arrivals';
             else
                 $customer_status = GeneralHelper::getCustomerStatus($customer_status_arr[$customer_list->id]);
 
@@ -234,9 +249,9 @@ class CustomerController extends Controller
             }
 
             if(!isset($request->my_customer)){
-                if($customer_list->ct_business_phone != null && Auth::user()->user_group_id != 1)
+                if($customer_list->ct_business_phone != null  && Gate::denies('permission','customer-admin'))
                     $customer_list['ct_business_phone'] = substr($customer_list->ct_business_phone,0,3)."########";
-                if($customer_list->ct_cell_phone != null && Auth::user()->user_group_id != 1)
+                if($customer_list->ct_cell_phone != null  && Gate::denies('permission','customer-admin'))
                 $customer_list['ct_cell_phone'] = substr($customer_list->ct_cell_phone,0,3)."########";
             }
             //GET PALCE, SERVICE
@@ -289,6 +304,9 @@ class CustomerController extends Controller
     }
     public function getMyCustomer(Request $request){
 
+        if(Gate::denies('permission','my-customer-read'))
+            return doNotPermission();
+
         $user_id = Auth::user()->user_id;
         $team_id = Auth::user()->user_team;
         $start_date = $request->start_date;
@@ -339,7 +357,7 @@ class CustomerController extends Controller
 
                 if(!isset($customer_status_arr[$customer->id])){
                     $customer_status_arr[$customer->id] = 1;
-                    $ct_status = 'Arrivals';
+                    $ct_status = 'New Arrivals';
                 }
                 else
                     $ct_status = GeneralHelper::getCustomerStatus($customer_status_arr[$customer->id]);
@@ -380,7 +398,7 @@ class CustomerController extends Controller
                         return '<a href="javascript:void(0)">'.$row['id'].'</a>';
                 })
                 ->editColumn('updated_at',function($row){
-                    return Carbon::parse($row['updated_at'])->format('m/d/Y H:i:s')." by ".$row['user_nickname'];
+                    return format_date($row['updated_at'])." by ".$row['user_nickname'];
                 })
                 ->addColumn('action', function ($row){
                     return '
@@ -393,6 +411,9 @@ class CustomerController extends Controller
                 ->make(true);
     }
     public function editCustomer(Request $request){
+
+        if(Gate::denies('permission','customer-update'))
+            return doNotPermission();
 
         $customer_id = $request->customer_id;
 
@@ -436,6 +457,9 @@ class CustomerController extends Controller
     }
     public function deleteCustomer(Request $request){
 
+        if(Gate::denies('permission','customer-delete'))
+            return doNotPermission();
+
         $customer_id = $request->customer_id;
         $team_id = Auth::user()->user_team;
 
@@ -452,6 +476,9 @@ class CustomerController extends Controller
     }
     public function exportCustomer(Request $request)
     {
+        if(Gate::denies('permission','export-customers'))
+            return doNotPermission();
+
         $customer_list = MainCustomerTemplate::latest()->get()->toArray();
 
         $date = Carbon::now()->format('Y_m_d_His');
@@ -488,6 +515,9 @@ class CustomerController extends Controller
         })->download("xlsx");
     }
     public function importCustomer(Request $request){
+
+        if(Gate::denies('permission','import-customers'))
+            return doNotPermissionAjax();
 
         if($request->hasFile('file')){
             $path = $request->file('file')->getRealPath();
@@ -973,7 +1003,6 @@ class CustomerController extends Controller
             return response(['status'=>'success','message'=>'Add Note Successfully!']);
     }
     public function moveCustomers(Request $request){
-
         $customer_id = $request->customer_id;
         $user_own = Auth::user()->user_id;
         $count = 0;
@@ -1015,6 +1044,10 @@ class CustomerController extends Controller
         }
     }
     public function moveCustomerAll(){
+
+        if(Gate::denies('permission','move-customer'))
+            return doNotPermission();
+
         $data['team_type_list'] = MainTeamType::active()->get();
         return view('customer.move-customer',$data);
     }

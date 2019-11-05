@@ -21,15 +21,13 @@ class MainComboService extends Model
         'cs_combo_service_type' //main_combo_service_type
     ];
 
+    public function getComboServiceType(){
+        return $this->belongsTo(MainComboServiceType::class,'cs_combo_service_type','id');
+    }
 
     public static function getByArrId($arr){
         return self::select('id','cs_name','cs_price')
                     ->whereIn('id',$arr)
                     ->get();
     } 
-
-    public function getComboServiceType(){
-        return $this->belongsTo(MainComboServiceType::class,'cs_combo_service_type','id');
-    }
-
 }

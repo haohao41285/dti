@@ -15,7 +15,7 @@ class MainGroupUser extends Model
         'created_by',
         'updated_by',
         'gu_status',
-        'service_permission'
+        'service_permission',
     ];
     public function scopeActive($query){
         return $query->where('gu_status',1);

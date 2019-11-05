@@ -261,7 +261,7 @@
             });
             function clearView(){
                 $("#email_list_2").val("");
-                $("#summernote2").val("");
+                $("#summernote2").summernote('reset');
             }
             $(document).on("click",".file-comment",function(){
                 $(this).parent('form').submit();

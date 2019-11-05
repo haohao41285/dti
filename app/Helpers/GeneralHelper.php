@@ -3,7 +3,7 @@ namespace App\Helpers;
 
 
 class GeneralHelper{
-    
+
    public static function unicodeVietNamese($str){
         $unicodes = array (
                 'a' =>'á|à|ạ|ả|ã|ă|ắ|ằ|ặ|ẳ|ẵ|â|ấ|ầ|ậ|ẩ|ẫ',
@@ -64,18 +64,18 @@ class GeneralHelper{
 
     }
     public static function getCustomerStatus($status_id){
-        // 1 is assigned, 2 is disabled, 3 is new arrivals,4 is serviced  
+        // 1 is assigned, 2 is disabled, 3 is new arrivals,4 is serviced
         switch ($status_id) {
             case 1:
                 $status_name = "Assigned";
                 break;
             case 3:
-                $status_name = "Arrivals";
+                $status_name = "New Arrivals";
                 break;
             case 4:
                 $status_name = "Serviced";
                 break;
-             
+
             default:
                 $status_name = "Disabled";
             break;
@@ -86,7 +86,7 @@ class GeneralHelper{
         return [
             1 => "Assigned",
             2 => "Disabled",
-            3 => "Arrivals",
+            3 => "New Arrivals",
             4 => "Serviced"
         ];
     }
