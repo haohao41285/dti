@@ -18,6 +18,7 @@ use Symfony\Component\Process\Process;
 use Symfony\Component\Process\Exception\ProcessFailedException;
 use App\Models\PosWebsiteProperty;
 use DB;
+use Gate;
 
 
 
@@ -38,9 +39,20 @@ class PlaceController extends Controller
 
 
     public function getPlacesDatatable(){
+
+        $user_id = Auth::user()->user_id;
+
         $places = PosPlace::select('place_id','place_name','place_address','place_email','place_phone','place_ip_license','created_at')
-            ->where('place_status',1)
-            ->get();
+            ->where('place_status',1);
+
+        if(Gate::allows('permission','place-admin')){}
+        elseif(Gate::allows('permission','place-staff'))
+            $places = $places->where(function($query) use ($user_id) {
+                $query->where('assign_to',$user_id)
+                    ->orWhere('created_by',$user_id)
+                    ->orWhere('updated_by',$user_id);
+            })
+            ->where('status','!=',3);
 
         return DataTables::of($places)
         ->editColumn('action',function($places){
