@@ -1,0 +1,1 @@
+ALTER TABLE `main_combo_service_bought` CHANGE `csb_payment_method` `csb_payment_method` INT(1) NULL COMMENT '1 cash, 2 credit card, 3 check', CHANGE `csb_card_type` `csb_card_type` VARCHAR(255) CHARACTER SET utf8 COLLATE utf8_unicode_ci NULL COMMENT 'name of card';

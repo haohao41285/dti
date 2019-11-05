@@ -34,7 +34,7 @@ Role List
 		</div>
 	</div>
 </div>
-	
+
 @stop
 @push('scripts')
 <script type="text/javascript">
@@ -47,34 +47,20 @@ Role List
             autoWidth: true,
 			buttons: [
             ],
-            columnDefs: [
-                {
-                    "targets": 0, 
-                    "className": "text-center"
-                },
-	            {
-	                "targets": 3,
-	                "className": "text-center",
-	            },
-	            {
-	                "targets": 4,
-	                "className": "text-center",
-	            }
-            ],
           ajax:{ url:"{{route('role-datatable')}}"},
                 columns:[
-	                {data:'gu_id', name:'gu_id'},
+	                {data:'gu_id', name:'gu_id',class:'text-center'},
 	                {data:'gu_name', name:'gu_name'},
 	                {data:'gu_descript', name:'gu_descript'},
-	                {data:'gu_status', name:'gu_status'},
-	                {data:'action', name:'action',orderable: false, searchable: false},
+	                {data:'gu_status', name:'gu_status',class:'text-center'},
+	                {data:'action', name:'action',orderable: false, searchable: false,class:'text-center'},
                 ],
                 fnDrawCallback:function (oSettings) {
                     var elems = Array.prototype.slice.call(document.querySelectorAll('.js-switch'));
                     elems.forEach(function (html) {
                         var switchery = new Switchery(html, {
                             color: '#0874e8',
-                            className : 'switchery switchery-small'                
+                            className : 'switchery switchery-small'
                         });
                     });
                 }
@@ -95,20 +81,19 @@ Role List
 				},
 			})
 			.done(function(data) {
-				if(data != ""){
-					data = JSON.parse(data);
-					if(data.message != ""){
-						alert(data.message);
-					}
-				}
+				data = JSON.parse(data);
+				if(data.status == 'error')
+				    toastr.error(data.message);
+				else
+				    toastr.success(data.message);
 				dataTable.draw();
 			})
 			.fail(function(data) {
 				data = JSON.parse(data.responseText);
-				alert(data.message);
+				toastr.error(data.message);
 				dataTable.draw();
 			});
-			
+
 		});
 		$('#dataTable tbody').on( 'click', 'tr', function () {
 
@@ -135,18 +120,18 @@ Role List
 		    		},
 		    	})
 		    	.done(function(data) {
-		    		console.log(data);
-		    		if(data == 0){
-		    			alert('Error!');
-		    		}else{
+		    		data = JSON.parse(data);
+		    		if(data.status == 'error')
+		    		    toastr.error(data.message);
+		    		else
+		    		    toastr.success(data.message);
+
 	      				clearView();
 		    			dataTable.draw();
-		    		}
-		    		console.log(data);
 		    	})
-				.fail(function(xhr, ajaxOptions, thrownError) {
-	                alert('Error!');
-	                console.log(thrownError + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText);
+				.fail(function(data) {
+				    data = JSON.parse(data.responseText);
+				    toastr.error(data.message);
 	         	});
 	    	}
 	    });

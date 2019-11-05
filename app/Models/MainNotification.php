@@ -17,4 +17,10 @@ class MainNotification extends Model
     public function scopeNotRead($query){
         return $query->where('read_not',0);
     }
+    public function getCreatedBy(){
+        return $this->belongsTo(MainUser::class,'created_by','user_id');
+    }
+    public function getReceive(){
+        return $this->belongsTo(MainUser::class,'receiver_id','user_id');
+    }
 }

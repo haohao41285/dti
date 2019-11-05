@@ -6,9 +6,19 @@ use Illuminate\Database\Eloquent\Model;
 use Laracasts\Presenter\PresentableTrait;
 use App\Models\MainService;
 
+use Carbon\Carbon;
+use DB;
+use App\Traits\StatisticsTrait;
+
+use App\Models\MainUser;
+use Gate;
+use Auth;
+
+
 class MainComboServiceBought extends Model
 {
-    use PresentableTrait;
+    use PresentableTrait,StatisticsTrait;
+
     protected $presenter = 'App\\Presenters\\ThemeMailPresenter';
 
     protected $table = "main_combo_service_bought";
@@ -44,21 +54,40 @@ class MainComboServiceBought extends Model
     public function getTasks(){
         return $this->hasMany(MainTask::class,'order_id','id');
     }
+    public function getUpdatedBy(){
+        return $this->belongsTo(MainUser::class,'updated_by','user_id');
+    }
 
     public static function getSumChargeByYear($year){
-        return self::select('csb_charge')
-                    ->whereYear('created_at',$year)
-                    ->sum('csb_charge');
+        $sum_charge = self::select('csb_charge','created_by')
+            ->whereYear('created_at',$year);
+        if(Gate::allows('permission','dashboard-admin')){
+        }
+        elseif(Gate::allows('permission','dashboard-leader')){
+            $sum_charge = $sum_charge->whereIn('created_by',MainUser::getMemberTeam());
+        }else{
+            $sum_charge = $sum_charge->where('created_by',Auth::user()->user_id);
+        }
+        $sum_charge = $sum_charge->sum('csb_charge');
+
+        return $sum_charge;
     }
+
     /**
      * get 10 popular services by monthe of the year , (year && month of $date)
-     * @param  date $date ex: 2019-04-31 
+     * @param  date $date ex: 2019-04-31
      * @return query
      */
     public static function get10popularServicesByMonth($date){
         $startDate = $date->format('Y-m')."-01";
         $endDate = $date->format('Y-m')."-31";
+    }
 
+    public static function getServicesByMonth($date){
+        return self::getByMonth($date);
+    }
+
+    private static function getBetween2Date($startDate,$endDate){
         $services = self::getServiceByStartAndEndDate($startDate,$endDate);
 
         $formatArrServices = self::formatArrServices($services);
@@ -66,11 +95,15 @@ class MainComboServiceBought extends Model
         $arrServices = self::sortTotalServices($formatArrServices);
 
         $arrServices = self::addNameServiceToArrServices($formatArrServices,$arrServices);
-        
+
         return $arrServices;
     }
 
     private static function getServiceByStartAndEndDate($startDate,$endDate){
+        $startDate = format_date_db($startDate)." 00:00:00";
+        $endDate = format_date_db($endDate)." 23:59:59";
+        // echo $startDate. " - ".$endDate; die();
+        
         return self::select('csb_combo_service_id','created_at')
                         ->whereBetween('created_at',[$startDate,$endDate])
                         ->get();
@@ -107,7 +140,7 @@ class MainComboServiceBought extends Model
                     'count' => 1,
                     'idService' => $value,
                 ];
-            }           
+            }
         }
         arsort($arr);
         $arr = array_values($arr);
@@ -116,32 +149,77 @@ class MainComboServiceBought extends Model
     }
 
     private static function addNameServiceToArrServices($formatArrServices, $arrServices){
-        $servicesName = MainService::select('service_id','service_name')
-                                    ->whereIn('service_id',$formatArrServices)
-                                    ->get();
+        $servicesName = MainComboService::getByArrId($formatArrServices);
 
-        foreach ($arrServices as $key => $valueArrServices) {            
+        foreach ($arrServices as $key => $valueArrServices) {
             foreach ($servicesName as $valueArrServicesName) {
-               if($valueArrServices['idService'] == $valueArrServicesName->service_id){
-                    $arrServices[$key]['nameService'] = $valueArrServicesName->service_name;
+               if($valueArrServices['idService'] == $valueArrServicesName->id){
+                    $arrServices[$key]['nameService'] = $valueArrServicesName->cs_name;
+                    $arrServices[$key]['priceService'] = $valueArrServicesName->cs_price;
+                    $arrServices[$key]['totalPrice'] = $valueArrServicesName->cs_price * $valueArrServices['count'];
                }
             }
         }
         return $arrServices;
     }
 
-    public static function getDatatable($date){
-        $startDate = $date->format('Y-m')."-01";
-        $endDate = $date->format('Y-m')."-31";
+    public static function getDatatable($start, $length, $type,$valueQuarter = null, $date = null){
+        if(!$date){
+            $date = format_date_db(get_nowDate());
+        }
+        
+        $arr = [];
+        // choose by type, from StatisticsTrait
+        switch ($type) {
+            case 'Daily':
+                $arr = self::getByDate($date);
+                break;
+            case 'Monthly':
+                $arr = self::getByMonth($date); 
+                break;
+            case 'Quarterly':
+                $arr = self::getByQuarterly($date,$valueQuarter); 
+                break;
+            case 'Yearly':
+                $arr = self::getByYear($date); 
+                break;            
+        }
+        
+        // dd($arr);
+// dd($a);
+        $arrOut = self::getArrByStartAndLength($arr, $start, $length);
 
-        $services = self::getServiceByStartAndEndDate($startDate,$endDate);
-        echo $services; die();
+        return response()->json([
+            'data'=>$arrOut,
+            'recordsFiltered' => count($arr),
+            'recordsTotal' => count($arr),
 
-        return Datatables::of($services)
-        ->editColumn('created_at',function($services){
-            return format_datetime($services->created_at);
-        })
-        ->make(true);
+        ]);
+
+
+       return response()->json($arr);
+    }
+    /**
+     * get arr by start and length of datatable
+     * @param  array    $arr
+     * @param  int      $start 
+     * @param  int      $length
+     * @return array    $arrOut
+     */
+    private static function getArrByStartAndLength($arr, $start, $length){
+        $arrOut = [];
+        for ($i = $start; $i < $start + $length; $i++) { 
+            try {
+                $arrOut[] = $arr[$i];
+            } catch (\Exception $e) {
+                continue;
+            }            
+        }
+        return $arrOut;
     }
 
 }
+
+
+
+

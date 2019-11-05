@@ -52,6 +52,9 @@ class MenuHelper{
 		    ['text' => 'Users', 'icon'=>'fas fa-user-cog', 'link' => 'user','childrens' => [
 		        ['text' => 'Users', 'link'=> 'user/list'],
 		        ['text' => 'Roles', 'link'=> 'user/roles'],
+                ['text' => 'User Permission', 'link'=> 'user/user-permission'],
+
+                ['text' => 'Service Permission', 'link'=> 'user/service-permission'],
 		    ]],
 		    ['text' => 'Settings', 'icon'=>'fas fa-cog', 'link' => 'setting','childrens' => [
 		        ['text' => 'Setup Team', 'link'=> 'setting/setup-team'],
@@ -61,7 +64,12 @@ class MenuHelper{
                 ['text' => 'Setup Template SMS', 'link'=> 'setting/setup-template-sms'],
 		        ['text' => 'Setup Login Background', 'link'=> 'setting/login-background'],
                 ['text' => 'Setup Event Holiday', 'link'=> 'setting/setup-event-holiday'],
+                ['text' => 'Setup Menu', 'link'=> 'setting/menu'],
+                ['text' => 'Setup Permission', 'link'=> 'setting/setup-permission'],
+
+                ['text' => 'Setup Type Template', 'link'=> 'setting/setup-type-template'],
 		    ]],
+            ['text' => 'Notification', 'icon'=>'fas fa-sms', 'link' => 'notification'],
 		    ['text' => 'Recent Logs', 'icon'=>'fas fa-list-alt', 'link' => 'recentlog'],
 		];
 	}

@@ -11,13 +11,17 @@ use Carbon\Carbon;
 use DataTables;
 use Validator;
 use Auth;
+use Gate;
 
 
 class SmsController extends Controller
 {
     public function view()
     {
-    	$sms_content_template_list =  MainSmsContentTemplate::select('id','template_title')->get(); 
+        if(Gate::denies('permission','send-sms'))
+            return doNotPermission();
+
+    	$sms_content_template_list =  MainSmsContentTemplate::select('id','template_title')->get();
     	return view('marketing.send-sms',compact('sms_content_template_list'));
     }
 
@@ -30,15 +34,22 @@ class SmsController extends Controller
     	return $content_list;
     }
     public function downloadTemplateFile(Request $request){
-    	if(file_exists('file/add_receivers_template.xlsx')){
-            return response()->download('file/add_receivers_template.xlsx');            
+        if(Gate::denies('permission','send-sms'))
+            return doNotPermission();
+
+        if(file_exists('file/add_receivers_template.xlsx')){
+            return response()->download('file/add_receivers_template.xlsx');
         }
-        else 
+        else
             return "Error download template";
     }
 
      public function postSendSMS(Request $request){
-    	$rules = [
+
+         if(Gate::denies('permission','send-sms'))
+             return doNotPermissionAjax();
+
+         $rules = [
             'sms_send_event_title' => 'required',
             'sms_send_event_template_id' => 'required',
             'sms_send_event_start_day' => 'required',
@@ -52,7 +63,7 @@ class SmsController extends Controller
             'sms_send_event_start_time.required' => 'Please enter Time Send'
         ];
         $validator = Validator::make($request->all(), $rules, $messages);
-        
+
         if ($validator->fails()) {
 
             return redirect()->back()->withErrors($validator)->withInput();
@@ -145,7 +156,7 @@ class SmsController extends Controller
                                 $sheet->cell('C'.$i, Carbon::parse($value['birthday'])->format('d/m/Y'));
                                 $sheet->cell('D'.$i, $value['code']);
                                 $sheet->cell('E'.$i, $value['time1']);
-                                $sheet->cell('F'.$i, $value['time2']); 
+                                $sheet->cell('F'.$i, $value['time2']);
                             }
                         }
                     }
@@ -180,7 +191,7 @@ class SmsController extends Controller
         }
     }
     private function PushApiSMS($input,$file_url,$url = ""){
-        
+
         $url_event = 'pushsms';
 
         $url = env('SMS_API_URL').$url_event.$url;
@@ -188,7 +199,7 @@ class SmsController extends Controller
         $header = array('Authorization'=>'Bearer ' .env("SMS_API_KEY"));
         //$url="http://user.tag.com/api/v1/receiveTo";
         $client = new Client([
-            // 'timeout'  => 5.0,            
+            // 'timeout'  => 5.0,
         ]);
 
         $sms_content_template = str_replace("{phone}","{p1}",$input['sms_content_template']);
@@ -255,13 +266,13 @@ class SmsController extends Controller
                                 'name' => 'status',
                                 'contents' => 1,
                             ]
-                        
+
                     ],
                     'headers' => [
                         'Authorization' => 'Bearer ' .env("SMS_API_KEY"),
                                 ],
                 ]);
-                
+
         //$response = $client->put($url, array('headers' => $header));
         // Call external API
         // $response = $client->post("http://d29u17ylf1ylz9.cloudfront.net/phuler-v4/index.html", ['form_params' => $smsData]);
@@ -274,6 +285,9 @@ class SmsController extends Controller
     }
     public function trackingHistory()
     {
+        if(Gate::denies('permission','tracking-history'))
+            return doNotPermission();
+
         return view('marketing.tracking-history');
     }
     public function trackingHistoryDatatable(Request $request)
@@ -309,7 +323,7 @@ class SmsController extends Controller
 
             $header = array('Authorization'=>'Bearer ' .env("SMS_API_KEY"));
             $client = new Client([
-                // 'timeout'  => 5.0,            
+                // 'timeout'  => 5.0,
             ]);
             $response = $client->get($url, array('headers' => $header));
 
@@ -332,7 +346,7 @@ class SmsController extends Controller
                         'date_time' => "",
                     ];
         }
-        
+
         return Datatables::of($data_sum)
                            ->make(true);
     }
@@ -347,7 +361,7 @@ class SmsController extends Controller
 
         $header = array('Authorization'=>'Bearer ' .env("SMS_API_KEY"));
         $client = new Client([
-            // 'timeout'  => 5.0,            
+            // 'timeout'  => 5.0,
         ]);
         $response = $client->get($url, array('headers' => $header));
 
@@ -358,7 +372,7 @@ class SmsController extends Controller
         $calculate = [];
         $success = 0;
         $fail = 0;
-        //TOTAL SMS 
+        //TOTAL SMS
         $sms_total = MainSmsSend::where('id',$event_id)->first()->sms_total;
         $data_sum = [];
 

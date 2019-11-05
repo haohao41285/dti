@@ -40,5 +40,39 @@ if(!function_exists('getFormService')){
         ];
     }
 }
+function cutString($str, $length = 15, $end = '...')
+{
+    $minword = 3;
+    $sub = '';
+    $len = 0;
+    foreach (explode(' ', $str) as $word) {
+        $part = (($sub != '') ? ' ' : '') . $word;
+        $sub .= $part;
+        $len += strlen($part);
+        if (strlen($word) > $minword && strlen($sub) >= $length) {
+            break;
+        }
+    }
+    return $sub . (($len < strlen($str)) ? $end : '');
+}
+function checkPermission($role,$permission){
 
+    $permission_list = $role->gu_role_new;
+    if($permission_list == "")
+        $check = "";
+    else{
+        $permission_arr = explode(';',$permission_list);
+        if(in_array($permission->id,$permission_arr))
+            $check = "checked";
+        else
+            $check = "";
+    }
+    return $check;
+}
+function doNotPermission(){
+    return back()->with('error','Permission Denies!');
+}
+function doNotPermissionAjax(){
+    return response(['status'=>'error','message'=>'Permission Denies!']);
+}
 ?>

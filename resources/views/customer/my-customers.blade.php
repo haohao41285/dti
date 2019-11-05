@@ -152,7 +152,7 @@
             <th>Status</th>
             <th>Note</th>
             <th>Created Date</th>
-            <th>Action</th>
+            <th style="width: 15%">Action</th>
             </tr>
         </thead>
     </table>
@@ -315,7 +315,7 @@
             </table>`;
           }
           var button = ``;
-          if(data.customer_list.ct_status === 'Arrivals')
+          if(data.customer_list.ct_status === 'New Arrivals')
             button = `<button type="button" id=`+data.customer_list.id+` class="btn btn-primary btn-sm get-customer">Get</button>`;
           $("#content-customer-detail").html(`
             <div class="row pr-5 pl-5" >

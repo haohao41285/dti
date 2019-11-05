@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use App\Models\MainCustomerTemplate;
 use App\Models\MainNotification;
+use App\Models\MainUser;
 use Carbon\Carbon;
 use Illuminate\Http\Response;
 
@@ -16,6 +17,7 @@ use App\Models\MainCustomer;
 use Illuminate\Http\Request;
 use Auth;
 use DataTables;
+use Gate;
 
 
 class DashboardController extends Controller {
@@ -26,13 +28,19 @@ class DashboardController extends Controller {
     }
 
     public function index(){
+
+        if(Gate::denies('permission','dashboard-read'))
+            return doNotPermission();
+
         $yearNow = format_year(get_nowDate());
         $now = get_nowDate();
 
         $data['earnings'] = MainComboServiceBought::getSumChargeByYear($yearNow);
         $data['pendingTasks'] = MainTask::getPendingTasks();
-        $data['nearlyExpired'] = MainCustomerBought::getNearlyExpired();
-        $data['popularServices'] = MainComboServiceBought::get10popularServicesByMonth($now);
+        $data['popularServices'] = MainComboServiceBought::getServicesByMonth($now);
+
+        $data['nearlyExpired'] = MainCustomerService::getNearlyExpired();
+
 
         $newCustomer = MainCustomer::getTotalNewCustomersEveryMonthByYear($yearNow);
 
@@ -40,6 +48,7 @@ class DashboardController extends Controller {
 
         return view('dashboard',$data);
     }
+    
     public function confirmEvent(){
         try{
             //subHours(11) to get time American
@@ -142,8 +151,13 @@ class DashboardController extends Controller {
             ->whereBetween('cs_date_expire',[$today,$date_expired])
            ->where('main_customer_service.cs_customer_id','!=',null);
 
-        if(Auth::user()->user_group_id != 1)
-            $customer_service_list = $customer_service_list->where('created_by',Auth::user()->user_id);
+        if(Gate::allows('permission','dashboard-admin')){
+
+        }
+        elseif(Gate::allows('permission','dashboard-leader'))
+             $customer_service_list = $customer_service_list->whereIn('main_customer_service.created_by',MainUser::getCustomerOfTeam());
+        else
+            $customer_service_list = $customer_service_list->where('main_customer_service.created_by',Auth::user()->user_id);
 
         $customer_service_list = $customer_service_list->get();
         $customer_service_list = $customer_service_list->groupBy('cs_customer_id');

@@ -13,10 +13,13 @@ use Carbon\Carbon;
 use DataTables;
 use DB;
 use Auth;
+use Gate;
 
 class SetupTeamController  extends Controller
 {
 	public function index(){
+	    if(Gate::denies('permission','setup-team'))
+	        return doNotPermission();
 
 		return view('setting.setup-team');
 	}
@@ -209,6 +212,9 @@ class SetupTeamController  extends Controller
 	}
 	public function setupTeamType()
 	{
+        if(Gate::denies('permission','setup-team-type'))
+            return doNotPermission();
+
 		return view('setting.setup-team-type');
 	}
 	public function teamTypeDatatable(Request $request)

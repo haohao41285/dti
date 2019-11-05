@@ -15,7 +15,7 @@
         </style>
     @endif
 <div class="table-responsive">
-
+    <form>
     <div class="form-group col-md-12 row">
         <div class="col-md-4">
             <label for="">Created date</label>
@@ -33,16 +33,12 @@
             <label for="">Status</label>
             <select id="status-customer" name="status_customer" class="form-control form-control-sm">
                 <option value="">-- ALL --</option>
-                @if(\Illuminate\Support\Facades\Auth::user()->user_group_id == 1)
-                @foreach ($status as $key =>  $element)
+                @foreach ($customer_status as $key =>  $element)
                     <option value="{{$key}}">{{$element}}</option>
                 @endforeach
-                @else
-                    <option value="3">Arrivals</option>
-                @endif
             </select>
         </div>
-        @if(\Illuminate\Support\Facades\Auth::user()->user_group_id == 1)
+        @if(Gate::allows('permission','customer-admin'))
         <div class="col-md-2">
             <label for="">Team</label>
             <select id="team_id" name="team_id" class="form-control form-control-sm">
@@ -55,13 +51,15 @@
         <div class="col-2 " style="position: relative;">
             <div style="position: absolute;top: 50%;" class="">
             <input type="button" class="btn btn-primary btn-sm" id="search-button" value="Search">
-            <input type="button" class="btn btn-secondary btn-sm" id="reset" value="Reset">
+            <input type="button" class="btn btn-secondary btn-sm" id="formReset" value="Reset">
             </div>
         </div>
     </div>
+    </form>
     <hr>
     <table class="table table-striped table-hover" id="dataTableAllCustomer" width="100%" cellspacing="0">
         <thead>
+            <tr>
                 <th>ID</th>
                 <th>Business</th>
                 <th>Contact Name</th>
@@ -70,7 +68,7 @@
                 <th>Note</th>
                 <th>Status</th>
                 <th>Created Date</th>
-                <th style="width: 10%">Action</th>
+                <th style="width: 15%">Action</th>
             </tr>
         </thead>
     </table>
@@ -125,6 +123,14 @@
        // dom: "lBfrtip",
        order:[[7,'desc']],
        buttons: [
+
+           {
+               text: '<i class="fas fa-exchange-alt"></i> Move Customer',
+               className: "btn-sm an",
+               action: function () {
+                   document.location.href = "{{route('move-customer-all')}}";
+               }
+           },
            {
                text: '<i class="fas fa-download"></i> Import',
                className: "btn-sm import-show an",
@@ -132,7 +138,7 @@
            {
                text: '<i class="fas fa-upload"></i> Export',
                className: "btn-sm an",
-               action: function ( e, dt, node, config ) {
+               action: function () {
                   document.location.href = "{{route('export-customer')}}";
               }
            }
@@ -162,13 +168,14 @@
         ],
     });
 
-    $("#reset").on('click',function(e){
-        $("#start_date").val("");
-        $("#end_date").val("");
-        $("#address").val("");
-        e.preventDefault();
-        table.ajax.reload(null, false);
-    });
+    // $("#formReset").on('click',function(e){
+    //    $(this).parents('form')[0].reset();
+    //     table.ajax.reload(null, false);
+    // });
+     $("#formReset").click(function () {
+         $(this).parents('form')[0].reset();
+         table.draw();
+     });
 
     $(document).on("click",".view",function(){
 
@@ -198,7 +205,7 @@
           if(data.ct_status==null)data.ct_status="";
 
           var button = ``;
-          if(data.ct_status === 'Arrivals')
+          if(data.ct_status === 'New Arrivals')
             button = `<button type="button" id=`+data.id+` class="btn btn-primary btn-sm get-customer">Assign</button>`;
           $(".modal-content-view").html(`
             <div class="modal-header">

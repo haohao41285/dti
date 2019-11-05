@@ -186,7 +186,7 @@
                                 $zip = new ZipArchive();
                                 if ($zip->open($file->name, ZipArchive::CREATE) !== TRUE) {
                                     $file_name .= '<form action="'.route('down-image').'" method="POST"><input type="hidden" value="'.csrf_token().'" name="_token" /><input type="hidden" value="'.$file->name.'" name="src" /><img class="file-comment ml-2" src="'.asset($file->name).'"/></form>';
-                                 }else{
+                                }else{
                                    $file_name .= '<form action="'.route('down-image').'" method="POST"><input type="hidden" value="'.csrf_token().'" name="_token" /><input type="hidden" value="'.$file->name.'" name="src" /><a href="javascript:void(0)" class="file-comment ml-2" /><i class="fas fa-file-archive"></i>'.$file->name_origin.'</a></form>';
                                 }
                             }
@@ -268,6 +268,7 @@
 	$(document).ready(function() {
 
         $('#summernote2').summernote({
+            placeholder: 'Text Comment...',
             toolbar: [
                 // [groupName, [list of button]]
                 ['style', ['bold', 'italic', 'underline', 'clear']],
@@ -330,10 +331,11 @@
         $(document).on("click",".file-comment",function(){
             $(this).parent('form').submit();
         });
-        $('body').on('click', '.submit-comment', function(){
+        $(document).on('click', '.submit-comment', function(){
             var formData = new FormData($(this).parents('form')[0]);
             formData.append('order_id',{{$task_info->order_id}});
             formData.append('task_id',{{$id}});
+            formData.append('_token','{{csrf_token()}}');
 
             $.ajax({
                 url: '{{route('post-comment')}}',
@@ -351,7 +353,13 @@
                     // return;
                     // data = JSON.parse(data);
                     if(data.status == 'error'){
-                        toastr.error(data.message);
+                        if(typeof(data.message) == "string")
+                            toastr.error(data.message);
+                        else{
+                            $.each(data.message,function(ind,val){
+                                toastr.error(val);
+                            });
+                        }
                     }else{
                         toastr.success(data.message);
                         table.draw();
@@ -366,7 +374,7 @@
         });
         function clearView(){
             $("#email_list_2").val("");
-            $("#summernote2").val("");
+            $('#summernote2').summernote('reset');
         }
         $("#send-notification").click(function(){
             $("#form-notification").modal('show');
