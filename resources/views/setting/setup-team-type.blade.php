@@ -51,7 +51,7 @@ Team Type List
 @push('scripts')
 <script type="text/javascript">
 //DEFINE VAR
-var gu_id = 0;
+var id = 0;
 $(document).ready(function($) {
     dataTable = $("#dataTable").DataTable({
         processing: true,

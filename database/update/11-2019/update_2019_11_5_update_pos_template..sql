@@ -1,0 +1,1 @@
+ALTER TABLE `pos_template` ADD `template_list_cate` VARCHAR(110) NOT NULL AFTER `template_list_service`;
