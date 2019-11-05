@@ -171,8 +171,9 @@ Combo/Service List
                 if(cs_combo_service_type == parseInt(ind)+1){
                     selected_type = 'selected';
                 }
-                service_type_htm += `<option `+selected_type+` value="`+ind+`">`+value+`</option>`;
+                service_type_htm += `<option `+selected_type+` value="`+value['id']+`">`+value['name']+`</option>`;
             });
+            console.log(data.combo_service_type_list);
 
           if(cs_type == 1){
             $.each(serivece_list_all, function(index, val)

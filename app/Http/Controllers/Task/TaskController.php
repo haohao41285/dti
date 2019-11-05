@@ -531,5 +531,19 @@ class TaskController extends Controller
             ->rawColumns(['order_id','task'])
             ->make(true);
     }
+    public function cskhTask($id = 0){
+        if(Gate::denies('permission','cskh-task'))
+            return doNotPermission();
+
+        $data['user_list'] = MainUser::all();
+        $data['task_parent_id'] = $id;
+        $data['task_name'] = "";
+
+        if($id>0){
+            $data['task_name'] = MainTask::find($id)->subject;
+        }
+
+        return view('task.cskh-task',$data);
+    }
 
 }
