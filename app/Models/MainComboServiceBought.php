@@ -5,9 +5,15 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Laracasts\Presenter\PresentableTrait;
 use App\Models\MainService;
+
 use Carbon\Carbon;
 use DB;
 use App\Traits\StatisticsTrait;
+
+use App\Models\MainUser;
+use Gate;
+use Auth;
+
 
 class MainComboServiceBought extends Model
 {
@@ -48,12 +54,34 @@ class MainComboServiceBought extends Model
     public function getTasks(){
         return $this->hasMany(MainTask::class,'order_id','id');
     }
+    public function getUpdatedBy(){
+        return $this->belongsTo(MainUser::class,'updated_by','user_id');
+    }
 
     public static function getSumChargeByYear($year){
-        return self::select('csb_charge')
-                    ->whereYear('created_at',$year)
-                    ->sum('csb_charge');
+        $sum_charge = self::select('csb_charge','created_by')
+            ->whereYear('created_at',$year);
+        if(Gate::allows('permission','dashboard-admin')){
+        }
+        elseif(Gate::allows('permission','dashboard-leader')){
+            $sum_charge = $sum_charge->whereIn('created_by',MainUser::getMemberTeam());
+        }else{
+            $sum_charge = $sum_charge->where('created_by',Auth::user()->user_id);
+        }
+        $sum_charge = $sum_charge->sum('csb_charge');
+
+        return $sum_charge;
     }
+
+    /**
+     * get 10 popular services by monthe of the year , (year && month of $date)
+     * @param  date $date ex: 2019-04-31
+     * @return query
+     */
+    public static function get10popularServicesByMonth($date){
+        $startDate = $date->format('Y-m')."-01";
+        $endDate = $date->format('Y-m')."-31";
+
 
     public static function getServicesByMonth($date){
         return self::getByMonth($date);
@@ -67,7 +95,7 @@ class MainComboServiceBought extends Model
         $arrServices = self::sortTotalServices($formatArrServices);
 
         $arrServices = self::addNameServiceToArrServices($formatArrServices,$arrServices);
-        
+
         return $arrServices;
     }
 
@@ -112,7 +140,7 @@ class MainComboServiceBought extends Model
                     'count' => 1,
                     'idService' => $value,
                 ];
-            }           
+            }
         }
         arsort($arr);
         $arr = array_values($arr);

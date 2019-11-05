@@ -31,8 +31,9 @@
         </div>
     </div>
     <hr>
-    <table class="table table-bordered" id="dataTableAllCustomer" width="100%" cellspacing="0">
+    <table class="table table-bordered table-hover" id="dataTableAllCustomer" width="100%" cellspacing="0">
         <thead>
+            <tr class="text-center">
                 <th>Id</th>
                 <th>Order Date</th>
                 <th>Customer</th>
@@ -40,6 +41,7 @@
                 <th>Subtotal($)</th>
                 <th>Discount($)</th>
                 <th>Total Charged($)</th>
+                <th>Payment Date</th>
                 <th>Info</th>
             </tr>
         </thead>
@@ -73,6 +75,7 @@
             { data: 'subtotal', name: 'subtotal',class:'text-right' },
             { data: 'discount', name: 'discount',class:'text-right' },
             { data: 'total_charge', name: 'total_charge',class:'text-right' },
+            { data: 'updated_at', name: 'updated_at',class:'text-center' },
             { data: 'information', name: 'information'},
                   // { data: 'action' , name:'action' ,orderable: false, searcheble: false ,class:'text-center'}
         ],

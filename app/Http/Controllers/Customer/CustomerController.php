@@ -182,7 +182,7 @@ class CustomerController extends Controller
                     return '<a href="javascript:void(0)">'.$row['id'].'</a>';
             })
             ->editColumn('created_at',function($row){
-                return Carbon::parse($row['created_at'])->format('m/d/Y H:i:s')." by ".$row['user_nickname'];
+                return format_date($row['created_at'])." by ".$row['user_nickname'];
             })
             ->editColumn('ct_business_phone',function($row){
                 if($row['ct_business_phone'] != null && Gate::denies('permission','customer-admin'))
@@ -398,7 +398,7 @@ class CustomerController extends Controller
                         return '<a href="javascript:void(0)">'.$row['id'].'</a>';
                 })
                 ->editColumn('updated_at',function($row){
-                    return Carbon::parse($row['updated_at'])->format('m/d/Y H:i:s')." by ".$row['user_nickname'];
+                    return format_date($row['updated_at'])." by ".$row['user_nickname'];
                 })
                 ->addColumn('action', function ($row){
                     return '

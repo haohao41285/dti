@@ -152,7 +152,7 @@
             <th>Status</th>
             <th>Note</th>
             <th>Created Date</th>
-            <th>Action</th>
+            <th style="width: 15%">Action</th>
             </tr>
         </thead>
     </table>

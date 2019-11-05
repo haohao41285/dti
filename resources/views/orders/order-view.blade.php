@@ -305,7 +305,7 @@
             $("#email_list").val("");
             $("#email_list_2").val("");
             $(".note-editable p").html("");
-            $("#summernote2").val("");
+            $("#summernote2").summernote('reset');
             $("#add-comment-modal").modal('hide');
         }
 

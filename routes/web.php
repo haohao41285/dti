@@ -159,6 +159,7 @@ Route::group(['middleware' => ['auth']], function () {
             Route::post('/change-password', 'PlaceController@changeNewPassword')->name('changeNewPassword');
             Route::get('/get-detail', 'PlaceController@getDetailPlace')->name('getDetailPlace');
             Route::get('/get-themes-datatable', 'PlaceController@getThemeDatatable')->name('getThemeDatatable');
+
             Route::get('/get-wp-datatable-by-place-id', 'PlaceController@getWpDatableByPlaceId')->name('getWpDatableByPlaceId');
             Route::get('/delete-value-property', 'PlaceController@deleteValueProperty')->name('deleteValueProperty');
             Route::post('/save-custom-value-property', 'PlaceController@saveCustomValueProperty')->name('saveCustomValueProperty');
@@ -168,6 +169,12 @@ Route::group(['middleware' => ['auth']], function () {
             Route::get('/delete-auto-coupon', 'PlaceController@deleteAutoCoupon')->name('deleteAutoCoupon');
             Route::get('get-auto-coupon-by-id', 'PlaceController@getAutoCouponById')->name('getAutoCouponById');
         
+            Route::get('/get-service-place', 'PlaceController@getServicePlace')->name('get-service-place');
+            Route::post('/save-expire-date', 'PlaceController@saveExpireDate')->name('save-expire-date');
+        });
+
+        Route::group(['prefix' => 'build-code'], function() {
+            Route::get('/', 'BuildCodeController@index');
         });
 
     });
@@ -291,6 +298,13 @@ Route::group(['middleware' => ['auth']], function () {
         Route::post('change-status-order', 'OrdersController@changeStatusOrder')->name('change-status-order');
         Route::post('resend-invoice', 'OrdersController@resendInvoice')->name('resend-invoice');
         Route::get('dowload-invoice/{id}', 'OrdersController@dowloadInvoice')->name('dowload-invoice');
+
+        Route::get('payment-orders-list','OrdersController@paymentOrderList')->name('payment-order-list');
+        Route::get('payment-orders/{id}','OrdersController@paymentOrder')->name('payment-order');
+        Route::post('add-order','OrdersController@addOrder')->name('post-add-order');
+        Route::get('payment-order-datatable', 'OrdersController@paymentOrderDatatable')->name('payment-order-datatable');
+
+
     });
     Route::group(['prefix' => 'task','namespace' => 'Task'], function() {
         Route::get('/', 'TaskController@index')->name('my-task');
@@ -329,7 +343,5 @@ Route::group(['middleware' => ['auth']], function () {
         Route::get('view-notification/{id}', 'NotificationController@viewNotification')->name('view-notification');
 
     });
-
-
 
 });
