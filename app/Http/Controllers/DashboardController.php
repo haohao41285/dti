@@ -37,8 +37,10 @@ class DashboardController extends Controller {
 
         $data['earnings'] = MainComboServiceBought::getSumChargeByYear($yearNow);
         $data['pendingTasks'] = MainTask::getPendingTasks();
+        $data['popularServices'] = MainComboServiceBought::getServicesByMonth($now);
+
         $data['nearlyExpired'] = MainCustomerService::getNearlyExpired();
-        $data['popularServices'] = MainComboServiceBought::get10popularServicesByMonth($now);
+
 
         $newCustomer = MainCustomer::getTotalNewCustomersEveryMonthByYear($yearNow);
 
@@ -46,6 +48,7 @@ class DashboardController extends Controller {
 
         return view('dashboard',$data);
     }
+    
     public function confirmEvent(){
         try{
             //subHours(11) to get time American

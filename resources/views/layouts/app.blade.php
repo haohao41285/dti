@@ -26,9 +26,9 @@
         <div id="content">
             @include('layouts.partials.header')
             <!-- Begin Page Content -->
-            <div class="container-fluid">
+            <div class="">
               <!-- Page Heading -->
-              <h1 class="h3 mb-4 text-gray-800">@yield('content-title')</h1>
+              <h1 class="h3 mb-4 text-gray-800 col-12">@yield('content-title')</h1>
               @yield('content')
             </div>
             <!-- /.container-fluid -->

@@ -15,11 +15,13 @@
                     <th>Status</th>
                     <th>Action</th>
                     <th hidden></th>
+
                 </tr>
                 </thead>
             </table>
         </div>
         <div class="col-md-5 offset-md-1" style="padding-top: 0px">
+
             <form id="add-edit-form">
                 <h5><b class="tip">Add Permission</b></h5>
                 <div class="form-group">
@@ -40,6 +42,7 @@
                     <button type="button" class="btn btn-sm btn-primary float-right submit-permission">Submit</button>
                 </div>
             </form>
+
         </div>
     </div>
 
@@ -48,6 +51,7 @@
     <script type="text/javascript">
         //DEFINE VAR
         var permission_id = 0;
+
         $(document).ready(function($) {
             dataTable = $("#dataTable").DataTable({
                 processing: true,
@@ -63,6 +67,7 @@
                     {data:'status', name:'status',class:'text-center'},
                     {data:'action', name:'action',searching:false,orderable:false,class:'text-center'},
                     {data:'menu_id', name:'menu_id',class: 'd-none'},
+
                 ],
                 fnDrawCallback:function (oSettings) {
                     var elems = Array.prototype.slice.call(document.querySelectorAll('.js-switch'));
@@ -104,7 +109,6 @@
 
             });
             $('#dataTable tbody').on( 'click', 'tr', function () {
-
                 $("#permission_name").val(dataTable.row(this).data()['permission_name']);
                 $("#menu_id").val(dataTable.row(this).data()['menu_id']);
                 $(".tip").text("Edit Permission");

@@ -32,5 +32,7 @@ class PosTempmail extends BaseModel
 
     protected $guarded = [];
 
+   
+
         
 }

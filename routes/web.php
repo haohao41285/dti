@@ -88,9 +88,17 @@ Route::group(['middleware' => ['auth']], function () {
 
     });
 
-    Route::group(['prefix'=>'statistics', 'namespace'=>'Statistics'],function(){
-
+    Route::group(['prefix'=>'statistic', 'namespace'=>'Statistics'],function(){
+        Route::group(['prefix' => 'customers'], function() {
+            Route::get('/', 'CustomerController@index')->name('statisticsCustomer');
+            Route::get('datatable', 'CustomerController@datatable')->name('statisticCustomerDatable');
+        });
+        Route::group(['prefix' => 'services'], function() {
+            Route::get('/', 'ServiceController@index')->name('statisticsService');
+            Route::get('datatable', 'ServiceController@datatable')->name('statisticServiceDatable');
+        });
     });
+
    Route::group(['prefix'=>'datasetup', 'namespace'=>'DataSetup'],function(){
          Route::get('combos', 'ComboController@index')->name('listCombo');
          Route::get('combo/add', 'ComboController@add')->name('addCombo');
@@ -151,6 +159,16 @@ Route::group(['middleware' => ['auth']], function () {
             Route::post('/change-password', 'PlaceController@changeNewPassword')->name('changeNewPassword');
             Route::get('/get-detail', 'PlaceController@getDetailPlace')->name('getDetailPlace');
             Route::get('/get-themes-datatable', 'PlaceController@getThemeDatatable')->name('getThemeDatatable');
+
+            Route::get('/get-wp-datatable-by-place-id', 'PlaceController@getWpDatableByPlaceId')->name('getWpDatableByPlaceId');
+            Route::get('/delete-value-property', 'PlaceController@deleteValueProperty')->name('deleteValueProperty');
+            Route::post('/save-custom-value-property', 'PlaceController@saveCustomValueProperty')->name('saveCustomValueProperty');
+            
+            Route::get('/get-auto-coupon-datatable', 'PlaceController@getAutoCouponDatatable')->name('getAutoCouponDatatable');
+            Route::post('/save-auto-coupon', 'PlaceController@saveAutoCoupon')->name('saveAutoCoupon');
+            Route::get('/delete-auto-coupon', 'PlaceController@deleteAutoCoupon')->name('deleteAutoCoupon');
+            Route::get('get-auto-coupon-by-id', 'PlaceController@getAutoCouponById')->name('getAutoCouponById');
+        
             Route::get('/get-service-place', 'PlaceController@getServicePlace')->name('get-service-place');
             Route::post('/save-expire-date', 'PlaceController@saveExpireDate')->name('save-expire-date');
         });
@@ -224,10 +242,18 @@ Route::group(['middleware' => ['auth']], function () {
 
         Route::get('menu','MenuController@setupMenu')->name('menu');
         Route::get('setup-permission','MenuController@permission')->name('setup-permission');
+
         Route::get('permission-datatable','MenuController@permissionDatatable')->name('permission-datatable');
         Route::post('change-status-permission','MenuController@changeStatusPermission')->name('change-status-permission');
         Route::get('save-permission','MenuController@savePermission')->name('save-permission');
         Route::delete('delete-permission','MenuController@deletePermission')->name('delete-permission');
+
+        Route::group(['prefix' => 'setup-type-template'], function() {
+            Route::get('/', 'SetupTypeTemplateController@index')->name('setupTypeTemplate');
+            Route::get('datatable', 'SetupTypeTemplateController@getDatatable')->name('getDatatableSetupTypeTemplate');
+            Route::post('save', 'SetupTypeTemplateController@save')->name('saveSetupTypeTemplate');
+            Route::post('delete', 'SetupTypeTemplateController@delete')->name('deleteSetupTypeTemplate');
+        });
 
     });
 
@@ -251,6 +277,7 @@ Route::group(['middleware' => ['auth']], function () {
         Route::get('change-service-permission','UserController@changeServicePermission')->name('change-service-permission');
 
         Route::get('user-permission','UserController@userPermission')->name('user-permission');
+
         Route::post('change-permission-role','UserController@changePermissionRole')->name('change-permission-role');
 
     });
@@ -316,7 +343,5 @@ Route::group(['middleware' => ['auth']], function () {
         Route::get('view-notification/{id}', 'NotificationController@viewNotification')->name('view-notification');
 
     });
-
-
 
 });

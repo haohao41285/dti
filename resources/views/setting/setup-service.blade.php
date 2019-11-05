@@ -3,6 +3,7 @@
 Combo/Service List
 @stop
 @section('content')
+<div class="col-12">
 <h5><b>Combo/Service List</b></h5>
 <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
   <thead>
@@ -20,6 +21,7 @@ Combo/Service List
     </tr>
   </thead>
 </table>
+</div>
 {{-- MODAL FOR ADD/EDIT COMBO,SERVICE --}}
 <div class="modal fade" id="add-edit-modal" tabindex="-1" role="dialog" aria-labelledby="" aria-hidden="true">
   <div class="modal-dialog" role="document">

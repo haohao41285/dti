@@ -428,6 +428,7 @@ class UserController extends Controller
         $data['menu_parent'] = MainMenuDti::active()->where('parent_id',0)->with('getMenuChild')->with('getPermission')->get();
 
         return view('user.user-permission',$data);
+
     }
     public function changePermissionRole(Request $request){
 

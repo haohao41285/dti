@@ -24,6 +24,7 @@
       
     </div>
   </div>
+<div class="col-12">
 <div class="row">
   <div class="col-md-7">
     <div class="card shadow mb-4">
@@ -95,6 +96,7 @@
   </div>
 </div>
  
+</div>
 </div>
 @endsection
 @push('scripts')

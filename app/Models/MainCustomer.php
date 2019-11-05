@@ -6,11 +6,16 @@ use App\Models\MainUser;
 use Illuminate\Database\Eloquent\Model;
 use Laracasts\Presenter\PresentableTrait;
 use DB;
+
+use DataTables;
+use App\Traits\StatisticsTrait;
+
 use Gate;
+
 
 class MainCustomer extends Model
 {
-    use PresentableTrait;
+    use PresentableTrait, StatisticsTrait;
     protected  $presenter = 'App\\Presenters\\MainCustomerPresenter';
 
     protected $table = 'main_customer';
@@ -70,6 +75,52 @@ class MainCustomer extends Model
         return  $this->customer_firstname. " ".$this->customer_lastname;
     }
 
+    public static function getDatatableStatistic($type,$valueQuarter = null, $date = null){
+        if(!$date){
+            $date = format_date_db(get_nowDate());
+        }
+
+        $customers = null;  
+        // choose by type, from StatisticsTrait
+        switch ($type) {
+            case 'Daily':
+                $customers = self::getByDate($date);
+                break;
+            case 'Monthly':
+                $customers = self::getByMonth($date); 
+                break;
+            case 'Quarterly':
+                $customers = self::getByQuarterly($date,$valueQuarter); 
+                break;
+            case 'Yearly':
+                $customers = self::getByYear($date); 
+                break;            
+        } 
+        //echo $customers; die();
+
+        return Datatables::of($customers)
+        ->addColumn('customer_fullname',function($customers){
+            return $customers->customer_firstname." ".$customers->customer_lastname;
+        })
+        ->editColumn('created_at',function($customers){
+            return format_datetime($customers->created_at);
+        })        
+        ->make(true);
+    }
+
+    private static function getBetween2Date($startDate,$endDate){
+        return self::select(
+                        'customer_id',
+                        'customer_lastname',
+                        'customer_firstname',
+                        'customer_email',
+                        'customer_phone',
+                        'created_at'
+                        )
+                    ->where('customer_status',1)
+                    ->whereBetween('created_at',[$startDate,$endDate])
+                    ->get();
+    }
 
 
 }
