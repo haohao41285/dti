@@ -52,4 +52,9 @@ class PosTemplateType extends Model
     				->where('template_type_status',1)
     				->first();
     }
+
+    public static function getTemplateType(){
+        return self::where('template_type_status',1)
+                    ->get();
+    }
 }

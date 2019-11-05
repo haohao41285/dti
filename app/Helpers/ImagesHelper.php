@@ -93,15 +93,6 @@ class ImagesHelper
 
 
     /**
-<<<<<<< HEAD
-     * Auto upload image to SummerNote 
-     * @param  $content input
-     * @return $content output
-=======
-     * Auto upload image to SummerNote
-     * @param  $description is SummerNote content
-     * @return $description
->>>>>>> origin/thieu
      */
     public static function uploadImageSummerNote($content){
         $dom = new \DomDocument();

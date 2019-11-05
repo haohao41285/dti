@@ -16,11 +16,13 @@ use Symfony\Component\Process\Process;
 use Symfony\Component\Process\Exception\ProcessFailedException;
 use App\Models\PosWebsiteProperty;
 use App\Models\PosTemplate;
+use App\Models\PosTemplateType;
 
 class PlaceController extends Controller
 {
     public function index(){
-        return view('tools.place');
+        $data['templateType'] = PosTemplateType::getByType(1);
+        return view('tools.place',$data);
     }
     public function cloneUpdateWebsite(Request $request)
     {
@@ -166,7 +168,9 @@ class PlaceController extends Controller
     }
 
     public function saveAutoCoupon(Request $request){
+        PosTemplate::saveAuto($request->id, $request->placeId, $request->title,$request->discount, $request->discountType,$request->image,$request->services, $request->couponType);
         
+        return response()->json(['status'=>1,'msg'=>"saved successfully"]);
     }
 
     public function deleteAutoCoupon(Request $request){

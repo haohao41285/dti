@@ -671,11 +671,15 @@
                                 </div>
                                 <div class="form-group row col-12">
                                     <label class="col-5">Discount</label>
-                                    <input class="col-7 form-control-sm form-control" type="text" name="discount">
+                                    <input class="col-7 form-control-sm form-control" type="number" name="discount">
                                 </div>
                                 <div class=" form-group row col-12">
                                     <label class="col-5">Discount Type </label>
-                                    <input class="col-7 form-control-sm form-control" type="text" name="discountType">
+                                    {{-- <input class="col-7 form-control-sm form-control" type="text" name="discountType"> --}}
+                                    <select class="col-7 form-control-sm form-control" name="discountType">
+                                        <option value="$">$</option>
+                                        <option value="%">%</option>
+                                    </select>
                                 </div>
                                 <div class="form-group col-12">
                                     <label>Image</label>
@@ -690,7 +694,12 @@
                                 </div>
                                 <div class=" form-group row col-12">
                                     <label class="col-5">Coupon Type </label>
-                                    <input class="col-7 form-control-sm form-control" type="text" name="couponType">
+                                    {{-- <input class="col-7 form-control-sm form-control" type="text" name="couponType"> --}}
+                                    <select class="col-7 form-control-sm form-control" name="couponType">
+                                        @foreach ($templateType as $element)
+                                        <option value="{{$element->template_type_id}}">{{$element->template_type_name}}</option>
+                                        @endforeach
+                                    </select>
                                 </div>
                                 <div class="form-group col-12 row">
                                     <label class="col-5"></label>
@@ -721,6 +730,7 @@ function clear() {
 
     $('#themes-datatable tbody tr.selected').removeClass('selected');
     $("#custom-properties-form").find("input[name='variable']").attr("readonly", false);
+    $("input[name='id']").val('');
 }
 
 function listThemePropertiesByThemeId(theme_id) {
@@ -1278,12 +1288,23 @@ $(document).ready(function() {
                     $("#auto-coupon-title").text("Update");
                     $("input[name='action']").val("update");
 
+                    $("input[name='id']").val(id);
                     $("input[name='title']").val(data.data.template_title);
                     $("input[name='discount']").val(data.data.template_discount);
-                    $("input[name='discountType']").val(data.data.template_type);
-                    $("#previewImageAutoCoupon").src(data.data.template_title);
+
+                    $("select[name='discountType']").find("option:selected").attr("selected", false);
+                    if (data.data.template_type == "1") {
+                        $("select[name='discountType']").find("option[value='$']").attr("selected", true);
+                    } else {
+                        $("select[name='discountType']").find("option[value='%']").attr("selected", true);
+                    }
+
+                    $("#previewImageAutoCoupon").attr("src", "{{env('URL_FILE_VIEW')}}" + data.data.template_linkimage);
                     $("input[name='services']").val("sada");
-                    $("input[name='couponType']").val("sdf");
+
+                    $("select[name='couponType']").find("option:selected").attr("selected", false);
+                    $("select[name='couponType']").find("option[value='" + data.data.template_type_id + "']").attr("selected", true);
+
                 }
             },
             error: function() {

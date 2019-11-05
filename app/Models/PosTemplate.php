@@ -4,14 +4,16 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use DataTables;
+use App\Helpers\ImagesHelper;
 
 class PosTemplate extends Model
 {
     protected $table = 'pos_template';
 
     // protected $primaryKey = ['template_id','template_place_id'];
+    protected $primaryKey = 'template_id';
 
-    // public $incrementing = false;
+    // public $id = false;
 
     public $timestamps = true;
 
@@ -71,8 +73,67 @@ class PosTemplate extends Model
                     return number_format($data->template_discount)."($)";
                 }          
         })
+        ->editColumn('template_type_id',function($data){
+            $type = PosTemplateType::getById($data->template_type_id);
+            return $type->template_type_name;
+        })
         ->rawColumns(['action','template_linkimage'])
         ->make(true);
+    }
+
+    public static function saveAuto($id, $placeId, $title, $discount, $discountType, $image, $services, $couponType){
+        if($image){
+            $image = ImagesHelper::uploadImageToAPI($image,'auto_coupon');
+        }
+        
+        $discountType = $discountType == "$" ? '1' : "0";
+
+        $arr = [
+            'template_place_id' => $placeId,
+            'template_title' => $title,
+            'template_discount' => $discount,
+            'template_type' => $discountType,
+            'template_linkimage' => $image,
+            'template_list_service' => $services,
+            'template_type_id' => $couponType,
+            'template_table_type' => 1 
+        ];
+
+        if($id){
+            $coupon = self::getByPlaceIdAndId($id ,$placeId);
+            if(!$image){
+                unset($arr['template_place_id']);
+                unset($arr['template_linkimage']);
+            }
+            // dd($arr);
+            $coupon->update($arr);
+            // $coupon->template_place_id = $placeId;
+            // $coupon->template_title = $title;
+            // $coupon->template_discount = $discount;
+            // $coupon->template_type = $discountType;
+            
+            // if($image){
+            //     $coupon->template_linkimage = $image;
+            // }
+
+            // $coupon->template_list_service = $services;
+            // $coupon->template_type_id = $couponType;
+            // $coupon->template_table_type = 1;
+            // $coupon->save();
+
+
+            return "updated successfully";
+        } else {
+            $id = self::select('template_id')
+                        ->where('template_place_id',$placeId)
+                        ->max('template_id');
+
+            $arr['template_id'] = $id+1;
+
+            self::insert($arr);
+
+            return "inserted successfully";
+        }
     }
         
 }
