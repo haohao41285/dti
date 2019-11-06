@@ -92,7 +92,7 @@
 {{--                            {{dd($service_permission_arr)}}--}}
                              @foreach($type->getComboService as $service)
                                  @if(in_array($service->id,$service_permission_arr))
-                                <label class="col-md-6"><input style="width:20px;height: 20px" type="checkbox" class="combo_service" cs_price="{{$service->cs_price}}" name="cs_id[]"  value="{{$service->id}}"> {{$service->cs_name}}{{$service->cs_type==1?"(Combo)":"(Service)"}} - ${{$service->cs_price}}</label><br>
+                                <label class="col-md-6"><input style="width:20px;height: 20px" type="checkbox" max_discount="{{$type->max_discount}}" class="combo_service" cs_price="{{$service->cs_price}}" name="cs_id[]"  value="{{$service->id}}"> {{$service->cs_name}}{{$service->cs_type==1?"(Combo)":"(Service)"}} - ${{$service->cs_price}}</label><br>
                                 @endif
                             @endforeach
                         </div>
@@ -170,6 +170,8 @@
     var cs_price = $(this).attr('cs_price');
     var discount = $("#discount").val();
     var cs_id = $(this).val();
+    var percent_discount = $(this).attr('max_discount');
+    var service_discount = parseFloat(percent_discount)*parseFloat(cs_price)/100;
 
     if(discount == "")
         discount = 0;
@@ -177,9 +179,11 @@
     if(combo_sevice_arr.includes(cs_id)){
         total_price -= parseFloat(cs_price);
         combo_sevice_arr.splice( $.inArray(cs_id, combo_sevice_arr), 1 );
+        max_discount -= service_discount;
     }else{
         combo_sevice_arr.push(cs_id);
         total_price += parseFloat(cs_price);
+        max_discount += service_discount;
     }
 
     $("#payment_amount").val(total_price-parseFloat(discount));
@@ -187,7 +191,7 @@
     $("#payment_amount_hidden").val(total_price-parseFloat(discount));
     $("#service_price").val(total_price);
     $("#service_price_hidden").val(total_price);
-    max_discount= total_price*10/100;
+    // max_discount= total_price*10/100;
     $("#max-discount").text('( Max: $'+max_discount+' )');
 
    });
@@ -195,6 +199,11 @@
 
        $(this).val($(this).val().replace(/[^0-9\.]/g,''));
        if ((event.which != 46 || $(this).val().indexOf('.') != -1) && (event.which < 48 || event.which > 57)) {
+           event.preventDefault();
+       }
+       var payment_amount = $("#payment_amount").val();
+       if(payment_amount == "" || payment_amount == 0){
+           toastr.error('Choose Service, please!');
            event.preventDefault();
        }
 
@@ -205,7 +214,7 @@
     if(discount > max_discount){
         discount = max_discount;
         $("#discount").val(max_discount);
-        toastr.error('Max discount is 10% Service Price');
+        toastr.error('Max discount is '+max_discount );
     }
      $("#payment_amount_disable").val(total_price-parseFloat(discount));
      $("#payment_amount").val(total_price-parseFloat(discount));

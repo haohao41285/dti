@@ -32,7 +32,7 @@
                             <th>Phone</th>
                             <th>License</th>
                             {{-- <th>Created Date</th> --}}
-                            <th width="200">Action</th>
+                            <th  class="w-30">Action</th>
                         </tr>
                     </thead>
                 </table>
@@ -803,7 +803,7 @@ $(document).ready(function() {
     var themeId = null;
 
     var placeTable = $('#places-datatable').DataTable({
-        // dom: "lfrtip",    
+        // dom: "lfrtip",
         processing: true,
         serverSide: true,
         ajax: { url: "{{ route('getPlacesDatatable') }}" },
@@ -821,7 +821,7 @@ $(document).ready(function() {
     });
 
     var customerTable = $('#user-datatable').DataTable({
-        // dom: "lfrtip",    
+        // dom: "lfrtip",
         processing: true,
         serverSide: true,
         ajax: {
