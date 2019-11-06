@@ -61,7 +61,8 @@ class SetupServiceController extends Controller
 				'cs_assign_id' => $service_combo->user_id,
 				'cs_status' => $service_combo->cs_status,
                 'cs_form_type' => $service_combo->cs_form_type,
-                'cs_combo_service_type' => $service_combo->cs_combo_service_type
+                'cs_combo_service_type' => $service_combo->cs_combo_service_type,
+                'cs_expiry_period' => $service_combo->cs_expiry_period
 			];
 		}
 
@@ -79,8 +80,7 @@ class SetupServiceController extends Controller
 				return '<input type="checkbox" cs_id="'.$row['id'].'" cs_status="'.$row['cs_status'].'" class="js-switch"'.$checked.'/>';
 			})
 			->addColumn('action',function($row){
-				return '<a class="btn btn-sm btn-secondary edit-cs" cs_combo_service_type="'.$row['cs_combo_service_type'].'" cs_form_type="'.$row['cs_form_type'].'" cs_price='.$row['cs_price'].' cs_description="'.$row['cs_description'].'" cs_type='.$row['cs_type'].' cs_name="'.$row['cs_name'].'" cs_id="'.$row['id'].'"  title="Edit" href="javascript:void(0)" cs_assign_id="'.$row['cs_assign_id'].'"><i class="fas fa-edit"></i></a>
-                <a class="btn btn-sm btn-secondary delete-team" title="Delete" href="javascript:void(0)"><i class="fas fa-trash"></i></a>';
+				return '<a class="btn btn-sm btn-secondary edit-cs" cs_expiry_period="'.$row['cs_expiry_period'].'" cs_combo_service_type="'.$row['cs_combo_service_type'].'" cs_form_type="'.$row['cs_form_type'].'" cs_price='.$row['cs_price'].' cs_description="'.$row['cs_description'].'" cs_type='.$row['cs_type'].' cs_name="'.$row['cs_name'].'" cs_id="'.$row['id'].'"  title="Edit" href="javascript:void(0)" cs_assign_id="'.$row['cs_assign_id'].'"><i class="fas fa-edit"></i></a>';
 			})
 			->rawColumns(['cs_status','action','cs_service_id'])
 		    ->make(true);
@@ -178,7 +178,7 @@ class SetupServiceController extends Controller
 					$check = "checked";
 
 			$menu_html .= '<div class="checkbox">
-                    <label style="margin-left:30px"><input type="checkbox" '.$check.' parent_id="'.$menu_parent_id.'"  class="service_id '.$menu_parent_id.'"  style="height: 20px;width: 20px" value="'.$menu_son->mer_menu_id.'">'.$menu_son->mer_menu_text.'</label>
+                    <label style="margin-left:30px"><input type="checkbox"  name="cs_menu_id[]"  '.$check.' parent_id="'.$menu_parent_id.'"  class="service_id '.$menu_parent_id.'"  style="height: 20px;width: 20px" value="'.$menu_son->mer_menu_id.'">'.$menu_son->mer_menu_text.'</label>
                 </div>';
 
             $menu_html .= self::getMenuSon($menu_list,$menu_son->mer_menu_id,$menu_id_arr);
@@ -188,6 +188,7 @@ class SetupServiceController extends Controller
 
 	public function saveServiceCombo(Request $request)
 	{
+//	    return $request->all();
         if(Gate::denies('permission','setup-service-update'))
             return doNotPermissionAjax();
 
@@ -196,23 +197,21 @@ class SetupServiceController extends Controller
 		$cs_name = $request->cs_name;
 		$cs_price = $request->cs_price;
 		$cs_description = $request->cs_description;
-		$service_id_arr = $request->service_id_arr;
 		$cs_assign_to = $request->cs_assign_to;
 		$cs_form_type = $request->cs_form_type;
 		$cs_combo_service_type = $request->cs_combo_service_type;
 
 		$rule = [
             'cs_name' => 'required',
-            // 'service_id_arr' => 'required',
-            'cs_price' => 'required',
+            'cs_price' => 'required|numeric',
         ];
-        $message = [
-        'cs_name.required' => 'Enter Combo Name, Please!',
-        // 'service_id_arr.required' => 'Check Service, Please!',
-        'cs_price.required' => 'Enter Price, Please!'
-        ];
-
-        $validator = Validator::make($request->all(),$rule,$message);
+		if($request->cs_type == 1){
+		    $rule['cs_service_id'] = 'required';
+        }
+		if($request->cs_type == 2){
+		    $rule['cs_expiry_period'] = 'required|numeric';
+        }
+        $validator = Validator::make($request->all(),$rule);
 
         if($validator->fails()){
             return \Response::json(array(
@@ -227,63 +226,56 @@ class SetupServiceController extends Controller
 		if($cs_id == 0)
 			$check = MainComboService::where('cs_name',$cs_name)->count();
 
-			if($check > 0)
-				return response(['status'=>'error','message'=>'Error! Name has existed.']);
+		if($check > 0)
+        return response(['status'=>'error','message'=>'Error! Name has existed.']);
 
-			if($service_id_arr != "")
-			    $service_id_list = implode(";", $service_id_arr);
-			else
-				$service_id_list = "";
+        if(isset($request->cs_service_id))
+            $service_id_list = implode(';',$request->cs_service_id);
+        else
+            $service_id_list = "";
 
-        if($cs_type == 1){
-        	if($cs_id != 0)
-			    $cs_update = MainComboService::where('id',$cs_id)->update([
-			        'cs_name'=>$cs_name,
-                    'cs_service_id'=>$service_id_list,
-                    'cs_description'=>$cs_description,
-                    'cs_assign_to'=>$cs_assign_to,
-                    'cs_combo_service_type' => $cs_combo_service_type,
-                    'cs_form_type' => $cs_form_type
+        if(isset($request->cs_menu_id))
+            $cs_menu_id = implode(';',$request->cs_menu_id);
+        else
+            $cs_menu_id = '';
 
-                ]);
-			else
-				$cs_update = MainComboService::insert([
-				    'cs_name'=>$cs_name,
-                    'cs_service_id'=>$service_id_list,
-                    'cs_price'=>$cs_price,
-                    'cs_type'=>1,
-                    'cs_status'=>1,
-                    'cs_description'=>$cs_description,
-                    'cs_assign_to'=>$cs_assign_to,
-                    'cs_combo_service_type'=>$cs_combo_service_type,
-                    'cs_form_type' => $cs_form_type
-                ]);
-        }
+        if($cs_id == 0)
+            $cs_update = MainComboService::insert([
+                'cs_name'=>$cs_name,
+                'cs_service_id'=>$service_id_list,
+                'cs_menu_id'=>$cs_menu_id,
+                'cs_expiry_period' => $request->cs_expiry_period,
+                'cs_price'=>$cs_price,
+                'cs_type'=>$cs_type,
+                'cs_status'=>1,
+                'cs_description'=>$cs_description,
+                'cs_assign_to'=>$cs_assign_to,
+                'cs_combo_service_type'=>$cs_combo_service_type,
+                'cs_form_type' => $cs_form_type
+            ]);
         else{
-        	if($cs_id != 0){
-        		$cs_update = MainComboService::where('id',$cs_id)->update([
-        		    'cs_name'=>$cs_name,
-                    'cs_menu_id'=>$service_id_list,
-                    'cs_description'=>$cs_description,
-                    'cs_assign_to'=>$cs_assign_to,
-                    'cs_combo_service_type' => $cs_combo_service_type,
-                    'cs_form_type' => $cs_form_type
-                ]);
-        	}else
-        	    $cs_update = MainComboService::insert([
-        	        'cs_name'=>$cs_name,
+            if($cs_type == 1)
+                $cs_update = MainComboService::where('id',$cs_id)->update([
+                    'cs_name'=>$cs_name,
+                    'cs_price' => $cs_price,
                     'cs_service_id'=>$service_id_list,
-                    'cs_price'=>$cs_price,
-                    'cs_type'=>2,
-                    'cs_status'=>1,
                     'cs_description'=>$cs_description,
                     'cs_assign_to'=>$cs_assign_to,
                     'cs_combo_service_type' => $cs_combo_service_type,
                     'cs_form_type' => $cs_form_type
                 ]);
-
+            else
+                $cs_update = MainComboService::where('id',$cs_id)->update([
+                    'cs_name'=>$cs_name,
+                    'cs_price' => $cs_price,
+                    'cs_menu_id'=>$cs_menu_id,
+                    'cs_description'=>$cs_description,
+                    'cs_assign_to'=>$cs_assign_to,
+                    'cs_combo_service_type' => $cs_combo_service_type,
+                    'cs_form_type' => $cs_form_type,
+                    'cs_expiry_period' => $request->cs_expiry_period
+                ]);
         }
-
 		if(!isset($cs_update))
 			return response(['status'=>'error','message'=>'Error!Check Again.']);
 		else
@@ -294,6 +286,7 @@ class SetupServiceController extends Controller
 		$cs_type = $request->cs_type;
 
 		$data['user'] = MainUser::where('user_status',1)->get();
+		$data['cs_combo_service_type'] = MainComboServiceType::active()->get();
 
 		if($cs_type == 1){
 			$data['cs_list'] = MainComboService::where('cs_type',2)->where('cs_status',1)->get();
@@ -316,7 +309,7 @@ class SetupServiceController extends Controller
 				if(in_array($menu_parent->mer_menu_id, $menu_id_arr))
 					$check = "checked";
 				$menu_html .= '<div class="checkbox">
-	                    <label><input type="checkbox" '.$check.' parent_id="0" class="service_id " id="'.$id.'"  style="height: 20px;width: 20px" value="'.$menu_parent->mer_menu_id.'">'.$menu_parent->mer_menu_text.'</label>
+	                    <label><input type="checkbox" name="cs_menu_id[]" '.$check.' parent_id="0" class="service_id " id="'.$id.'"  style="height: 20px;width: 20px" value="'.$menu_parent->mer_menu_id.'">'.$menu_parent->mer_menu_text.'</label>
 	                </div>';
 	             $menu_html .= self::getMenuSon($menu_list,$menu_parent->mer_menu_id,$menu_id_arr);
 			}
