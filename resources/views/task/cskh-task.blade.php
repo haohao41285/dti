@@ -81,13 +81,13 @@
                         <textarea class="fom-control form-control-sm" name="desription" id="description"></textarea>
                     </td>
                 </tr>
-                <tr>
-                    <td>PARENT TASK</td>
-                    <td>
-                        <input type="number" class="form-control form-control-sm" id="task_parent_id" name="task_parent_id" value="{{$task_parent_id>0?$task_parent_id:""}}">
-                    </td>
-                    <th colspan="5" id="task_name" class="text-uppercase">{{$task_name}}</th>
-                </tr>
+{{--                <tr>--}}
+{{--                    <td>PARENT TASK</td>--}}
+{{--                    <td>--}}
+{{--                        <input type="number" class="form-control form-control-sm" id="task_parent_id" name="task_parent_id" value="{{$task_parent_id>0?$task_parent_id:""}}">--}}
+{{--                    </td>--}}
+{{--                    <th colspan="5" id="task_name" class="text-uppercase">{{$task_name}}</th>--}}
+{{--                </tr>--}}
                 </tbody>
             </table>
             <div class="form-group">

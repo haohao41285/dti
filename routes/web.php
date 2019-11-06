@@ -202,7 +202,7 @@ Route::group(['middleware' => ['auth']], function () {
         Route::get('service-datatable', 'SetupServiceController@serviceDatabase')->name('service-datatable');
         Route::get('change-status-cs', 'SetupServiceController@changeStatusCs')->name('change-status-cs');
         Route::get('get-service-combo', 'SetupServiceController@getServiceCombo')->name('get-service-combo');
-        Route::get('save-service-combo', 'SetupServiceController@saveServiceCombo')->name('save-service-combo');
+        Route::post('save-service-combo', 'SetupServiceController@saveServiceCombo')->name('save-service-combo');
         Route::get('get-cs', 'SetupServiceController@getCs')->name('get-cs');
 
         Route::get('team-type-datatable', 'SetupTeamController@teamTypeDatatable')->name('team-type-datatable');
