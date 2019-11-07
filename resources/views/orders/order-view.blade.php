@@ -593,7 +593,7 @@
         });
         $("#upload_file").change(function(){
             var name = $(this).val();
-            alert(name);
+            alert('ok');
         })
     });
 </script>

@@ -645,7 +645,7 @@
                                             <th>Title</th>
                                             <th>Discount</th>
                                             <th>Image</th>
-                                            <th>Services</th>
+                                            <th>Categories</th>
                                             <th>Type</th>
                                             <th>Action</th>
                                         </tr>
@@ -692,8 +692,14 @@
                                     </div>
                                 </div>
                                 <div class=" form-group row col-12">
-                                    <label class="col-5">Services</label>
-                                    <input class="col-7 form-control-sm form-control" type="text" name="services">
+                                    <label class="col-5">Cate Services</label>
+                                    <select name="services" multiple="" class="col-7 form-control form-control-sm" id="boot-multiselect-demo">
+                                        <option value="">1</option>
+                                        <option value="">2</option>
+                                        <option value="">3</option>
+                                        <option value="">4</option>
+                                        <option value="">5</option>
+                                    </select>
                                 </div>
                                 <div class=" form-group row col-12">
                                     <label class="col-5">Coupon Type </label>
@@ -1461,7 +1467,12 @@ $(document).ready(function() {
     $(".cancel-change").click(function() {
         $("#service-form")[0].reset();
         $("#extension_service").modal('hide');
-    })
+    });
+
+    $('#boot-multiselect-demo').multiselect({
+        buttonWidth: '300px',
+
+    });
 
 
 });
