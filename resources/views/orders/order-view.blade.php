@@ -5,8 +5,8 @@
 @push('styles')
 <style type="text/css" media="screen">
    .file-comment{
-        max-width: 100px;
-        max-height: 100px;
+        /*max-width: 100px;*/
+        max-height: 80px;
     }
    .note-popover.popover {
         display: none;
@@ -350,13 +350,14 @@
                     <div class="col-md-5">
                         <input type="file" hidden id="file" name="" value="">
                         <input type="button" class="btn btn-sm btn-secondary" onclick="uploadFile()" value="Upload attachment files" name="">
-                        <input type="file" id="upload_file" hidden class="" value="" name="list_file[]" multiple>
+                        <input type="file" id="upload_file" hidden class="" value="" name="list_file[]" multiple><br>
+                        <span id="file_names"></span>
                     </div>
 
                 </div>
                 <div class="form-group">
-                    <label for="note">Notes</label>
-                    <textarea class="form-control form-control-sm" name="note" rows="3"></textarea>
+                    <label for="desription">Description</label>
+                    <textarea class="form-control form-control-sm desription" name="desription" rows="3"></textarea>
                 </div>
                 `;
             }
@@ -375,11 +376,12 @@
                 <div class="border border-secondary p-2 rounded">
                     <p>Upload Logo images or file</p>
                     <input type="button" class="btn btn-sm btn-secondary" onclick="uploadFile()" value="Upload attachment files" name="">
-                    <input type="file" id="upload_file" hidden class="" value="" name="list_file[]" multiple>
+                    <input type="file" id="upload_file" hidden class="" value="" name="list_file[]" multiple><br>
+                        <span id="file_names"></span>
                 </div>
                 <div class="form-group">
-                    <label for="note">Notes</label>
-                    <textarea class="form-control form-control-sm" name="note" rows="3"></textarea>
+                    <label for="desription">Description</label>
+                    <textarea class="form-control form-control-sm desription" name="desription" rows="3"></textarea>
                 </div>
                 `;
             }
@@ -421,12 +423,13 @@
                     </div>
                     <div class="col-md-5">
                         <input type="button" class="btn btn-sm btn-secondary" onclick="uploadFile()" value="Upload attachment files" name="">
-                        <input type="file" id="upload_file" hidden class="" value="" name="list_file[]" multiple>
+                        <input type="file" id="upload_file" hidden class="" value="" name="list_file[]" multiple><br>
+                        <span id="file_names"></span>
                     </div>
                 </div>
                 <div class="form-group">
-                    <label for="note">Notes</label>
-                    <textarea class="form-control form-control-sm" name="note" rows="3"></textarea>
+                    <label for="desription">Description</label>
+                    <textarea class="form-control form-control-sm desription" name="desription" rows="3"></textarea>
                 </div>
                 `;
             }
@@ -443,7 +446,8 @@
                     </div>
                     <div class="col-md-6 pl-3">
                         <input type="button" class="btn btn-sm btn-secondary" onclick="uploadFile()" value="Upload attachment files" name="">
-                        <input type="file" id="upload_file" hidden class="" value="" name="list_file[]" multiple>
+                        <input type="file" id="upload_file" hidden class="" value="" name="list_file[]" multiple><br>
+                        <span id="file_names"></span>
                     </div>
                 </div>
                 <h5><b>BUSINESS INFO</b></h5>
@@ -458,21 +462,21 @@
                     <input type="email" id="address" class="col-md-3 form-control form-control-sm" name="address">
                 </div>
                 <div class="form-group">
-                    <label for="note">Notes</label>
-                    <textarea class="form-control form-control-sm" name="note" rows="3"></textarea>
+                    <label for="note">Description</label>
+                    <textarea class="form-control form-control-sm desription" name="desription" rows="3"></textarea>
                 </div>
                 `;
             }
             if(input_form_type == 5){
                 content_html = `
                     <div class="form-group">
-                        <label for="note">Notes</label>
-                        <textarea class="form-control form-control-sm" name="note" rows="3"></textarea>
+                        <label for="desription">Discription</label>
+                        <textarea class="form-control form-control-sm desription" name="desription" rows="3"></textarea>
                     </div>
                     <div class="form-group">
-                        <input type="button" class="btn btn-sm btn-secondary" onclick="uploadFile()" value="Upload attachment files" name="">
-                        <input type="file" id="upload_file" hidden class="" value="" name="list_file[]" multiple>
-                    <span class="file_name"></span>
+                        <input type="button" class="btn btn-sm btn-secondary" onclick="uploadFile()" value="Upload attachment files">
+                        <input type="file" id="upload_file" hidden class="" value="" name="list_file[]" multiple><br>
+                        <span id="file_names"></span>
                     </div>
                 `;
             }
@@ -480,6 +484,18 @@
             $("#datepicker_form").datepicker({
               todayHighlight: true,
               setDate: new Date(),
+            });
+            $(".desription").summernote({
+                placeholder: 'Text Description...',
+                toolbar: [
+                    // [groupName, [list of button]]
+                    ['style', ['bold', 'italic', 'underline', 'clear']],
+                    ['font', ['strikethrough', 'superscript', 'subscript']],
+                    ['fontsize', ['fontsize']],
+                    ['color', ['color']],
+                    ['para', ['ul', 'ol', 'paragraph']],
+                    ['height', ['height']]
+                ]
             });
             $("#modal-input-form").modal('show');
         });
@@ -501,10 +517,9 @@
         $(document).on("click",".file-comment",function(){
             $(this).parent('form').submit();
         });
-
         $(".submit-input-form").click(function(){
 
-            var formData = new FormData($(this).parents('form')[0])
+            var formData = new FormData($(this).parents('form')[0]);
             formData.append('_token','{{csrf_token()}}');
             formData.append('task_id',task_id);
             formData.append('order_id',{{$id}});
@@ -591,9 +606,19 @@
                     console.log("error");
                 });
         });
-        $("#upload_file").change(function(){
-            var name = $(this).val();
-            alert('ok');
+
+        //  GET NAME FILES
+        $(document).on('change','#upload_file',function(e){
+
+            var names = [];
+            var name_html = "";
+
+            for (var i = 0; i < $(this).get(0).files.length; ++i) {
+                names.push($(this).get(0).files[i].name);
+                name_html += $(this).get(0).files[i].name + "<br>";
+
+            }
+            $("#file_names").html(name_html);
         })
     });
 </script>
