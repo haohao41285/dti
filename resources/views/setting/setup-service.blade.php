@@ -32,7 +32,7 @@ Combo/Service List
 </div>
 {{-- MODAL FOR ADD/EDIT COMBO,SERVICE --}}
 <div class="modal fade" id="add-edit-modal" tabindex="-1" role="dialog" aria-labelledby="" aria-hidden="true">
-  <div class="modal-dialog" role="document">
+  <div class="modal-dialog modal-lg" role="document">
     <div class="modal-content">
       <div class="modal-body" id="body-add-edit">
 
@@ -199,88 +199,100 @@ Combo/Service List
             });
             content_body_html = `
             <form>
-            <div class="form-group">
-              <h6 for="cs_name" ><b class="required">Combo Name</b></h6>
-                <input type="hidden" name="cs_type" value="1" >
-                <input type="hidden" name="cs_id" value="`+cs_id+`">
-              <input type="text" name="cs_name" cs_id="`+cs_id+`" cs_type="`+cs_type+`"  class="form-control form-control-sm  cs_name" value="`+cs_name+`" placeholder="">
-            </div>
-            <div class="form-group">
-              <h6><b class="required">Price</b></h6>
-              <input type="number" name="cs_price"  class="form-control form-control-sm cs_price" value="`+cs_price+`" placeholder="">
-            </div>
-           <div class="form-group">
-            <h6><b>Combo Service type</b></h6>
-            <select name="cs_combo_service_type" id="cs_combo_service_type" class="form-control form-control-sm">
-              <option value="">Choose Service Type</option>
-                `+service_type_htm+`
-             </select>
-           </div>
-          <div class="form-group">
-            <h6><b>Assign To</b></h6>
-            <select name="cs_assign_to" id="assign_to" class="form-control form-control-sm">
-                `+user_html+`
-              </select>
-            </div>
-            <div class="form-group">
-              <h6><b>Description</b></h6>
-              <textarea name="cs_description" rows="3" class="form-control form-control-sm cs_description">`+cs_description+`</textarea>
-            </div>
-            <h6><b class="required">Service List</b></h6>
-            `+service_list_html+`
-            <div class="form-group row float-right">
-              <button type="button" class="btn btn-danger cancel-add-edit">Cancel</button>
-              <button type="button" class="btn btn-primary ml-2 submit-add-edit">Submit</button>
-            </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                          <h6 for="cs_name" ><b class="required">Combo Name</b></h6>
+                            <input type="hidden" name="cs_type" value="1" >
+                            <input type="hidden" name="cs_id" value="`+cs_id+`">
+                          <input type="text" name="cs_name" cs_id="`+cs_id+`" cs_type="`+cs_type+`"  class="form-control form-control-sm  cs_name" value="`+cs_name+`" placeholder="">
+                        </div>
+                        <div class="form-group">
+                          <h6><b class="required">Price</b></h6>
+                          <input type="number" name="cs_price"  class="form-control form-control-sm cs_price" value="`+cs_price+`" placeholder="">
+                        </div>
+                        <div class="form-group">
+                        <h6><b>Combo Service type</b></h6>
+                        <select name="cs_combo_service_type" id="cs_combo_service_type" class="form-control form-control-sm">
+                          <option value="">Choose Service Type</option>
+                            `+service_type_htm+`
+                         </select>
+                       </div>
+                        <div class="form-group">
+                        <h6><b>Assign To</b></h6>
+                        <select name="cs_assign_to" id="assign_to" class="form-control form-control-sm">
+                            `+user_html+`
+                          </select>
+                        </div>
+                        <div class="form-group">
+                      <h6><b>Description</b></h6>
+                      <textarea name="cs_description" rows="3" class="form-control form-control-sm cs_description">`+cs_description+`</textarea>
+                    </div>
+                    </div>
+                    <div class="col-md-6">
+                        <h6><b class="required">Service List</b></h6>
+                        `+service_list_html+`
+                        <div class="form-group row float-right">
+                          <button type="button" class="btn btn-danger cancel-add-edit">Cancel</button>
+                          <button type="button" class="btn btn-primary ml-2 submit-add-edit">Submit</button>
+                        </div>
+                    </div>
+                </div>
             </form>
             `;
           }else
           content_body_html = `
-            <form>
-            <div class="form-group">
-              <h6 for="cs_name"><b class="required">Service Name</b></h6>
-               <input type="hidden" name="cs_type" value="2" >
-              <input type="hidden" name="cs_id" value="`+cs_id+`">
-              <input type="text" name="cs_name" cs_id="`+cs_id+`" cs_type="`+cs_type+`"  class="form-control form-control-sm cs_name" value="`+cs_name+`" placeholder="">
-            </div>
-            <div class="form-group">
-              <h6><b class="required">Price</b></h6>
-              <input type="number" name="cs_price"  class="form-control form-control-sm cs_price" value="`+cs_price+`" placeholder="">
-            </div>
-            <div class="form-group">
-              <h6><b class="required">Expire Period</b></h6>
-             <input type="number" name="cs_expiry_period"  class="form-control form-control-sm" value="`+cs_expiry_period+`" placeholder="">
-            </div>
-            <div class="form-group">
-                <h6><b>Combo Service type</b></h6>
-                <select name="cs_combo_service_type" id="cs_combo_service_type" class="form-control form-control-sm">
-                    `+service_type_htm+`
-                 </select>
-           </div>
-            <div class="form-group">
-              <h6><b>Service Form</b></h6>
-              <select name="cs_form_type" id="cs_form_type" class="form-control form-control-sm">
-                `+service_form+`
-              </select>
-            </div>
-            <div class="form-group">
-              <h6><b>Assign To</b></h6>
-              <select name="cs_assign_to" id="assign_to" class="form-control form-control-sm">
-                `+user_html+`
-              </select>
-            </div>
-            <div class="form-group">
-              <h6><b>Description</b></h6>
-              <textarea name="cs_description" rows="3" class="form-control form-control-sm cs_description">`+cs_description+`</textarea>
-            </div>
-            <h6><b>Menu List</b></h6>
-            <div style="max-height:20em;overflow-y: auto;" class="scroll">
-              `+data.menu_html+`
-            </div>
-            <div class="form-group row float-right">
-              <button type="button" class="btn btn-danger cancel-add-edit">Cancel</button>
-              <button type="button" class="btn btn-primary ml-2 submit-add-edit">Submit</button>
-            </div>
+            <form">
+                <div class="col-md-12 row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                          <h6 for="cs_name"><b class="required">Service Name</b></h6>
+                           <input type="hidden" name="cs_type" value="2" >
+                          <input type="hidden" name="cs_id" value="`+cs_id+`">
+                          <input type="text" name="cs_name" cs_id="`+cs_id+`" cs_type="`+cs_type+`"  class="form-control form-control-sm cs_name" value="`+cs_name+`" placeholder="">
+                        </div>
+                        <div class="form-group">
+                          <h6><b class="required">Price</b></h6>
+                          <input type="number" name="cs_price"  class="form-control form-control-sm cs_price" value="`+cs_price+`" placeholder="">
+                        </div>
+                        <div class="form-group">
+                          <h6><b class="required">Expire Period</b></h6>
+                         <input type="number" name="cs_expiry_period"  class="form-control form-control-sm" value="`+cs_expiry_period+`" placeholder="">
+                        </div>
+                        <div class="form-group">
+                            <h6><b>Combo Service type</b></h6>
+                            <select name="cs_combo_service_type" id="cs_combo_service_type" class="form-control form-control-sm">
+                                `+service_type_htm+`
+                             </select>
+                       </div>
+                        <div class="form-group">
+                          <h6><b>Service Form</b></h6>
+                          <select name="cs_form_type" id="cs_form_type" class="form-control form-control-sm">
+                            `+service_form+`
+                          </select>
+                        </div>
+                        <div class="form-group">
+                          <h6><b>Assign To</b></h6>
+                          <select name="cs_assign_to" id="assign_to" class="form-control form-control-sm">
+                            `+user_html+`
+                          </select>
+                        </div>
+                        <div class="form-group">
+                          <h6><b>Description</b></h6>
+                          <textarea name="cs_description" rows="3" class="form-control form-control-sm cs_description">`+cs_description+`</textarea>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                    <h6><b>Menu List</b></h6>
+                    <div style="max-height:33em;overflow-y: auto;" class="scroll">
+                      `+data.menu_html+`
+                    </div>
+                    <div class="form-group row float-right">
+                      <button type="button" class="btn btn-danger cancel-add-edit">Cancel</button>
+                      <button type="button" class="btn btn-primary ml-2 submit-add-edit">Submit</button>
+                    </div>
+                </div>
+                 </div>
             </form>
             `;
             $("#body-add-edit").html(content_body_html);
@@ -292,21 +304,6 @@ Combo/Service List
       });
     });
     $(document).on('click','.submit-add-edit',function(){
-
-      // var cs_name = $(".cs_name").val();
-      // var cs_id = $(".cs_name").attr('cs_id');
-      // var cs_type = $(".cs_name").attr('cs_type');
-      // var cs_price = $(".cs_price").val();
-      // var cs_description = $(".cs_description").val();
-      // var cs_assign_to = $("#assign_to :selected").val();
-      // var cs_combo_service_type = $("#cs_combo_service_type").val();
-      // var cs_form_type = $("#cs_form_type").val();
-      // var service_id_arr = [];
-
-      // $('.service_id:checked').each(function() {
-      //   service_id_arr.push($(this).val());
-      // });
-
         var formData = new FormData($(this).parents('form')[0]);
         formData.append('_token','{{csrf_token()}}');
 
@@ -361,12 +358,12 @@ Combo/Service List
     });
     $(document).on("click",'.add-new-cs',function(){
 
-      var cs_type = 1;
+      var cs_type = 2;
       getCs(cs_type);
 
     });
     function getCs(cs_type){
-      var cs_type = 1;
+      var cs_type = 2;
       var cs_id = 0;
       $.ajax({
         url: '{{route('get-cs')}}',
@@ -394,7 +391,7 @@ Combo/Service List
                 combo_service_html += `<option  value="`+val.id+`">`+val.name+`</option>`;
             });
 
-          if(cs_type == 1){
+          if(cs_type == 2){
             $.each(cs_list, function(index, val)
             {
               service_list_html += `<div class="checkbox">
@@ -403,40 +400,64 @@ Combo/Service List
             });
             content_body_html = `
              <form>
-             <input type="hidden" value="`+cs_id+`" name="cs_id">
+          <div class="row">
+            <div class="col-md-6">
+                <input type="hidden" value="`+cs_id+`" name="cs_id">
+                <div class="form-group">
+                    <h6><b class="required">Type</b></h6>
+                    <select name="cs_type" required class="form-control-sm form-control cs_type">
+                      <option value="1">Combo</option>
+                      <option selected value="2">Service</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <h6><b class="required">Combo Service Kind Of</b></h6>
+                    <select name="cs_combo_service_type" required class="form-control-sm form-control">
+                      `+combo_service_html+`
+                    </select>
+                </div>
+                <div class="form-group">
+                  <h6><b class="required">Name</b></h6>
+                  <input type="text" name="cs_name" required cs_id="`+cs_id+`" cs_type="`+cs_type+`"  class="form-control form-control-sm cs_name" value="" placeholder="">
+                </div>
+                <div class="form-group service-content">
+                  <h6><b class="required">Price</b></h6>
+                  <input type="number" name="cs_price" required class="form-control form-control-sm cs_price" value="" placeholder="">
+                </div>
+                <div class="form-group service-content-son">
+                    <h6><b class="required">Expire Period(month)</b></h6>
+                  <input type="number" name="cs_expiry_period" required class="form-control form-control-sm" value="" placeholder="">
+              </div>
+               <div class="form-group service-content-son" >
+                <h6><b>Service Form</b></h6>
+                <select name="cs_form_type" id="cs_form_type" class="form-control form-control-sm">
+                  @foreach(getFormService() as $key => $form)
+            <option value="{{$key}}">{{$form}}</option>
+                  @endforeach
+            </select>
+          </div>
+          <div class="form-group service-content-son">
+            <h6><b class="required">Assign To</b></h6>
+            <select name="cs_assign_to" id="assign_to" class="form-control form-control-sm">
+              `+user_html+`
+            </select>
+          </div>
             <div class="form-group">
-                <h6><b class="required">Type</b></h6>
-                <select name="cs_type" required class="form-control-sm form-control cs_type">
-                  <option value="1">Combo</option>
-                  <option value="2">Service</option>
-                </select>
-            </div>
-            <div class="form-group">
-                <h6><b class="required">Combo Service Kind Of</b></h6>
-                <select name="cs_combo_service_type" required class="form-control-sm form-control">
-                  `+combo_service_html+`
-                </select>
-            </div>
-            <div class="form-group">
-              <h6><b class="required">Name</b></h6>
-              <input type="text" name="cs_name" required cs_id="`+cs_id+`" cs_type="`+cs_type+`"  class="form-control form-control-sm cs_name" value="" placeholder="">
-            </div>
-            <div class="form-group service-content">
-              <h6><b class="required">Price</b></h6>
-              <input type="number" name="cs_price" required class="form-control form-control-sm cs_price" value="" placeholder="">
-            </div>
-            <div class="form-group">
-              <h6><b>Description</b></h6>
-              <textarea name="cs_description" rows="3" class="form-control form-control-sm cs_description"></textarea>
-            </div>
+          <h6><b>Description</b></h6>
+          <textarea name="cs_description" rows="3" class="form-control form-control-sm cs_description"></textarea>
+        </div>
+        </div>
+        <div class="col-md-6">
             <h6><b> List</b></h6>
-            <div style="max-height: 20em;overflow-y: auto" id="cs-box">
-              `+service_list_html+`
+            <div style="max-height: 33em;overflow-y: auto" id="cs-box">
+`+data.menu_html+`
+                </div>
+                <div class="form-group row float-right">
+                  <button type="button" class="btn btn-danger cancel-add-edit">Cancel</button>
+                  <button type="button" class="btn btn-primary ml-2 submit-add-edit">Submit</button>
+                </div>
             </div>
-            <div class="form-group row float-right">
-              <button type="button" class="btn btn-danger cancel-add-edit">Cancel</button>
-              <button type="button" class="btn btn-primary ml-2 submit-add-edit">Submit</button>
-            </div>
+            <div>
             </form>
             `;
           }
