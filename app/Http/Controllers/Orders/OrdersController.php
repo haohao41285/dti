@@ -818,9 +818,7 @@ class OrdersController extends Controller
             ->make(true);
     }
 
-    public function submitInfoTask(Request $request)
-    {
-
+    public function submitInfoTask(Request $request){
         $input = $request->all();
         $current_month = Carbon::now()->format('m');
         $tracking_arr = [];
@@ -844,7 +842,7 @@ class OrdersController extends Controller
         $tracking_create = MainTrackingHistory::create($tracking_arr);
 
         //UPDATE TASK
-        $task_update = MainTask::where('id', $request->task_id)->update(['content' => $content, 'note' => $request->note, 'updated_by' => Auth::user()->user_id]);
+        $task_update = MainTask::where('id', $request->task_id)->update(['content' => $content, 'desription' => $request->desription, 'updated_by' => Auth::user()->user_id]);
 
         //DELETE OLD FILE
         $file_delete = MainFile::where('task_id', $request->task_id)->delete();

@@ -61,7 +61,7 @@ Combo/Service List
                 columns:[
                   {data:'id', name:'id'},
                   {data:'cs_name', name:'cs_name'},
-                  {data:'cs_type', name:'cs_type',class: 'text-center'},
+                  {data:'cs_combo_service_type', name:'cs_combo_service_type',class: 'text-center'},
                   {data:'cs_price', name:'cs_price',class: 'text-right'},
                   {data:'cs_expiry_period', name:'cs_expiry_period',class: 'text-center'},
                   {data:'cs_service_id', name:'cs_service_id'},
@@ -167,19 +167,18 @@ Combo/Service List
           });
 
           //GET FORM SERVICE LIST
-           var selected_form = '';
+
           $.each(data.service_form,function (ind,value) {
-            if(cs_form_type == parseInt(ind)+1){
-                selected_form = 'selected';
-            }
+            if(cs_form_type == parseInt(ind)+1) var selected_form = 'selected';
+            else var selected_form = '';
+
             service_form += `<option `+selected_form+` value="`+ind+`">`+value+`</option>`;
           });
           //GET COMBO SERVICE TYPE LIST
-            var selected_type = '';
             $.each(data.combo_service_type_list,function (ind,value) {
-                if(cs_combo_service_type == parseInt(ind)+1){
-                    selected_type = 'selected';
-                }
+                if(cs_combo_service_type == parseInt(ind)+1) var selected_type = 'selected';
+                else var selected_type = "";
+
                 service_type_htm += `<option `+selected_type+` value="`+value['id']+`">`+value['name']+`</option>`;
             });
             // console.log(data.combo_service_type_list);
@@ -242,7 +241,7 @@ Combo/Service List
             `;
           }else
           content_body_html = `
-            <form">
+            <form>
                 <div class="col-md-12 row">
                     <div class="col-md-6">
                         <div class="form-group">

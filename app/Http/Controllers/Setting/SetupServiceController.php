@@ -68,11 +68,8 @@ class SetupServiceController extends Controller
 
 		return DataTables::of($combo_service_arr)
 
-		    ->editColumn('cs_type',function($row){
-		    	if($row['cs_type'] == 1)
-		    		return "Combo";
-		    	else
-		    		return "Service";
+		    ->editColumn('cs_combo_service_type',function($row){
+		    	return getFormService()[$row['cs_type']];
 		    })
 		    ->addColumn('cs_status',function($row){
 				if($row['cs_status'] == 1) $checked='checked';
