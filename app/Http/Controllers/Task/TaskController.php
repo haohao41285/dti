@@ -287,7 +287,7 @@ class TaskController extends Controller
         }
     }
     public function saveTask(Request $request){
-
+//        return $request->all();
         if(Gate::denies('permission','create-new-task'))
             return doNotPermission();
 
@@ -299,9 +299,10 @@ class TaskController extends Controller
 
         $input =  $request->all();
         if($request->date_start != "")
-            $input['date_start'] = format_date_d_m_y($request->date_start);
+            $input['date_start'] = format_date_db($request->date_start);
         if($request->date_end != "")
-            $input['date_end'] = format_date_d_m_y($request->date_end);
+            $input['date_end'] = format_date_db($request->date_end);
+//        return $input;
 
         if(!isset($request->id)){
 

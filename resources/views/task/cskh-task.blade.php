@@ -99,15 +99,7 @@
 @endsection
 @push('scripts')
     <script>
-        $(document).ready(function() {
-            // $("#date_start").datepicker({
-            //     todayHighlight: true,
-            //     setDate: new Date(),
-            // });
-            // $("#date_end").datepicker({
-            //     todayHighlight: true,
-            //     setDate: new Date(),
-            // });
+        $(document).ready(function(){
             $('#description').summernote({
                 placeholder: 'Text Content ...',
                 toolbar: [
