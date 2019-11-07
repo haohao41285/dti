@@ -37,7 +37,7 @@ if(!function_exists('getFormService')){
             2 => 'Website',
             3 => 'Facebook',
             4 => 'Domain',
-            5 => 'Design and Printing'
+            5 => 'Default'
         ];
     }
 }
