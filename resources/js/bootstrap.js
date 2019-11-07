@@ -1,3 +1,5 @@
+window.bootstrapMulty = require("bootstrap-multiselect/dist/js/bootstrap-multiselect.js");
+
 window.CanvasJS = require('canvasjs/dist/canvasjs.min.js');
 window.CanvasJSJ = require('canvasjs/dist/jquery.canvasjs.min.js');
 
@@ -20,9 +22,9 @@ try {
     window.$ = window.jQuery = require('jquery');
 
     require('bootstrap');
-    window.Switchery  = require('switchery/switchery')
+    window.Switchery = require('switchery/switchery')
 
-} catch (e) {console.log(e); }
+} catch (e) { console.log(e); }
 
 /**
  * We'll load the axios HTTP library which allows us to easily issue requests
@@ -45,7 +47,7 @@ let token = document.head.querySelector('meta[name="csrf-token"]');
 if (token) {
     window.axios.defaults.headers.common['X-CSRF-TOKEN'] = token.content;
 } else {
-   //console.error('CSRF token not found: https://laravel.com/docs/csrf#csrf-x-csrf-token');
+    //console.error('CSRF token not found: https://laravel.com/docs/csrf#csrf-x-csrf-token');
 }
 
 /**

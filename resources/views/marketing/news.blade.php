@@ -110,7 +110,7 @@ News
                     <div class="form-group row col-12">
                         <label class="col-2 ">Image</label>
                         <div class="previewImage">
-                            <img id="previewImageNews" src="{{ asset("images/no-image.png")}}" />
+                            <img style="height: 10em; width: auto" id="previewImageNews" src="{{ asset("images/no-image.png")}}" />
                             <input type="file" accept="image/*" name="image" class="custom-file-input" previewImageId="previewImageNews" value="" style="display: none">
                         </div>
                     </div>
