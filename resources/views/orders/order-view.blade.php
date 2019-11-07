@@ -463,6 +463,19 @@
                 </div>
                 `;
             }
+            if(input_form_type == 5){
+                content_html = `
+                    <div class="form-group">
+                        <label for="note">Notes</label>
+                        <textarea class="form-control form-control-sm" name="note" rows="3"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <input type="button" class="btn btn-sm btn-secondary" onclick="uploadFile()" value="Upload attachment files" name="">
+                        <input type="file" id="upload_file" hidden class="" value="" name="list_file[]" multiple>
+                    <span class="file_name"></span>
+                    </div>
+                `;
+            }
             $("#content-form").html(content_html);
             $("#datepicker_form").datepicker({
               todayHighlight: true,
@@ -577,6 +590,10 @@
                 .fail(function() {
                     console.log("error");
                 });
+        });
+        $("#upload_file").change(function(){
+            var name = $(this).val();
+            alert(name);
         })
     });
 </script>
