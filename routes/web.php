@@ -173,8 +173,12 @@ Route::group(['middleware' => ['auth']], function () {
             Route::post('/save-expire-date', 'PlaceController@saveExpireDate')->name('save-expire-date');
         });
 
-        Route::group(['prefix' => 'build-code'], function() {
-            Route::get('/', 'BuildCodeController@index');
+        Route::group(['prefix' => 'auto-template'], function() {
+            Route::get('/', 'AutoTemplateController@index');
+            Route::get('/get-auto-template-datatable', 'AutoTemplateController@getAutoTemplateDatatable')->name('getAutoTemplateDatatable');
+            Route::get('/get-auto-template-by-id', 'AutoTemplateController@getAutoTemplateById')->name('getAutoTemplateById');
+            Route::get('/delete-auto-template', 'AutoTemplateController@deleteAutoTemplate')->name('deleteAutoTemplate');
+            Route::post('/save-auto-template', 'AutoTemplateController@saveAutoTemplate')->name('saveAutoTemplate');
         });
 
     });
