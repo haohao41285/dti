@@ -50,7 +50,7 @@
     var OneSignal = window.OneSignal || [];
     OneSignal.push(function() {
         OneSignal.init({
-            appId: "d11fe280-bd65-4897-90b8-22835655a341", /*Đây là app ID của các bạn họ */
+            appId: '{{ENV('ONESIGNAL_APP_ID')}}', /*Đây là app ID của các bạn họ */
             autoRegister: true,
             requiresUserPrivacyConsent: false,
             // notifyButton: {
