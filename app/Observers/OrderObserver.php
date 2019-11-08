@@ -94,7 +94,7 @@ class OrderObserver
             $input['name'] = $mainComboServiceBought->getCustomer->customer_firstname. " ".$mainComboServiceBought->getCustomer->customer_lastname;
             $input['message'] = $content;
 
-            dispatch(new SendNotification($input))->delay(now()->addSecond(5));
+//            dispatch(new SendNotification($input))->delay(now()->addSecond(5));
         }
     }
 
