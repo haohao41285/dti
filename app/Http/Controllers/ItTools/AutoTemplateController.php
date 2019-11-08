@@ -34,7 +34,7 @@ class AutoTemplateController extends Controller
     }
 
     public function saveAutoTemplate(Request $request){
-    	$template = PosTemplate::saveAuto($request->id,  null, $request->title, $request->discount, $request->discountType, $request->image, $request->services, $request->couponType);
+    	$template = PosTemplate::saveAuto($request->id,  null, $request->title, $request->discount, $request->discountType, $request->image, $request->services, $request->templateType,$request->type);
     	
     	return response()->json(['status'=>1,'msg'=>'saved successfully']);
     }
