@@ -10,10 +10,7 @@ class PosTemplate extends Model
 {
     protected $table = 'pos_template';
 
-    // protected $primaryKey = ['template_id','template_place_id'];
     protected $primaryKey = 'template_id';
-
-    // public $id = false;
 
     public $timestamps = true;
 
@@ -22,7 +19,7 @@ class PosTemplate extends Model
         'template_place_id',
         'template_title',
         'template_discount',
-        'template_type',
+        'template_discount_type',
         'template_list_service',
         'template_linkimage',
         'created_at',
@@ -54,8 +51,8 @@ class PosTemplate extends Model
                     ->first();
     }
 
-    public static function getDatatableByPlaceId($placeId){
-        $data = self::getByPlaceIdAndType($placeId,1);
+    public static function getDatatableByPlaceId($placeId, $type){
+        $data = self::getByPlaceIdAndType($placeId,$type);
 
         return DataTables::of($data)
         ->editColumn('action',function($data){
@@ -67,7 +64,7 @@ class PosTemplate extends Model
                 return "<img style='height: 5rem;' src=".env('URL_FILE_VIEW').$data->template_linkimage." >";            
         })
         ->editColumn('template_discount',function($data){
-                if($data->template_type === 0){
+                if($data->template_discount_type === 0){
                     return $data->template_discount."(%)";
                 } else {
                     return number_format($data->template_discount)."($)";
@@ -92,7 +89,7 @@ class PosTemplate extends Model
             'template_place_id' => $placeId,
             'template_title' => $title,
             'template_discount' => $discount,
-            'template_type' => $discountType,
+            'template_discount_type' => $discountType,
             'template_linkimage' => $image,
             'template_list_service' => $services,
             'template_type_id' => $couponType,
@@ -107,21 +104,7 @@ class PosTemplate extends Model
             }
             // dd($arr);
             $coupon->update($arr);
-            // $coupon->template_place_id = $placeId;
-            // $coupon->template_title = $title;
-            // $coupon->template_discount = $discount;
-            // $coupon->template_type = $discountType;
-            
-            // if($image){
-            //     $coupon->template_linkimage = $image;
-            // }
-
-            // $coupon->template_list_service = $services;
-            // $coupon->template_type_id = $couponType;
-            // $coupon->template_table_type = 1;
-            // $coupon->save();
-
-
+           
             return "updated successfully";
         } else {
             $id = self::select('template_id')
