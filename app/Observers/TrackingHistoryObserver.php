@@ -53,7 +53,7 @@ class TrackingHistoryObserver
             $input['name'] = $mainTrackingHistory->getReceiver->user_firstname." ".$mainTrackingHistory->getReceiver->user_lastname;
             $input['message'] = $content;
 
-            dispatch(new SendNotification($input));
+//            dispatch(new SendNotification($input));
         }
         //END SEND MAIL
 
