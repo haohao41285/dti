@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Task;
 
 use App\Models\MainComboService;
+use App\Models\MainGroupUser;
+use App\Models\MainPermissionDti;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use PHPMailer\PHPMailer\PHPMailer;
@@ -285,7 +287,7 @@ class TaskController extends Controller
         }
     }
     public function saveTask(Request $request){
-
+//        return $request->all();
         if(Gate::denies('permission','create-new-task'))
             return doNotPermission();
 
@@ -297,9 +299,10 @@ class TaskController extends Controller
 
         $input =  $request->all();
         if($request->date_start != "")
-            $input['date_start'] = format_date_d_m_y($request->date_start);
+            $input['date_start'] = format_date_db($request->date_start);
         if($request->date_end != "")
-            $input['date_end'] = format_date_d_m_y($request->date_end);
+            $input['date_end'] = format_date_db($request->date_end);
+//        return $input;
 
         if(!isset($request->id)){
 
@@ -530,6 +533,39 @@ class TaskController extends Controller
             })
             ->rawColumns(['order_id','task'])
             ->make(true);
+    }
+    public function cskhTask($id = 0){
+        if(Gate::denies('permission','cskh-task'))
+            return doNotPermission();
+
+        $role_arr = [];
+
+        $permission_id = MainPermissionDti::where('permission_slug','cskh-task-read')->first()->id;
+
+        $role_list = MainGroupUser::active()
+            ->where('gu_id','!=',1)
+            ->where(function ($query){
+                $query->where('gu_role_new','!=',null)
+                    ->orWhere('gu_role_new','!=','');
+            })
+            ->select('gu_role_new','gu_id')
+            ->get();
+
+        foreach ($role_list as $role){
+            $permission_list = explode(';',$role->gu_role_new);
+            if(in_array($permission_id,$permission_list)){
+                $role_arr[] = $role->gu_id;
+            }
+        }
+        $data['user_list'] = MainUser::active()->whereIn('user_group_id',$role_arr)->get();
+        $data['task_parent_id'] = $id;
+        $data['task_name'] = "";
+
+        if($id>0){
+            $data['task_name'] = MainTask::find($id)->subject;
+        }
+
+        return view('task.cskh-task',$data);
     }
 
 }

@@ -9,6 +9,7 @@ use App\Models\MainGroupUser;
 use App\Models\MainMenuDti;
 use App\Models\MainPermissionDti;
 use App\Models\MainTeam;
+use App\Models\MainTeamType;
 use Illuminate\Http\Request;
 use App\Helpers\MenuHelper;
 use App\Helpers\GeneralHelper;
@@ -20,6 +21,7 @@ use App\Helpers\ImagesHelper;
 use Gate;
 use Validator;
 use Hash;
+use App\Models\MainComboServiceType;
 
 class UserController extends Controller
 {
@@ -380,8 +382,8 @@ class UserController extends Controller
             return doNotPermission();
 
         $data['role_list'] = MainGroupUser::active()->get();
-        $data['team_list'] = MainTeam::active()->get();
-        $data['service_list'] = MainComboService::where('cs_status',1)->get();
+        $data['team_list'] = MainTeamType::active()->get();
+        $data['service_type_list'] = MainComboServiceType::active()->get();
 
         return view('user.service-permission',$data);
     }
@@ -393,7 +395,7 @@ class UserController extends Controller
         $team_id = $request->team_id;
         $service_id = $request->service_id;
 
-        $service_permission = MainTeam::find($team_id);
+        $service_permission = MainTeamType::find($team_id);
         $service_permission_list = $service_permission->service_permission;
 
         if($service_permission_list == ""){
@@ -409,7 +411,7 @@ class UserController extends Controller
             else
                 $service_permission_list = $service_permission_list.";".$service_id;
         }
-        $service_update = MainTeam::find($team_id)->update(['service_permission'=> $service_permission_list]);
+        $service_update = MainTeamType::find($team_id)->update(['service_permission'=> $service_permission_list]);
 
         if(!isset($service_update))
             return response(['status'=>'error','message'=>'Failed!']);

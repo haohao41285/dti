@@ -13,11 +13,15 @@
                 <thead class="text-center thead-light">
                 <th>Services/Permissions</th>
                 @foreach($team_list as $team)
-                    <th>{{$team->team_name}}</th>
+                    <th>{{$team->team_type_name}}</th>
                  @endforeach
                 </thead>
                 <tbody>
-                    @foreach($service_list as $service)
+                @foreach($service_type_list as $service_type)
+                    <tr class="thead-light">
+                        <td colspan="{{$team_list->count()+1}}"><b>{{$service_type->name}}</b></td>
+                    </tr>
+                    @foreach($service_type->getComboService as $service)
                     <tr>
                         <td>#{{$service->id}}-{{$service->cs_name}}</td>
                         @foreach($team_list as $team)
@@ -42,6 +46,7 @@
                         @endforeach
                     </tr>
                      @endforeach
+                @endforeach
                 </tbody>
             </table>
         </div>

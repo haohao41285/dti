@@ -163,12 +163,12 @@ Route::group(['middleware' => ['auth']], function () {
             Route::get('/get-wp-datatable-by-place-id', 'PlaceController@getWpDatableByPlaceId')->name('getWpDatableByPlaceId');
             Route::get('/delete-value-property', 'PlaceController@deleteValueProperty')->name('deleteValueProperty');
             Route::post('/save-custom-value-property', 'PlaceController@saveCustomValueProperty')->name('saveCustomValueProperty');
-            
+
             Route::get('/get-auto-coupon-datatable', 'PlaceController@getAutoCouponDatatable')->name('getAutoCouponDatatable');
             Route::post('/save-auto-coupon', 'PlaceController@saveAutoCoupon')->name('saveAutoCoupon');
             Route::get('/delete-auto-coupon', 'PlaceController@deleteAutoCoupon')->name('deleteAutoCoupon');
             Route::get('get-auto-coupon-by-id', 'PlaceController@getAutoCouponById')->name('getAutoCouponById');
-        
+
             Route::get('/get-service-place', 'PlaceController@getServicePlace')->name('get-service-place');
             Route::post('/save-expire-date', 'PlaceController@saveExpireDate')->name('save-expire-date');
         });
@@ -206,7 +206,7 @@ Route::group(['middleware' => ['auth']], function () {
         Route::get('service-datatable', 'SetupServiceController@serviceDatabase')->name('service-datatable');
         Route::get('change-status-cs', 'SetupServiceController@changeStatusCs')->name('change-status-cs');
         Route::get('get-service-combo', 'SetupServiceController@getServiceCombo')->name('get-service-combo');
-        Route::get('save-service-combo', 'SetupServiceController@saveServiceCombo')->name('save-service-combo');
+        Route::post('save-service-combo', 'SetupServiceController@saveServiceCombo')->name('save-service-combo');
         Route::get('get-cs', 'SetupServiceController@getCs')->name('get-cs');
 
         Route::get('team-type-datatable', 'SetupTeamController@teamTypeDatatable')->name('team-type-datatable');
@@ -328,6 +328,9 @@ Route::group(['middleware' => ['auth']], function () {
 
         Route::get('all-task', 'TaskController@allTask')->name('all-task');
         Route::get('all-task-datatable', 'TaskController@allTaskDatatable')->name('all-task-datatable');
+
+        Route::get('cskh-task', 'TaskController@cskhTask')->name('cskh-task');
+
     });
     //confirm event
     Route::get('confirm-event', 'DashboardController@confirmEvent')->name('confirm-event');

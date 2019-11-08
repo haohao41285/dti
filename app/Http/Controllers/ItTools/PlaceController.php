@@ -4,6 +4,7 @@ namespace App\Http\Controllers\ItTools;
 
 use App\Models\MainComboServiceBought;
 use App\Models\MainCustomerService;
+use App\Models\MainTask;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use App\Models\PosPlace;
@@ -22,14 +23,24 @@ use App\Models\PosTemplate;
 use App\Models\PosTemplateType;
 
 use DB;
+use Gate;
+use Auth;
 
 
 
 class PlaceController extends Controller
 {
     public function index(){
-        $data['templateType'] = PosTemplateType::getByType(1);
-        return view('tools.place',$data);
+
+        if(Gate::allows('permission','place-admin')
+            || Gate::allows('permission','place-staff')
+        ){
+            $data['templateType'] = PosTemplateType::getByType(1);
+            return view('tools.place',$data);
+        }else
+            return doNotPermission();
+
+
     }
     public function cloneUpdateWebsite(Request $request)
     {
@@ -49,9 +60,30 @@ class PlaceController extends Controller
 
 
     public function getPlacesDatatable(){
+
+        $user_id = Auth::user()->user_id;
+
+
+
         $places = PosPlace::select('place_id','place_name','place_address','place_email','place_phone','place_ip_license','created_at')
-            ->where('place_status',1)
-            ->get();
+            ->where('place_status',1);
+        if(Gate::allows('permission','place-admin')){}
+        elseif(Gate::allows('permission','place-staff')){
+            $place_id_arr = MainTask::where(function($query) use ($user_id) {
+                $query->where('assign_to',$user_id)
+                    ->orWhere('created_by',$user_id)
+                    ->orWhere('updated_by',$user_id);
+            })
+                ->where('status','!=',3)
+                ->select('place_id')
+                ->get()->toArray();
+
+            $place_id_arr = array_values($place_id_arr);
+
+            $places = $places->whereIn('place_id',$place_id_arr);
+        }
+
+
 
         return DataTables::of($places)
         ->editColumn('action',function($places){
@@ -208,7 +240,7 @@ class PlaceController extends Controller
     }
 
     public function saveCustomValueProperty(Request $request){
-       PosWebsiteProperty::saveValue($request->variable,$request->name,$request->value,$request->image,$request->action,$request->placeId); 
+       PosWebsiteProperty::saveValue($request->variable,$request->name,$request->value,$request->image,$request->action,$request->placeId);
        return response()->json(['status'=> 1,"msg"=>"Saved successfully"]);
     }
 
@@ -218,7 +250,7 @@ class PlaceController extends Controller
 
     public function saveAutoCoupon(Request $request){
         PosTemplate::saveAuto($request->id, $request->placeId, $request->title,$request->discount, $request->discountType,$request->image,$request->services, $request->couponType);
-        
+
         return response()->json(['status'=>1,'msg'=>"saved successfully"]);
     }
 
@@ -238,6 +270,6 @@ class PlaceController extends Controller
         }
     }
 
-    
+
 }
 

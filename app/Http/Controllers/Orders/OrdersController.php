@@ -109,9 +109,10 @@ class OrdersController extends Controller
                 ->get();
         }
         //GET COMBO SERVICE WITH ROLE
-        $service_permission_list = MainTeam::find(Auth::user()->user_team)->service_permission;
+        $service_permission_list = MainTeam::find(Auth::user()->user_team)->getTeamType->service_permission;
         $service_permission_arr = explode(';', $service_permission_list);
         $data['service_permission_arr'] = $service_permission_arr;
+
 //        return $service_permission_arr;
         //GET COMBO SERVICE NOT TYPE
         $data['combo_service_orther'] = MainComboService::where('cs_status', 1)->whereIn('id', $service_permission_arr)->whereNull('cs_combo_service_type')->get();
@@ -817,9 +818,7 @@ class OrdersController extends Controller
             ->make(true);
     }
 
-    public function submitInfoTask(Request $request)
-    {
-
+    public function submitInfoTask(Request $request){
         $input = $request->all();
         $current_month = Carbon::now()->format('m');
         $tracking_arr = [];
@@ -843,7 +842,7 @@ class OrdersController extends Controller
         $tracking_create = MainTrackingHistory::create($tracking_arr);
 
         //UPDATE TASK
-        $task_update = MainTask::where('id', $request->task_id)->update(['content' => $content, 'note' => $request->note, 'updated_by' => Auth::user()->user_id]);
+        $task_update = MainTask::where('id', $request->task_id)->update(['content' => $content, 'desription' => $request->desription, 'updated_by' => Auth::user()->user_id]);
 
         //DELETE OLD FILE
         $file_delete = MainFile::where('task_id', $request->task_id)->delete();
