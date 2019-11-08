@@ -30,7 +30,7 @@ class TaskObserver
         $input['name'] = $mainTask->getAssignTo->user_firstname." ".$mainTask->getAssignTo->user_lastname;
         $input['message'] = $content;
 
-        dispatch(new SendNotification($input));
+//        dispatch(new SendNotification($input));
         //END SEND MAIL
 
         //SEND NOTIFICATION WITH ONESIGNAL
