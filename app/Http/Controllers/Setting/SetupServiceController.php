@@ -61,23 +61,28 @@ class SetupServiceController extends Controller
 				'cs_assign_id' => $service_combo->user_id,
 				'cs_status' => $service_combo->cs_status,
                 'cs_form_type' => $service_combo->cs_form_type,
-                'cs_combo_service_type' => $service_combo->cs_combo_service_type,
-                'cs_expiry_period' => $service_combo->cs_expiry_period
+                'cs_combo_service_type' => $service_combo->getComboServiceType['name'],
+                'cs_expiry_period' => $service_combo->cs_expiry_period,
+                'cs_combo_service_type_id' => $service_combo->cs_combo_service_type
 			];
 		}
 
 		return DataTables::of($combo_service_arr)
 
-		    ->editColumn('cs_combo_service_type',function($row){
-		    	return getFormService()[$row['cs_type']];
-		    })
+//		    ->editColumn('cs_combo_service_type',function($row){
+////		    	return getFormService()[$row['cs_combo_service_type']];
+//		    	foreach(getFormService() as $key => $form_service){
+//		    	    if($key == $row['cs_combo_service_type'])
+//		    	        return $form_service;
+//                }
+//		    })
 		    ->addColumn('cs_status',function($row){
 				if($row['cs_status'] == 1) $checked='checked';
 	       		else $checked="";
 				return '<input type="checkbox" cs_id="'.$row['id'].'" cs_status="'.$row['cs_status'].'" class="js-switch"'.$checked.'/>';
 			})
 			->addColumn('action',function($row){
-				return '<a class="btn btn-sm btn-secondary edit-cs" cs_expiry_period="'.$row['cs_expiry_period'].'" cs_combo_service_type="'.$row['cs_combo_service_type'].'" cs_form_type="'.$row['cs_form_type'].'" cs_price='.$row['cs_price'].' cs_description="'.$row['cs_description'].'" cs_type='.$row['cs_type'].' cs_name="'.$row['cs_name'].'" cs_id="'.$row['id'].'"  title="Edit" href="javascript:void(0)" cs_assign_id="'.$row['cs_assign_id'].'"><i class="fas fa-edit"></i></a>';
+				return '<a class="btn btn-sm btn-secondary edit-cs" cs_expiry_period="'.$row['cs_expiry_period'].'" cs_combo_service_type="'.$row['cs_combo_service_type_id'].'" cs_form_type="'.$row['cs_form_type'].'" cs_price='.$row['cs_price'].' cs_description="'.$row['cs_description'].'" cs_type='.$row['cs_type'].' cs_name="'.$row['cs_name'].'" cs_id="'.$row['id'].'"  title="Edit" href="javascript:void(0)" cs_assign_id="'.$row['cs_assign_id'].'"><i class="fas fa-edit"></i></a>';
 			})
 			->rawColumns(['cs_status','action','cs_service_id'])
 		    ->make(true);
