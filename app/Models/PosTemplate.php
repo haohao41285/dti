@@ -78,12 +78,12 @@ class PosTemplate extends Model
         ->make(true);
     }
 
-    public static function saveAuto($id, $placeId, $title, $discount, $discountType, $image, $services, $couponType){
+    public static function saveAuto($id, $placeId, $title, $discount, $discountType, $image, $services, $couponType,$tableType){
         if($image){
-            $image = ImagesHelper::uploadImageToAPI($image,'auto_coupon');
+            $image = ImagesHelper::uploadImageToAPI($image,'auto_template');
         }
         
-        $discountType = $discountType == "$" ? '1' : "0";
+        // $discountType = $discountType == "$" ? '1' : "0";
 
         $arr = [
             'template_place_id' => $placeId,
@@ -93,7 +93,7 @@ class PosTemplate extends Model
             'template_linkimage' => $image,
             'template_list_service' => $services,
             'template_type_id' => $couponType,
-            'template_table_type' => 1 
+            'template_table_type' => $tableType, 
         ];
 
         if($id){

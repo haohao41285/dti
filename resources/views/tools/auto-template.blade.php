@@ -77,7 +77,7 @@
                     <div class=" form-group row col-12">
                         <label class="col-5">Template Type </label>
                         {{-- <input class="col-7 form-control-sm form-control" type="text" name="couponType"> --}}
-                        <select class="col-7 form-control-sm form-control" name="couponType">
+                        <select class="col-7 form-control-sm form-control" name="templateType">
                             <option>-- Template Type --</option>
                             @foreach ($templateType as $element)
                             <option class="{{$element->template_type_table_type == 1 ? "coupon" : "promotion"}}" value="{{$element->template_type_id}}">{{$element->template_type_name}}</option>
@@ -105,6 +105,9 @@ function reset() {
     $("#auto-template-form")[0].reset();
     $(".previewImage img").attr("src", "{{ asset('images/no-image.png') }}");
     $("input[name='id']").val('');
+
+    $("select[name='templateType']").find("option:selected").attr("selected", false);
+    $("select[name='templateType']:first-child").attr("selected", true);
 }
 $(document).ready(function() {
     var type = null;
@@ -205,17 +208,15 @@ $(document).ready(function() {
                     $("input[name='discount']").val(data.data.template_discount);
 
                     $("select[name='discountType']").find("option:selected").attr("selected", false);
-                    if (data.data.template_type == "1") {
-                        $("select[name='discountType']").find("option[value='$']").attr("selected", true);
-                    } else {
-                        $("select[name='discountType']").find("option[value='%']").attr("selected", true);
-                    }
+
+                    $("select[name='discountType']").find("option[value='" + data.data.template_discount_type + "']").attr("selected", true);
+
 
                     $("#previewImageAutoCoupon").attr("src", "{{env('URL_FILE_VIEW')}}" + data.data.template_linkimage);
                     $("input[name='services']").val("sada");
 
-                    $("select[name='couponType']").find("option:selected").attr("selected", false);
-                    $("select[name='couponType']").find("option[value='" + data.data.template_type_id + "']").attr("selected", true);
+                    $("select[name='templateType']").find("option:selected").attr("selected", false);
+                    $("select[name='templateType']").find("option[value='" + data.data.template_type_id + "']").attr("selected", true);
 
                 }
             },
