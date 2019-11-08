@@ -40,7 +40,7 @@ class PosTemplate extends Model
     public static function getByPlaceIdAndType($placeId, $type){
         return self::where('template_place_id',$placeId)
                     ->where('template_status',1)
-                    ->where('template_table_type',$type)
+                    //->where('template_table_type',$type)
                     ->get();
     }
 
@@ -51,7 +51,7 @@ class PosTemplate extends Model
                     ->first();
     }
 
-    public static function getDatatableByPlaceId($placeId, $type){
+    public static function getDatatableByPlaceId($placeId, $type=null){
         $data = self::getByPlaceIdAndType($placeId,$type);
 
         return DataTables::of($data)
@@ -78,12 +78,12 @@ class PosTemplate extends Model
         ->make(true);
     }
 
-    public static function saveAuto($id, $placeId, $title, $discount, $discountType, $image, $services, $couponType){
+    public static function saveAuto($id, $placeId, $title, $discount, $discountType, $image, $services, $couponType,$tableType){
         if($image){
-            $image = ImagesHelper::uploadImageToAPI($image,'auto_coupon');
+            $image = ImagesHelper::uploadImageToAPI($image,'auto_template');
         }
         
-        $discountType = $discountType == "$" ? '1' : "0";
+        // $discountType = $discountType == "$" ? '1' : "0";
 
         $arr = [
             'template_place_id' => $placeId,
@@ -93,7 +93,7 @@ class PosTemplate extends Model
             'template_linkimage' => $image,
             'template_list_service' => $services,
             'template_type_id' => $couponType,
-            'template_table_type' => 1 
+            'template_table_type' => $tableType, 
         ];
 
         if($id){
