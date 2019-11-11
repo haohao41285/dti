@@ -40,7 +40,7 @@ class PosTemplate extends Model
     public static function getByPlaceIdAndType($placeId, $type){
         return self::where('template_place_id',$placeId)
                     ->where('template_status',1)
-                    ->where('template_table_type',$type)
+                    //->where('template_table_type',$type)
                     ->get();
     }
 
@@ -51,7 +51,7 @@ class PosTemplate extends Model
                     ->first();
     }
 
-    public static function getDatatableByPlaceId($placeId, $type){
+    public static function getDatatableByPlaceId($placeId, $type=null){
         $data = self::getByPlaceIdAndType($placeId,$type);
 
         return DataTables::of($data)
