@@ -164,10 +164,10 @@ Route::group(['middleware' => ['auth']], function () {
             Route::get('/delete-value-property', 'PlaceController@deleteValueProperty')->name('deleteValueProperty');
             Route::post('/save-custom-value-property', 'PlaceController@saveCustomValueProperty')->name('saveCustomValueProperty');
 
-            Route::get('/get-auto-coupon-datatable', 'PlaceController@getAutoCouponDatatable')->name('getAutoCouponDatatable');
-            Route::post('/save-auto-coupon', 'PlaceController@saveAutoCoupon')->name('saveAutoCoupon');
+            Route::get('/get-auto-template-datatable', 'PlaceController@getAutoTemplateDatatableDatatable')->name('Places.getAutoTemplateDatatable');
+            Route::post('/save-auto-template', 'PlaceController@saveAutoTemplate')->name('Places.saveAutoTemplate');
             Route::get('/delete-auto-coupon', 'PlaceController@deleteAutoCoupon')->name('deleteAutoCoupon');
-            Route::get('get-auto-coupon-by-id', 'PlaceController@getAutoCouponById')->name('getAutoCouponById');
+            Route::get('get-auto-template-by-id', 'PlaceController@getAutoTemplateById')->name('Places.getAutoTemplateById');
 
             Route::get('/get-service-place', 'PlaceController@getServicePlace')->name('get-service-place');
             Route::post('/save-expire-date', 'PlaceController@saveExpireDate')->name('save-expire-date');
@@ -179,6 +179,7 @@ Route::group(['middleware' => ['auth']], function () {
             Route::get('/get-auto-template-by-id', 'AutoTemplateController@getAutoTemplateById')->name('getAutoTemplateById');
             Route::get('/delete-auto-template', 'AutoTemplateController@deleteAutoTemplate')->name('deleteAutoTemplate');
             Route::post('/save-auto-template', 'AutoTemplateController@saveAutoTemplate')->name('saveAutoTemplate');
+            Route::get('get-services-by-place-id', 'AutoTemplateController@getServicesByPlaceId')->name('getServicesByPlaceId');
         });
 
     });

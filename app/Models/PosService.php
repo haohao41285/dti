@@ -67,5 +67,7 @@ class PosService extends BaseModel
         
         return $newCollection->all();
     }
+
+    
         
 }
