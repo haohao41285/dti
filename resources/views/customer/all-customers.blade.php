@@ -122,6 +122,7 @@
     var table = $('#dataTableAllCustomer').DataTable({
        // dom: "lBfrtip",
        order:[[7,'desc']],
+        responsive:false,
        buttons: [
 
            {
@@ -156,7 +157,7 @@
         },
        columns: [
 
-                { data: 'id', name: 'id',class:'text-center' },
+                { data: 'id', name: 'id',class:'text-center w-10' },
                 { data: 'ct_salon_name', name: 'ct_salon_name' },
                 { data: 'ct_fullname', name: 'ct_fullname'},
                 { data: 'ct_business_phone', name: 'ct_business_phone' ,class:'text-center'},
@@ -193,6 +194,12 @@
           toastr.error('Get Detaill Customer Error!');
         }else{
           data = JSON.parse(data);
+            console.log(data);
+            var button = ``;
+            if(data.count_customer_user == 0)
+                button = `<button type="button" id=`+data.id+` class="btn btn-primary btn-sm get-customer">Assign</button>`;
+            if(data.ct_status !== 'Disabled')
+                button = '';
           data = data.customer_list;
           if(data.ct_salon_name==null)data.ct_salon_name="";
           if(data.ct_contact_name==null)data.ct_contact_name="";
@@ -204,9 +211,7 @@
           if(data.ct_note==null)data.ct_note="";
           if(data.ct_status==null)data.ct_status="";
 
-          var button = ``;
-          if(data.ct_status === 'New Arrivals')
-            button = `<button type="button" id=`+data.id+` class="btn btn-primary btn-sm get-customer">Assign</button>`;
+
           $(".modal-content-view").html(`
             <div class="modal-header">
               <h5 class="modal-title text-center" id="exampleModalLabel"><b>Customer Detail</b></h5>
@@ -283,7 +288,6 @@
     $(document).on('click','.get-customer',function(){
 
       var customer_id = $(this).attr('id');
-
       $.ajax({
         url: '{{route('add-customer-to-my')}}',
         type: 'GET',
@@ -293,13 +297,13 @@
       .done(function(data) {
         if(data == 1){
           $("#viewModal").modal('hide');
-          table.ajax.reload(null, false);
-        }else{
+          toastr.success('Successfully!');
+        }else
           toastr.error('Getting Error! Check again!');
-        }
+        table.ajax.reload(null, false);
       })
       .fail(function() {
-        console.log("error");
+          toastr.error('Getting Error! Check again!');
       });
     });
     $(document).on('click','.edit-customer',function(){
@@ -502,6 +506,66 @@
     $(".cancle-import").click(function(){
       $("#import-modal").modal("hide");
     });
+     $('#dataTableAllCustomer tbody').on('click', '.details-control', function () {
+
+         var customer_template_id = $(this).attr('id');
+         $(this).toggleClass('fa-plus-circle fa-minus-circle');
+         var tr = $(this).closest('tr');
+         var row = table.row( tr );
+         var team_id = $("#team_id :selected").val();
+
+         if ( row.child.isShown() ) {
+             // This row is already open - close it
+             row.child.hide();
+             tr.removeClass('shown');
+         }else{
+             $.ajax({
+                 url: '{{route('get-place-customer')}}',
+                 type: 'GET',
+                 dataType: 'html',
+                 data: {
+                     customer_template_id: customer_template_id,
+                     team_id: team_id
+                 },
+             })
+                 .done(function(data) {
+                     data = JSON.parse(data);
+                     console.log(data);
+                     var subtask_html = "";
+                     $.each(data, function(index,val){
+
+                         if(val.get_user.length  != 0) var user_manage = val.get_user.user_nickname;
+                         else var user_manage = "";
+
+                         subtask_html += `
+                                <tr>
+                                    <td>`+val.get_place.place_name+`</td>
+                                    <td>`+val.get_place.place_phone+`</td>
+                                    <td>`+val.get_place.place_ip_license+`</td>
+                                    <td>`+user_manage+`</td>
+                                    <td></td>
+                                </tr> `;
+                     });
+                     row.child(format(row.data()) +subtask_html+"</table>" ).show();
+                     tr.addClass('shown');
+                 })
+                 .fail(function() {
+                     toastr.error('Get SubTask Failed!');
+                 });
+         }
+     } );
+
+     function format ( d ) {
+         // `d` is the original data object for the row
+         return `<table class="border border-info table-striped table table-border bg-white">
+            <tr class="bg-info text-white">
+                <th scope="col">Name</th>
+                <th scope="col">Phone</th>
+                <th>Liences</th>
+                <th>User Manager</th>
+                <th class="text-center">Action</th>
+            </tr>`;
+     }
 });
 </script>
 @endpush

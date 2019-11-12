@@ -63,6 +63,10 @@ Route::group(['middleware' => ['auth']], function () {
          Route::get('get-customer-2', 'CustomerController@getCustomer2')->name('get_customer_2');
          Route::post('move-customer-all', 'CustomerController@moveCustomersAll')->name('move-customer-all');
 
+         Route::get('get-place-customer','CustomerController@getPlaceCustomer')->name('get-place-customer');
+         Route::get('get-place-my-customer','CustomerController@getPlaceMyCustomer')->name('get_place_my_customer');
+         Route::post('move-place','CustomerController@movePlace')->name('move_place');
+
     });
 
     Route::group(['prefix'=>'marketing', 'namespace'=>'Marketing'],function(){

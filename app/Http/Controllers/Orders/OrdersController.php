@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Orders;
 use App\Models\MainComboServiceType;
 use App\Models\MainGroupUser;
 use App\Models\MainOrder;
+use App\Models\MainUserCustomerPlace;
 use App\Models\PosCustomertag;
 use App\Models\PosSubjectWeb;
 use Illuminate\Http\Request;
@@ -97,14 +98,27 @@ class OrdersController extends Controller
 
         if ($customer_id != 0) {
         }
+        $user_id = Auth::user()->user_id;
+        $team_id = Auth::user()->user_team;
 
         $data['customer_info'] = MainCustomerTemplate::where('id', $customer_id)->first();
 
         if (!empty($data['customer_info'])) {
+
+            //GET PLACES'S CUSTOMER OF USER
+            $places_arr = MainUserCustomerPlace::where([
+                ['user_id',$user_id],
+                ['team_id',$team_id],
+                ['customer_id',$data['customer_info']->id]
+            ])->select('place_id')->get()->toArray();
+
+            $places_arr = array_values($places_arr);
+
             $data['place_list'] = PosPlace::join('main_customer', function ($join) {
                 $join->on('pos_place.place_customer_id', 'main_customer.customer_id');
             })
                 ->where('main_customer.customer_phone', $data['customer_info']->ct_business_phone)
+                ->whereIn('pos_place.place_id',$places_arr)
                 ->select('pos_place.place_id', 'pos_place.place_name')
                 ->get();
         }
@@ -285,6 +299,23 @@ class OrdersController extends Controller
             ];
             // return $place_arr;
             PosPlace::insert($place_arr);
+            //INSERT MAIN_USER_CUSTOMER_PLACE
+            $user_customer = [
+                'user_id' => Auth::user()->user_id,
+                'team_id' => Auth::user()->user_team,
+                'customer_id' => $customer_info->id,
+                'place_id' =>$place_id,
+            ];
+            $check_user_customer_exist = MainUserCustomerPlace::where([
+                ['user_id',Auth::user()->user_id],
+                ['team_id',Auth::user()->user_team],
+                ['customer_id',$customer_info->id],
+                ['place_id',null]
+            ]);
+            if($check_user_customer_exist->count() == 0)
+                MainUserCustomerPlace::create($user_customer);
+            else
+                $check_user_customer_exist->update(['place_id'=>$place_id]);
             //INSERT POS_CUSTOMERTAG
             $arrCustomerTag = [
                 ['customertag_id' => 1, 'customertag_name' => 'Vip', 'customertag_place_id' => $place_id, 'customertag_status' => 1],
@@ -519,10 +550,14 @@ class OrdersController extends Controller
         foreach ($my_order_list as $key => $order) {
 
             //GET INFORMATION CARD
-            if ($order->csb_status == 1)
-                $infor = "<span>ID: " . $order->csb_trans_id . "</span><br><span>Name: " . $order->csb_card_type . "</span><br><span>Number: " . $order->csb_card_number . "</span>";
+            if (!isset($request->my_order)){
+                if ($order->csb_status == 1)
+                    $infor = "<span>ID: " . $order->csb_trans_id . "</span><br><span>Name: " . $order->csb_card_type . "</span><br><span>Number: " . $order->csb_card_number . "</span>";
+                else
+                    $infor = "<span>Account Number: " . $order->account_number . "</span><br><span>Name: " . $order->routing_number . "</span><br><span>Bank Name: " . $order->bank_name . "</span>";
+            }
             else
-                $infor = "<span>Account Number: " . $order->account_number . "</span><br><span>Name: " . $order->routing_number . "</span><br><span>Bank Name: " . $order->bank_name . "</span>";
+                $infor = "";
 
             $services = explode(";", $order->csb_combo_service_id);
 
@@ -538,7 +573,7 @@ class OrdersController extends Controller
                 $order_date = "<a href='" . route('order-view', $order->id) . "'>" . format_datetime($order->created_at) . "</a>";
 
             //GET CUSTOMER INFORMATION
-            $customer = "<span>Customer: " . $order->customer_firstname . " " . $order->customer_lastname . "</span><br><span>Business Phone: " . $order->customer_phone . "</span><br><span>Address: " . $order->customer_address . "</span><br><span>Email: " . $order->customer_email . "</span>";
+            $customer = "<span>Customer: " . $order->customer_firstname . " " . $order->customer_lastname . "</span><br><span>Business Phone: " . $order->customer_phone . "</span><br><span>Email: " . $order->customer_email . "</span>";
 
             $updated_at = "";
             if($order->updated_by != "")
@@ -558,7 +593,10 @@ class OrdersController extends Controller
             ];
         }
         return DataTables::of($my_order_arr)
-            ->rawColumns(['servivce', 'information', 'customer', 'order_date','updated_at'])
+            ->editColumn('total_charge',function ($row){
+                return '<span class="text-danger"><b>'.$row['total_charge'].'</b></span>';
+            })
+            ->rawColumns(['servivce', 'information', 'customer', 'order_date','updated_at','total_charge'])
             ->make(true);
     }
 
@@ -729,6 +767,7 @@ class OrdersController extends Controller
         })
             ->where('main_task.order_id', $order_id)
             ->select('main_combo_service.*', 'main_task.id', 'main_combo_service.id as csb_id', 'main_task.note', 'main_task.content');
+//        return $service_list;
 
         return DataTables::of($service_list)
             ->addColumn('action', function ($row) {
@@ -740,12 +779,15 @@ class OrdersController extends Controller
                 $file_name = "<div class='row'>";
                 $file_list = $row->getFiles;
                 foreach ($file_list as $key => $file) {
-                    $zip = new ZipArchive();
 
-                    if ($zip->open($file->name, ZipArchive::CREATE) !== TRUE) {
-                        $file_name .= '<form action="' . route('down-image') . '" method="POST"><input type="hidden" value="' . csrf_token() . '" name="_token" /><input type="hidden" value="' . $file->name . '" name="src" /><img class="file-comment ml-2" src="' . asset($file->name) . '"/></form>';
-                    } else {
+                    $allowedMimeTypes = ['image/jpeg','image/gif','image/png','image/bmp','image/svg+xml'];
+                    $contentType = mime_content_type($file->name);
+                    if(! in_array($contentType, $allowedMimeTypes) ){
                         $file_name .= '<form action="' . route('down-image') . '" method="POST"><input type="hidden" value="' . csrf_token() . '" name="_token" /><input type="hidden" value="' . $file->name . '" name="src" /><a href="javascript:void(0)" class="file-comment ml-2" /><i class="fas fa-file-archive"></i>' . $file->name_origin . '</a></form>';
+
+                    }else{
+                        $file_name .= '<form action="' . route('down-image') . '" method="POST"><input type="hidden" value="' . csrf_token() . '" name="_token" /><input type="hidden" value="' . $file->name . '" name="src" /><img class="file-comment ml-2" src="' . asset($file->name) . '"/></form>';
+
                     }
 
                 }
@@ -1203,10 +1245,13 @@ class OrdersController extends Controller
             ];
         }
         return  DataTables::of($my_order_arr)
+            ->editColumn('total_charge',function($row){
+                return '<span class="text-danger"><b>'.$row['total_charge'].'</b></span>';
+            })
             ->addColumn('action',function ($row){
                 return '<a class="btn btn-sm btn-secondary"  href="'.route('payment-order',$row['id']).'" title="Payment Order"><i class="fas fa-money-bill"></i></a>';
             })
-            ->rawColumns(['servivce','information','customer','order_date','action'])
+            ->rawColumns(['servivce','information','customer','order_date','action','total_charge'])
             ->make(true);
     }
 }
