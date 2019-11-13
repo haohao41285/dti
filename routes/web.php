@@ -66,6 +66,7 @@ Route::group(['middleware' => ['auth']], function () {
          Route::get('get-place-customer','CustomerController@getPlaceCustomer')->name('get-place-customer');
          Route::get('get-place-my-customer','CustomerController@getPlaceMyCustomer')->name('get_place_my_customer');
          Route::post('move-place','CustomerController@movePlace')->name('move_place');
+        Route::get('get_user_form_team','CustomerController@getUserFromTeam')->name('get_user_form_team');
 
     });
 

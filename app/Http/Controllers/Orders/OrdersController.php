@@ -101,25 +101,22 @@ class OrdersController extends Controller
         $user_id = Auth::user()->user_id;
         $team_id = Auth::user()->user_team;
 
-        $data['customer_info'] = MainCustomerTemplate::where('id', $customer_id)->first();
+        $data['customer_info'] = MainCustomer::where('customer_customer_template_id', $customer_id)->first();
 
         if (!empty($data['customer_info'])) {
 
             //GET PLACES'S CUSTOMER OF USER
             $places_arr = MainUserCustomerPlace::where([
                 ['user_id',$user_id],
-                ['team_id',$team_id],
-                ['customer_id',$data['customer_info']->id]
+                ['customer_id',$customer_id],
+                ['place_id','!=',null]
             ])->select('place_id')->get()->toArray();
 
             $places_arr = array_values($places_arr);
 
-            $data['place_list'] = PosPlace::join('main_customer', function ($join) {
-                $join->on('pos_place.place_customer_id', 'main_customer.customer_id');
-            })
-                ->where('main_customer.customer_phone', $data['customer_info']->ct_business_phone)
-                ->whereIn('pos_place.place_id',$places_arr)
-                ->select('pos_place.place_id', 'pos_place.place_name')
+            $data['place_list'] = PosPlace::where('place_customer_id',$data['customer_info']->customer_id)
+                ->whereIn('place_id',$places_arr)
+                ->where('place_status',1)
                 ->get();
         }
         //GET COMBO SERVICE WITH ROLE
@@ -477,37 +474,21 @@ class OrdersController extends Controller
     public function getCustomerInfor(Request $request)
     {
         $customer_phone = $request->customer_phone;
+        $user_id = Auth::user()->user_id;
+        $team_id = Auth::user()->user_team;
 
-        $customer_list = Auth::user()->user_customer_list;
+        $customer_list = MainUserCustomerPlace::where('user_id',$user_id);
 
-        if ($customer_list == "")
+        if ($customer_list->count() ==  0)
             return response(['status' => 'error', 'message' => 'You dont have any customer']);
+        //GET CUSTOMER
+        $customer_info  = MainCustomer::where('customer_phone',$customer_phone)->first();
+        $customer_list = $customer_list->where('place_id','!=',null)->select('place_id')->get()->toArray();
+        $customer_arr = array_values($customer_list);
 
-        $customer_arr = explode(";", $customer_list);
-
-        $customer_info = MainCustomerTemplate::whereIn('id', $customer_arr)
-            ->where(function ($query) use ($customer_phone) {
-                $query->where('ct_business_phone', $customer_phone)
-                    ->orWhere('ct_cell_phone', $customer_phone);
-            })
-            ->where('ct_active', 1)
-            ->first();
-
-        //CHECK CUSTOMER EXIST POS_USER
-        $check_customer = MainCustomer::where(function ($query) use ($customer_phone) {
-            $query->where('customer_phone', $customer_phone)
-                ->orWhere('customer_phone', $customer_phone);
-        })
-            ->where('customer_status', 1)
-            ->select('customer_id')
-            ->first();
-
-        $place_list = PosPlace::join('main_customer', function ($join) {
-            $join->on('pos_place.place_customer_id', 'main_customer.customer_id');
-        })
-            ->where('main_customer.customer_phone', $customer_phone)
-            ->select('pos_place.place_id', 'pos_place.place_name')
-            ->get();
+        $place_list = PosPlace::where('place_customer_id',$customer_info->customer_id)
+            ->whereIn('place_id',$customer_arr)
+            ->where('place_status',1)->get();
 
         if (!isset($customer_info) || !isset($place_list))
             return response(['status' => 'error', 'message' => 'Get Customer Error']);

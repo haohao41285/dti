@@ -502,8 +502,10 @@
         $("#move-modal").modal("show");
     });
     $(".move-submit").click(function(){
+
         var formData = new FormData($(this).parents('form')[0]);
-        formData.append('_token','{{csrf_token()}}')
+        formData.append('_token','{{csrf_token()}}');
+
         $.ajax({
             url: '{{route('move-customer')}}',
             type: 'POST',
@@ -709,6 +711,8 @@
      $(".move-place-submit").click(function(){
          var formData = new FormData($(this).parents('form')[0]);
          formData.append('_token','{{csrf_token()}}');
+         formData.append('current_user','{{\Auth::user()->user_id}}');
+         formData.append('team_id','{{\Auth::user()->user_team}}');
 
          $.ajax({
              url: '{{route('move_place')}}',
@@ -719,6 +723,8 @@
              data: formData,
          })
              .done(function(data) {
+                 // console.log(data);
+                 // return;
                  data = JSON.parse(data);
                  if(data.status == 'error')
                      toastr.error(data.message);
@@ -728,7 +734,7 @@
                  }
              })
              .fail(function() {
-                 console.log("error");
+                 toastr.error('Get List User Failed!');
              });
      });
      function cleanModalPlace(){

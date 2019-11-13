@@ -113,6 +113,44 @@
     </div>
   </div>
 </div>
+    <div class="modal fade" id="move-place-modal" role="dialog">
+        <div class="modal-dialog">
+            <!-- Modal content-->
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h6 class="modal-title text-info"><b>MOVE PLACE:</b></h6>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
+                <form id="form-place" action="" method="get" accept-charset="utf-8">
+                    <div class="modal-body">
+                        <div class="input-group mb-2 mr-sm-2">
+                            <div class="input-group-prepend">
+                                <div class="input-group-text">Move Place:</div>
+                            </div>
+                            <input type="text" class="form-control text-info"  id="place_name" disabled>
+                            <input type="hidden" name="place_id" id="place_id_hidden">
+                            <input type="hidden" name="customer_id" id="customer_id_hidden">
+                            <input type="hidden" name="current_user" id="current_user">
+                        </div>
+                        <div class="input-group mb-2 mr-sm-2">
+                            <div class="input-group-prepend">
+                                <div class="input-group-text">To User:</div>
+                            </div>
+                            <select name="user_id" id="user_id" class="form-control  text-capitalize">
+{{--                                @foreach($user_list as $user)--}}
+{{--                                    <option value="{{$user->user_id}}">{{$user->user_nickname}} ( {{$user->getFullname()}} )</option>--}}
+{{--                                @endforeach--}}
+                            </select>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-danger btn-sm cancel-move" data-dismiss="modal">Cancel</button>
+                        <button type="button" class="btn btn-sm btn-primary move-place-submit">Submit</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
 
 @endsection
 @push('scripts')
@@ -197,8 +235,8 @@
             console.log(data);
             var button = ``;
             if(data.count_customer_user == 0)
-                button = `<button type="button" id=`+data.id+` class="btn btn-primary btn-sm get-customer">Assign</button>`;
-            if(data.ct_status !== 'Disabled')
+                button = `<button type="button" id=`+data.customer_list.id+` class="btn btn-primary btn-sm get-customer">Assign</button>`;
+            if(data.ct_status === 'Disabled')
                 button = '';
           data = data.customer_list;
           if(data.ct_salon_name==null)data.ct_salon_name="";
@@ -210,9 +248,13 @@
           if(data.ct_website==null)data.ct_website="";
           if(data.ct_note==null)data.ct_note="";
           if(data.ct_status==null)data.ct_status="";
-
+          if(data.ct_status != 'New Arrivals' && data.ct_status != 'Disabled'){
+              data.ct_salon_name = '<input type="text" name="business_name" id="business_name" class="form-control form-control-sm col-12" required>';
+              data.ct_business_phone = '<input type="number" name="business_phone" id="business_phone" class="form-control form-control-sm col-12" required>';
+          }
 
           $(".modal-content-view").html(`
+            <form>
             <div class="modal-header">
               <h5 class="modal-title text-center" id="exampleModalLabel"><b>Customer Detail</b></h5>
               <button type="button" class="close" data-dismiss="modal" aria-label="Close">
@@ -271,6 +313,7 @@
             </div>
           </div>
           </div>
+          </form>
             `);
           $("#viewModal").modal('show');
         }
@@ -287,24 +330,36 @@
     //GET CUSTOMER TO MY CUSTOMER
     $(document).on('click','.get-customer',function(){
 
+      var business_name = $("#business_name").val();
+      var business_phone = $("#business_phone").val();
       var customer_id = $(this).attr('id');
-      $.ajax({
-        url: '{{route('add-customer-to-my')}}',
-        type: 'GET',
-        dataType: 'html',
-        data: {customer_id: customer_id},
-      })
-      .done(function(data) {
-        if(data == 1){
-          $("#viewModal").modal('hide');
-          toastr.success('Successfully!');
-        }else
-          toastr.error('Getting Error! Check again!');
-        table.ajax.reload(null, false);
-      })
-      .fail(function() {
-          toastr.error('Getting Error! Check again!');
-      });
+      if(business_name !== "" || business_phone != ""){
+          $.ajax({
+              url: '{{route('add-customer-to-my')}}',
+              type: 'GET',
+              dataType: 'html',
+              data: {
+                  customer_id: customer_id,
+                  business_name: business_name,
+                  business_phone: business_phone
+              },
+          })
+              .done(function(data) {
+                  if(data == 1){
+                      $("#viewModal").modal('hide');
+                      toastr.success('Successfully!');
+                  }else
+                      toastr.error('Getting Error! Check again!');
+                  table.ajax.reload(null, false);
+              })
+              .fail(function() {
+                  toastr.error('Getting Error! Check again!');
+              });
+      }else{
+          business_phone==""?toastr.error('Enter Business Phone!'):"";
+          business_name==""?toastr.error("Enter Business Name"):"";
+        }
+
     });
     $(document).on('click','.edit-customer',function(){
 
@@ -431,7 +486,6 @@
           table.ajax.reload(null, false);
           $(".modal-content").html("");
         }
-        console.log(data);
       })
       .fail(function() {
         console.log("error");
@@ -543,7 +597,15 @@
                                     <td>`+val.get_place.place_phone+`</td>
                                     <td>`+val.get_place.place_ip_license+`</td>
                                     <td>`+user_manage+`</td>
-                                    <td></td>
+                                    <td class="text-center">
+                                         <a class="btn btn-sm btn-secondary move-place"
+                                            user_id="`+val.get_user.user_id+`"
+                                            place_name="`+val.get_place.place_name+`"
+                                            place_id="`+val.get_place.place_id+`"
+                                            customer_id="`+val.customer_id+`" href="javascript:void(0)" title="Move Place To User">
+                                            <i class="fas fa-exchange-alt"></i>
+                                         </a>
+                                    </td>
                                 </tr> `;
                      });
                      row.child(format(row.data()) +subtask_html+"</table>" ).show();
@@ -554,7 +616,6 @@
                  });
          }
      } );
-
      function format ( d ) {
          // `d` is the original data object for the row
          return `<table class="border border-info table-striped table table-border bg-white">
@@ -566,6 +627,80 @@
                 <th class="text-center">Action</th>
             </tr>`;
      }
+     $(document).on('click',".move-place",function(){
+         var place_name = $(this).attr('place_name');
+         var place_id = $(this).attr('place_id');
+         var customer_id = $(this).attr('customer_id');
+         var user_id = $(this).attr('user_id');
+         $("#place_id_hidden").val(place_id);
+         $("#customer_id_hidden").val(customer_id);
+         $("#current_user").val(user_id);
+         $("#place_name").val(place_name);
+         $("#move-place-modal").modal('show');
+
+         //GET USER'S TEAM
+         var team_id = $("#team_id :selected").val();
+         $.ajax({
+             url: '{{route('get_user_form_team')}}',
+             type: 'GET',
+             dataType: 'html',
+             data: {
+                 team_id: team_id,
+                 user_id: user_id
+             },
+         })
+             .done(function(data) {
+
+                 data = JSON.parse(data);
+                 console.log(data);
+                 if(data.status == 'error')
+                     toastr.error(data.message);
+                 else{
+                     option_html = '';
+                     $.each(data.user_list,function(ind,val){
+                         option_html += `<option value="`+val.user_id+`">`+val.user_nickname+`(`+val.user_firstname+val.user_lastname+`)</option>`;
+                     });
+                     $("#user_id").html(option_html);
+                 }
+             })
+             .fail(function() {
+                 console.log("error");
+             });
+     });
+     $(".move-place-submit").click(function(){
+         var formData = new FormData($(this).parents('form')[0]);
+         formData.append('_token','{{csrf_token()}}');
+         formData.append('team_id',$("#team_id :selected").val());
+
+         $.ajax({
+             url: '{{route('move_place')}}',
+             type: 'POST',
+             dataType: 'html',
+             processData: false,
+             contentType: false,
+             data: formData,
+         })
+             .done(function(data) {
+                 data = JSON.parse(data);
+                 if(data.status == 'error')
+                     toastr.error(data.message);
+                 else{
+                     toastr.success(data.message);
+                     cleanModalPlace();
+                 }
+             })
+             .fail(function() {
+                 console.log("error");
+             });
+     });
+     function cleanModalPlace(){
+         $("#form-place")[0].reset();
+         $("#move-place-modal").modal('hide');
+         table.ajax.reload(null, false);
+     }
+     $(".cancel-move").click(function () {
+         cleanModalPlace();
+     });
 });
 </script>
 @endpush

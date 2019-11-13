@@ -28,38 +28,23 @@
         </div>
         @else
         <div class="col-md-4" >
-            <input type="text" disabled class="input-sm form-control form-control-sm" id="customer_phone" value="{{$customer_info->ct_business_phone}}" name="customer_phone" />
-            <input type="hidden"  class="input-sm form-control form-control-sm" id="customer_phone" value="{{$customer_info->ct_business_phone}}" name="customer_phone" />
-            <input type="hidden" class="input-sm form-control form-control-sm" id="customer_id" value="{{!empty($customer_info)?$customer_info->id:""}}"  name="customer_id" />
+            <input type="text" disabled class="input-sm form-control form-control-sm" id="customer_phone" value="{{$customer_info->customer_phone}}" name="customer_phone" />
+            <input type="hidden"  class="input-sm form-control form-control-sm" id="customer_phone" value="{{$customer_info->customer_phone}}" name="customer_phone" />
+            <input type="hidden" class="input-sm form-control form-control-sm" id="customer_id" value="{{!empty($customer_info)?$customer_info->customer_customer_template_id:""}}"  name="customer_id" />
         </div>
         @endif
-    </div>
-    <div class="form-group col-md-12 row">
-        <div class="col-md-2">
-            <label class="required">Business:</label>
-        </div>
-        <div class="col-md-4" >
-            <input type="text" class="input-sm form-control form-control-sm" disabled id="customer_bussiness" value="{{!empty($customer_info)?$customer_info->ct_salon_name:""}}"  name=""/>
-        </div>
     </div>
     <div class="form-group col-md-12 row">
         <div class="col-md-2">
             <label class="required">FullName:</label>
         </div>
         <div class="col-md-4" >
-            <input type="text" class="input-sm form-control form-control-sm" value="{{!empty($customer_info)?$customer_info->ct_fullname:""}}" disabled id="customer_fullname"  name=""/>
+            <input type="text" class="input-sm form-control form-control-sm" value="{{!empty($customer_info)?$customer_info->getFullname():""}}" disabled id="customer_fullname"  name=""/>
         </div>
     </div>
     <div class="form-group col-md-12 row">
         <div class="col-md-2">
-            <label class="required">Places:</label>
-        </div>
-        <div class="col-md-10 row">
-            <label class="ml-3 text-uppercase text-dark"><input style="width:20px;height: 20px" type="radio" class="place_id"  name="place_id" value="0">New Place</label>
-        </div>
-    </div>
-    <div class="form-group col-md-12 row">
-        <div class="col-md-2">
+            <label class="required">Business:</label>
         </div>
         <div class="col-md-10 row"  id="salon_list">
             @if(isset($place_list))
@@ -115,15 +100,6 @@
                     </div>
             </div>
         </div>
-{{--             <div class="col-md-5">--}}
-{{--                @foreach($combo_service_list as $key => $cs)--}}
-{{--                @if($key == $count)--}}
-{{--                </div>--}}
-{{--                <div class="col-md-5">--}}
-{{--                @endif--}}
-{{--                <label><input style="width:20px;height: 20px" type="checkbox" class="combo_service" cs_price="{{$cs->cs_price}}" name="cs_id[]"  value="{{$cs->id}}"> {{$cs->cs_name}}{{$cs->cs_type==1?"(Combo)":"(Service)"}} - ${{$cs->cs_price}}</label><br>--}}
-{{--                @endforeach--}}
-{{--        </div>--}}
     </div>
     <hr>
     <div class="col-md-12 form-group row">
@@ -244,9 +220,9 @@
                 toastr.error(data.message);
             }
             else{
-                $("#customer_bussiness").val(data.customer_info.ct_salon_name);
-                $("#customer_fullname").val(data.customer_info.ct_firstname+" "+data.customer_info.ct_lastname);
-                $("#customer_id").val(data.customer_info.id);
+                // $("#customer_bussiness").val(data.customer_info.ct_salon_name);
+                $("#customer_fullname").val(data.customer_info.customer_firstname+" "+data.customer_info.customer_lastname);
+                $("#customer_id").val(data.customer_info.customer_customer_template_id);
                 if(data.place_list != ""){
 
                     var salon_html ="";

@@ -274,25 +274,11 @@ class CustomerController extends Controller
     public function addCustomerToMy(Request $request){
 
         $customer_id = $request->customer_id;
-        $user_customer_arr = [];
         $user_id = Auth::user()->user_id;
         $team_id = Auth::user()->user_team;
 
         DB::beginTransaction();
 
-        $user_customer_list = Auth::user()->user_customer_list;
-
-//        if($user_customer_list == NULL){
-//
-//            $user_customer_arr[] = $customer_id;
-//        }else{
-//            $user_customer_arr = explode(";", $user_customer_list);
-//
-//            array_push($user_customer_arr,$customer_id);
-//        }
-//        $user_customer_list_after = implode(";", $user_customer_arr);
-//    //UPDATE LIST CUSTOMER
-//        $update_user = MainUser::where('user_id',$user_id)->update(['user_customer_list'=>$user_customer_list_after]);
         //ADD CUSTOMER TO USER LIST
         $user_customer_arr = [
             'user_id' => $user_id,
@@ -1095,12 +1081,8 @@ class CustomerController extends Controller
     public function getCustomer1(Request $request){
 
         $user_id = $request->user_1;
-        $customer_arr = [];
-
-        $customer_list = MainUser::where('user_id',$user_id)->first();
-
-        if($customer_list != "")
-            $customer_arr = explode(';',$customer_list->user_customer_list);
+        $customer_list = MainUserCustomerPlace::where('user_id',$user_id)->select('customer_id')->get()->toArray();
+        $customer_arr = array_values($customer_list);
 
         $customer_list = MainCustomerTemplate::whereIn('id',$customer_arr);
 
@@ -1110,11 +1092,8 @@ class CustomerController extends Controller
     public function getCustomer2(Request $request){
 
         $user_id = $request->user_2;
-        $customer_arr = [];
-
-        $customer_list = MainUser::where('user_id',$user_id)->first();
-        if($customer_list != "")
-            $customer_arr = explode(';',$customer_list->user_customer_list);
+        $customer_list = MainUserCustomerPlace::where('user_id',$user_id)->select('customer_id')->get()->toArray();
+        $customer_arr = array_values($customer_list);
 
         $customer_list = MainCustomerTemplate::whereIn('id',$customer_arr);
 
@@ -1124,39 +1103,15 @@ class CustomerController extends Controller
     public function moveCustomersAll(Request $request){
 
         $customer_input = $request->customer_array;
-
-        $customer_list_1 = MainUser::where('user_id',$request->user_1)->first()->user_customer_list;
-        $customer_arr_1 = explode(';',$customer_list_1);
-
-        DB::beginTransaction();
-        //REMOVE CUSTOMER FORM USER 1
-        foreach ($customer_input as $customer){
-            if (($key = array_search( intval($customer), $customer_arr_1)) !== false) {
-                unset($customer_arr_1[$key]);
-            }
-        }
-        $customer_list_1 = implode(';',$customer_arr_1);
-        $update_user_1 = MainUser::where('user_id',$request->user_1)->update(['user_customer_list'=>$customer_list_1]);
-
-        $customer_list_2 = MainUser::where('user_id',$request->user_2)->first()->user_customer_list;
-
-        $customer_input = implode(';',$customer_input);
-
-        if( is_null($customer_list_2) )
-            $customer_list_2 = $customer_input;
-        else
-            $customer_list_2 = $customer_list_2.";".$customer_input;
-
-        $update_user_2 = MainUser::where('user_id',$request->user_2)->update(['user_customer_list'=>$customer_list_2]);
-
-        if(!isset($update_user_1) || !isset($update_user_2)){
-            DB::callback();
+        //GET TEAM USER 2
+        $user_team_2 = MainUser::where('user_id',$request->user_2)->first()->user_team;
+        $update_user_customer = MainUserCustomerPlace::where('user_id',$request->user_1)
+            ->whereIn('customer_id',$customer_input)
+            ->update(['team_id'=>$user_team_2,'user_id'=>$request->user_2]);
+        if(!$update_user_customer)
             return response(['status'=>'error','message'=>'Failed! Move Customer Failed!']);
-        }else{
-            DB::commit();
+        else
             return response(['status'=>'success','message'=>'Successfully! Move Customer Successfully!']);
-        }
-//        return $customer_arr;
     }
     public function getPlaceCustomer(Request $request){
 
@@ -1184,18 +1139,39 @@ class CustomerController extends Controller
     public function movePlace(Request $request){
         $place_id = $request->place_id;
         $user_id = $request->user_id;
-        $current_user = Auth::user()->user_id;
-        $team_id = Auth::user()->user_team;
+        $current_user = $request->current_user;
+        $team_id = $request->team_id;
+
+        //GET TEAM'S MOVING USER
+        $moving_team = MainUser::where('user_id',$user_id)->first()->user_team;
 
         $user_customer_place_update = MainUserCustomerPlace::where([
                                         ['team_id',$team_id],
                                         ['user_id',$current_user],
                                         ['place_id',$place_id]
-                                    ])->update(['user_id'=>$user_id]);
+                                    ])->update(['user_id'=>$user_id,'team_id'=>$moving_team]);
 
         if(!$user_customer_place_update)
             return response(['status'=>'error','message'=>'Move Place Failed!']);
         else
             return response(['status'=>'success','message'=>'Move Place Successfully!']);
+    }
+    public function getUserFromTeam(Request $request){
+//        return $request->all();
+
+        $team_id = $request->team_id;
+        $team_type = MainTeam::find($team_id)->team_type;
+        $team_list = MainTeam::active()->where('team_type',$team_type)->select('id')->get()->toArray();
+        $team_arr = array_values($team_list);
+
+        $user_list = MainUser::active()
+            ->whereIn('user_team',$team_arr)
+            ->where('user_id','!=',$request->user_id)
+            ->select('user_id','user_nickname','user_firstname','user_lastname')->get();
+
+        if(!$user_list)
+            return response(['status'=>'error','message'=>'Get User List Failed!']);
+        else
+            return response(['status'=>'success','user_list'=>$user_list]);
     }
 }

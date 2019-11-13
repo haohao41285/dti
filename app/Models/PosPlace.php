@@ -59,7 +59,6 @@ class PosPlace extends BaseModel
         'place_auto_print',
         'place_orderservice_price',
         'place_theme_code',
-        'place_user_manage'
     ];
 
     protected $guarded = [];
@@ -69,9 +68,6 @@ class PosPlace extends BaseModel
                     ->where('place_ip_license',$license)
                     ->where('place_status',1)
                     ->first();
-    }
-    public function getUserManage(){
-        return $this->belongsTo(MainUser::class,'place_user_manage','user_id');
     }
 
 }
