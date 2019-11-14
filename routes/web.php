@@ -48,7 +48,7 @@ Route::group(['middleware' => ['auth']], function () {
          Route::get('export-customer', 'CustomerController@exportCustomer')->name('export-customer');
          Route::get('export-my-customer', 'CustomerController@exportMyCustomer')->name('export-my-customer');
 
-         Route::post('save-my-customer', 'CustomerControllercustomersDatatable@saveMyCustomer')->name('save-my-customer');
+         Route::post('save-my-customer', 'CustomerController@saveMyCustomer')->name('save-my-customer');
          Route::get('customer-detail/{id?}', 'CustomerController@customerDetail')->where(['id'=>'[0-9]+'])->name('customer-detail');
          Route::get('customer-tracking', 'CustomerController@customerTracking')->name('customer-tracking');
          Route::post('post-comment-customer', 'CustomerController@postCommentCustomer')->name('post-comment-customer');
@@ -66,7 +66,10 @@ Route::group(['middleware' => ['auth']], function () {
          Route::get('get-place-customer','CustomerController@getPlaceCustomer')->name('get-place-customer');
          Route::get('get-place-my-customer','CustomerController@getPlaceMyCustomer')->name('get_place_my_customer');
          Route::post('move-place','CustomerController@movePlace')->name('move_place');
-        Route::get('get_user_form_team','CustomerController@getUserFromTeam')->name('get_user_form_team');
+         Route::get('get_user_form_team','CustomerController@getUserFromTeam')->name('get_user_form_team');
+         Route::post('save-my-business','CustomerController@saveMyBusiness')->name('save_my_business');
+
+
 
     });
 

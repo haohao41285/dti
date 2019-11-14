@@ -19,5 +19,8 @@ class MainUserCustomerPlace extends Model
     public function getUser(){
         return $this->belongsTo(MainUser::class,'user_id','user_id')->withDefault();
     }
+    public function getCustomer(){
+        return $this->belongsTo(MainCustomerTemplate::class,'customer_id','id')->groupBy('id');
+    }
 
 }

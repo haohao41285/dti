@@ -345,11 +345,20 @@
               },
           })
               .done(function(data) {
-                  if(data == 1){
+                  data = JSON.parse(data);
+                  // console.log(data);
+                  // return;
+                  if(data.status == 'success'){
                       $("#viewModal").modal('hide');
                       toastr.success('Successfully!');
                   }else
-                      toastr.error('Getting Error! Check again!');
+                      if(typeof(data.message) == "string")
+                           toastr.error(data.message);
+                      else{
+                          $.each(data.message,function(ind,val){
+                              toastr.error(val);
+                          });
+                      }
                   table.ajax.reload(null, false);
               })
               .fail(function() {

@@ -28,9 +28,9 @@
         </div>
         @else
         <div class="col-md-4" >
-            <input type="text" disabled class="input-sm form-control form-control-sm" id="customer_phone" value="{{$customer_info->customer_phone}}" name="customer_phone" />
-            <input type="hidden"  class="input-sm form-control form-control-sm" id="customer_phone" value="{{$customer_info->customer_phone}}" name="customer_phone" />
-            <input type="hidden" class="input-sm form-control form-control-sm" id="customer_id" value="{{!empty($customer_info)?$customer_info->customer_customer_template_id:""}}"  name="customer_id" />
+            <input type="text" disabled class="input-sm form-control form-control-sm" id="customer_phone" value="{{$customer_info->ct_cell_phone}}" name="customer_phone" />
+            <input type="hidden"  class="input-sm form-control form-control-sm" id="customer_phone" value="{{$customer_info->ct_cell_phone}}" name="customer_phone" />
+            <input type="hidden" class="input-sm form-control form-control-sm" id="customer_id" value="{{!empty($customer_info)?$customer_info->id:""}}"  name="customer_id" />
         </div>
         @endif
     </div>
@@ -47,6 +47,29 @@
             <label class="required">Business:</label>
         </div>
         <div class="col-md-10 row"  id="salon_list">
+            @if($place_list_assign->count() > 0)
+                @foreach($place_list_assign as $place)
+                    <div class="col-md-3">
+                        <label class="ml-3 text-uppercase text-dark">
+                            <input style="width:20px;height: 20px" type="radio" class="place_id"
+                                   business_name="{{$place->business_name}}"
+                                   business_phone="{{$place->business_phone}}"
+                                   customer_id_assign="{{$place->id}}"
+                                   email_assign="{{$place->email}}"
+                                   website_assign="{{$place->website}}"
+                                   address_assign="{{$place->address}}"
+                                   name="place_id" value="0">
+                            <b>{{$place->business_name}}</b>
+                        </label>
+                    </div>
+                @endforeach
+                    <input type="hidden" id="business_name_assign" name="business_name">
+                    <input type="hidden" id="business_phone_assign" name="business_phone">
+                    <input type="hidden" id="customer_id_assign" name="customer_id_assign">
+                    <input type="hidden" id="email_assign" name="email">
+                    <input type="hidden" id="website_assign" name="website">
+                    <input type="hidden" id="address_assign" name="address">
+            @endif
             @if(isset($place_list))
             @foreach($place_list as $place)
             <div class="col-md-3">
@@ -248,6 +271,24 @@
             $(".credit").css('display', '');
         }
    });
+   $(".place_id").click(function () {
+       var place_id = $(this).val();
+       if(place_id == 0){
+           var business_name = $(this).attr('business_name');
+           var business_phone = $(this).attr('business_phone');
+           var customer_id_assign = $(this).attr('customer_id_assign');
+           var email = $(this).attr('email_assign');
+           var website = $(this).attr('website_assign');
+           var address = $(this).attr('address_assign');
+
+           $("#business_name_assign").val(business_name);
+           $("#business_phone_assign").val(business_phone);
+           $("#customer_id_assign").val(customer_id_assign);
+           $("#email_assign").val(email);
+           $("#website_assign").val(website);
+           $("#address_assign").val(address);
+       }
+   })
 });
 </script>
 @endpush

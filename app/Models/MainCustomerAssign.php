@@ -12,5 +12,8 @@ class MainCustomerAssign extends Model
         'business_phone',
         'business_name',
         'customer_id',
+        'email',
+        'address',
+        'website'
     ];
 }

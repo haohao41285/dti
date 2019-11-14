@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Customer;
 
 use App\Helpers\ImagesHelper;
+use App\Models\MainCustomerAssign;
 use App\Models\MainCustomerBought;
 use App\Models\MainCustomerNote;
 use App\Models\MainFile;
@@ -55,7 +56,9 @@ class CustomerController extends Controller
 
     public function addCustomer()
     {
-        return view('customer.customer-add');
+        $customer_arr = MainUserCustomerPlace::where('user_id',Auth::user()->user_id)->select('customer_id')->groupBy('customer_id')->get()->toArray();
+        $customer_list = MainCustomerTemplate::whereIn('id',$customer_arr)->get();
+        return view('customer.customer-add',compact('customer_list'));
     }
 
     public function listMyCustomer(){
@@ -272,6 +275,7 @@ class CustomerController extends Controller
         }
     }
     public function addCustomerToMy(Request $request){
+//        return $request->all();
 
         $customer_id = $request->customer_id;
         $user_id = Auth::user()->user_id;
@@ -279,6 +283,25 @@ class CustomerController extends Controller
 
         DB::beginTransaction();
 
+        if(count($request->all()) == 3){
+            $rule = [
+                'business_name' => 'required',
+                'business_phone' => 'required|digits_between:10,15|unique:main_customer_template,ct_business_phone|unique:main_customer_assigns,business_phone|unique:pos_place,place_phone'
+            ];
+            $validator = Validator::make($request->all(),$rule);
+            if($validator->fails())
+                return response([
+                    'status'=>'error',
+                    'message'=> $validator->getMessageBag()->toArray()
+                ]);
+            $customer_assign = [
+                'user_id' => Auth::user()->user_id,
+                'customer_id' => $customer_id,
+                'business_name' => $request->business_name,
+                'business_phone' => $request->business_phone,
+            ];
+            MainCustomerAssign::create($customer_assign);
+        }
         //ADD CUSTOMER TO USER LIST
         $user_customer_arr = [
             'user_id' => $user_id,
@@ -298,11 +321,11 @@ class CustomerController extends Controller
         }
         if(!isset($update_user) || !isset($update_customer)){
             DB::callback();
-            return 0;
+            return response(['status'=>'error','message'=>'Getting Failed!']);
         }
         else{
             DB::commit();
-            return 1;
+            return response(['status'=>'success','message'=>'Getting Successfully!']);
         }
     }
     public function getMyCustomer(Request $request){
@@ -726,11 +749,12 @@ class CustomerController extends Controller
             'ct_business_phone' => 'required|unique:main_customer_template,ct_business_phone|numeric|digits_between:10,15',
             'ct_email' => 'required|email',
             'ct_address' => 'required',
+            'ct_cell_phone' => 'required|unique:main_customer_template,cs_cell_phone|digits_between:10,15'
         ];
         $message = [
             'ct_firstname.required' => 'Enter Firstname',
             'ct_lastname.required' => 'Enter Lastname',
-            'ct_salon_name' => 'Enter Business Name',
+            'ct_salon_name.required' => 'Enter Business Name',
             'ct_email.required' => 'Enter Email',
             'ct_email.email' =>'Enter a Email',
             'ct_address.required' => 'Enter Address',
@@ -738,6 +762,9 @@ class CustomerController extends Controller
             'ct_business_phone.unique' => 'Business Phone has Existed',
             'ct_business_phone.numeric' => 'Enter Number',
             'ct_business_phone.between' => 'Enter True Number',
+            'ct_cell_phone.required' => 'Enter Cell Phone',
+            'ct_cell_phone.unique' => 'Cell Phone has Taken',
+            'ct_cell_phone.digits_between' => "Enter a Cell Phone"
         ];
         $validator = Validator::make($request->all(),$rule,$message);
         if($validator->fails())
@@ -1173,5 +1200,26 @@ class CustomerController extends Controller
             return response(['status'=>'error','message'=>'Get User List Failed!']);
         else
             return response(['status'=>'success','user_list'=>$user_list]);
+    }
+    public function saveMyBusiness(Request $request){
+
+        $rule = [
+            'business_name' => 'required',
+            'business_phone' => 'required|unique:main_customer_template,ct_business_phone|unique:main_customer_assigns,business_phone|unique:pos_place,place_phone|digits_between:10,15',
+        ];
+        $message = [
+            'business_phone.digits_between' => 'Enter a Number Phone',
+        ];
+        $validator = Validator::make($request->all(),$rule,$message);
+        if($validator->fails())
+            return back()->withErrors($validator)->withInput();
+        $input = $request->all();
+        $input['user_id'] = Auth::user()->user_id;
+        unset($input['_token']);
+        $customer_assign_update = MainCustomerAssign::create($input);
+        if(!$customer_assign_update)
+            return back()->with('error','Create Busines Failed!');
+        else
+            return redirect()->route('myCustomers')->with('success','Create Business Successfully!');
     }
 }
