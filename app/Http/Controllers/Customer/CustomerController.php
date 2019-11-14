@@ -341,7 +341,6 @@ class CustomerController extends Controller
         $status_customer = $request->status_customer;
         $customer_arr = [];
 
-//        $user_customer_list = MainUser::where('user_id',$user_id)->first()->user_customer_list;
         $user_customer_list = MainUserCustomerPlace::where([
             ['user_id',$user_id],
             ['team_id',$team_id],
@@ -349,13 +348,8 @@ class CustomerController extends Controller
 
         if($user_customer_list != NULL){
 
-//            $user_customer_arr = explode(";", $user_customer_list);
             $user_customer_arr = array_values($user_customer_list);
 
-//            $customer_list = MainCustomerTemplate::leftjoin('main_user',function($join){
-//                                                    $join->on('main_customer_template.created_by','main_user.user_id');
-//                                                })
-//                                                ->whereIn('main_customer_template.id',$user_customer_arr);
             $customer_list = MainCustomerTemplate::with('getCreatedBy')->whereIn('main_customer_template.id',$user_customer_arr);
 
         if($start_date != "" && $end_date != ""){
@@ -437,8 +431,7 @@ class CustomerController extends Controller
                     return '
                           <a class="btn btn-sm btn-secondary add-note"  contact_name="'.$row['ct_fullname'].'" customer_id="'.$row['id'].'" href="javascript:void(0)" title="Add Customer Note"><i class="far fa-sticky-note"></i></a>
                           <a class="btn btn-sm btn-secondary view" customer_id="'.$row['id'].'" href="javascript:void(0)" title="View Customer"><i class="fas fa-eye"></i></a>
-                    <a class="btn btn-sm btn-secondary order-service" href="'.route('add-order',$row['id']).'" title="Go To Order"><i class="fas fa-shopping-cart"></i></a>
-                    <a class="btn btn-sm btn-secondary move-customer" contact_name="'.$row['ct_fullname'].'" customer_id="'.$row['id'].'" href="javascript:void(0)" title="Move Customer To User"><i class="fas fa-exchange-alt"></i></a>';
+                    <a class="btn btn-sm btn-secondary order-service" href="'.route('add-order',$row['id']).'" title="Go To Order"><i class="fas fa-shopping-cart"></i></a>';
                 })
                 ->rawColumns(['action','id'])
                 ->make(true);

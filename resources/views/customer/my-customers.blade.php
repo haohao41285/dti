@@ -254,21 +254,21 @@
        processing: true,
        serverSide: true,
        buttons: [
-           {
-               text: '<i class="fas fa-exchange-alt"></i> Move Customers',
-               className: "btn-sm move-customers"
-           },
-           {
-               text: '<i class="fas fa-download"></i> Import',
-               className: "btn-sm import-show"
-           },
-           {
-               text: '<i class="fas fa-upload"></i> Export',
-               className: "btn-sm export",
-               action: function ( e, dt, node, config ) {
-                  document.location.href = "{{route('export-my-customer')}}";
-              }
-           }
+           // {
+           //     text: '<i class="fas fa-exchange-alt"></i> Move Customers',
+           //     className: "btn-sm move-customers"
+           // },
+           {{--{--}}
+           {{--    text: '<i class="fas fa-download"></i> Import',--}}
+           {{--    className: "btn-sm import-show"--}}
+           {{--},--}}
+           {{--{--}}
+           {{--    text: '<i class="fas fa-upload"></i> Export',--}}
+           {{--    className: "btn-sm export",--}}
+           {{--    action: function ( e, dt, node, config ) {--}}
+           {{--       document.location.href = "{{route('export-my-customer')}}";--}}
+           {{--   }--}}
+           {{--}--}}
        ],
        ajax:{ url:"{{ route('get-my-customer') }}",
        data: function (d) {

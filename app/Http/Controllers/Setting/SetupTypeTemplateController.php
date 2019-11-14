@@ -6,10 +6,13 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use DataTables;
 use App\Models\PosTemplateType;
+use Gate;
 
 class SetupTypeTemplateController  extends Controller
 {
 	public function index(){
+	    if(Gate::denies('permission','setup-type-template'))
+	        return doNotPermission();
 		return view('setting.setup-template-type');
 	}
 
@@ -17,7 +20,7 @@ class SetupTypeTemplateController  extends Controller
 		return PosTemplateType::getDataTableByType($request->type);
 	}
 	/**
-	 * save coupon type Template 
+	 * save coupon type Template
 	 * @param  Request $request
 	 * @return json
 	 */
