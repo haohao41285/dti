@@ -13,8 +13,8 @@ class SetupTypeTemplateController  extends Controller
 		return view('setting.setup-template-type');
 	}
 
-	public function getDatatable(){
-		return PosTemplateType::getCouponDataTable();
+	public function getDatatable(Request $request){
+		return PosTemplateType::getDataTableByType($request->type);
 	}
 	/**
 	 * save coupon type Template 
@@ -24,7 +24,7 @@ class SetupTypeTemplateController  extends Controller
 	public function save(Request $request){
 		$arr = [
 			'template_type_name' => $request->name,
-			'template_type_table_type' => 1,
+			'template_type_table_type' => $request->type,
 		];
 
 		if($request->action == "Create"){
@@ -41,10 +41,7 @@ class SetupTypeTemplateController  extends Controller
 
 	public function delete(Request $request){
 		if($request->id){
-			$counpon = PosTemplateType::getById($request->id);
-			// echo $counpon; die;
-			$counpon->template_type_status = 0;
-			$counpon->save();
+			$counpon = PosTemplateType::deleteById($request->id);
 
 			return response()->json(['status'=>1,'msg'=>"deleted successfully"]);
 		}

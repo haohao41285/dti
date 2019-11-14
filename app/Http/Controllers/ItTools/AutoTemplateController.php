@@ -9,6 +9,7 @@ use App\Helpers\GeneralHelper;
 use Validator;
 use App\Models\PosTemplateType;
 use App\Models\PosTemplate;
+use App\Models\PosCateService;
 use Gate;
 
 class AutoTemplateController extends Controller
@@ -36,13 +37,23 @@ class AutoTemplateController extends Controller
             return doNotPermission();
 
     	$template = PosTemplate::deleteByIdAndPlaceId($request->id, null);
+        // dd($template);
 
     	return response()->json(['status'=>1,'msg'=>'deleted successfully']);
     }
 
     public function saveAutoTemplate(Request $request){
-    	$template = PosTemplate::saveAuto($request->id,  null, $request->title, $request->discount, $request->discountType, $request->image, $request->services, $request->couponType);
 
+    	$template = PosTemplate::saveAuto($request->id,  null, $request->title, $request->discount, $request->discountType, $request->image, $request->services, $request->templateType,$request->type);
+    	
     	return response()->json(['status'=>1,'msg'=>'saved successfully']);
+    }
+
+    public function getServicesByPlaceId(Request $request){
+        if($request->placeId){
+            $services = PosCateService::getCateServicesAndServicesByPlaceId($request->placeId);
+
+            return response()->json(['status'=>1,'data'=>$services]);
+        }
     }
 }

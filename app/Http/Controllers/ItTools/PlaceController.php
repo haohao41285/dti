@@ -35,7 +35,7 @@ class PlaceController extends Controller
         if(Gate::allows('permission','place-admin')
             || Gate::allows('permission','place-staff')
         ){
-            $data['templateType'] = PosTemplateType::getByType(1);
+            $data['templateType'] = PosTemplateType::getAll();
             return view('tools.place',$data);
         }else
             return doNotPermission();
@@ -244,29 +244,39 @@ class PlaceController extends Controller
        return response()->json(['status'=> 1,"msg"=>"Saved successfully"]);
     }
 
-    public function getAutoCouponDatatable(Request $request){
-        return PosTemplate::getDatatableByPlaceId($request->placeId);
+    public function getAutoTemplateDatatableDatatable(Request $request){
+        return PosTemplate::getDatatableByPlaceId($request->placeId,$request->type);
     }
 
-    public function saveAutoCoupon(Request $request){
-        PosTemplate::saveAuto($request->id, $request->placeId, $request->title,$request->discount, $request->discountType,$request->image,$request->services, $request->couponType);
+    public function saveAutoTemplate(Request $request){
+        $template = PosTemplate::saveAuto(
+            $request->id,  
+            $request->placeId, 
+            $request->title, 
+            $request->discount, 
+            $request->discountType, 
+            $request->image, 
+            $request->services, 
+            $request->templateType,
+            $request->templateTableType
+        );
 
         return response()->json(['status'=>1,'msg'=>"saved successfully"]);
     }
 
-    public function deleteAutoCoupon(Request $request){
+    // public function deleteAutoCoupon(Request $request){
+    //     if($request->id){
+    //         PosTemplate::deleteByIdAndPlaceId($request->id, $request->placeId);
+
+    //         return response()->json(['status'=>1,'msg'=>"deleted successfully"]);
+    //     }
+    // }
+
+    public function getAutoTemplateById(Request $request){
         if($request->id){
-            PosTemplate::deleteByIdAndPlaceId($request->id, $request->placeId);
-
-            return response()->json(['status'=>1,'msg'=>"deleted successfully"]);
-        }
-    }
-
-    public function getAutoCouponById(Request $request){
-        if($request->id){
-            $coupon = PosTemplate::getByPlaceIdAndId($request->id, $request->placeId);
-
-            return response()->json(['status'=>1,'data'=>$coupon]);
+            $template = PosTemplate::getByPlaceIdAndId($request->id, $request->placeId);
+            // dd($template);
+            return response()->json(['status'=>1,'data'=>$template]);
         }
     }
 
