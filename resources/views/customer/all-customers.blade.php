@@ -238,6 +238,10 @@
                 button = `<button type="button" id=`+data.customer_list.id+` class="btn btn-primary btn-sm get-customer">Assign</button>`;
             if(data.ct_status === 'Disabled')
                 button = '';
+            if(data.customer_list.ct_status != 'New Arrivals' && data.customer_list.ct_status != 'Disabled' && data.count_customer_user == 0 ){
+                data.customer_list.ct_salon_name = '<input type="text" name="business_name" id="business_name" class="form-control form-control-sm col-12" required>';
+                data.customer_list.ct_business_phone = '<input type="number" name="business_phone" id="business_phone" class="form-control form-control-sm col-12" required>';
+            }
           data = data.customer_list;
           if(data.ct_salon_name==null)data.ct_salon_name="";
           if(data.ct_contact_name==null)data.ct_contact_name="";
@@ -248,10 +252,7 @@
           if(data.ct_website==null)data.ct_website="";
           if(data.ct_note==null)data.ct_note="";
           if(data.ct_status==null)data.ct_status="";
-          if(data.ct_status != 'New Arrivals' && data.ct_status != 'Disabled'){
-              data.ct_salon_name = '<input type="text" name="business_name" id="business_name" class="form-control form-control-sm col-12" required>';
-              data.ct_business_phone = '<input type="number" name="business_phone" id="business_phone" class="form-control form-control-sm col-12" required>';
-          }
+
 
           $(".modal-content-view").html(`
             <form>

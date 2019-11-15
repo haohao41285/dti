@@ -302,6 +302,25 @@ class CustomerController extends Controller
             ];
             MainCustomerAssign::create($customer_assign);
         }
+        elseif(count($request->all()) == 1) {
+            //CHECK NEW CUSTOMER FOR TEAM TYPE
+            $team_id_arr = MainTeam::active()->where('team_type', MainTeam::find(Auth::user()->user_team)->team_type)->select('id')->get()->toArray();
+            $team_id_arr = array_values($team_id_arr);
+            $user_customer = MainUserCustomerPlace::whereIn('team_id', $team_id_arr)->where('customer_id', $customer_id)->count();
+            if ($user_customer == 0) {
+                $customer_info = MainCustomerTemplate::find($customer_id);
+                $customer_assign = [
+                    'user_id' => Auth::user()->user_id,
+                    'customer_id' => $customer_id,
+                    'business_name' => $customer_info->ct_salon_name,
+                    'business_phone' => $customer_info->ct_business_phone,
+                    'email' =>$customer_info->ct_email,
+                    'website'=>$customer_info->ct_website,
+                    'address'=> $customer_info->ct_address
+                ];
+                MainCustomerAssign::create($customer_assign);
+            }
+        }
         //ADD CUSTOMER TO USER LIST
         $user_customer_arr = [
             'user_id' => $user_id,
