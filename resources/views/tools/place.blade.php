@@ -819,7 +819,7 @@ $(document).ready(function() {
             { data: 'place_name', name: 'place_name' },
             { data: 'place_phone', name: 'place_phone', class: 'text-center' },
             { data: 'place_ip_license', name: 'place_ip_license' },
-            { data: 'action', name: 'action', orderable: false, searcheble: false, class: 'text-center' }
+            { data: 'action', name: 'action', orderable: false, searchable: false, class: 'text-center' }
         ],
         buttons: [
 
