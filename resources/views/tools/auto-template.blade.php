@@ -24,7 +24,7 @@
                                 <th>Title</th>
                                 <th>Discount</th>
                                 <th>Image</th>
-                                <th>Categories</th>
+                                {{-- <th>Categories</th> --}}
                                 <th>Type</th>
                                 <th>Action</th>
                             </tr>
@@ -155,7 +155,7 @@ $(document).ready(function() {
             { data: 'template_title', name: 'template_title', class: "template_title" },
             { data: 'template_discount', name: 'template_discount', class: "template_discount" },
             { data: 'template_linkimage', name: 'template_linkimage', class: "template_linkimage" },
-            { data: 'template_list_service', name: 'template_list_service', class: "template_list_service" },
+            // { data: 'template_list_service', name: 'template_list_service', class: "template_list_service" },
             { data: 'template_type_id', name: 'template_type_id', class: "template_type_id" },
             { data: 'action', name: 'action', orderable: false, searchable: false, class: 'text-center' }
         ]

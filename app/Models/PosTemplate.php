@@ -60,7 +60,9 @@ class PosTemplate extends Model
                     ->get();
     }
 
-    public static function getDatatableByPlaceId($placeId, $type=null){
+
+    public static function getDatatableByPlaceId($placeId = null, $type = null){
+
         $data = self::getByPlaceIdAndType($placeId,$type);
 
         return DataTables::of($data)
