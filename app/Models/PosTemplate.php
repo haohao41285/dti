@@ -51,8 +51,7 @@ class PosTemplate extends Model
                     ->first();
     }
 
-<<<<<<< HEAD
-=======
+
     public static function getByTypeAndDiscount($type, $discount){
         return self::where('template_place_id',null)
                     ->where('template_status',1)
@@ -61,7 +60,6 @@ class PosTemplate extends Model
                     ->get();
     }
 
->>>>>>> 49f1bf8d4e030a10fb5bbcad554e58729f68a775
     public static function getDatatableByPlaceId($placeId, $type=null){
         $data = self::getByPlaceIdAndType($placeId,$type);
 
