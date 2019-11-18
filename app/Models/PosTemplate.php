@@ -40,7 +40,7 @@ class PosTemplate extends Model
     public static function getByPlaceIdAndType($placeId, $type){
         return self::where('template_place_id',$placeId)
                     ->where('template_status',1)
-                    //->where('template_table_type',$type)
+                    ->where('template_table_type',$type)
                     ->get();
     }
 
