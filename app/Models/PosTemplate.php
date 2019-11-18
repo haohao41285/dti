@@ -33,7 +33,7 @@ class PosTemplate extends Model
 
     public static function deleteByIdAndPlaceId($id, $placeId){
         return self::where('template_id',$id)
-                    ->where('template_place_id',$placeId)
+                    // ->where('template_place_id',$placeId)
                     ->update(['template_status'=>0]);
     }
 
@@ -51,6 +51,17 @@ class PosTemplate extends Model
                     ->first();
     }
 
+<<<<<<< HEAD
+=======
+    public static function getByTypeAndDiscount($type, $discount){
+        return self::where('template_place_id',null)
+                    ->where('template_status',1)
+                    ->where('template_type_id',$type)
+                    ->where('template_discount',$discount)
+                    ->get();
+    }
+
+>>>>>>> 49f1bf8d4e030a10fb5bbcad554e58729f68a775
     public static function getDatatableByPlaceId($placeId, $type=null){
         $data = self::getByPlaceIdAndType($placeId,$type);
 
@@ -107,11 +118,13 @@ class PosTemplate extends Model
            
             return "updated successfully";
         } else {
-            $id = self::select('template_id')
-                        ->where('template_place_id',$placeId)
-                        ->max('template_id');
+            // $id = self::select('template_id')
+            //             ->where('template_place_id',$placeId)
+            //             ->max('template_id');
 
-            $arr['template_id'] = $id+1;
+            // $arr['template_id'] = $id+1;
+            // if(!$arr['template_id']) $arr['template_id'] = 1;
+            // dd($arr);
 
             self::insert($arr);
 

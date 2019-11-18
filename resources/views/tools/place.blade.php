@@ -32,7 +32,7 @@
                             <th>Phone</th>
                             <th>License</th>
                             {{-- <th>Created Date</th> --}}
-                            <th  class="w-30">Action</th>
+                            <th class="w-30">Action</th>
                         </tr>
                     </thead>
                 </table>
@@ -625,13 +625,17 @@
     <div style="max-width: 95%" class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">Auto Coupon</h5>
+                <h5 class="modal-title">Auto Template</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
             <div class="modal-body row">
                 <div class="col-8 ">
+                    <div class="form-group">
+                        <button class="btn-sm btn-primary btn " id="btn-coupon">Coupon</button>
+                        <button class="btn-sm btn-danger btn " id="btn-promotion">Promotion</button>
+                    </div>
                     <div class="card shadow mb-4 ">
                         <div class="card-header py-2">
                             <h6 class="m-0 font-weight-bold text-primary">Auto coupon list </h6>
@@ -657,13 +661,11 @@
                 </div>
                 <div class="col-4">
                     <div class="form-group" id="buttonSetupProperties">
-                        {{-- <button class="btn-sm btn-primary btn showAdd" id="addText">Add Text</button> --}}
-                        {{-- <button class="btn-sm btn-danger btn showAdd" id="addImage">Add Image</button> --}}
                         <button class="btn btn-sm btn-warning resetAddAutoCoupon">Reset Add</button>
                     </div>
                     <div class="card shadow mb-4 ">
                         <div class="card-header py-2">
-                            <h6 class="m-0 font-weight-bold text-primary " id="auto-coupon-title">Add</h6>
+                            <h6 class="m-0 font-weight-bold text-primary " id="auto-template-title">Add</h6>
                         </div>
                         <div class="card-body">
                             <form method="post" id="auto-coupon-form" enctype="multipart/form-data">
@@ -680,8 +682,18 @@
                                     <label class="col-5">Discount Type </label>
                                     {{-- <input class="col-7 form-control-sm form-control" type="text" name="discountType"> --}}
                                     <select class="col-7 form-control-sm form-control" name="discountType">
-                                        <option value="$">$</option>
-                                        <option value="%">%</option>
+                                        <option value="1">$</option>
+                                        <option value="0">%</option>
+                                    </select>
+                                </div>
+                                <div class=" form-group row col-12">
+                                    <label class="col-5">Coupon Type </label>
+                                    {{-- <input class="col-7 form-control-sm form-control" type="text" name="couponType"> --}}
+                                    <select class="col-7 form-control-sm form-control" name="templateType">
+                                        <option>-- Template Type --</option>
+                                        @foreach ($templateType as $element)
+                                        <option class="{{$element->template_type_table_type == 1 ? "coupon" : "promotion"}}" value="{{$element->template_type_id}}">{{$element->template_type_name}}</option>
+                                        @endforeach
                                     </select>
                                 </div>
                                 <div class="form-group col-12">
@@ -699,15 +711,6 @@
                                         <option value="">3</option>
                                         <option value="">4</option>
                                         <option value="">5</option>
-                                    </select>
-                                </div>
-                                <div class=" form-group row col-12">
-                                    <label class="col-5">Coupon Type </label>
-                                    {{-- <input class="col-7 form-control-sm form-control" type="text" name="couponType"> --}}
-                                    <select class="col-7 form-control-sm form-control" name="couponType">
-                                        @foreach ($templateType as $element)
-                                        <option value="{{$element->template_type_id}}">{{$element->template_type_name}}</option>
-                                        @endforeach
                                     </select>
                                 </div>
                                 <div class="form-group col-12 row">
@@ -773,6 +776,10 @@ function clear() {
     $('#themes-datatable tbody tr.selected').removeClass('selected');
     $("#custom-properties-form").find("input[name='variable']").attr("readonly", false);
     $("input[name='id']").val('');
+
+    $("#auto-template-title").text("Add");
+    $("select[name='templateType']").find("option:selected").attr("selected", false);
+    $("select[name='templateType']:first-child").attr("selected", true);
 }
 
 function listThemePropertiesByThemeId(theme_id) {
@@ -801,12 +808,28 @@ function listThemePropertiesByThemeId(theme_id) {
     });
 }
 
+function getServicesByPlaceId(placeId) {
+    $.ajax({
+        url: "{{ route('getServicesByPlaceId') }}",
+        method: "get",
+        dataType: "json",
+        data: { placeId },
+        success: function(data) {
+            if (data.status) {
+
+            }
+        }
+    });
+}
+
 $(document).ready(function() {
     perviewImage();
+    var type = null;
     var placeId = null;
     var userId = null;
     var license = null;
     var themeId = null;
+    var templateTableType = null;
 
     var placeTable = $('#places-datatable').DataTable({
         // dom: "lfrtip",
@@ -1246,14 +1269,18 @@ $(document).ready(function() {
         });
     });
 
+
     //=============================
     //auto coupon
     $(document).on('click', ".btn-auto-coupon", function(e) {
         e.preventDefault();
         placeId = $(this).attr('data-id');
-        autoCouponTable.draw();
+        autoTemplateTable.draw();
+        getServicesByPlaceId(placeId);
+
         $("#auto-coupon-modal").modal("show");
         $(".resetAddAutoCoupon").trigger("click");
+        $("#btn-coupon").trigger("click");
     });
 
     $(".resetAddAutoCoupon").on('click', function() {
@@ -1261,7 +1288,7 @@ $(document).ready(function() {
         $("#auto-coupon-title").text("Add");
     });
 
-    autoCouponTable = $('#auto-coupon-datatable').DataTable({
+    autoTemplateTable = $('#auto-coupon-datatable').DataTable({
         // dom: "lBfrtip",
         processing: true,
         serverSide: true,
@@ -1272,9 +1299,10 @@ $(document).ready(function() {
         ],
 
         ajax: {
-            url: "{{ route('getAutoCouponDatatable') }}",
+            url: "{{ route('Places.getAutoTemplateDatatable') }}",
             data: function(data) {
                 data.placeId = placeId;
+                data.type = type;
             },
         },
         columns: [
@@ -1293,8 +1321,9 @@ $(document).ready(function() {
         var form = $(this)[0];
         var form_data = new FormData(form);
         form_data.append('placeId', placeId);
+        form_data.append('templateTableType', templateTableType);
         $.ajax({
-            url: "{{ route('saveAutoCoupon') }}",
+            url: "{{ route('Places.saveAutoTemplate') }}",
             method: "post",
             dataType: "json",
             data: form_data,
@@ -1302,7 +1331,7 @@ $(document).ready(function() {
             contentType: false,
             processData: false,
             success: function(data) {
-                autoCouponTable.draw();
+                autoTemplateTable.draw();
                 toastr.success("Saved successfully!");
                 clear();
 
@@ -1318,7 +1347,7 @@ $(document).ready(function() {
         var id = $(this).attr("data-id");
 
         $.ajax({
-            url: "{{ route('getAutoCouponById') }}",
+            url: "{{ route('Places.getAutoTemplateById') }}",
             method: "get",
             data: {
                 id,
@@ -1327,7 +1356,7 @@ $(document).ready(function() {
             dataType: "json",
             success: function(data) {
                 if (data.status) {
-                    $("#auto-coupon-title").text("Update");
+                    $("#auto-template-title").text("Update");
                     $("input[name='action']").val("update");
 
                     $("input[name='id']").val(id);
@@ -1335,17 +1364,15 @@ $(document).ready(function() {
                     $("input[name='discount']").val(data.data.template_discount);
 
                     $("select[name='discountType']").find("option:selected").attr("selected", false);
-                    if (data.data.template_type == "1") {
-                        $("select[name='discountType']").find("option[value='$']").attr("selected", true);
-                    } else {
-                        $("select[name='discountType']").find("option[value='%']").attr("selected", true);
-                    }
+
+                    $("select[name='discountType']").find("option[value='" + data.data.template_discount_type + "']").attr("selected", true);
+
 
                     $("#previewImageAutoCoupon").attr("src", "{{env('URL_FILE_VIEW')}}" + data.data.template_linkimage);
                     $("input[name='services']").val("sada");
 
-                    $("select[name='couponType']").find("option:selected").attr("selected", false);
-                    $("select[name='couponType']").find("option[value='" + data.data.template_type_id + "']").attr("selected", true);
+                    $("select[name='templateType']").find("option:selected").attr("selected", false);
+                    $("select[name='templateType']").find("option[value='" + data.data.template_type_id + "']").attr("selected", true);
 
                 }
             },
@@ -1359,29 +1386,53 @@ $(document).ready(function() {
     });
 
     $(document).on("click", ".deleteAutoCoupon", function(e) {
+        e.preventDefault();
+
         if (!confirm("Are you sure you want to delete this data?")) {
             return false;
         }
 
         var id = $(this).attr("data-id");
         $.ajax({
-            url: "{{ route('deleteAutoCoupon') }}",
+            url: "{{ route('deleteAutoTemplate') }}",
             method: "get",
             data: {
                 id,
-                placeId,
+                // placeId,
             },
             dataType: "json",
             success: function(data) {
                 if (data.status) {
                     toastr.success("Deleted successfully!");
-                    autoCouponTable.draw();
+                    autoTemplateTable.draw();
                 }
             },
             error: function() {
                 toastr.error("Failed to delete!");
             }
         });
+    });
+
+    $("#btn-coupon").on('click', function(e) {
+        e.preventDefault();
+        type = 1;
+        $(".table-title").text("Auto coupon list");
+        autoTemplateTable.draw();
+        clear();
+        $(".coupon").show();
+        $(".promotion").hide();
+        templateTableType = 1;
+    });
+
+    $("#btn-promotion").on('click', function(e) {
+        e.preventDefault();
+        type = 2;
+        $(".table-title").text("Auto promotion list");
+        autoTemplateTable.draw();
+        clear();
+        $(".coupon").hide();
+        $(".promotion").show();
+        templateTableType = 2;
     });
 
     $(document).on('click', '.extension-service', function() {

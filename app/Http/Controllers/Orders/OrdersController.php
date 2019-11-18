@@ -3,8 +3,10 @@
 namespace App\Http\Controllers\Orders;
 
 use App\Models\MainComboServiceType;
+use App\Models\MainCustomerAssign;
 use App\Models\MainGroupUser;
 use App\Models\MainOrder;
+use App\Models\MainUserCustomerPlace;
 use App\Models\PosCustomertag;
 use App\Models\PosSubjectWeb;
 use Illuminate\Http\Request;
@@ -97,15 +99,32 @@ class OrdersController extends Controller
 
         if ($customer_id != 0) {
         }
+        $user_id = Auth::user()->user_id;
+        $team_id = Auth::user()->user_team;
 
-        $data['customer_info'] = MainCustomerTemplate::where('id', $customer_id)->first();
+        //GET CUSTOMER ASSIGN
+        $data['place_list_assign'] = MainCustomerAssign::where([
+            ['user_id',Auth::user()->user_id],
+            ['customer_id',$customer_id],
+        ])->get();
 
-        if (!empty($data['customer_info'])) {
-            $data['place_list'] = PosPlace::join('main_customer', function ($join) {
-                $join->on('pos_place.place_customer_id', 'main_customer.customer_id');
-            })
-                ->where('main_customer.customer_phone', $data['customer_info']->ct_business_phone)
-                ->select('pos_place.place_id', 'pos_place.place_name')
+//        $data['customer_info'] = MainCustomer::where('customer_customer_template_id', $customer_id)->first();
+        $data['customer_info'] = MainCustomerTemplate::find($customer_id);
+
+        if (!empty($data['customer_info']->getMainCustomer)) {
+
+            //GET PLACES'S CUSTOMER OF USER
+            $places_arr = MainUserCustomerPlace::where([
+                ['user_id',$user_id],
+                ['customer_id',$customer_id],
+                ['place_id','!=',null]
+            ])->select('place_id')->get()->toArray();
+
+            $places_arr = array_values($places_arr);
+
+            $data['place_list'] = PosPlace::where('place_customer_id',$data['customer_info']->getMainCustomer->customer_id)
+                ->whereIn('place_id',$places_arr)
+                ->where('place_status',1)
                 ->get();
         }
         //GET COMBO SERVICE WITH ROLE
@@ -145,13 +164,9 @@ class OrdersController extends Controller
         //GET CUSTOMER INFORMATION
         $customer_phone = $request->customer_phone;
 
-        $customer_info = MainCustomerTemplate::where(function ($query) use ($customer_phone) {
-            $query->where('ct_business_phone', $customer_phone)
-                ->orWhere('ct_cell_phone', $customer_phone);
-        })
+        $customer_info = MainCustomerTemplate::where('ct_cell_phone', $customer_phone)
             ->where('ct_active', 1)
             ->first();
-
         //CHECK CUSTOMER IN MAIN_CUSTOMER
         $check_customer = MainCustomer::where('customer_phone', $customer_phone)->first();
 
@@ -266,14 +281,14 @@ class OrdersController extends Controller
                 'place_customer_id' => $customer_id,
                 'place_code' => 'place-' . $place_id,
                 'place_logo' => 'logo',
-                'place_name' => 'New Place',
+                'place_name' => $request->business_name,
                 'place_actiondate' => '{"mon": {"start": "09:00", "end": "21:00", "closed": false}, "tue": {"start": "09:00", "end": "21:00", "closed": false}, "wed": {"start": "09:00", "end": "21:00", "closed": false}, "thur": {"start": "09:00", "end": "21:00", "closed": false}, "fri": {"start": "09:00", "end": "21:00", "closed": false}, "sat": {"start": "09:00", "end": "21:00", "closed": false},"sun": {"start": "09:00", "end": "21:00", "closed": false} }',
                 'place_actiondate_option' => 0,
                 'place_period_overtime' => 1,
                 'place_hour_overtime' => '08:00',
-                'place_address' => $customer_info->ct_address,
-                'place_website' => $customer_info->ct_website,
-                'place_phone' => $customer_info->ct_business_phone,
+                'place_address' => $request->address,
+                'place_website' => $request->website,
+                'place_phone' => $request->business_phone,
                 'place_taxcode' => 'tax-code',
                 'place_customer_type' => 'customer type',
                 'place_url_plugin' => 'url plugin',
@@ -281,10 +296,35 @@ class OrdersController extends Controller
                 'updated_by' => Auth::user()->user_id,
                 'place_ip_license' => $place_ip_license,
                 'place_status' => 1,
-                'place_bill_export' => 2
+                'place_bill_export' => 2,
+                'place_email' => $request->email
             ];
             // return $place_arr;
             PosPlace::insert($place_arr);
+            //DELETE CUSTOMER ASSIGN (Main_customer_assign)
+            MainCustomerAssign::where([
+                ['business_phone',$request->business_phone],
+                    ['business_name',$request->business_name],
+                    ['user_id',Auth::user()->user_id]
+            ])->delete();
+            //INSERT MAIN_USER_CUSTOMER_PLACE
+            $user_customer = [
+                'user_id' => Auth::user()->user_id,
+                'team_id' => Auth::user()->user_team,
+                'customer_id' => $customer_info->id,
+                'place_id' =>$place_id,
+            ];
+//            return $user_customer;
+            $check_user_customer_exist = MainUserCustomerPlace::where([
+                ['user_id',Auth::user()->user_id],
+                ['team_id',Auth::user()->user_team],
+                ['customer_id',$customer_info->id],
+                ['place_id',null]
+            ]);
+            if($check_user_customer_exist->count() == 0)
+                MainUserCustomerPlace::create($user_customer);
+            else
+                $check_user_customer_exist->update(['place_id'=>$place_id]);
             //INSERT POS_CUSTOMERTAG
             $arrCustomerTag = [
                 ['customertag_id' => 1, 'customertag_name' => 'Vip', 'customertag_place_id' => $place_id, 'customertag_status' => 1],
@@ -446,37 +486,21 @@ class OrdersController extends Controller
     public function getCustomerInfor(Request $request)
     {
         $customer_phone = $request->customer_phone;
+        $user_id = Auth::user()->user_id;
+        $team_id = Auth::user()->user_team;
 
-        $customer_list = Auth::user()->user_customer_list;
+        $customer_list = MainUserCustomerPlace::where('user_id',$user_id);
 
-        if ($customer_list == "")
+        if ($customer_list->count() ==  0)
             return response(['status' => 'error', 'message' => 'You dont have any customer']);
+        //GET CUSTOMER
+        $customer_info  = MainCustomer::where('customer_phone',$customer_phone)->first();
+        $customer_list = $customer_list->where('place_id','!=',null)->select('place_id')->get()->toArray();
+        $customer_arr = array_values($customer_list);
 
-        $customer_arr = explode(";", $customer_list);
-
-        $customer_info = MainCustomerTemplate::whereIn('id', $customer_arr)
-            ->where(function ($query) use ($customer_phone) {
-                $query->where('ct_business_phone', $customer_phone)
-                    ->orWhere('ct_cell_phone', $customer_phone);
-            })
-            ->where('ct_active', 1)
-            ->first();
-
-        //CHECK CUSTOMER EXIST POS_USER
-        $check_customer = MainCustomer::where(function ($query) use ($customer_phone) {
-            $query->where('customer_phone', $customer_phone)
-                ->orWhere('customer_phone', $customer_phone);
-        })
-            ->where('customer_status', 1)
-            ->select('customer_id')
-            ->first();
-
-        $place_list = PosPlace::join('main_customer', function ($join) {
-            $join->on('pos_place.place_customer_id', 'main_customer.customer_id');
-        })
-            ->where('main_customer.customer_phone', $customer_phone)
-            ->select('pos_place.place_id', 'pos_place.place_name')
-            ->get();
+        $place_list = PosPlace::where('place_customer_id',$customer_info->customer_id)
+            ->whereIn('place_id',$customer_arr)
+            ->where('place_status',1)->get();
 
         if (!isset($customer_info) || !isset($place_list))
             return response(['status' => 'error', 'message' => 'Get Customer Error']);
@@ -519,10 +543,14 @@ class OrdersController extends Controller
         foreach ($my_order_list as $key => $order) {
 
             //GET INFORMATION CARD
-            if ($order->csb_status == 1)
-                $infor = "<span>ID: " . $order->csb_trans_id . "</span><br><span>Name: " . $order->csb_card_type . "</span><br><span>Number: " . $order->csb_card_number . "</span>";
+            if (!isset($request->my_order)){
+                if ($order->csb_status == 1)
+                    $infor = "<span>ID: " . $order->csb_trans_id . "</span><br><span>Name: " . $order->csb_card_type . "</span><br><span>Number: " . $order->csb_card_number . "</span>";
+                else
+                    $infor = "<span>Account Number: " . $order->account_number . "</span><br><span>Name: " . $order->routing_number . "</span><br><span>Bank Name: " . $order->bank_name . "</span>";
+            }
             else
-                $infor = "<span>Account Number: " . $order->account_number . "</span><br><span>Name: " . $order->routing_number . "</span><br><span>Bank Name: " . $order->bank_name . "</span>";
+                $infor = "";
 
             $services = explode(";", $order->csb_combo_service_id);
 
@@ -538,7 +566,7 @@ class OrdersController extends Controller
                 $order_date = "<a href='" . route('order-view', $order->id) . "'>" . format_datetime($order->created_at) . "</a>";
 
             //GET CUSTOMER INFORMATION
-            $customer = "<span>Customer: " . $order->customer_firstname . " " . $order->customer_lastname . "</span><br><span>Business Phone: " . $order->customer_phone . "</span><br><span>Address: " . $order->customer_address . "</span><br><span>Email: " . $order->customer_email . "</span>";
+            $customer = "<span>Customer: " . $order->customer_firstname . " " . $order->customer_lastname . "</span><br><span>Business Phone: " . $order->customer_phone . "</span><br><span>Email: " . $order->customer_email . "</span>";
 
             $updated_at = "";
             if($order->updated_by != "")
@@ -558,7 +586,10 @@ class OrdersController extends Controller
             ];
         }
         return DataTables::of($my_order_arr)
-            ->rawColumns(['servivce', 'information', 'customer', 'order_date','updated_at'])
+            ->editColumn('total_charge',function ($row){
+                return '<span class="text-danger"><b>'.$row['total_charge'].'</b></span>';
+            })
+            ->rawColumns(['servivce', 'information', 'customer', 'order_date','updated_at','total_charge'])
             ->make(true);
     }
 
@@ -729,6 +760,7 @@ class OrdersController extends Controller
         })
             ->where('main_task.order_id', $order_id)
             ->select('main_combo_service.*', 'main_task.id', 'main_combo_service.id as csb_id', 'main_task.note', 'main_task.content');
+//        return $service_list;
 
         return DataTables::of($service_list)
             ->addColumn('action', function ($row) {
@@ -740,12 +772,15 @@ class OrdersController extends Controller
                 $file_name = "<div class='row'>";
                 $file_list = $row->getFiles;
                 foreach ($file_list as $key => $file) {
-                    $zip = new ZipArchive();
 
-                    if ($zip->open($file->name, ZipArchive::CREATE) !== TRUE) {
-                        $file_name .= '<form action="' . route('down-image') . '" method="POST"><input type="hidden" value="' . csrf_token() . '" name="_token" /><input type="hidden" value="' . $file->name . '" name="src" /><img class="file-comment ml-2" src="' . asset($file->name) . '"/></form>';
-                    } else {
+                    $allowedMimeTypes = ['image/jpeg','image/gif','image/png','image/bmp','image/svg+xml'];
+                    $contentType = mime_content_type($file->name);
+                    if(! in_array($contentType, $allowedMimeTypes) ){
                         $file_name .= '<form action="' . route('down-image') . '" method="POST"><input type="hidden" value="' . csrf_token() . '" name="_token" /><input type="hidden" value="' . $file->name . '" name="src" /><a href="javascript:void(0)" class="file-comment ml-2" /><i class="fas fa-file-archive"></i>' . $file->name_origin . '</a></form>';
+
+                    }else{
+                        $file_name .= '<form action="' . route('down-image') . '" method="POST"><input type="hidden" value="' . csrf_token() . '" name="_token" /><input type="hidden" value="' . $file->name . '" name="src" /><img class="file-comment ml-2" src="' . asset($file->name) . '"/></form>';
+
                     }
 
                 }
@@ -1203,10 +1238,13 @@ class OrdersController extends Controller
             ];
         }
         return  DataTables::of($my_order_arr)
+            ->editColumn('total_charge',function($row){
+                return '<span class="text-danger"><b>'.$row['total_charge'].'</b></span>';
+            })
             ->addColumn('action',function ($row){
                 return '<a class="btn btn-sm btn-secondary"  href="'.route('payment-order',$row['id']).'" title="Payment Order"><i class="fas fa-money-bill"></i></a>';
             })
-            ->rawColumns(['servivce','information','customer','order_date','action'])
+            ->rawColumns(['servivce','information','customer','order_date','action','total_charge'])
             ->make(true);
     }
 }

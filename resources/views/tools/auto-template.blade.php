@@ -63,17 +63,6 @@
                             <option value="0">%</option>
                         </select>
                     </div>
-                    <div class="form-group col-12">
-                        <label>Image</label>
-                        <div class="previewImage">
-                            <img id="previewImageAutoCoupon" src="{{ asset('/images/no-image.png') }}">
-                            <input type="file" class="custom-file-input" name="image" previewimageid="previewImageAutoCoupon">
-                        </div>
-                    </div>
-                    <div class=" form-group row col-12">
-                        <label class="col-5">Cate Services</label>
-                        <input type="text" name="services">
-                    </div>
                     <div class=" form-group row col-12">
                         <label class="col-5">Template Type </label>
                         {{-- <input class="col-7 form-control-sm form-control" type="text" name="couponType"> --}}
@@ -84,6 +73,17 @@
                             @endforeach
                         </select>
                     </div>
+                    <div class="form-group col-12">
+                        <label>Image</label>
+                        <div class="previewImage">
+                            <img id="previewImageAutoCoupon" src="{{ asset('/images/no-image.png') }}">
+                            <input type="file" class="custom-file-input" name="image" previewimageid="previewImageAutoCoupon">
+                        </div>
+                    </div>
+                    {{-- <div class=" form-group row col-12">
+                        <label class="col-5">Cate Services</label>
+                        <input type="text" name="services">
+                    </div> --}}
                     <div class="form-group col-12 row">
                         <label class="col-5"></label>
                         <input class="btn-sm btn btn-primary" type="submit" value="Save">
