@@ -12,16 +12,16 @@ use OneSignal;
 class SendNotificationTrackingOnesignal implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
-    protected $input;
+    protected $input_onesignal;
 
     /**
      * Create a new job instance.
      *
      * @return void
      */
-    public function __construct($input)
+    public function __construct($input_onesignal)
     {
-        $this->input = $input;
+        $this->input_onesignal = $input_onesignal;
     }
 
     /**
@@ -31,9 +31,9 @@ class SendNotificationTrackingOnesignal implements ShouldQueue
      */
     public function handle()
     {
-        OneSignal::sendNotificationUsingTags($input['name_created'] . " have just created a comment on task#" . $input['task_id'],
-            array(["field" => "tag", "key" => "user_id", "relation" => "=", "value" => $input['receiver_id']]),
-            $url = route('task-detail',$input['task_id'])
+        OneSignal::sendNotificationUsingTags($this->input_onesignal['name_created'] . " have just created a comment on task#" . $this->input_onesignal['task_id'],
+            array(["field" => "tag", "key" => "user_id", "relation" => "=", "value" => $this->input_onesignal['receiver_id']]),
+            $url = route('task-detail',$this->input_onesignal['task_id'])
         );
     }
 }

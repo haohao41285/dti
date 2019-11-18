@@ -48,8 +48,14 @@ class SendNotification implements ShouldQueue
         $mail->isSMTP();                                      // Set mailer to use SMTP
         $mail->Host = env('MAIL_HOST');  // Specify main and backup SMTP servers
         $mail->SMTPAuth = true;                               // Enable SMTP authentication
-        $mail->Username = env('MAIL_USERNAME');                 // SMTP username
-        $mail->Password = env('MAIL_PASSWORD');                           // SMTP password
+        if(isset($this->input['mail_username_invoice']))
+            $mail->Username = $this->input['mail_username_invoice'];
+        else
+            $mail->Username = env('MAIL_USERNAME');                 // SMTP username
+        if(isset($this->input['mail_password_invoice']))
+            $mail->Password = $this->input['mail_password_invoice'];
+        else
+            $mail->Password = env('MAIL_PASSWORD');                           // SMTP password
         $mail->SMTPSecure = env('MAIL_ENCRYPTION');                            // Enable TLS encryption, `ssl` also accepted
         $mail->Port = env('MAIL_PORT');                                    // TCP port to connect to
 

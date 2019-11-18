@@ -5,6 +5,7 @@ namespace App\Observers;
 use App\Models\MainTask;
 use App\Jobs\SendNotification;
 use OneSignal;
+use App\Jobs\SendNotificationTaskOnesignal;
 
 class TaskObserver
 {
@@ -43,7 +44,7 @@ class TaskObserver
             $input_onesignal['receiver_id'] = $receiver_id;
             $input_onesignal['name_created'] = $name_created;
 
-            dispatch(new SendNotificationTaskOnesignal($input_onesignal));
+            dispatch(new SendNotificationTaskOnesignal($input_onesignal))->delay(now()->addSecond(5));
         }
 
 //            OneSignal::sendNotificationUsingTags($name_created . " have just created a task to you" ,

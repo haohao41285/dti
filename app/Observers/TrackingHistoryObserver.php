@@ -64,7 +64,7 @@ class TrackingHistoryObserver
             $input_onesignal['name_created'] = $name_created;
             $input_onesignal['task_id'] = $task_id;
             $input_onesignal['receiver_id'] = $receiver_id;
-            dispatch(new SendNotificationTrackingOnesignal($input_onesignal));
+            dispatch(new SendNotificationTrackingOnesignal($input_onesignal))->delay(now()->addSecond(5));
 
 
         }

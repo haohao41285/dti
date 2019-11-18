@@ -108,7 +108,6 @@ class OrdersController extends Controller
             ['customer_id',$customer_id],
         ])->get();
 
-//        $data['customer_info'] = MainCustomer::where('customer_customer_template_id', $customer_id)->first();
         $data['customer_info'] = MainCustomerTemplate::find($customer_id);
 
         if (!empty($data['customer_info']->getMainCustomer)) {
@@ -286,9 +285,9 @@ class OrdersController extends Controller
                 'place_actiondate_option' => 0,
                 'place_period_overtime' => 1,
                 'place_hour_overtime' => '08:00',
-                'place_address' => $request->address,
-                'place_website' => $request->website,
-                'place_phone' => $request->business_phone,
+                'place_address' => $request->address!=""?$request->address:"",
+                'place_website' => $request->website!=""?$request->website:"",
+                'place_phone' => $request->business_phone!=""?$request->business_phone:"",
                 'place_taxcode' => 'tax-code',
                 'place_customer_type' => 'customer type',
                 'place_url_plugin' => 'url plugin',

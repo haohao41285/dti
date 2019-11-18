@@ -378,6 +378,7 @@
         function clearView(){
             $("#email_list_2").val("");
             // $('#summernote2').summernote('reset');
+            $('#summernote2').val("");
         }
         $("#send-notification").click(function(){
             $("#form-notification").modal('show');

@@ -98,6 +98,8 @@ class OrderObserver
             $input['email'] = $mainComboServiceBought->getCustomer->customer_email;
             $input['name'] = $mainComboServiceBought->getCustomer->customer_firstname. " ".$mainComboServiceBought->getCustomer->customer_lastname;
             $input['message'] = $content;
+            $input['mail_username_invoice'] = env('MAIL_USERNAME_INVOICE');
+            $input['mail_password_invoice'] = env('MAIL_PASSWORD_INVOICE');
 
             dispatch(new SendNotification($input))->delay(now()->addSecond(5));
         }
