@@ -329,7 +329,7 @@
       $(".modal-content-view").html(``);
     });
     //GET CUSTOMER TO MY CUSTOMER
-    $(document).on('click','.get-customer',function(){
+    $(document).on('click','php',function(){
 
       var business_name = $("#business_name").val();
       var business_phone = $("#business_phone").val();
