@@ -7,9 +7,13 @@ Template Type
 @section('content')
 <div class="row col-12">
     <div class="col-12 ">
+        <div class="form-group">
+            <button class="btn-sm btn-primary btn " id="btn-coupon">Coupon</button>
+            <button class="btn-sm btn-danger btn " id="btn-promotion">Promotion</button>
+        </div>
         <div class="card shadow mb-4 ">
             <div class="card-header py-2">
-                <h6 class="m-0 font-weight-bold text-primary">Type Coupon List</h6>
+                <h6 class="m-0 font-weight-bold text-primary table-title">Auto coupon list</h6>
             </div>
             <div class="card-body">
                 <div class="table-responsive dataTables_scrollBody dataTables_scroll">
@@ -118,12 +122,17 @@ function save(form_data, url) {
 }
 
 $(document).ready(function() {
-
+    var type = null;
     var table = $('#coupon-type-datatable').DataTable({
         // dom: "lBfrtip",
         processing: true,
         serverSide: true,
-        ajax: { url: "{{ route('getDatatableSetupTypeTemplate') }}", },
+        ajax: {
+            url: "{{ route('getDatatableSetupTypeTemplate') }}",
+            data: function(data) {
+                data.type = type;
+            },
+        },
         columns: [
             { data: 'template_type_id', name: 'template_type_id', class: "id" },
             { data: 'template_type_name', name: 'template_type_name', class: "name" },
@@ -173,14 +182,28 @@ $(document).ready(function() {
         var form = $(this)[0];
         var form_data = new FormData(form);
         var url = "{{ route('saveSetupTypeTemplate') }}";
+        form_data.append('type', type);
         save(form_data, url);
         $("#coupon-type-modal").modal("hide");
         table.ajax.reload(null, false);
     });
 
+    $("#btn-coupon").on('click', function(e) {
+        e.preventDefault();
+        type = 1;
+        $(".table-title").text("Auto coupon list");
+        table.draw();
+    });
+
+    $("#btn-promotion").on('click', function(e) {
+        e.preventDefault();
+        type = 2;
+        $(".table-title").text("Auto promotion list");
+        table.draw();
+    });
 
 
-
+    $("#btn-coupon").trigger("click");
 });
 
 </script>

@@ -58,7 +58,7 @@ class PosPlace extends BaseModel
         'place_timezone',
         'place_auto_print',
         'place_orderservice_price',
-        'place_theme_code'
+        'place_theme_code',
     ];
 
     protected $guarded = [];
@@ -69,5 +69,5 @@ class PosPlace extends BaseModel
                     ->where('place_status',1)
                     ->first();
     }
-        
+
 }

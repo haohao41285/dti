@@ -3,11 +3,14 @@
 namespace App\Http\Controllers\Customer;
 
 use App\Helpers\ImagesHelper;
+use App\Models\MainCustomerAssign;
 use App\Models\MainCustomerBought;
 use App\Models\MainCustomerNote;
 use App\Models\MainFile;
 use App\Models\MainTeamType;
 use App\Models\MainTrackingHistory;
+use App\Models\MainUserCustomerPlace;
+use App\Models\PosPlace;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Helpers\Option;
@@ -53,7 +56,9 @@ class CustomerController extends Controller
 
     public function addCustomer()
     {
-        return view('customer.customer-add');
+        $customer_arr = MainUserCustomerPlace::where('user_id',Auth::user()->user_id)->select('customer_id')->groupBy('customer_id')->get()->toArray();
+        $customer_list = MainCustomerTemplate::whereIn('id',$customer_arr)->get();
+        return view('customer.customer-add',compact('customer_list'));
     }
 
     public function listMyCustomer(){
@@ -126,7 +131,7 @@ class CustomerController extends Controller
         foreach ($customers as $key => $customer) {
 
             if(!isset($customer_status_arr[$customer->id])){
-                $customer_status_arr[$customer->id] = 1;
+                $customer_status_arr[$customer->id] = 3;
                 $ct_status = 'New Arrivals';
             }
             else
@@ -177,7 +182,7 @@ class CustomerController extends Controller
         return Datatables::of($customer_arr)
             ->editColumn('id',function ($row){
                 if($row['ct_status'] == 'Serviced')
-                    return '<a href="'.route('customer-detail',$row['id']).'">'.$row['id'].'</a>';
+                    return '<i class="fas fa-plus-circle details-control text-danger" id="'.$row['id'].'" ></i><a href="'.route('customer-detail',$row['id']).'"> '.$row['id'].'</a>';
                 else
                     return '<a href="javascript:void(0)">'.$row['id'].'</a>';
             })
@@ -253,6 +258,11 @@ class CustomerController extends Controller
                     $customer_list['ct_business_phone'] = substr($customer_list->ct_business_phone,0,3)."########";
                 if($customer_list->ct_cell_phone != null  && Gate::denies('permission','customer-admin'))
                 $customer_list['ct_cell_phone'] = substr($customer_list->ct_cell_phone,0,3)."########";
+                //CHECK CUSTOMER ASSIGN OR NOT YET
+                $data['count_customer_user'] = MainUserCustomerPlace::where('user_id',Auth::user()->user_id)
+                    ->where('team_id',Auth::user()->user_team)
+                    ->where('customer_id',$customer_id)
+                    ->count();
             }
             //GET PALCE, SERVICE
 
@@ -265,41 +275,76 @@ class CustomerController extends Controller
         }
     }
     public function addCustomerToMy(Request $request){
+//        return $request->all();
 
         $customer_id = $request->customer_id;
-        $user_customer_arr = [];
         $user_id = Auth::user()->user_id;
         $team_id = Auth::user()->user_team;
 
         DB::beginTransaction();
 
-        $user_customer_list = Auth::user()->user_customer_list;
-
-        if($user_customer_list == NULL){
-
-            $user_customer_arr[] = $customer_id;
-        }else{
-            $user_customer_arr = explode(";", $user_customer_list);
-
-            array_push($user_customer_arr,$customer_id);
+        if(count($request->all()) == 3){
+            $rule = [
+                'business_name' => 'required',
+                'business_phone' => 'required|digits_between:10,15|unique:main_customer_template,ct_business_phone|unique:main_customer_assigns,business_phone|unique:pos_place,place_phone'
+            ];
+            $validator = Validator::make($request->all(),$rule);
+            if($validator->fails())
+                return response([
+                    'status'=>'error',
+                    'message'=> $validator->getMessageBag()->toArray()
+                ]);
+            $customer_assign = [
+                'user_id' => Auth::user()->user_id,
+                'customer_id' => $customer_id,
+                'business_name' => $request->business_name,
+                'business_phone' => $request->business_phone,
+            ];
+            MainCustomerAssign::create($customer_assign);
         }
-        $user_customer_list_after = implode(";", $user_customer_arr);
-    //UPDATE LIST CUSTOMER
-        $update_user = MainUser::where('user_id',$user_id)->update(['user_customer_list'=>$user_customer_list_after]);
+        elseif(count($request->all()) == 1) {
+            //CHECK NEW CUSTOMER FOR TEAM TYPE
+            $team_id_arr = MainTeam::active()->where('team_type', MainTeam::find(Auth::user()->user_team)->team_type)->select('id')->get()->toArray();
+            $team_id_arr = array_values($team_id_arr);
+            $user_customer = MainUserCustomerPlace::whereIn('team_id', $team_id_arr)->where('customer_id', $customer_id)->count();
+            if ($user_customer == 0) {
+                $customer_info = MainCustomerTemplate::find($customer_id);
+                $customer_assign = [
+                    'user_id' => Auth::user()->user_id,
+                    'customer_id' => $customer_id,
+                    'business_name' => $customer_info->ct_salon_name,
+                    'business_phone' => $customer_info->ct_business_phone,
+                    'email' =>$customer_info->ct_email,
+                    'website'=>$customer_info->ct_website,
+                    'address'=> $customer_info->ct_address
+                ];
+                MainCustomerAssign::create($customer_assign);
+            }
+        }
+        //ADD CUSTOMER TO USER LIST
+        $user_customer_arr = [
+            'user_id' => $user_id,
+            'team_id' => $team_id,
+            'customer_id' => $customer_id
+        ];
+        $update_user = MainUserCustomerPlace::create($user_customer_arr);
     //UPDATE CUSTOMER STATUS
         $team_customer_status = MainTeam::find($team_id)->getTeamType->team_customer_status;
         $customer_status_arr = json_decode($team_customer_status,TRUE);
-        $customer_status_arr[$customer_id] = 1;
-        $customer_status_list = json_encode($customer_status_arr);
-        $update_customer = MainTeam::find($team_id)->getTeamType->update(['team_customer_status'=>$customer_status_list]);
-
+        if(!isset($customer_status_arr[$customer_id])){
+            $customer_status_arr[$customer_id] = 1;
+            $customer_status_list = json_encode($customer_status_arr);
+            $update_customer = MainTeam::find($team_id)->getTeamType->update(['team_customer_status'=>$customer_status_list]);
+        }else{
+            $update_customer = 'ok';
+        }
         if(!isset($update_user) || !isset($update_customer)){
             DB::callback();
-            return 0;
+            return response(['status'=>'error','message'=>'Getting Failed!']);
         }
         else{
             DB::commit();
-            return 1;
+            return response(['status'=>'success','message'=>'Getting Successfully!']);
         }
     }
     public function getMyCustomer(Request $request){
@@ -315,16 +360,16 @@ class CustomerController extends Controller
         $status_customer = $request->status_customer;
         $customer_arr = [];
 
-        $user_customer_list = MainUser::where('user_id',$user_id)->first()->user_customer_list;
+        $user_customer_list = MainUserCustomerPlace::where([
+            ['user_id',$user_id],
+            ['team_id',$team_id],
+        ])->select('customer_id')->get()->toArray();
 
         if($user_customer_list != NULL){
 
-            $user_customer_arr = explode(";", $user_customer_list);
+            $user_customer_arr = array_values($user_customer_list);
 
-            $customer_list = MainCustomerTemplate::leftjoin('main_user',function($join){
-                                                    $join->on('main_customer_template.created_by','main_user.user_id');
-                                                })
-                                                ->whereIn('main_customer_template.id',$user_customer_arr);
+            $customer_list = MainCustomerTemplate::with('getCreatedBy')->whereIn('main_customer_template.id',$user_customer_arr);
 
         if($start_date != "" && $end_date != ""){
 
@@ -338,7 +383,7 @@ class CustomerController extends Controller
             $customer_list->where('ct_address','LIKE',"%".$address."%");
         }
 
-            $customer_list = $customer_list->select('main_customer_template.*','main_user.user_nickname')->get();
+            $customer_list = $customer_list->get();
 
             //GET LIST TEAM CUSTOMER LIST
             $team_customer_status = MainTeam::find($team_id)->getTeamType->team_customer_status;
@@ -372,7 +417,7 @@ class CustomerController extends Controller
                         'ct_status' => $ct_status,
                         'note' => $customer_note,
                         'updated_at' => $customer->updated_at,
-                        'user_nickname' => $customer->user_nickname
+                        'user_nickname' => $customer->getCreatedBy->user_nickname
                     ];
                 }
                 if($status_customer == ""){
@@ -385,7 +430,7 @@ class CustomerController extends Controller
                         'ct_status' => $ct_status,
                         'note' => $customer_note,
                         'updated_at' => $customer->updated_at,
-                        'user_nickname' => $customer->user_nickname
+                        'user_nickname' => $customer->getCreatedBy->user_nickname
                     ];
                 }
             }
@@ -393,7 +438,8 @@ class CustomerController extends Controller
         return Datatables::of($customer_arr)
                 ->editColumn('id',function ($row){
                     if($row['ct_status'] == 'Serviced')
-                        return '<a href="'.route('customer-detail',$row['id']).'">'.$row['id'].'</a>';
+                        return '<i class="fas fa-plus-circle details-control text-danger" id="'.$row['id'].'" ></i>
+                                <a href="'.route('customer-detail',$row['id']).'">'.$row['id'].'</a>';
                     else
                         return '<a href="javascript:void(0)">'.$row['id'].'</a>';
                 })
@@ -404,8 +450,7 @@ class CustomerController extends Controller
                     return '
                           <a class="btn btn-sm btn-secondary add-note"  contact_name="'.$row['ct_fullname'].'" customer_id="'.$row['id'].'" href="javascript:void(0)" title="Add Customer Note"><i class="far fa-sticky-note"></i></a>
                           <a class="btn btn-sm btn-secondary view" customer_id="'.$row['id'].'" href="javascript:void(0)" title="View Customer"><i class="fas fa-eye"></i></a>
-                    <a class="btn btn-sm btn-secondary order-service" href="'.route('add-order',$row['id']).'" title="Go To Order"><i class="fas fa-shopping-cart"></i></a>
-                    <a class="btn btn-sm btn-secondary move-customer" contact_name="'.$row['ct_fullname'].'" customer_id="'.$row['id'].'" href="javascript:void(0)" title="Move Customer To User"><i class="fas fa-exchange-alt"></i></a>';
+                    <a class="btn btn-sm btn-secondary order-service" href="'.route('add-order',$row['id']).'" title="Go To Order"><i class="fas fa-shopping-cart"></i></a>';
                 })
                 ->rawColumns(['action','id'])
                 ->make(true);
@@ -716,11 +761,12 @@ class CustomerController extends Controller
             'ct_business_phone' => 'required|unique:main_customer_template,ct_business_phone|numeric|digits_between:10,15',
             'ct_email' => 'required|email',
             'ct_address' => 'required',
+            'ct_cell_phone' => 'required|unique:main_customer_template,cs_cell_phone|digits_between:10,15'
         ];
         $message = [
             'ct_firstname.required' => 'Enter Firstname',
             'ct_lastname.required' => 'Enter Lastname',
-            'ct_salon_name' => 'Enter Business Name',
+            'ct_salon_name.required' => 'Enter Business Name',
             'ct_email.required' => 'Enter Email',
             'ct_email.email' =>'Enter a Email',
             'ct_address.required' => 'Enter Address',
@@ -728,6 +774,9 @@ class CustomerController extends Controller
             'ct_business_phone.unique' => 'Business Phone has Existed',
             'ct_business_phone.numeric' => 'Enter Number',
             'ct_business_phone.between' => 'Enter True Number',
+            'ct_cell_phone.required' => 'Enter Cell Phone',
+            'ct_cell_phone.unique' => 'Cell Phone has Taken',
+            'ct_cell_phone.digits_between' => "Enter a Cell Phone"
         ];
         $validator = Validator::make($request->all(),$rule,$message);
         if($validator->fails())
@@ -1071,12 +1120,8 @@ class CustomerController extends Controller
     public function getCustomer1(Request $request){
 
         $user_id = $request->user_1;
-        $customer_arr = [];
-
-        $customer_list = MainUser::where('user_id',$user_id)->first();
-
-        if($customer_list != "")
-            $customer_arr = explode(';',$customer_list->user_customer_list);
+        $customer_list = MainUserCustomerPlace::where('user_id',$user_id)->select('customer_id')->get()->toArray();
+        $customer_arr = array_values($customer_list);
 
         $customer_list = MainCustomerTemplate::whereIn('id',$customer_arr);
 
@@ -1086,11 +1131,8 @@ class CustomerController extends Controller
     public function getCustomer2(Request $request){
 
         $user_id = $request->user_2;
-        $customer_arr = [];
-
-        $customer_list = MainUser::where('user_id',$user_id)->first();
-        if($customer_list != "")
-            $customer_arr = explode(';',$customer_list->user_customer_list);
+        $customer_list = MainUserCustomerPlace::where('user_id',$user_id)->select('customer_id')->get()->toArray();
+        $customer_arr = array_values($customer_list);
 
         $customer_list = MainCustomerTemplate::whereIn('id',$customer_arr);
 
@@ -1100,42 +1142,96 @@ class CustomerController extends Controller
     public function moveCustomersAll(Request $request){
 
         $customer_input = $request->customer_array;
-
-        $customer_list_1 = MainUser::where('user_id',$request->user_1)->first()->user_customer_list;
-        $customer_arr_1 = explode(';',$customer_list_1);
-
-        DB::beginTransaction();
-        //REMOVE CUSTOMER FORM USER 1
-        foreach ($customer_input as $customer){
-            if (($key = array_search( intval($customer), $customer_arr_1)) !== false) {
-                unset($customer_arr_1[$key]);
-            }
-        }
-        $customer_list_1 = implode(';',$customer_arr_1);
-        $update_user_1 = MainUser::where('user_id',$request->user_1)->update(['user_customer_list'=>$customer_list_1]);
-
-        $customer_list_2 = MainUser::where('user_id',$request->user_2)->first()->user_customer_list;
-
-        $customer_input = implode(';',$customer_input);
-
-        if( is_null($customer_list_2) )
-            $customer_list_2 = $customer_input;
-        else
-            $customer_list_2 = $customer_list_2.";".$customer_input;
-
-        $update_user_2 = MainUser::where('user_id',$request->user_2)->update(['user_customer_list'=>$customer_list_2]);
-
-        if(!isset($update_user_1) || !isset($update_user_2)){
-            DB::callback();
+        //GET TEAM USER 2
+        $user_team_2 = MainUser::where('user_id',$request->user_2)->first()->user_team;
+        $update_user_customer = MainUserCustomerPlace::where('user_id',$request->user_1)
+            ->whereIn('customer_id',$customer_input)
+            ->update(['team_id'=>$user_team_2,'user_id'=>$request->user_2]);
+        if(!$update_user_customer)
             return response(['status'=>'error','message'=>'Failed! Move Customer Failed!']);
-        }else{
-            DB::commit();
+        else
             return response(['status'=>'success','message'=>'Successfully! Move Customer Successfully!']);
-        }
+    }
+    public function getPlaceCustomer(Request $request){
 
+        $customer_template_id = $request->customer_template_id;
+        $team_id = $request->team_id;
+        $customer_place = MainUserCustomerPlace::with('getPlace')->with('getUser')
+            ->where('customer_id',$customer_template_id)
+            ->where('place_id','!=',null)
+            ->where('team_id',$team_id)->get();
 
+        return $customer_place;
+    }
+    public function getPlaceMyCustomer(Request $request){
 
+        $customer_template_id = $request->customer_template_id;
+        $team_id = $request->team_id;
+        $customer_place = MainUserCustomerPlace::with('getPlace')->with('getUser')
+            ->where('customer_id',$customer_template_id)
+            ->where('user_id',Auth::user()->user_id)
+            ->where('place_id','!=',null)
+            ->where('team_id',$team_id)->get();
 
-        return $customer_arr;
+        return $customer_place;
+    }
+    public function movePlace(Request $request){
+        $place_id = $request->place_id;
+        $user_id = $request->user_id;
+        $current_user = $request->current_user;
+        $team_id = $request->team_id;
+
+        //GET TEAM'S MOVING USER
+        $moving_team = MainUser::where('user_id',$user_id)->first()->user_team;
+
+        $user_customer_place_update = MainUserCustomerPlace::where([
+                                        ['team_id',$team_id],
+                                        ['user_id',$current_user],
+                                        ['place_id',$place_id]
+                                    ])->update(['user_id'=>$user_id,'team_id'=>$moving_team]);
+
+        if(!$user_customer_place_update)
+            return response(['status'=>'error','message'=>'Move Place Failed!']);
+        else
+            return response(['status'=>'success','message'=>'Move Place Successfully!']);
+    }
+    public function getUserFromTeam(Request $request){
+//        return $request->all();
+
+        $team_id = $request->team_id;
+        $team_type = MainTeam::find($team_id)->team_type;
+        $team_list = MainTeam::active()->where('team_type',$team_type)->select('id')->get()->toArray();
+        $team_arr = array_values($team_list);
+
+        $user_list = MainUser::active()
+            ->whereIn('user_team',$team_arr)
+            ->where('user_id','!=',$request->user_id)
+            ->select('user_id','user_nickname','user_firstname','user_lastname')->get();
+
+        if(!$user_list)
+            return response(['status'=>'error','message'=>'Get User List Failed!']);
+        else
+            return response(['status'=>'success','user_list'=>$user_list]);
+    }
+    public function saveMyBusiness(Request $request){
+
+        $rule = [
+            'business_name' => 'required',
+            'business_phone' => 'required|unique:main_customer_template,ct_business_phone|unique:main_customer_assigns,business_phone|unique:pos_place,place_phone|digits_between:10,15',
+        ];
+        $message = [
+            'business_phone.digits_between' => 'Enter a Number Phone',
+        ];
+        $validator = Validator::make($request->all(),$rule,$message);
+        if($validator->fails())
+            return back()->withErrors($validator)->withInput();
+        $input = $request->all();
+        $input['user_id'] = Auth::user()->user_id;
+        unset($input['_token']);
+        $customer_assign_update = MainCustomerAssign::create($input);
+        if(!$customer_assign_update)
+            return back()->with('error','Create Busines Failed!');
+        else
+            return redirect()->route('myCustomers')->with('success','Create Business Successfully!');
     }
 }

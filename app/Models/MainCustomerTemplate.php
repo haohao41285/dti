@@ -30,7 +30,10 @@ class MainCustomerTemplate extends Model
     public function getMainCustomer(){
         return $this->hasOne(MainCustomer::class,'customer_customer_template_id','id');
     }
+    public function getCreatedBy(){
+        return $this->belongsTo(MainUser::class,'created_by','user_id')->withDefault();
+    }
 
-    
+
 }
 //

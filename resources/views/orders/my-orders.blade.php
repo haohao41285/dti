@@ -43,7 +43,6 @@
                 <th>Total Charged($)</th>
                 <th>Status</th>
                 <th>Payment Date</th>
-                <th>Information Card</th>
             </tr>
         </thead>
     </table>
@@ -76,10 +75,9 @@
             { data: 'servivce', name: 'servivce' },
             { data: 'subtotal', name: 'subtotal',class:'text-right' },
             { data: 'discount', name: 'discount',class:'text-right' },
-            { data: 'total_charge', name: 'total_charge',class:'text-right' },
+            { data: 'total_charge', name: 'total_charge',class:'text-right', },
             { data: 'status', name: 'status',class:"text-center" },
             { data: 'updated_at', name: 'updated_at',class:"text-center" },
-            { data: 'information', name: 'information'},
         ],
     });
     $("#search-button").click(function(){

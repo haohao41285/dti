@@ -32,11 +32,11 @@ class PosTemplateType extends Model
     				->get();
     }
     /**
-     * get by template_type_table_type = 1
+     * get by type
      * @return mixed
      */
-    public static function getCouponDataTable(){
-    	$coupon = self::getByType(1);
+    public static function getDataTableByType($type){
+    	$coupon = self::getByType($type);
 
     	return DataTables::of($coupon)
         ->addColumn('action', function ($coupon){
@@ -56,5 +56,12 @@ class PosTemplateType extends Model
     public static function getAll(){
         return self::where('template_type_status',1)
                     ->get();
+    }
+
+    public static function deleteById($id){
+        $counpon = self::getById($id);
+        $counpon->template_type_status = 0;
+        $counpon->save();
+        return $counpon;
     }
 }

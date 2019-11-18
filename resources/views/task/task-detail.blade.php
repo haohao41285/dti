@@ -183,11 +183,14 @@
                             $file_name = "<div class='row '>";
 
                             foreach ($file_list as $key => $file) {
-                                $zip = new ZipArchive();
-                                if ($zip->open($file->name, ZipArchive::CREATE) !== TRUE) {
-                                    $file_name .= '<form action="'.route('down-image').'" method="POST"><input type="hidden" value="'.csrf_token().'" name="_token" /><input type="hidden" value="'.$file->name.'" name="src" /><img class="file-comment ml-2" src="'.asset($file->name).'"/></form>';
+                                 $allowedMimeTypes = ['image/jpeg','image/gif','image/png','image/bmp','image/svg+xml'];
+                                $contentType = mime_content_type($file->name);
+                                if(! in_array($contentType, $allowedMimeTypes) ){
+                                      $file_name .= '<form action="'.route('down-image').'" method="POST"><input type="hidden" value="'.csrf_token().'" name="_token" /><input type="hidden" value="'.$file->name.'" name="src" /><a href="javascript:void(0)" class="file-comment ml-2" /><i class="fas fa-file-archive"></i>'.$file->name_origin.'</a></form>';
+
                                 }else{
-                                   $file_name .= '<form action="'.route('down-image').'" method="POST"><input type="hidden" value="'.csrf_token().'" name="_token" /><input type="hidden" value="'.$file->name.'" name="src" /><a href="javascript:void(0)" class="file-comment ml-2" /><i class="fas fa-file-archive"></i>'.$file->name_origin.'</a></form>';
+                                      $file_name .= '<form action="'.route('down-image').'" method="POST"><input type="hidden" value="'.csrf_token().'" name="_token" /><input type="hidden" value="'.$file->name.'" name="src" /><img class="file-comment ml-2" src="'.asset($file->name).'"/></form>';
+
                                 }
                             }
                                 $file_name .= "</div>";
@@ -242,7 +245,7 @@
 <form  enctype="multipart/form-data" accept-charset="utf-8">
     @csrf()
     <input type="hidden" name="receiver_id" value="{{$task_info->assign_to==\Illuminate\Support\Facades\Auth::user()->user_id?$task_info->created_by:$task_info->assign_to}}">
-    <textarea  id="summernote2" class="form-control form-control-sm"  name="note"></textarea>
+    <textarea  id="summernote2" class="form-control form-control-sm"  name="note" placeholder="Text Content..."></textarea>
     <input type="button" class="btn btn-sm btn-secondary mt-2" name="" value="Upload attchment's file" onclick="getFile2()" placeholder="">
     <input type="file" hidden id="file_image_list_2" multiple name="file_image_list[]">
     <p>(The maximum upload file size: 100M)</p>
@@ -267,18 +270,18 @@
     }
 	$(document).ready(function() {
 
-        $('#summernote2').summernote({
-            placeholder: 'Text Comment...',
-            toolbar: [
-                // [groupName, [list of button]]
-                ['style', ['bold', 'italic', 'underline', 'clear']],
-                ['font', ['strikethrough', 'superscript', 'subscript']],
-                ['fontsize', ['fontsize']],
-                ['color', ['color']],
-                ['para', ['ul', 'ol', 'paragraph']],
-                ['height', ['height']]
-            ]
-        });
+        // $('#summernote2').summernote({
+        //     placeholder: 'Text Comment...',
+        //     toolbar: [
+        //         // [groupName, [list of button]]
+        //         ['style', ['bold', 'italic', 'underline', 'clear']],
+        //         ['font', ['strikethrough', 'superscript', 'subscript']],
+        //         ['fontsize', ['fontsize']],
+        //         ['color', ['color']],
+        //         ['para', ['ul', 'ol', 'paragraph']],
+        //         ['height', ['height']]
+        //     ]
+        // });
 
         var table = $('#subtask-datatable').DataTable({
             // dom: "lBfrtip",
@@ -374,7 +377,7 @@
         });
         function clearView(){
             $("#email_list_2").val("");
-            $('#summernote2').summernote('reset');
+            // $('#summernote2').summernote('reset');
         }
         $("#send-notification").click(function(){
             $("#form-notification").modal('show');
