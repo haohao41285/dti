@@ -38,11 +38,18 @@ class TaskObserver
         $receiver_id = $mainTask->getAssignTo->user_id;
         $task_id = $mainTask->id;
 
-        if($receiver_id != "")
-            OneSignal::sendNotificationUsingTags($name_created . " have just created a task to you" ,
-                array(["field" => "tag", "key" => "user_id", "relation" => "=", "value" => $receiver_id]),
-                $url = route('task-detail',$task_id)
-            );
+        if($receiver_id != ""){
+            $input_onesignal['task_id'] = $task_id;
+            $input_onesignal['receiver_id'] = $receiver_id;
+            $input_onesignal['name_created'] = $name_created;
+
+            dispatch(new SendNotificationTaskOnesignal($input_onesignal));
+        }
+
+//            OneSignal::sendNotificationUsingTags($name_created . " have just created a task to you" ,
+//                array(["field" => "tag", "key" => "user_id", "relation" => "=", "value" => $receiver_id]),
+//                $url = route('task-detail',$task_id)
+//            );
         //END SEND NOTIFICATION
     }
 
