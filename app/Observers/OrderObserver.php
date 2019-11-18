@@ -10,7 +10,8 @@ use App\Models\MainNotification;
 use App\Models\MainPermissionDti;
 use App\Models\MainUser;
 use Laracasts\Presenter\PresentableTrait;
-use OneSignal;
+//use OneSignal;
+use App\Jobs\SendNotificationOrderOnesignal;
 
 class OrderObserver
 {
@@ -51,25 +52,29 @@ class OrderObserver
                 ];
                 MainNotification::create($notification_arr);
                 //SEND NOTIFICATION WITH ONESIGNAL
-                OneSignal::sendNotificationUsingTags('New Order',
-                    array(["field" => "tag", "key" => "user_id", "relation" => "=", "value" =>$user->user_id]),
-                    $url = route('payment-order',$mainComboServiceBought->id)
-                );
+                $input_onesignal['order_id'] = $mainComboServiceBought->id;
+                $input_onesignal['user_id'] = $user->user_id;
+                dispatch(new SendNotificationOrderOnesignal($input_onesignal))->delay(now()->addSecond(5));
+
+//                OneSignal::sendNotificationUsingTags('New Order',
+//                    array(["field" => "tag", "key" => "user_id", "relation" => "=", "value" =>$user->user_id]),
+//                    $url = route('payment-order',$mainComboServiceBought->id)
+//                );
             }
         }
 //        if($mainComboServiceBought->getCustomer->customer_email != ""){
-//            $service_list = $mainComboServiceBought->csb_combo_service_id;
-//            $service_arrray = explode(";",$service_list);
-//            $mainComboServiceBought['combo_service_list'] = MainComboService::whereIn('id',$service_arrray)->get();
-//
-//            $content = $mainComboServiceBought->present()->getThemeMail;
-//
-//            $input['subject'] = 'INVOICE';
-//            $input['email'] = $mainComboServiceBought->getCustomer->customer_email;
-//            $input['name'] = $mainComboServiceBought->getCustomer->customer_firstname. " ".$mainComboServiceBought->getCustomer->customer_lastname;
-//            $input['message'] = $content;
-//
-//            dispatch(new SendNotification($input))->delay(now()->addSecond(5));
+////            $service_list = $mainComboServiceBought->csb_combo_service_id;
+////            $service_arrray = explode(";",$service_list);
+////            $mainComboServiceBought['combo_service_list'] = MainComboService::whereIn('id',$service_arrray)->get();
+////
+////            $content = $mainComboServiceBought->present()->getThemeMail;
+////
+////            $input['subject'] = 'INVOICE';
+////            $input['email'] = $mainComboServiceBought->getCustomer->customer_email;
+////            $input['name'] = $mainComboServiceBought->getCustomer->customer_firstname. " ".$mainComboServiceBought->getCustomer->customer_lastname;
+////            $input['message'] = $content;
+////
+////            dispatch(new SendNotification($input))->delay(now()->addSecond(5));
 //        }
     }
 
