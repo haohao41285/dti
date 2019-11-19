@@ -4,8 +4,8 @@ namespace App\Observers;
 
 use App\Models\MainTask;
 use App\Jobs\SendNotification;
-use OneSignal;
 use App\Jobs\SendNotificationTaskOnesignal;
+use App\Models\MainUser;
 
 class TaskObserver
 {
@@ -17,8 +17,20 @@ class TaskObserver
      */
     public function created(MainTask $mainTask)
     {
-        //SEND MAIL NOTIFICATION
-        $content = '<b style="text-transform: capitalize">Hi '.$mainTask->getAssignTo->user_firstname." ".$mainTask->getAssignTo->user_lastname.'</b><br>
+        $receiver_id = $mainTask->assign_to;
+        $receiver_id = explode(';',$receiver_id);
+        $receiver_list = MainUser::whereIn('user_id',$receiver_id)->get();
+        foreach ($receiver_list as $key => $receiver){
+            if($key == 0){
+                $input['email'] = $receiver->user_email;
+                $input['name'] = $receiver->getFullname();
+            }else{
+                $input['email_arr'][] = $receiver->user_email;
+            }
+        }
+        if(!empty($receiver_id)){
+            //SEND MAIL NOTIFICATION
+            $content = '<b style="text-transform: capitalize">Hi '.$mainTask->getAssignTo->user_firstname." ".$mainTask->getAssignTo->user_lastname.'</b><br>
                     Have a new task to you<br>
                     <span style="text-transform: capitalize">Service: '.$mainTask->subject.'</span>
                     <div style="background-color: #c69500" >Notes:'.$mainTask->desription.'</div>
@@ -26,24 +38,22 @@ class TaskObserver
                     <hr>
                     WEB MASTER (DTI SYSTEM)';
 
-        $input['subject'] = 'New Task';
-        $input['email'] = $mainTask->getAssignTo->user_email;
-        $input['name'] = $mainTask->getAssignTo->user_firstname." ".$mainTask->getAssignTo->user_lastname;
-        $input['message'] = $content;
+            $input['subject'] = 'New Task';
+            $input['message'] = $content;
 
-        dispatch(new SendNotification($input));
-        //END SEND MAIL
+            dispatch(new SendNotification($input));
+            //END SEND MAIL
+        }
 
         //SEND NOTIFICATION WITH ONESIGNAL
         $name_created = $mainTask->getCreatedBy->user_nickname;
-        $receiver_id = $mainTask->getAssignTo->user_id;
         $task_id = $mainTask->id;
 
-        if($receiver_id != ""){
-            $input_onesignal['task_id'] = $task_id;
-            $input_onesignal['receiver_id'] = $receiver_id;
-            $input_onesignal['name_created'] = $name_created;
+        $input_onesignal['task_id'] = $task_id;
+        $input_onesignal['name_created'] = $name_created;
 
+        foreach ($receiver_id as $receiver){
+            $input_onesignal['receiver_id'] = $receiver;
             dispatch(new SendNotificationTaskOnesignal($input_onesignal))->delay(now()->addSecond(5));
         }
 

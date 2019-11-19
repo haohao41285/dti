@@ -19,7 +19,6 @@
           <button type="button" class="btn btn-sm btn-primary">Submit</button>
         </div>
       </div>
-
     </div>
   </div>
 {{-- END MODAL --}}

@@ -68,7 +68,12 @@
                 <th class="text-info">{{\App\Helpers\GeneralHelper::getStatusTask()[$task_info->status]}}</th>
                 <th>{{format_datetime($task_info->created_at)}}</th>
                 <th>{{$task_info->getCreatedBy->user_nickname}}<span class="text-capitalize">({{$task_info->getCreatedBy->user_firstname}} {{$task_info->getCreatedBy->user_lastname}})</span></th>
-                <th colspan="2">{{$task_info->getUser->user_nickname}}<span class="text-capitalize">({{$task_info->getUser->user_firstname}} {{$task_info->getUser->user_lastname}})</span></th>
+                <th colspan="2">
+                    @foreach($assign_to as $assign)
+                        {{$assign->user_nickname}}
+                        <span class="text-capitalize">({{$assign->user_firstname}} {{$assign->user_lastname}})</span><br>
+                    @endforeach
+                </th>
             </tr>
             <tr>
                 <td>DATE START</td>

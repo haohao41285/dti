@@ -16,15 +16,15 @@
             <input type="hidden" name="order_id" value="{{$order_id}}">
             @csrf()
             <div class="col-md-12 form-group row">
-                <label class="col-md-2">Customer Phone</label>
+                <label class="col-md-2">Business Phone</label>
                 <div class="col-md-4">
-                    <input disabled type="text" value="{{$customer_info->customer_phone}}" class="form-control form-control-sm" >
+                    <input disabled type="text" value="{{$customer_info->place_phone}}" class="form-control form-control-sm" >
                 </div>
             </div>
             <div class="col-md-12 form-group row">
-                <label class="col-md-2">Customer Fullname</label>
+                <label class="col-md-2">Business Name</label>
                 <div class="col-md-4">
-                    <input disabled class="form-control form-control-sm" value="{{$customer_info->getFullname()}}" type="text">
+                    <input disabled class="form-control form-control-sm" value="{{$customer_info->place_name}}" type="text">
                 </div>
             </div>
             <div class="col-md-12 form-group row">

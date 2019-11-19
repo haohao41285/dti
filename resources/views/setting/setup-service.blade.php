@@ -44,7 +44,7 @@ Combo/Service List
 @push('scripts')
 <script type="text/javascript">
   //DEFINE VAR
-  var cs_assign_id = 0;
+  var cs_assign_id = [];
 
   $(document).ready(function($) {
     dataTable = $("#dataTable").DataTable({
@@ -135,7 +135,7 @@ Combo/Service List
       var cs_form_type = $(this).attr('cs_form_type');
       var cs_combo_service_type = $(this).attr('cs_combo_service_type');
       var cs_expiry_period = $(this).attr('cs_expiry_period');
-      cs_assign_id = $(this).attr('cs_assign_id');
+      cs_assign_id = $(this).attr('cs_assign_id').split(';');
 
       $.ajax({
         url: '{{route('get-service-combo')}}',
@@ -162,7 +162,7 @@ Combo/Service List
 
           //GET ASSIGN LIST
           $.each(data.user, function(index, val) {
-            if(cs_assign_id == val.user_id) var selected = "selected";
+              if(cs_assign_id.includes(""+val.user_id)) var selected = "selected";
             user_html += `<option `+selected+` value="`+val.user_id+`">`+val.user_nickname+`</option>`;
           });
 
@@ -217,13 +217,7 @@ Combo/Service List
                             `+service_type_htm+`
                          </select>
                        </div>
-                        <div class="form-group">
-                        <h6><b>Assign To</b></h6>
-                        <select name="cs_assign_to" id="assign_to" class="form-control form-control-sm">
-                            `+user_html+`
-                          </select>
-                        </div>
-                        <div class="form-group">
+                       <div class="form-group">
                       <h6><b>Description</b></h6>
                       <textarea name="cs_description" rows="3" class="form-control form-control-sm cs_description">`+cs_description+`</textarea>
                     </div>
@@ -232,8 +226,8 @@ Combo/Service List
                         <h6><b class="required">Service List</b></h6>
                         `+service_list_html+`
                         <div class="form-group row float-right">
-                          <button type="button" class="btn btn-danger cancel-add-edit">Cancel</button>
-                          <button type="button" class="btn btn-primary ml-2 submit-add-edit">Submit</button>
+                          <button type="button" class="btn btn-danger btn-sm cancel-add-edit">Cancel</button>
+                          <button type="button" class="btn btn-primary btn-sm ml-2 submit-add-edit">Submit</button>
                         </div>
                     </div>
                 </div>
@@ -272,7 +266,7 @@ Combo/Service List
                         </div>
                         <div class="form-group">
                           <h6><b>Assign To</b></h6>
-                          <select name="cs_assign_to" id="assign_to" class="form-control form-control-sm">
+                          <select name="cs_assign_to[]" id="assign_to" class="form-control form-control-sm" multiple>
                             `+user_html+`
                           </select>
                         </div>
@@ -287,8 +281,8 @@ Combo/Service List
                       `+data.menu_html+`
                     </div>
                     <div class="form-group row float-right">
-                      <button type="button" class="btn btn-danger cancel-add-edit">Cancel</button>
-                      <button type="button" class="btn btn-primary ml-2 submit-add-edit">Submit</button>
+                      <button type="button" class="btn btn-danger btn-sm cancel-add-edit">Cancel</button>
+                      <button type="button" class="btn btn-primary btn-sm ml-2 submit-add-edit">Submit</button>
                     </div>
                 </div>
                  </div>
@@ -436,8 +430,8 @@ Combo/Service List
             </select>
           </div>
           <div class="form-group service-content-son">
-            <h6><b class="required">Assign To</b></h6>
-            <select name="cs_assign_to" id="assign_to" class="form-control form-control-sm">
+            <h6><b class="required">Assign To</b>(Ctrl+Click for Multiple)</h6>
+            <select name="cs_assign_to[]" id="assign_to" class="form-control form-control-sm" multiple>
               `+user_html+`
             </select>
           </div>
@@ -452,8 +446,8 @@ Combo/Service List
 `+data.menu_html+`
                 </div>
                 <div class="form-group row float-right">
-                  <button type="button" class="btn btn-danger cancel-add-edit">Cancel</button>
-                  <button type="button" class="btn btn-primary ml-2 submit-add-edit">Submit</button>
+                  <button type="button" class="btn btn-danger btn-sm cancel-add-edit">Cancel</button>
+                  <button type="button" class="btn btn-primary btn-sm ml-2 submit-add-edit">Submit</button>
                 </div>
             </div>
             <div>
@@ -521,7 +515,7 @@ Combo/Service List
               </div>
               <div class="form-group service-content-son">
                 <h6><b class="required">Assign To</b></h6>
-                <select name="cs_assign_to" id="assign_to" class="form-control form-control-sm">
+                <select name="cs_assign_to[]" id="assign_to" class="form-control form-control-sm" multiple>
                   `+user_html+`
                 </select>
               </div>
