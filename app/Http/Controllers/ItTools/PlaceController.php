@@ -18,13 +18,12 @@ use App\Models\MainTheme;
 use Symfony\Component\Process\Process;
 use Symfony\Component\Process\Exception\ProcessFailedException;
 use App\Models\PosWebsiteProperty;
-
 use App\Models\PosTemplate;
 use App\Models\PosTemplateType;
-
 use DB;
 use Gate;
 use Auth;
+
 
 
 
