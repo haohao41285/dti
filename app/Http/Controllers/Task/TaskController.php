@@ -50,8 +50,15 @@ class TaskController extends Controller
             $task_list->where('category',$request->category);
         if($request->service_id != "")
             $task_list->where('service_id',$request->service_id);
-        if($request->assign_to)
-            $task_list->where('assign_to',$request->assign_to);
+        if($request->assign_to && $request->assign_to != ""){
+            $assign_to = $request->assign_to;
+            $task_list->where(function($query) use($assign_to){
+                $query->where('assign_to',$assign_to)
+                    ->orWhere('assign_to','like','%;'.$assign_to)
+                    ->orWhere('assign_to','likt','%;'.$assign_to.';%')
+                    ->orWhere('assign_to','likt',$assign_to.';%');
+            });
+        }
         if($request->priority != "")
             $task_list->where('priority',$request->priority);
         if($request->status != "")
@@ -210,6 +217,8 @@ class TaskController extends Controller
 
         $data['task_info'] = MainTask::find($id);
         $data['id'] = $id;
+        $assign_to_arr = explode(';',$data['task_info']->assign_to);
+        $data['assign_to'] = MainUser::whereIn('user_id',$assign_to_arr)->get();
         $data['team'] = MainTeam::all();
 
         return view('task.task-detail',$data);

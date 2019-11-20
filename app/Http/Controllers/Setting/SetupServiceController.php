@@ -29,11 +29,12 @@ class SetupServiceController extends Controller
             return doNotPermission();
 
 		$combo_service_arr = [];
-		$service_combo_list = MainComboService::leftjoin('main_user',function($join){
-			$join->on('main_combo_service.cs_assign_to','main_user.user_id');
-		})
-			->select('main_combo_service.*','main_user.user_nickname','main_user.user_id')
-			->get();
+//		$service_combo_list = MainComboService::leftjoin('main_user',function($join){
+//			$join->on('main_combo_service.cs_assign_to','main_user.user_id');
+//		})
+//			->select('main_combo_service.*','main_user.user_nickname','main_user.user_id')
+//			->get();
+        $service_combo_list = MainComboService::where('cs_status',1)->get();
 
 		foreach ($service_combo_list as $key => $service_combo) {
 
@@ -49,6 +50,17 @@ class SetupServiceController extends Controller
 					$service_name_arr .= "<span>- ".$value->cs_name."</span><br>";
 				}
 			}
+            $cs_assign_to = "";
+            $cs_assign_id = [];
+			if(!empty($service_combo->cs_assign_to)){
+			    $assign_arr = explode(';',$service_combo->cs_assign_to);
+			    $assign_list = MainUser::whereIn('user_id',$assign_arr)->select('user_id','user_nickname','user_lastname','user_firstname')->get();
+			    foreach($assign_list as $assign){
+                    $cs_assign_to .= "<span class='text-capitalize'>".$assign->user_nickname."(".$assign->getFullname().")</span><br>";
+                    $cs_assign_id[] = $assign->user_id;
+                }
+
+            }
 			$combo_service_arr[] = [
 				'id' => $service_combo->id,
 				'cs_name' => $service_combo->cs_name,
@@ -57,8 +69,8 @@ class SetupServiceController extends Controller
 				'cs_service_id' => $service_name_arr,
 				'cs_description' => $service_combo->cs_description,
 				'cs_type' => $service_combo->cs_type,
-				'cs_assign_to' => $service_combo->user_nickname,
-				'cs_assign_id' => $service_combo->user_id,
+				'cs_assign_to' => $cs_assign_to,
+				'cs_assign_id' => implode(';',$cs_assign_id),
 				'cs_status' => $service_combo->cs_status,
                 'cs_form_type' => $service_combo->cs_form_type,
                 'cs_combo_service_type' => $service_combo->getComboServiceType['name'],
@@ -82,9 +94,18 @@ class SetupServiceController extends Controller
 				return '<input type="checkbox" cs_id="'.$row['id'].'" cs_status="'.$row['cs_status'].'" class="js-switch"'.$checked.'/>';
 			})
 			->addColumn('action',function($row){
-				return '<a class="btn btn-sm btn-secondary edit-cs" cs_expiry_period="'.$row['cs_expiry_period'].'" cs_combo_service_type="'.$row['cs_combo_service_type_id'].'" cs_form_type="'.$row['cs_form_type'].'" cs_price='.$row['cs_price'].' cs_description="'.$row['cs_description'].'" cs_type='.$row['cs_type'].' cs_name="'.$row['cs_name'].'" cs_id="'.$row['id'].'"  title="Edit" href="javascript:void(0)" cs_assign_id="'.$row['cs_assign_id'].'"><i class="fas fa-edit"></i></a>';
+				return '<a class="btn btn-sm btn-secondary edit-cs"
+				 cs_expiry_period="'.$row['cs_expiry_period'].'"
+				 cs_combo_service_type="'.$row['cs_combo_service_type_id'].'"
+				 cs_form_type="'.$row['cs_form_type'].'" cs_price='.$row['cs_price'].'
+				 cs_description="'.$row['cs_description'].'" 
+				 cs_type='.$row['cs_type'].'
+				 cs_name="'.$row['cs_name'].'" 
+				 cs_id="'.$row['id'].'"  
+				 cs_assign_id="'.$row['cs_assign_id'].'"
+				 title="Edit" href="javascript:void(0)"><i class="fas fa-edit"></i></a>';
 			})
-			->rawColumns(['cs_status','action','cs_service_id'])
+			->rawColumns(['cs_status','action','cs_service_id','cs_assign_to'])
 		    ->make(true);
 	}
 	public function changeStatusCs(Request $request){
@@ -199,7 +220,7 @@ class SetupServiceController extends Controller
 		$cs_name = $request->cs_name;
 		$cs_price = $request->cs_price;
 		$cs_description = $request->cs_description;
-		$cs_assign_to = $request->cs_assign_to;
+		$cs_assign_to = implode(';',$request->cs_assign_to);
 		$cs_form_type = $request->cs_form_type;
 		$cs_combo_service_type = $request->cs_combo_service_type;
 

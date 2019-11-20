@@ -46,7 +46,7 @@ class MainComboServiceBought extends Model
         return $this->belongsTo(MainCustomer::class,'csb_customer_id','customer_id');
     }
     public function getPlace(){
-        return $this->belongsTo(PosPlace::class,'csb_place_id','place_id');
+        return $this->belongsTo(PosPlace::class,'csb_place_id','place_id')->withDefault();
     }
     public function getCreatedBy(){
         return $this->belongsTo(MainUser::class,'created_by','user_id');
@@ -103,7 +103,7 @@ class MainComboServiceBought extends Model
         $startDate = format_date_db($startDate)." 00:00:00";
         $endDate = format_date_db($endDate)." 23:59:59";
         // echo $startDate. " - ".$endDate; die();
-        
+
         return self::select('csb_combo_service_id','created_at')
                         ->whereBetween('created_at',[$startDate,$endDate])
                         ->get();
@@ -167,7 +167,7 @@ class MainComboServiceBought extends Model
         if(!$date){
             $date = format_date_db(get_nowDate());
         }
-        
+
         $arr = [];
         // choose by type, from StatisticsTrait
         switch ($type) {
@@ -175,16 +175,16 @@ class MainComboServiceBought extends Model
                 $arr = self::getByDate($date);
                 break;
             case 'Monthly':
-                $arr = self::getByMonth($date); 
+                $arr = self::getByMonth($date);
                 break;
             case 'Quarterly':
-                $arr = self::getByQuarterly($date,$valueQuarter); 
+                $arr = self::getByQuarterly($date,$valueQuarter);
                 break;
             case 'Yearly':
-                $arr = self::getByYear($date); 
-                break;            
+                $arr = self::getByYear($date);
+                break;
         }
-        
+
         // dd($arr);
 // dd($a);
         $arrOut = self::getArrByStartAndLength($arr, $start, $length);
@@ -202,18 +202,18 @@ class MainComboServiceBought extends Model
     /**
      * get arr by start and length of datatable
      * @param  array    $arr
-     * @param  int      $start 
+     * @param  int      $start
      * @param  int      $length
      * @return array    $arrOut
      */
     private static function getArrByStartAndLength($arr, $start, $length){
         $arrOut = [];
-        for ($i = $start; $i < $start + $length; $i++) { 
+        for ($i = $start; $i < $start + $length; $i++) {
             try {
                 $arrOut[] = $arr[$i];
             } catch (\Exception $e) {
                 continue;
-            }            
+            }
         }
         return $arrOut;
     }

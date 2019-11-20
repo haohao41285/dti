@@ -108,7 +108,6 @@ class OrdersController extends Controller
             ['customer_id',$customer_id],
         ])->get();
 
-//        $data['customer_info'] = MainCustomer::where('customer_customer_template_id', $customer_id)->first();
         $data['customer_info'] = MainCustomerTemplate::find($customer_id);
 
         if (!empty($data['customer_info']->getMainCustomer)) {
@@ -191,14 +190,6 @@ class OrdersController extends Controller
         }
 
         $service_arr = [];
-//			$number_credit = "";
-//			$account_number = "";
-//
-//			if($request->credit_card_number != "")
-//			    $number_credit =  substr($request->credit_card_number, 0,4)."####".substr($request->credit_card_number, -4);
-//			if($request->account_number != "")
-//			    $account_number =  substr($request->account_number, 0,4)."####".substr($request->account_number, -4);
-
         $combo_service_list = implode(";", $request->cs_id);
         $today = Carbon::today();
 
@@ -210,7 +201,6 @@ class OrdersController extends Controller
             else
                 $service_arr[] = $value;
         }
-
         if ($request->place_id != 0) {
             $place_id = $request->place_id;
         } else {
@@ -286,9 +276,9 @@ class OrdersController extends Controller
                 'place_actiondate_option' => 0,
                 'place_period_overtime' => 1,
                 'place_hour_overtime' => '08:00',
-                'place_address' => $request->address,
-                'place_website' => $request->website,
-                'place_phone' => $request->business_phone,
+                'place_address' => $request->address!=""?$request->address:"",
+                'place_website' => $request->website!=""?$request->website:"",
+                'place_phone' => $request->business_phone!=""?$request->business_phone:"",
                 'place_taxcode' => 'tax-code',
                 'place_customer_type' => 'customer type',
                 'place_url_plugin' => 'url plugin',
@@ -304,8 +294,8 @@ class OrdersController extends Controller
             //DELETE CUSTOMER ASSIGN (Main_customer_assign)
             MainCustomerAssign::where([
                 ['business_phone',$request->business_phone],
-                    ['business_name',$request->business_name],
-                    ['user_id',Auth::user()->user_id]
+                ['business_name',$request->business_name],
+                ['user_id',Auth::user()->user_id]
             ])->delete();
             //INSERT MAIN_USER_CUSTOMER_PLACE
             $user_customer = [
@@ -451,11 +441,11 @@ class OrdersController extends Controller
 
             //INSER MAIN_TASK
             $service_arr = array_unique($service_arr);
-            $task_arr = [];
+//            $task_arr = [];
             foreach ($service_arr as $key => $service) {
                 $service_info = MainComboService::find($service);
 
-                $task_arr[] = [
+                $task_arr = [
                     'subject' => $service_info->cs_name,
                     'priority' => 2,
                     'status' => 1,
@@ -467,8 +457,10 @@ class OrdersController extends Controller
                     'category' => 1,
                     'assign_to' => $service_info->cs_assign_to
                 ];
+                $task_create = MainTask::create($task_arr);
             }
-            $task_create = MainTask::insert($task_arr);
+//            return $task_arr;
+//            $task_create = MainTask::insert($task_arr);
 
             if (!isset($insert_order)
                 || !isset($update_team_customr_status)
@@ -518,7 +510,7 @@ class OrdersController extends Controller
         $end_date = $request->end_date;
         $my_order_arr = [];
 
-        $my_order_list = MainComboServiceBought::join('main_customer', function ($join) {
+        $my_order_list = MainComboServiceBought::with('getPlace')->join('main_customer', function ($join) {
             $join->on('main_combo_service_bought.csb_customer_id', 'main_customer.customer_id');
         })
             ->join('main_user', function ($join) {
@@ -537,7 +529,7 @@ class OrdersController extends Controller
             $my_order_list = $my_order_list->whereDate('main_combo_service_bought.created_at', '<=', $end_date);
         }
 
-        $my_order_list = $my_order_list->select('main_combo_service_bought.*', 'main_customer.customer_lastname', 'main_customer.customer_firstname', 'main_user.user_nickname')
+        $my_order_list = $my_order_list->select('main_combo_service_bought.*', 'main_customer.customer_lastname', 'main_customer.customer_firstname','main_customer.customer_phone','main_customer.customer_email', 'main_user.user_nickname')
             ->get();
 
         foreach ($my_order_list as $key => $order) {
@@ -566,7 +558,7 @@ class OrdersController extends Controller
                 $order_date = "<a href='" . route('order-view', $order->id) . "'>" . format_datetime($order->created_at) . "</a>";
 
             //GET CUSTOMER INFORMATION
-            $customer = "<span>Customer: " . $order->customer_firstname . " " . $order->customer_lastname . "</span><br><span>Business Phone: " . $order->customer_phone . "</span><br><span>Email: " . $order->customer_email . "</span>";
+            $customer = "<span>Customer: <b>" . $order->customer_firstname . " " . $order->customer_lastname . "</b></span><br><span>Business Phone: <b>" . $order->getPlace->place_phone . "</b></span><br><span>Email: <b>" . $order->getPlace->place_email . "</b></span>";
 
             $updated_at = "";
             if($order->updated_by != "")
@@ -580,7 +572,7 @@ class OrdersController extends Controller
                 'subtotal' => $order->csb_amount,
                 'discount' => $order->csb_amount_deal,
                 'total_charge' => $order->csb_charge,
-                'status' => $order->csb_status == 0 ? "NOTPAYMEET" : "PAID",
+                'status' => $order->csb_status == 0 ? "NOTPAYMENT" : "PAID",
                 'information' => $infor,
                 'updated_at' => $updated_at
             ];
@@ -1031,7 +1023,7 @@ class OrdersController extends Controller
 
         $data['order_id'] = $id;
         $data['order_info'] = $order_info;
-        $data['customer_info'] = $order_info->getCustomer;
+        $data['customer_info'] = $order_info->getPlace;
         $service_list = $order_info->csb_combo_service_id;
         $service_arr = explode(';', $service_list);
         $data['service_list'] = MainComboService::whereIn('id', $service_arr)->select('cs_name', 'cs_price')->get();
@@ -1178,7 +1170,7 @@ class OrdersController extends Controller
         $end_date = $request->end_date;
         $my_order_arr = [];
 
-        $my_order_list = MainComboServiceBought::join('main_customer',function($join){
+        $my_order_list = MainComboServiceBought::with('getPlace')->join('main_customer',function($join){
             $join->on('main_combo_service_bought.csb_customer_id','main_customer.customer_id');
         })
             ->join('main_user',function($join){
@@ -1223,7 +1215,7 @@ class OrdersController extends Controller
                 $order_date = "<span>".format_datetime($order->created_at)."</span>";
 
             //GET CUSTOMER INFORMATION
-            $customer = "<span>Customer: ".$order->customer_firstname. " " .$order->customer_lastname."</span><br><span>Business Phone: ".$order->customer_phone."</span><br><span>Address: ".$order->customer_address."</span><br><span>Email: ".$order->customer_email."</span>";
+            $customer = "<span>Customer: <b>".$order->customer_firstname. " " .$order->customer_lastname."</b></span><br><span>Business Phone: <b>".$order->getPlace->place_phone."</b></span><br><span>Email: <b>".$order->getPlace->place_email."</b></span>";
 
             $my_order_arr[] = [
                 'id' => $order->id,
@@ -1233,7 +1225,7 @@ class OrdersController extends Controller
                 'subtotal' => $order->csb_amount,
                 'discount' => $order->csb_amount_deal,
                 'total_charge' => $order->csb_charge,
-                'status' => $order->csb_status==0?"NOTPAYMEET":"PAID",
+                'status' => $order->csb_status==0?"NOTPAYMENT":"PAID",
                 'information' => $infor,
             ];
         }

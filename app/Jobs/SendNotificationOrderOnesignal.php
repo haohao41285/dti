@@ -32,8 +32,8 @@ class SendNotificationOrderOnesignal implements ShouldQueue
     public function handle()
     {
         OneSignal::sendNotificationUsingTags('New Order',
-            array(["field" => "tag", "key" => "user_id", "relation" => "=", "value" =>$input['user_id']]),
-            $url = route('payment-order',$input['order_id'])
+            array(["field" => "tag", "key" => "user_id", "relation" => "=", "value" =>$this->input['user_id']]),
+            $url = route('payment-order',$this->input['order_id'])
         );
     }
 }

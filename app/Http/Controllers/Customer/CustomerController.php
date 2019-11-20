@@ -832,6 +832,7 @@ class CustomerController extends Controller
             return back()->with(['error'=>'Get CustomerDetail Failed!']);
 
         $data['template_customer_info'] = MainCustomerTemplate::find($customer_id);
+//        return $data['template_customer_info'];
         try{
             $customer_id = $data['template_customer_info']->getMainCustomer->customer_id;
         }catch(\Exception $e){

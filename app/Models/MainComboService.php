@@ -29,5 +29,5 @@ class MainComboService extends Model
         return self::select('id','cs_name','cs_price')
                     ->whereIn('id',$arr)
                     ->get();
-    } 
+    }
 }
