@@ -2,6 +2,7 @@
 @section('title')
     My Tasks
 @endsection
+
 @section('content')
 {{-- MODAL INPUT FORM --}}
 <div class="modal fade" id="modal-input-form" role="dialog">
