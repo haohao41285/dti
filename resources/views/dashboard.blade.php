@@ -10,7 +10,7 @@
 
             <!-- Earnings (Monthly) Card Example -->
             <div class="col-xl-3 col-md-6 mb-4">
-              <div class="card border-left-primary shadow h-100 py-2">
+              <div class="card border-left-primary shadow h-100 py-2">Customer is about to expire
                 <div class="card-body">
                   <div class="row no-gutters align-items-center">
                     <div class="col mr-2">
@@ -62,7 +62,6 @@
                 </div>
               </div>
             </div>
-
             <!-- Pending Requests Card Example -->
             <div class="col-xl-3 col-md-6 mb-4">
               <div class="card border-left-warning shadow h-100 py-2">
@@ -80,6 +79,23 @@
               </div>
             </div>
           </div>
+
+        <div class="col-md-12 card shadow py-2">
+            <h4 class="text-black">Proccessing Task</h4>
+            <table class="table table-striped table-hover" id="datatable-customer-service" width="100%" cellspacing="0">
+                <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Subject</th>
+                    <th>Priority</th>
+                    <th>Service</th>
+                    <th>Expired Date</th>
+                    <th>Seller</th>
+                    <th>Action</th>
+                </tr>
+                </thead>
+            </table>
+        </div>
 
           <!-- Content Row -->
 
@@ -113,8 +129,8 @@
               </div>
             </div>
           </div>
-        <div class="col-md-12">
-            <h4>Customer is about to expire</h4>
+        <div class="col-md-12 card shadow py-2">
+            <h4 class="text-black">Customer is about to expire</h4>
             <table class="table table-striped table-hover" id="datatable-customer-service" width="100%" cellspacing="0">
                 <thead>
                     <tr>
