@@ -360,4 +360,14 @@ Route::group(['middleware' => ['auth']], function () {
 
     });
 
+    Route::group(['prefix' => 'reports'], function() {
+        Route::group(['prefix' => 'customers'], function () {
+            Route::get('/', 'ReportController@customers')->name('report.customers');
+            Route::get('customers-datatable', 'ReportController@customersDataTable')->name('report.customers.datatable');
+        });
+        Route::group(['prefix' => 'services'], function () {
+            Route::get('/', 'ReportController@services')->name('report.services');
+            Route::get('service-datatable', 'ReportController@servicesDataTable')->name('report.services.datatable');
+        });
+    });
 });

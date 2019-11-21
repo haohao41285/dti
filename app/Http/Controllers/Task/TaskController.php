@@ -63,7 +63,9 @@ class TaskController extends Controller
             $task_list->where('priority',$request->priority);
         if($request->status != "")
             $task_list->where('status',$request->status);
-
+        if(isset($request->task_dashboard)){
+            $task_list->where('status','!=',3);
+        }
     	return DataTables::of($task_list)
     		->editColumn('priority',function($row){
     			return getPriorityTask()[$row->priority];
