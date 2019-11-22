@@ -1,4 +1,4 @@
-window.bootstrapMulty = require("bootstrap-multiselect/dist/js/bootstrap-multiselect.js");
+// window.bootstrapMulty = require("bootstrap-multiselect/dist/js/bootstrap-multiselect.js");
 
 window.CanvasJS = require('canvasjs/dist/canvasjs.min.js');
 window.CanvasJSJ = require('canvasjs/dist/jquery.canvasjs.min.js');

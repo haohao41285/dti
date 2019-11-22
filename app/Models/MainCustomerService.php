@@ -40,13 +40,13 @@ class MainCustomerService extends Model
 	    return $this->belongsTo(PosPlace::class,'cs_place_id','place_id');
     }
     public function getCreatedBy(){
-	    return $this->belongsTo(MainUser::class,'created_by','user_id');
+	    return $this->belongsTo(MainUser::class,'created_by','user_id')->withDefault();
     }
     public function scopeActive($query){
 	    return $query->where('cs_status',1);
     }
     public function getCustomer(){
-	    return $this->belongsTo(MainCustomer::class,'cs_customer_id','customer_id');
+	    return $this->belongsTo(MainCustomer::class,'cs_customer_id','customer_id')->withDefault();
     }
 
     public function getNewDateExpireAttribute(){

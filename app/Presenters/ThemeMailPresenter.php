@@ -28,7 +28,8 @@ class ThemeMailPresenter extends Presenter{
                 </tr>
 	        ';
         }
-		return "<div style=\"border-bottom: 2px black solid\">
+		return "<div style='background: url(".asset('images/logo_email_2.png').") 0 0 repeat'>
+<div style=\"border-bottom: 2px black solid\">
             <span><img src='".asset('images/logo274x29.png')."'></span>
             <span style=\"float: right\"><b>INVOICE</b></span>
         </div>
@@ -104,6 +105,7 @@ class ThemeMailPresenter extends Presenter{
         <div style=\"text-align: center;margin-top: 50px\">
             If you have any question about this invoice, please contact us shown above.
             <h4><b>THANKS FOR YOUR BUSINESS</b></h4>
+        </div>
         </div>
         ";
 	}

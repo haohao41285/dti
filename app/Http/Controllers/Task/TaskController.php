@@ -55,15 +55,17 @@ class TaskController extends Controller
             $task_list->where(function($query) use($assign_to){
                 $query->where('assign_to',$assign_to)
                     ->orWhere('assign_to','like','%;'.$assign_to)
-                    ->orWhere('assign_to','likt','%;'.$assign_to.';%')
-                    ->orWhere('assign_to','likt',$assign_to.';%');
+                    ->orWhere('assign_to','like','%;'.$assign_to.';%')
+                    ->orWhere('assign_to','like',$assign_to.';%');
             });
         }
         if($request->priority != "")
             $task_list->where('priority',$request->priority);
         if($request->status != "")
             $task_list->where('status',$request->status);
-
+        if(isset($request->task_dashboard)){
+            $task_list->where('status','!=',3);
+        }
     	return DataTables::of($task_list)
     		->editColumn('priority',function($row){
     			return getPriorityTask()[$row->priority];
@@ -493,8 +495,15 @@ class TaskController extends Controller
             $task_list->where('category',$request->category);
         if($request->service_id != "")
             $task_list->where('service_id',$request->service_id);
-        if($request->assign_to)
-            $task_list->where('assign_to',$request->assign_to);
+        if($request->assign_to && $request->assign_to != ""){
+           $assign_to = $request->assign_to;
+            $task_list->where(function ($query) use ($assign_to){
+                $query->where('assign_to',$assign_to)
+                    ->orWhere('assign_to','like','%;'.$assign_to)
+                    ->orWhere('assign_to','like','%;'.$assign_to.';%')
+                    ->orWhere('assign_to','like',$assign_to.';%');
+            });
+        }
         if($request->priority != "")
             $task_list->where('priority',$request->priority);
         if($request->status != "")

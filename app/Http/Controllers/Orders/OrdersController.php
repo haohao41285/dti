@@ -1067,8 +1067,10 @@ class OrdersController extends Controller
 
         if ($input['credit_card_type'] != 'E-CHECK') {
             $response = self::authorizePayment($input);
-            if ($response['status'] == 'error')
-                return back()->with('error', $response['message']);
+            if ($response['status'] == 'error'){
+                $message = $response['message'];
+                return back()->with(['error'=>$message]);
+            }
             else
                 $input['csb_trans_id'] = $response['csb_trans_id'];
             $input['csb_payment_method'] = 2;
@@ -1140,28 +1142,40 @@ class OrdersController extends Controller
                 $tresponse = $response->getTransactionResponse();
 
                 if ($tresponse != null && $tresponse->getMessages() != null) {
-                    return ['status' => 'success', 'message' => 'Transaction Successfully!', 'csb_trans_id' => $tresponse->getTransId()];
+                    $result = [
+                        'status' => 'success',
+                        'message' => 'Transaction Successfully!',
+                        'csb_trans_id' => $tresponse->getTransId()
+                    ];
+                    return $result;
                 } else {
-                    $error = " Error Code  : " . $tresponse->getErrors()[0]->getErrorCode() . "\n";
-                    $error .= " Error Message : " . $tresponse->getErrors()[0]->getErrorText() . "\n";
-
-                    return ['status' => 'error', 'message' => $error];
+                    $error = $tresponse->getErrors()[0]->getErrorText();
+                    $result = [
+                        'status' => 'error',
+                        'message' => $error
+                    ];
+                    return $result;
                 }
             } else {
                 $tresponse = $response->getTransactionResponse();
-
                 if ($tresponse != null && $tresponse->getErrors() != null) {
-                    $error = " Error Code  : " . $tresponse->getErrors()[0]->getErrorCode() . "\n";
-                    $error .= " Error Message : " . $tresponse->getErrors()[0]->getErrorText() . "\n";
+                    $error =  $tresponse->getErrors()[0]->getErrorText();
 
                 } else {
-                    $error = " Error Code  : " . $response->getMessages()->getMessage()[0]->getCode() . "\n";
-                    $error .= " Error Message : " . $response->getMessages()->getMessage()[0]->getText() . "\n";
+                    $error = $response->getMessages()->getMessage()[0]->getText();
                 }
-                return ['status' => 'error', 'message' => $error];
+                $result = [
+                    'status' => 'error',
+                    'message' => $error
+                ];
+                return $result;
             }
         } else {
-            return ['status' => 'error', 'message' => 'No response returned'];
+            $result = [
+                'status' => 'error',
+                'message' => 'No response returned'
+            ];
+            return $result;
         }
     }
     public function paymentOrderDatatable(Request $request)

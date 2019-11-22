@@ -331,7 +331,7 @@ Route::group(['middleware' => ['auth']], function () {
         Route::get('get-task', 'TaskController@getTask')->name('get-task');
         Route::get('get-subtask', 'TaskController@getSubtask')->name('get-subtask');
         Route::get('edit-task/{id?}', 'TaskController@editTask')->where(['id'=>'[0-9]+'])->name('edit-task');
-        Route::post('send-mail-notification', 'TaskController@sendMailNotification')->name('send-mail-notification');
+        Route::post('send-mail-notification', 'TaskControall-task-datatableller@sendMailNotification')->name('send-mail-notification');
         Route::get('theme-mail', 'TaskController@themeMail')->name('theme-mail');
         Route::get('get-subtask', 'TaskController@getSubTask')->name('get-subtask');
 
@@ -360,4 +360,14 @@ Route::group(['middleware' => ['auth']], function () {
 
     });
 
+    Route::group(['prefix' => 'reports'], function() {
+        Route::group(['prefix' => 'customers'], function () {
+            Route::get('/', 'ReportController@customers')->name('report.customers');
+            Route::get('customers-datatable', 'ReportController@customersDataTable')->name('report.customers.datatable');
+        });
+        Route::group(['prefix' => 'services'], function () {
+            Route::get('/', 'ReportController@services')->name('report.services');
+            Route::get('service-datatable', 'ReportController@servicesDataTable')->name('report.services.datatable');
+        });
+    });
 });
