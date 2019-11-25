@@ -10,6 +10,7 @@ use App\Models\MainCustomerNote;
 use App\Models\MainCustomerService;
 use App\Models\MainCustomerTemplate;
 use App\Models\MainTeam;
+use App\Models\MainUser;
 use App\Models\MainUserCustomerPlace;
 use Illuminate\Http\Request;
 use Yajra\DataTables\DataTables;
@@ -127,13 +128,113 @@ class ReportController extends Controller
             ->make(true);
     }
     public function services(){
-        return view('reports.services');
+        $data['sellers'] = MainUser::active()->get();
+        return view('reports.services',$data);
     }
     public function servicesDataTable(Request $request){
-//        $service_list = MainComboServiceBought::with('getCustomer')->with('getCreatedBy')->get();
+
         $combo_service_list = MainComboService::orderBy('cs_combo_service_type','asc')->get();
-        return $combo_service_list;
-//        return DataTables::of($service_list)
-//            ->make(true);
+        $service_customer_result = [];
+
+        foreach ($combo_service_list as $combo_service){
+
+            $service_id = $combo_service->id;
+
+            $service_customer = MainComboServiceBought::where(function($query) use ($service_id){
+                $query->where('csb_combo_service_id',$service_id)
+                    ->orWhere('csb_combo_service_id','like','%;'.$service_id)
+                    ->orWhere('csb_combo_service_id','like','%;'.$service_id.';%')
+                    ->orWhere('csb_combo_service_id','like',$service_id.';%');
+            });
+            if($request->address != ""){
+
+                $address_customer = $request->address;
+
+                $service_customer = $service_customer->join('main_customer',function($join) use ($address_customer){
+                    $join->on('main_combo_service_bought.csb_customer_id','main_customer.customer_id')
+                    ->where('main_customer.customer_address','like','%'.$address_customer.'%');
+                });
+
+                if($request->start_date != "" && $request->end_date != ""){
+                    $start_date = format_date_db($request->start_date);
+                    $end_date = format_date_db($request->end_date);
+                    $service_customer = $service_customer->whereBetween('main_combo_service_bought.created_at',[$start_date,$end_date]);
+                }
+
+                if($request->seller_id != ""){
+                    $service_customer = $service_customer->where('main_combo_service_bought.created_by',$request->seller_id);
+                }
+
+                $customer_total = $service_customer->distinct('main_combo_service_bought.csb_customer_id')->count('main_combo_service_bought.csb_customer_id');
+                $order_total = $service_customer->count();
+
+            }else{
+
+                if($request->start_date != "" && $request->end_date != ""){
+                    $start_date = format_date_db($request->start_date);
+                    $end_date = format_date_db($request->end_date);
+                    $service_customer = $service_customer->whereBetween('created_at',[$start_date,$end_date]);
+                }
+                if($request->seller_id != ""){
+                    $service_customer = $service_customer->where('created_by',$request->seller_id);
+                }
+                $customer_total = $service_customer->distinct('csb_customer_id')->count('csb_customer_id');
+                $order_total = $service_customer->count();
+            }
+
+            $service_customer_result[] = [
+                'id' => $combo_service->id,
+                'service_name' => $combo_service->cs_name,
+                'service_price' => $combo_service->cs_price,
+                'customer_total' => $customer_total,
+                'order_total' => $order_total
+            ];
+        }
+        return DataTables::of($service_customer_result)
+            ->make(true);
+    }
+    public function sellers(){
+        $data['sellers'] = MainUser::active()->get();
+        return view('reports.sellers',$data);
+    }
+    public function sellersDataTable(Request $request){
+
+        $user_list  = MainUser::active();
+
+        if($request->start_date != "" && $request->end_date){
+            $start_date = format_date_db($request->start_date);
+            $end_date = format_date_db($request->end_date);
+//            $user_list->whereBetween('')
+        }
+
+
+        $user_customer_place = MainUserCustomerPlace::all();
+        $user_customer_place = collect($user_customer_place);
+        $order_list_collect = MainComboServiceBought::all();
+        $order_list_collect = collect($order_list_collect);
+
+        foreach ($user_list as $user){
+
+            $total_assigned = $user_customer_place->where('user_id',$user->user_id)->where('place_id',null)->count();
+            $total_serviced = $user_customer_place->where('user_id',$user->user_id)->where('place_id','!=',null)->count();
+            $total_orders = $order_list_collect->where('created_by',$user->user_id)->count();
+            $total_discount = $order_list_collect->where('created_by',$user->user_id)->sum('csb_amount_deal');
+            $total_charged = $order_list_collect->where('created_by',$user->user_id)->sum('csb_charge');
+
+                $seller_list[] = [
+                    'id' => $user->user_id,
+                    'user_nickname' => $user->user_nickname,
+                    'user_fullname' => $user->getFullname(),
+                    'email' => $user->user_email,
+                    'total_assigned' => $total_assigned,
+                    'total_serviced' => $total_serviced,
+                    'total_orders' => $total_orders,
+                    'total_discount' => $total_discount,
+                    'total_charged' => $total_charged
+                ];
+        }
+        return DataTables::of($seller_list)
+            ->make(true);
+
     }
 }

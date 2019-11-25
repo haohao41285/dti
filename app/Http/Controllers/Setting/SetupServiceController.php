@@ -220,7 +220,7 @@ class SetupServiceController extends Controller
 		$cs_name = $request->cs_name;
 		$cs_price = $request->cs_price;
 		$cs_description = $request->cs_description;
-		$cs_assign_to = implode(';',$request->cs_assign_to);
+		$cs_assign_to = $request->cs_assign_to!=""?implode(';',$request->cs_assign_to):"";
 		$cs_form_type = $request->cs_form_type;
 		$cs_combo_service_type = $request->cs_combo_service_type;
 
