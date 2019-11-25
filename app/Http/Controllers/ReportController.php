@@ -204,14 +204,19 @@ class ReportController extends Controller
         if($request->start_date != "" && $request->end_date){
             $start_date = format_date_db($request->start_date);
             $end_date = format_date_db($request->end_date);
-//            $user_list->whereBetween('')
+            $user_list->whereBetween('created_at',[$start_date,$end_date]);
         }
-
+        if($request->seller_id != ""){
+            $user_list->where('user_id',$request->seller_id);
+        }
+        $user_list =  $user_list->get();
 
         $user_customer_place = MainUserCustomerPlace::all();
         $user_customer_place = collect($user_customer_place);
         $order_list_collect = MainComboServiceBought::all();
         $order_list_collect = collect($order_list_collect);
+
+        $seller_list = [];
 
         foreach ($user_list as $user){
 

@@ -15,10 +15,10 @@
                         <input type="text" class="input-sm form-control form-control-sm" id="end_date" name="end" />
                     </div>
                 </div>
-                <div class="col-md-3">
-                    <label for="">Address</label>
-                    <input type="text" id="address" name="address" class="form-control form-control-sm">
-                </div>
+{{--                <div class="col-md-3">--}}
+{{--                    <label for="">Address</label>--}}
+{{--                    <input type="text" id="address" name="address" class="form-control form-control-sm">--}}
+{{--                </div>--}}
                 <div class="col-md-3">
                     <label for="">Seller</label>
                     <select name="seller" id="seller_id" class="form-control form-control-sm">
@@ -76,7 +76,7 @@
                     data: function (d) {
                         d.start_date = $("#start_date").val();
                         d.end_date = $("#end_date").val();
-                        d.address = $("#address").val();
+                        // d.address = $("#address").val();
                         d.seller_id = $("#seller_id").val();
                     }
                 },
