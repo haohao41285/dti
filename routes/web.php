@@ -369,5 +369,9 @@ Route::group(['middleware' => ['auth']], function () {
             Route::get('/', 'ReportController@services')->name('report.services');
             Route::get('service-datatable', 'ReportController@servicesDataTable')->name('report.services.datatable');
         });
+        Route::group(['prefix' => 'sellers'], function () {
+            Route::get('/', 'ReportController@sellers')->name('report.sellers');
+            Route::get('sellers-datatable', 'ReportController@sellersDataTable')->name('report.sellers.datatable');
+        });
     });
 });

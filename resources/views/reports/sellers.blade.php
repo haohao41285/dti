@@ -1,10 +1,10 @@
 @extends('layouts.app')
 @section('title')
-    Services Report
+    Sellers Report
 @endsection
 @section('content')
     <div class="table-responsive">
-        <h4 class="border border-info border-top-0 border-right-0 border-left-0 text-info">SERVICES REPORT</h4>
+        <h4 class="border border-info border-top-0 border-right-0 border-left-0 text-info">SELLERS REPORT</h4>
         <form id="search-form">
             <div class="form-group col-md-12 row">
                 <div class="col-md-4">
@@ -34,17 +34,21 @@
                         <input type="button" class="btn btn-secondary btn-sm" id="reset-btn" value="Reset">
                     </div>
                 </div>
-        </div>
-    </form>
+            </div>
+        </form>
         <table class="table table-striped table-hover" id="dataTableAllService" width="100%" cellspacing="0">
             <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Service</th>
-                    <th>Service Price($)</th>
-                    <th>Total Customers</th>
-                    <th>Total Orders</th>
-                </tr>
+            <tr>
+                <th>ID</th>
+                <th>Username</th>
+                <th>Fullname</th>
+                <th>Email</th>
+                <th>Total Assigned Customers</th>
+                <th>Total Serviced Customers</th>
+                <th>Total Orders</th>
+                <th>Total Discount($)</th>
+                <th>Total Charged($)</th>
+            </tr>
             </thead>
         </table>
     </div>
@@ -64,11 +68,11 @@
                         text: '<i class="fas fa-upload"></i> Export',
                         className: "btn-sm export",
                         action: function ( e, dt, node, config ) {
-                           document.location.href = "{{route('export-my-customer')}}";
-                       }
+                            document.location.href = "{{route('export-my-customer')}}";
+                        }
                     }
                 ],
-                ajax:{ url:"{{ route('report.services.datatable') }}",
+                ajax:{ url:"{{ route('report.sellers.datatable') }}",
                     data: function (d) {
                         d.start_date = $("#start_date").val();
                         d.end_date = $("#end_date").val();
@@ -78,10 +82,15 @@
                 },
                 columns: [
                     { data: 'id', name: 'id',class:'text-center' },
-                    { data: 'service_name', name: 'service_name' },
-                    { data: 'service_price', name: 'service_price',class:'text-right'},
-                    { data: 'customer_total', name: 'customer_total' ,class:'text-right'},
-                    { data: 'order_total', name: 'order_total',class:'text-right' },
+                    { data: 'user_nickname', name: 'user_nickname' },
+                    { data: 'user_fullname', name: 'user_fullname', class:'text-capitalize'},
+                    { data: 'email', name: 'email' ,},
+                    { data: 'total_assigned', name: 'total_assigned',class:'text-right' },
+                    { data: 'total_serviced', name: 'total_serviced',class:'text-right' },
+                    { data: 'total_orders', name: 'total_orders',class:'text-right' },
+                    { data: 'total_discount', name: 'total_discount',class:'text-right' },
+                    { data: 'total_charged', name: 'total_charged',class:'text-right' },
+
                 ],
             });
 
