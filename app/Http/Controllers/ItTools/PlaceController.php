@@ -248,6 +248,11 @@ class PlaceController extends Controller
     }
 
     public function saveAutoTemplate(Request $request){
+        $cateservices = null;
+        foreach ($request->cateservices as $key => $value) {
+            $cateservices .= $value.";";
+        }
+
         $template = PosTemplate::saveAuto(
             $request->id,  
             $request->placeId, 
@@ -255,7 +260,7 @@ class PlaceController extends Controller
             $request->discount, 
             $request->discountType, 
             $request->image, 
-            $request->services, 
+            $cateservices, 
             $request->templateType,
             $request->templateTableType
         );
