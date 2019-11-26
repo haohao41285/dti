@@ -5,43 +5,55 @@
 @section('content')
     <div class="table-responsive">
         <h4 class="border border-info border-top-0 border-right-0 border-left-0 text-info">CUSTOMERS REPORT</h4>
-        <div class="form-group col-md-12 row">
-            <div class="col-md-4">
-                <label for="">Created date</label>
-                <div class="input-daterange input-group" id="created_at">
-                    <input type="text" class="input-sm form-control form-control-sm" id="start_date" name="start" />
-                    <span class="input-group-addon">to</span>
-                    <input type="text" class="input-sm form-control form-control-sm" id="end_date" name="end" />
+        <form id="customer_form">
+            <div class="form-group col-md-12 row">
+                <div class="col-md-4">
+                    <label for="">Created date</label>
+                    <div class="input-daterange input-group" id="created_at">
+                        <input type="text" class="input-sm form-control form-control-sm" id="start_date" name="start_date" />
+                        <span class="input-group-addon">to</span>
+                        <input type="text" class="input-sm form-control form-control-sm" id="end_date" name="end_date" />
+                    </div>
+                </div>
+                <div class="col-md-2">
+                    <label for="">Address</label>
+                    <input type="text" id="address" name="address" class="form-control form-control-sm">
+                </div>
+                <div class="col-md-2">
+                    <label for="">Status</label>
+                    <select id="status-customer" name="status_customer" class="form-control form-control-sm">
+                        <option value="">-- ALL --</option>
+                        @foreach ($status as $key =>  $element)
+                            <option value="{{$key}}">{{$element}}</option>
+                        @endforeach
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <label for="">Team</label>
+                    <select id="team_id" name="team_id" class="form-control form-control-sm">
+                        @foreach ($teams as $key =>  $team)
+                            <option value="{{$team->id}}">{{$team->team_name}}</option>
+                        @endforeach
+                    </select>
+                </div>
+                <div class="col-2 " style="position: relative;">
+                    <div style="position: absolute;top: 50%;" class="">
+                        <input type="button" class="btn btn-primary btn-sm" id="search-button" value="Search">
+                        <input type="button" class="btn btn-secondary btn-sm" id="reset-btn" value="Reset">
+                    </div>
                 </div>
             </div>
-            <div class="col-md-3">
-                <label for="">Address</label>
-                <input type="text" id="address" name="address" class="form-control form-control-sm">
-            </div>
-            <div class="col-md-2">
-                <label for="">Status</label>
-                <select id="status-customer" name="status_customer" class="form-control form-control-sm">
-                    <option value="">-- ALL --</option>
-                    @foreach ($status as $key =>  $element)
-                        <option value="{{$key}}">{{$element}}</option>
-                    @endforeach
-                </select>
-            </div>
-            <div class="col-2 " style="position: relative;">
-                <div style="position: absolute;top: 50%;" class="">
-                    <input type="button" class="btn btn-primary btn-sm" id="search-button" value="Search">
-                    <input type="button" class="btn btn-secondary btn-sm" id="reset" value="Reset">
-                </div>
-            </div>
-        </div>
+        </form>
+
+
         <div class="my-2" style="background: #cdcdcd; width: 100%; color: #342f2f;">
             <table cellspacing="6" cellpadding="6" border="0">
                 <tbody>
                     <tr>
-                        <td style="padding-right: 30px;">TOTAL NEW: <span id="textTotalServiced">0</span></td>
-                        <td style="padding-right: 30px;">TOTAL SERVICED: <span id="textTotalServiced">0</span></td>
-                        <td style="padding-right: 30px;">TOTAL ASSIGNED: <span id="textTotalAssigned">0</span></td>
-                        <td style="padding-right: 30px;">TOTAL DISABLED: <span id="textTotalDisabled">0</span></td>
+                        <td style="padding-right: 30px;">TOTAL NEW: <span id="totalNewCustomer" class="text-danger">0</span></td>
+                        <td style="padding-right: 30px;">TOTAL SERVICED: <span id="totalServicedCustomer" class="text-danger">0</span></td>
+                        <td style="padding-right: 30px;">TOTAL ASSIGNED: <span id="totalAssignedCustomer" class="text-danger">0</span></td>
+                        <td style="padding-right: 30px;">TOTAL DISABLED: <span id="totalDisabledCustomer" class="text-danger">0</span></td>
                     </tr>
                 </tbody>
             </table>
@@ -66,7 +78,10 @@
 @push('scripts')
     <script type="text/javascript">
         $(document).ready(function() {
+            getTotalCustomer();
             $("#created_at").datepicker({});
+            var dataForm = $("#customer_form").serialize();
+            console.log(dataForm);
             var table = $('#dataTableAllCustomer').DataTable({
                 // dom: "lBfrtip",
                 order:[[6,"desc"]],
@@ -81,13 +96,13 @@
                     {{--    text: '<i class="fas fa-download"></i> Import',--}}
                     {{--    className: "btn-sm import-show"--}}
                     {{--},--}}
-                    {{--{--}}
-                    {{--    text: '<i class="fas fa-upload"></i> Export',--}}
-                    {{--    className: "btn-sm export",--}}
-                    {{--    action: function ( e, dt, node, config ) {--}}
-                    {{--       document.location.href = "{{route('export-my-customer')}}";--}}
-                    {{--   }--}}
-                    {{--}--}}
+                    {
+                        text: '<i class="fas fa-upload"></i> Export',
+                        className: "btn-sm export-customer",
+                        {{--action: function ( e, dt, node, config ) {--}}
+                        {{--   document.location.href = "{{route('report.customers.export')}}"+"&"+dataForm;--}}
+                       // }
+                    }
                 ],
                 ajax:{ url:"{{ route('report.customers.datatable') }}",
                     data: function (d) {
@@ -95,6 +110,7 @@
                         d.end_date = $("#end_date").val();
                         d.address = $("#address").val();
                         d.status_customer = $("#status-customer :selected").val();
+                        d.team_id = $("#team_id").val();
                     }
                 },
                 columns: [
@@ -303,238 +319,20 @@
             });
             $("#search-button").click(function(){
                 table.draw();
+                getTotalCustomer();
             });
-            $("#reset").on('click',function(e){
-                $("#start_date").val("");
-                $("#end_date").val("");
-                $("#address").val("");
-                e.preventDefault();
+            $("#reset-btn").on('click',function(e){
+                $(this).parents('form')[0].reset();
                 table.ajax.reload(null, false);
+                getTotalCustomer();
             });
-            $(document).on('click','.move-customer',function () {
 
-                var customer_id = $(this).attr('customer_id');
-                var contact_name = $(this).attr('contact_name');
-                $("#customer_id").val(customer_id);
-                $("#contact_name").val(contact_name);
-
-                $("#move-modal").modal("show");
-            });
-            $(".move-submit").click(function(){
-
-                var formData = new FormData($(this).parents('form')[0]);
+            function getTotalCustomer() {
+                var formData = new FormData($("#customer_form")[0]);
                 formData.append('_token','{{csrf_token()}}');
 
                 $.ajax({
-                    url: '{{route('move-customer')}}',
-                    type: 'POST',
-                    dataType: 'html',
-                    cache: false,
-                    contentType: false,
-                    processData: false,
-                    async: true,
-                    xhr: function() {
-                        var myXhr = $.ajaxSettings.xhr();
-                        return myXhr;
-                    },
-                    data: formData,
-                })
-                    .done(function(data) {
-                        // console.log(data);
-                        // return;
-                        data = JSON.parse(data);
-                        if(data.status == 'error'){
-                            toastr.error(data.message);
-                        }else{
-                            toastr.success(data.message);
-                            table.ajax.reload(null, false);
-                            $("#move-modal").modal("hide");
-                        }
-                    })
-                    .fail(function() {
-                        console.log("error");
-                    });
-            });
-            $(document).on('click','.add-note',function () {
-                var customer_id = $(this).attr('customer_id');
-                var contact_name = $(this).attr('contact_name');
-
-                $("#customer_name_note").val(contact_name);
-                $("#customer_id_note").val(customer_id);
-                $("#add-note-modal").modal('show');
-            });
-            $(document).on('click','.add-note-submit',function () {
-
-                var formData = new FormData($(this).parents('form')[0]);
-                formData.append('_token','{{csrf_token()}}');
-
-                $.ajax({
-                    url: '{{route('add-customer-note')}}',
-                    type: 'POST',
-                    dataType: 'html',
-                    cache: false,
-                    contentType: false,
-                    processData: false,
-                    async: true,
-                    xhr: function() {
-                        var myXhr = $.ajaxSettings.xhr();
-                        return myXhr;
-                    },
-                    data: formData,
-                })
-                    .done(function(data) {
-                        // console.log(data);
-                        // return;
-                        data = JSON.parse(data);
-                        let message = '';
-                        if(data.status == 'error'){
-                            if( typeof(data.message) == 'string')
-                                toastr.error(data.message);
-                            else{
-                                $.each(data.message,function (index,val) {
-                                    message += val+'\n';
-                                });
-                                toastr.error(message);
-                            }
-                        }else{
-                            toastr.success(data.message);
-                            table.ajax.reload(null, false);
-                            $("#add-note-modal").modal("hide");
-                        }
-                    })
-                    .fail(function() {
-                        console.log("error");
-                    });
-            });
-            $(document).on('click','.move-customers',function(){
-                $("#move-customers-modal").modal('show');
-            });
-            $(".move-customers-submit").click(function () {
-
-                var formData = new FormData($(this).parents('form')[0]);
-                formData.append('_token','{{csrf_token()}}');
-                $.ajax({
-                    url: '{{route('move-customers')}}',
-                    type: 'POST',
-                    dataType: 'html',
-                    data: formData,
-                    cache: false,
-                    contentType: false,
-                    processData: false,
-                    async: true,
-                    xhr: function() {
-                        var myXhr = $.ajaxSettings.xhr();
-                        return myXhr;
-                    },
-                })
-                    .done(function(data) {
-                        // console.log(data);
-                        // return;
-                        data = JSON.parse(data);
-                        let message = '';
-                        if(data.status == 'error'){
-                            if( typeof(data.message) == 'string')
-                                toastr.error(data.message);
-                            else{
-                                $.each(data.message,function (index,val) {
-                                    message += val+'\n';
-                                });
-                                toastr.error(message);
-                            }
-                        }else{
-                            toastr.success(data.message);
-                            table.ajax.reload(null, false);
-                            $("#move-customers-modal").modal("hide");
-                        }
-                    })
-                    .fail(function() {
-                        console.log("error");
-                    });
-            });
-            $('#dataTableAllCustomer tbody').on('click', '.details-control', function () {
-
-                var customer_template_id = $(this).attr('id');
-                $(this).toggleClass('fa-plus-circle fa-minus-circle');
-                var tr = $(this).closest('tr');
-                var row = table.row( tr );
-                // var team_id = $("#team_id :selected").val();
-
-                if ( row.child.isShown() ) {
-                    // This row is already open - close it
-                    row.child.hide();
-                    tr.removeClass('shown');
-                }else{
-                    $.ajax({
-                        url: '{{route('get_place_my_customer')}}',
-                        type: 'GET',
-                        dataType: 'html',
-                        data: {
-                            customer_template_id: customer_template_id,
-                            team_id: '{{\Auth::user()->user_team}}'
-                        },
-                    })
-                        .done(function(data) {
-                            data = JSON.parse(data);
-                            console.log(data);
-                            var subtask_html = "";
-                            $.each(data, function(index,val){
-
-                                if(val.get_user.length  != 0) var user_manage = val.get_user.user_nickname;
-                                else var user_manage = "";
-
-                                subtask_html += `
-                                <tr>
-                                    <td>`+val.get_place.place_name+`</td>
-                                    <td>`+val.get_place.place_phone+`</td>
-                                    <td>`+val.get_place.place_ip_license+`</td>
-                                    <td>`+user_manage+`</td>
-                                    <td class="text-center">
-                                         <a class="btn btn-sm btn-secondary move-place"
-                                            place_name="`+val.get_place.place_name+`"
-                                            place_id="`+val.get_place.place_id+`"
-                                            customer_id="`+val.customer_id+`" href="javascript:void(0)" title="Move Place To User">
-                                            <i class="fas fa-exchange-alt"></i>
-                                         </a>
-                                    </td>
-                                </tr> `;
-                            });
-                            row.child(format(row.data()) +subtask_html+"</table>" ).show();
-                            tr.addClass('shown');
-                        })
-                        .fail(function() {
-                            toastr.error('Get SubTask Failed!');
-                        });
-                }
-            } );
-
-            function format ( d ) {
-                // `d` is the original data object for the row
-                return `<table class="border border-info table-striped table table-border bg-white">
-            <tr class="bg-info text-white">
-                <th scope="col">Name</th>
-                <th scope="col">Phone</th>
-                <th>Liences</th>
-                <th>User Manager</th>
-                <th class="text-center">Action</th>
-            </tr>`;
-            }
-            $(document).on('click',".move-place",function(){
-                var place_name = $(this).attr('place_name');
-                var place_id = $(this).attr('place_id');
-                var customer_id = $(this).attr('customer_id');
-                $("#place_id_hidden").val(place_id);
-                $("#customer_id_hidden").val(customer_id);
-                $("#place_name").val(place_name);
-                $("#move-place-modal").modal('show');
-            });
-            $(".move-place-submit").click(function(){
-                var formData = new FormData($(this).parents('form')[0]);
-                formData.append('_token','{{csrf_token()}}');
-                formData.append('current_user','{{\Auth::user()->user_id}}');
-                formData.append('team_id','{{\Auth::user()->user_team}}');
-
-                $.ajax({
-                    url: '{{route('move_place')}}',
+                    url: '{{route('report.customers.total_customer')}}',
                     type: 'POST',
                     dataType: 'html',
                     processData: false,
@@ -545,25 +343,42 @@
                         // console.log(data);
                         // return;
                         data = JSON.parse(data);
-                        if(data.status == 'error')
-                            toastr.error(data.message);
-                        else{
-                            toastr.success(data.message);
-                            cleanModalPlace();
-                        }
+                        $("#totalNewCustomer").text(data.arrivals_total);
+                        $("#totalServicedCustomer").text(data.serviced_total);
+                        $("#totalAssignedCustomer").text(data.assigned_total);
+                        $("#totalDisabledCustomer").text(data.disabled_total);
+
                     })
                     .fail(function() {
                         toastr.error('Get List User Failed!');
                     });
-            });
-            function cleanModalPlace(){
-                $("#form-place")[0].reset();
-                $("#move-place-modal").modal('hide');
-                table.ajax.reload(null, false);
             }
-            $(".cancel-move").click(function () {
-                cleanModalPlace();
-            });
+            $(".export-customer").click(function(){
+                var formData = new FormData($("#customer_form")[0]);
+                formData.append('_token','{{csrf_token()}}');
+
+                $.ajax({
+                    url: '{{route('report.customers.export')}}',
+                    type: 'POST',
+                    dataType: 'html',
+                    processData: false,
+                    contentType: false,
+                    data: formData,
+                })
+                    .done(function(data) {
+                        console.log(data);
+                        return;
+                        data = JSON.parse(data);
+                        $("#totalNewCustomer").text(data.arrivals_total);
+                        $("#totalServicedCustomer").text(data.serviced_total);
+                        $("#totalAssignedCustomer").text(data.assigned_total);
+                        $("#totalDisabledCustomer").text(data.disabled_total);
+
+                    })
+                    .fail(function() {
+                        toastr.error('Get List User Failed!');
+                    });
+            })
         });
     </script>
 @endpush

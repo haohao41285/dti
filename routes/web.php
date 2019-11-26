@@ -364,6 +364,8 @@ Route::group(['middleware' => ['auth']], function () {
         Route::group(['prefix' => 'customers'], function () {
             Route::get('/', 'ReportController@customers')->name('report.customers');
             Route::get('customers-datatable', 'ReportController@customersDataTable')->name('report.customers.datatable');
+            Route::post('customers-total', 'ReportController@customersTotal')->name('report.customers.total_customer');
+            Route::post('customers-export', 'ReportController@customersExport')->name('report.customers.export');
         });
         Route::group(['prefix' => 'services'], function () {
             Route::get('/', 'ReportController@services')->name('report.services');

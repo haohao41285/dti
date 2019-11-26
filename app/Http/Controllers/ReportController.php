@@ -16,44 +16,58 @@ use Illuminate\Http\Request;
 use Yajra\DataTables\DataTables;
 use Auth;
 use Carbon\Carbon;
+use Gate;
 
 class ReportController extends Controller
 {
     public function customers(){
         $data['status'] = GeneralHelper::getCustomerStatusList();
+        if(Gate::allows('permission','customer-report-admin'))
+             $data['teams'] = MainTeam::active()->get();
+        else
+             $data['teams'] = MainTeam::where('id',Auth::user()->user_team)->get();
         return view('reports.customers',$data);
     }
-    public function customersDataTable(Request $request){
+    public function getCustomerList($request){
 
-//        if(Gate::denies('permission','my-customer-read'))
-//            return doNotPermission();
+        if(Gate::denies('permission','customer-report'))
+            return doNotPermission();
 
-        $user_id = Auth::user()->user_id;
-        $team_id = Auth::user()->user_team;
         $start_date = $request->start_date;
         $end_date = $request->end_date;
         $address = $request->address;
         $status_customer = $request->status_customer;
         $customer_arr = [];
 
-        $user_customer_list = MainUserCustomerPlace::where([
-            ['user_id',$user_id],
-            ['team_id',$team_id],
-        ])->select('customer_id')->get()->toArray();
-
-        if($user_customer_list != NULL){
-
+        if(Gate::allows('permission','customer-report-admin')){
+            $team_id = $request->team_id;
+            $customer_list = MainCustomerTemplate::select('*');
+        }
+        else{
+            $team_id = Auth::user()->user_team;
+            if(Gate::allows('permission','customer-report-leader')){
+                $user_customer_list = MainUserCustomerPlace::where([
+                    ['team_id',$team_id],
+                ])->select('customer_id')->get()->toArray();
+            }
+            else{
+                $user_id = Auth::user()->user_id;
+                $user_customer_list = MainUserCustomerPlace::where([
+                    ['user_id',$user_id],
+                    ['team_id',$team_id],
+                ])->select('customer_id')->get()->toArray();
+            }
             $user_customer_arr = array_values($user_customer_list);
-
-            $customer_list = MainCustomerTemplate::with('getCreatedBy')->whereIn('main_customer_template.id',$user_customer_arr);
+            $customer_list = MainCustomerTemplate::whereIn('id', $user_customer_arr);
+        }
 
             if($start_date != "" && $end_date != ""){
 
                 $start_date = Carbon::parse($start_date)->format('Y-m-d');
                 $end_date = Carbon::parse($end_date)->format('Y-m-d');
 
-                $customer_list->whereDate('main_customer_template.created_at','>=',$start_date)
-                    ->whereDate('main_customer_template.created_at','<=',$end_date);
+                $customer_list->whereDate('created_at','>=',$start_date)
+                    ->whereDate('created_at','<=',$end_date);
             }
             if($address != ""){
                 $customer_list->where('ct_address','LIKE',"%".$address."%");
@@ -116,8 +130,12 @@ class ReportController extends Controller
                     ];
                 }
             }
-        }
-        return Datatables::of($customer_arr)
+         return $customer_arr;
+
+    }
+    public function customersDataTable( Request $request){
+        $customer_list = self::getCustomerList($request);
+        return Datatables::of($customer_list)
             ->editColumn('id',function ($row){
                 if($row['ct_status'] == 'Serviced')
                     return '<a href="'.route('customer-detail',$row['id']).'">'.$row['id'].'</a>';
@@ -240,6 +258,119 @@ class ReportController extends Controller
         }
         return DataTables::of($seller_list)
             ->make(true);
+    }
 
+    public function customersTotal(Request $request){
+
+        $team_id = $request->team_id;
+
+        $arrivals_total = 0;
+        $assigned_total = 0;
+        $serviced_total = 0;
+        $disabled_total = 0;
+
+        if(Gate::allows('permission','customer-report-admin')){
+            $customer_list = MainCustomerTemplate::select('*');
+        }
+        else{
+            if(Gate::allows('permission','customer-report-leader')){
+                $user_customer_list = MainUserCustomerPlace::where([
+                    ['team_id',$team_id],
+                ])->select('customer_id')->get()->toArray();
+            }
+            else{
+                $user_id = Auth::user()->user_id;
+                $user_customer_list = MainUserCustomerPlace::where([
+                    ['user_id',$user_id],
+                    ['team_id',$team_id],
+                ])->select('customer_id')->get()->toArray();
+            }
+                $user_customer_arr = array_values($user_customer_list);
+                $customer_list = MainCustomerTemplate::with('getCreatedBy')->whereIn('id', $user_customer_arr);
+        }
+
+            if($request->start_date != "" && $request->end_date != ""){
+                $start_date = format_date_db($request->start_date);
+                $end_date = format_date_db($request->start_date);
+
+                $customer_list->whereDate('created_at','>=',$start_date)
+                    ->whereDate('created_at','<=',$end_date);
+            }
+            if($request->address != ""){
+                $customer_list->where('ct_address','LIKE',"%".$request->address."%");
+            }
+
+            $customer_list = $customer_list->get();
+
+            //GET LIST TEAM CUSTOMER LIST
+            $team_customer_status = MainTeam::find($team_id)->getTeamType->team_customer_status;
+
+            $customer_status_arr = json_decode($team_customer_status,TRUE);
+
+            foreach ($customer_list as $key => $customer) {
+                if(!isset($customer_status_arr[$customer->id])){
+                    //New Arrivals
+                    $arrivals_total++;
+                }
+                else{
+                    switch ($customer_status_arr[$customer->id]) {
+                        case 1:
+                            //Assigned
+                            $assigned_total++;
+                            break;
+                        case 4:
+                            //Serviced
+                            $serviced_total++;
+                            break;
+
+                        default:
+                            //Disabled
+                            $disabled_total++;
+                            break;
+                    }
+                }
+            }
+
+        return response([
+            'arrivals_total' => $arrivals_total,
+            'assigned_total' => $assigned_total,
+            'serviced_total' => $serviced_total,
+            'disabled_total' => $disabled_total
+        ]);
+    }
+    public function customersExport(Request $request){
+        $customer_list = self::getCustomerList($request);
+        $date = Carbon::now()->format('Y_m_d_His');
+        // dd($data);
+        return \Excel::create('customer_list_'.$date,function($excel) use ($customer_list){
+
+            $excel ->sheet('Customer List', function ($sheet) use ($customer_list)
+            {
+                $sheet->cell('A1', function($cell) {$cell->setValue('ID');   });
+                $sheet->cell('B1', function($cell) {$cell->setValue('Nail Shop');   });
+                $sheet->cell('C1', function($cell) {$cell->setValue('Contact Name');   });
+                $sheet->cell('D1', function($cell) {$cell->setValue('Business Phone');   });
+                $sheet->cell('E1', function($cell) {$cell->setValue('Cell Phone');   });
+                $sheet->cell('F1', function($cell) {$cell->setValue('Status');   });
+                $sheet->cell('G1', function($cell) {$cell->setValue('Seller');   });
+                $sheet->cell('H1', function($cell) {$cell->setValue('Discount Total');   });
+                $sheet->cell('I1', function($cell) {$cell->setValue('Charged Total');   });
+
+                if (!empty($customer_list)) {
+                    foreach ($customer_list as $key => $value) {
+                        $i=$key+2;
+                        $sheet->cell('A'.$i, $value['id']);
+                        $sheet->cell('B'.$i, $value['ct_salon_name']);
+                        $sheet->cell('C'.$i, $value['ct_fullname']);
+                        $sheet->cell('D'.$i, $value['ct_business_phone']);
+                        $sheet->cell('E'.$i, $value['ct_cell_phone']);
+                        $sheet->cell('F'.$i, $value['ct_status']);
+                        $sheet->cell('G'.$i, $value['seller']);
+                        $sheet->cell('H'.$i, $value['discount_total']);
+                        $sheet->cell('I'.$i, $value['charged_total']);
+                    }
+                }
+            });
+        })->download("xlsx");
     }
 }
