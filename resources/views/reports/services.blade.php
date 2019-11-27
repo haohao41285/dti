@@ -22,7 +22,9 @@
                 <div class="col-md-3">
                     <label for="">Seller</label>
                     <select name="seller" id="seller_id" class="form-control form-control-sm">
+                        @if(\Gate::allows('permission','service-report-admin') || \Gate::allows('permission','service-report-leader'))
                         <option value="">--All--</option>
+                        @endif
                         @foreach($sellers as $seller)
                             <option value="{{$seller->user_id}}">{{$seller->getFullname()."(".$seller->user_nickname.")"}}</option>
                         @endforeach
@@ -64,7 +66,7 @@
                         text: '<i class="fas fa-upload"></i> Export',
                         className: "btn-sm export",
                         action: function ( e, dt, node, config ) {
-                           document.location.href = "{{route('export-my-customer')}}";
+                           document.location.href = "{{route('report.services.export')}}";
                        }
                     }
                 ],

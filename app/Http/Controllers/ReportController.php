@@ -6,8 +6,6 @@ use App\Helpers\GeneralHelper;
 use App\Models\MainComboService;
 use App\Models\MainComboServiceBought;
 use App\Models\MainCustomer;
-use App\Models\MainCustomerNote;
-use App\Models\MainCustomerService;
 use App\Models\MainCustomerTemplate;
 use App\Models\MainTeam;
 use App\Models\MainUser;
@@ -96,7 +94,7 @@ class ReportController extends Controller
                             ->with('getCreatedBy');
                         $seller_list  = $order_info->select('created_by')->distinct('created_by')->get();
                         foreach($seller_list as $seller){
-                            $seller_name .= $seller->getCreatedBy->user_nickname."<br>";
+                            $seller_name .= $seller->getCreatedBy->user_nickname.";";
                         }
                         $discount_total = $order_info->sum('csb_amount_deal');
                         $charged_total = $order_info->sum('csb_charge');
@@ -146,12 +144,27 @@ class ReportController extends Controller
             ->make(true);
     }
     public function services(){
-        $data['sellers'] = MainUser::active()->get();
+        if(Gate::denies('permission','service-report'))
+            return doNotPermission;
+        if(Gate::allows('permission','service-report-admin'))
+            $data['sellers'] = MainUser::all();
+        elseif(Gate::allows('permission','service-report-leader'))
+            $data['sellers'] = MainUser::where('user_team',Auth::user()->user_team)->get();
+        else
+            $data['sellers'] = MainUser::where('user_id',Auth::user()->user_id)->get();
+
         return view('reports.services',$data);
     }
-    public function servicesDataTable(Request $request){
+    public function getServiceList($request){
 
-        $combo_service_list = MainComboService::orderBy('cs_combo_service_type','asc')->get();
+        if(Gate::allows('permission','service-report-admin'))
+            $combo_service_list = MainComboService::orderBy('cs_combo_service_type','asc')->get();
+        else{
+            $service_list = MainTeam::find(Auth::user()->user_team)->getTeamType->service_permission;
+            $service_list = explode(';',$service_list);
+            $combo_service_list = MainComboService::whereIn('id',$service_list)->orderBy('cs_combo_service_type','asc')->get();
+        }
+
         $service_customer_result = [];
 
         foreach ($combo_service_list as $combo_service){
@@ -208,16 +221,32 @@ class ReportController extends Controller
                 'order_total' => $order_total
             ];
         }
-        return DataTables::of($service_customer_result)
+        return $service_customer_result;
+    }
+    public function servicesDataTable(Request $request){
+
+        $service_list = self::getServiceList($request);
+        return DataTables::of($service_list)
             ->make(true);
     }
     public function sellers(){
-        $data['sellers'] = MainUser::active()->get();
+
+        if(Gate::denies('permission','seller-report'))
+            return doNotPermission;
+        if(Gate::allows('permission','seller-report-admin'))
+            $data['sellers'] = MainUser::all();
+//        elseif(Gate::allows('permission','seller-report-leader'))
+        else
+            $data['sellers'] = MainUser::where('user_team',Auth::user()->user_team)->get();
         return view('reports.sellers',$data);
     }
-    public function sellersDataTable(Request $request){
+    public function getSellerList($request){
 
-        $user_list  = MainUser::active();
+        if(Gate::allows('permission','seller-report-admin'))
+            $user_list = MainUser::select('*');
+//        elseif(Gate::allows('permission','seller-report-leader'))
+        else
+            $user_list = MainUser::where('user_team',Auth::user()->user_team);
 
         if($request->start_date != "" && $request->end_date){
             $start_date = format_date_db($request->start_date);
@@ -256,12 +285,15 @@ class ReportController extends Controller
                     'total_charged' => $total_charged
                 ];
         }
+        return $seller_list;
+    }
+    public function sellersDataTable(Request $request){
+        $seller_list = self::getSellerList($request);
         return DataTables::of($seller_list)
             ->make(true);
     }
 
     public function customersTotal(Request $request){
-
         $team_id = $request->team_id;
 
         $arrivals_total = 0;
@@ -339,10 +371,13 @@ class ReportController extends Controller
         ]);
     }
     public function customersExport(Request $request){
+
         $customer_list = self::getCustomerList($request);
         $date = Carbon::now()->format('Y_m_d_His');
-        // dd($data);
-        return \Excel::create('customer_list_'.$date,function($excel) use ($customer_list){
+        //GET TEAM NAME
+        $team_name = MainTeam::find($request->team_id)->team_name;
+
+        return \Excel::create('customer_list_'.$team_name."_".$date,function($excel) use ($customer_list){
 
             $excel ->sheet('Customer List', function ($sheet) use ($customer_list)
             {
@@ -369,6 +404,71 @@ class ReportController extends Controller
                         $sheet->cell('H'.$i, $value['discount_total']);
                         $sheet->cell('I'.$i, $value['charged_total']);
                     }
+                }
+            });
+        })->download("xlsx");
+    }
+    public function serviceExport(Request $request){
+
+        $service_list = self::getServiceList($request);
+        $date = Carbon::now()->format('Y_m_d_His');
+        return \Excel::create('service_list_'.$date,function($excel) use ($service_list){
+
+            $excel ->sheet('Service List', function ($sheet) use ($service_list)
+            {
+                $sheet->cell('A1', function($cell) {$cell->setValue('ID');   });
+                $sheet->cell('B1', function($cell) {$cell->setValue('Serivce');   });
+                $sheet->cell('C1', function($cell) {$cell->setValue('Service Price($)');   });
+                $sheet->cell('D1', function($cell) {$cell->setValue('Total Customers');   });
+                $sheet->cell('E1', function($cell) {$cell->setValue('Total Orders');   });
+
+                if (!empty($service_list)) {
+                    foreach ($service_list as $key => $value) {
+                        $i=$key+2;
+                        $sheet->cell('A'.$i, $value['id']);
+                        $sheet->cell('B'.$i, $value['service_name']);
+                        $sheet->cell('C'.$i, $value['service_price']);
+                        $sheet->cell('D'.$i, $value['customer_total']);
+                        $sheet->cell('E'.$i, $value['order_total']);
+                    }
+                }
+            });
+        })->download("xlsx");
+    }
+    public function sellerExport(Request $request){
+
+        $seller_list = self::getSellerList($request);
+        $date = Carbon::now()->format('Y_m_d_His');
+        return \Excel::create('seller_list'.$date,function($excel) use ($seller_list){
+
+            $excel ->sheet('Seller List', function ($sheet) use ($seller_list)
+            {
+                $sheet->cell('A1', function($cell) {$cell->setValue('ID');   });
+                $sheet->cell('B1', function($cell) {$cell->setValue('Username');   });
+                $sheet->cell('C1', function($cell) {$cell->setValue('Fulllname');   });
+                $sheet->cell('D1', function($cell) {$cell->setValue('Email');   });
+                $sheet->cell('E1', function($cell) {$cell->setValue('Total Assigned Customers');   });
+                $sheet->cell('F1', function($cell) {$cell->setValue('Total Serviced Customers');   });
+                $sheet->cell('G1', function($cell) {$cell->setValue('Total Order');   });
+                $sheet->cell('H1', function($cell) {$cell->setValue('Total Discount($)');   });
+                $sheet->cell('I1', function($cell) {$cell->setValue('Total Charged($)');   });
+
+                if (!empty($seller_list)) {
+                    foreach ($seller_list as $key => $value) {
+                        $i=$key+2;
+                        $sheet->cell('A'.$i, $value['id']);
+                        $sheet->cell('B'.$i, $value['user_nickname']);
+                        $sheet->cell('C'.$i, $value['user_fullname']);
+                        $sheet->cell('D'.$i, $value['email']);
+                        $sheet->cell('E'.$i, $value['total_assigned']);
+                        $sheet->cell('F'.$i, $value['total_serviced']);
+                        $sheet->cell('G'.$i, $value['total_orders']);
+                        $sheet->cell('H'.$i, $value['total_discount']);
+                        $sheet->cell('I'.$i, $value['total_charged']);
+                    }
+                }
+                else{
+                    return back('error','Empty Data for Exporting!');
                 }
             });
         })->download("xlsx");

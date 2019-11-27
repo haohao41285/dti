@@ -363,17 +363,19 @@ Route::group(['middleware' => ['auth']], function () {
     Route::group(['prefix' => 'reports'], function() {
         Route::group(['prefix' => 'customers'], function () {
             Route::get('/', 'ReportController@customers')->name('report.customers');
-            Route::get('customers-datatable', 'ReportController@customersDataTable')->name('report.customers.datatable');
-            Route::post('customers-total', 'ReportController@customersTotal')->name('report.customers.total_customer');
-            Route::post('customers-export', 'ReportController@customersExport')->name('report.customers.export');
+            Route::get('datatable', 'ReportController@customersDataTable')->name('report.customers.datatable');
+            Route::post('total', 'ReportController@customersTotal')->name('report.customers.total_customer');
+            Route::get('export/{team_id?}', 'ReportController@customersExport')->name('report.customers.export');
         });
         Route::group(['prefix' => 'services'], function () {
             Route::get('/', 'ReportController@services')->name('report.services');
-            Route::get('service-datatable', 'ReportController@servicesDataTable')->name('report.services.datatable');
+            Route::get('datatable', 'ReportController@servicesDataTable')->name('report.services.datatable');
+            Route::get('export', 'ReportController@serviceExport')->name('report.services.export');
         });
         Route::group(['prefix' => 'sellers'], function () {
             Route::get('/', 'ReportController@sellers')->name('report.sellers');
-            Route::get('sellers-datatable', 'ReportController@sellersDataTable')->name('report.sellers.datatable');
+            Route::get('datatable', 'ReportController@sellersDataTable')->name('report.sellers.datatable');
+            Route::get('export', 'ReportController@sellerExport')->name('report.sellers.export');
         });
     });
 });

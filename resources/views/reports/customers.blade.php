@@ -80,8 +80,7 @@
         $(document).ready(function() {
             getTotalCustomer();
             $("#created_at").datepicker({});
-            var dataForm = $("#customer_form").serialize();
-            console.log(dataForm);
+            var team_id = $("#team_id").val();
             var table = $('#dataTableAllCustomer').DataTable({
                 // dom: "lBfrtip",
                 order:[[6,"desc"]],
@@ -98,10 +97,10 @@
                     {{--},--}}
                     {
                         text: '<i class="fas fa-upload"></i> Export',
-                        className: "btn-sm export-customer",
-                        {{--action: function ( e, dt, node, config ) {--}}
-                        {{--   document.location.href = "{{route('report.customers.export')}}"+"&"+dataForm;--}}
-                       // }
+                        className: "btn-sm",
+                        action: function ( e, dt, node, config ) {
+                           document.location.href = "{{route('report.customers.export')}}"+"/"+team_id
+                       }
                     }
                 ],
                 ajax:{ url:"{{ route('report.customers.datatable') }}",

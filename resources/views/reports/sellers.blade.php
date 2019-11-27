@@ -68,7 +68,7 @@
                         text: '<i class="fas fa-upload"></i> Export',
                         className: "btn-sm export",
                         action: function ( e, dt, node, config ) {
-                            document.location.href = "{{route('export-my-customer')}}";
+                            document.location.href = "{{route('report.sellers.export')}}";
                         }
                     }
                 ],
