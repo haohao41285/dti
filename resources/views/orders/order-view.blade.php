@@ -135,7 +135,7 @@
             </tr>
         </tbody>
     </table>
-    <table class="table mt-4 table table-hover" id="service-datatable" widtd="100%" cellspacing="0">
+    {{--<table class="table mt-4 table table-hover" id="service-datatable" widtd="100%" cellspacing="0">
         <thead class="thead-light">
             <tr>
                 <th style="width: 10%">SERVICE NAME</th>
@@ -145,18 +145,19 @@
             </tr>
         </thead>
 
-    </table>
+    </table>--}}
     <table class="table mt-4 table-hover table-bordered" id="" widtd="100%" cellspacing="0">
         <thead  class="thead-light">
             <tr>
                 <th>TASK#</th>
                 <th>SERVICE</th>
+                <th>ACTION</th>
                 <th class="text-center">PRIORITY</th>
                 <th class="text-center">STATUS</th>
                 <th class="text-center">DATE START</th>
                 <th class="text-center">DATE END</th>
                 <th class="text-center">%COMPLETE</th>
-                <th class="text-center">ASSIGNEE</th>
+                <th class="text-center">ASSIGNE</th>
                 <th class="text-center">LAST UPDATE</th>
 {{--                <th class="text-center">ACTION</th>--}}
             </tr>
@@ -166,6 +167,9 @@
             <tr class="text-center">
                 <td><a href="{{route('task-detail',$task->id)}}" title="">#{{$task->id}}</a></td>
                 <td>{{$task->subject}}</td>
+                <td>
+                    <button type="button" form_type_id="{{$task->getService->cs_form_type}}" task_id="{{$task->id}}" class="btn btn-sm btn-secondary input-form">INPUT FORM</button>
+                </td>
                 <td>{{\App\Helpers\GeneralHelper::getPriorityTask()[$task->priority]}}</td>
                 <td>{{\App\Helpers\GeneralHelper::getStatusTask()[$task->status]}}</td>
                 <td>{{$task->date_start!=""?format_date($task->date_start):""}}</td>
@@ -238,7 +242,7 @@
         {{--            { data: 'content', name: 'content'},--}}
         {{--        ],--}}
         {{--});--}}
-        var service_table = $('#service-datatable').DataTable({
+        /*var service_table = $('#service-datatable').DataTable({
             // dom: "lBfrtip",
             // order:[[0,'desc']],
             responsive: false,
@@ -262,7 +266,7 @@
                     { data: 'infor', name: 'infor'},
                 ],
         });
-
+*/
         $('body').on('click', '.submit-comment', function(e){
             e.preventDefault();
             var formData = new FormData($(this).parents('form')[0]);
@@ -313,72 +317,186 @@
 
             var input_form_type = $(this).attr('form_type_id');
             task_id = $(this).attr('task_id');
-            var content_html = "";
+
+            $.ajax({
+                url: '{{route('input_form.task')}}',
+                type: 'get',
+                dataType: 'html',
+                data: {
+                    task_id: task_id
+                },
+            })
+                .done(function(data) {
+                    // console.log(data);
+                    // return;
+                    data = JSON.parse(data);
+                    if(data.status == 'error')
+                        toatr.error(data.mesage);
+                    else{
+                        var content = data.content;
+                        var content_html = getHtmlForm(input_form_type,content);
+                        $("#content-form").html(content_html);
+                        $("#datepicker_form").datepicker({
+                            todayHighlight: true,
+                            setDate: new Date(),
+                        });
+                        $("#modal-input-form").modal('show');
+                        // if(data.content == null)
+                        //     console.log('Ok');
+                    }
+                })
+                .fail(function() {
+                    console.log("error");
+                });
+            return;
+
+        });
+        function getHtmlForm(input_form_type,content){
+            content = JSON.parse(content);
+            console.log(content);
+
+             var content_html = "";
 
             if(input_form_type == 1){
+
+                var google_link_html = "";
+                var worker_name_html = "";
+                var star_html = "";
+                var current_review_html ="";
+                var order_review_html = "";
+                var complete_date_html = "";
+                var description_html = "";
+
+                 if( content !== null && typeof(content['google_link']) != "undefined" && content['google_link'] !== null)
+                     google_link_html = '<b>'+content['google_link']+'</b>';
+                 else
+                     google_link_html = `<input type="text" class="form-control form-control-sm" id="google-link" name="google_link" value="">`;
+
+                if(content !== null && typeof(content['worker_name']) != "undefined" && content['worker_name'] !== null)
+                    worker_name_html = '<b>'+content['worker_name']+'</b>';
+                else
+                    worker_name_html = '<input type="text" class="form-control form-control-sm" id="worker-name" name="worker_name" value="">';
+
+                if(content !== null && typeof(content['star']) != "undefined" && content['star'] !== null)
+                    star_html = "<b>"+content['star']+"</b>";
+                else
+                    star_html = '<input type="number" class="form-control form-control-sm col-md-6" id="number_of_stars" name="star" value="">';
+
+                if(content !== null && typeof(content['current_review']) != "undefined" && content['current_review'] !== null)
+                    current_review_html = "<b>"+content['current_review']+"</b>";
+                else
+                    current_review_html = '<input type="number" class="form-control form-control-sm col-md-6"  id="number_of_reviews" name="current_review" value="">';
+
+                if(content !== null && typeof(content['order_review']) != "undefined" && content['order_review'] !== null)
+                    order_review_html = "<b>"+content['order_review']+"</b>";
+                else
+                    order_review_html = '<input type="number" class="form-control form-control-sm col-md-6"  id="number_of_reviews" name="order_review" value="">';
+
+                if(content !== null && typeof(content['complete_date']) != "undefined" && content['complete_date'] !== null)
+                    complete_date_html = "<b>"+content['complete_date']+"</b>";
+                else
+                    complete_date_html = '<input type="text" class="form-control form-control-sm col-md-6" id="datepicker_form" name="complete_date" >';
+
+                if(content !== null && typeof(content['desription']) != "undefined" && content['desription'] !== null)
+                    description_html = "<span class='text-danger'>"+content['desription']+"</span>";
+                else
+                    description_html = '<textarea class="form-control form-control-sm desription" name="desription" rows="3"></textarea>'
+
                 content_html = `
                 <div class="form-group">
-                    <label for="google-link">Google Link</label>
-                    <input type="text" class="form-control form-control-sm"  id="google-link" name="google_link" value="">
+                    <label for="google-link">Google Link: </label>
+                    `+google_link_html+`
                 </div>
                 <div class="form-group">
-                    <label for="worker-name">Tên Thợ nails</label>
-                    <input type="text" class="form-control form-control-sm"  id="worker-name" name="worker_name" value="">
+                    <label for="worker-name">Tên Thợ Nails: </label>
+                    `+worker_name_html+`
                 </div>
                 <div class="col-md-12 row">
                     <div class="col-md-6">
                         <div class="form-group row">
-                            <label for="number_of_stars" class="col-md-6">Number of Stars</label>
-                            <input type="number" class="form-control form-control-sm col-md-6"  id="number_of_stars" name="star" value="">
+                            <label for="number_of_stars" class="col-md-6">Number of Stars: </label>
+                            `+star_html+`
                         </div>
                         <div class="form-group row">
-                            <label for="number_of_reviews" class="col-md-6">Số Reviews hiện tại</label>
-                            <input type="number" class="form-control form-control-sm col-md-6"  id="number_of_reviews" name="current_review" value="">
+                            <label for="number_of_reviews" class="col-md-6">Số Reviews hiện tại: </label>
+                            `+current_review_html+`
                         </div>
                         <div class="form-group row">
-                            <label class="col-md-6" for="offer_of_reviews">Số reviews yêu cầu</label>
-                            <input type="number" class="form-control form-control-sm col-md-6" id="offer_of_reviews" name="order_review" value="">
+                            <label class="col-md-6" for="offer_of_reviews">Số reviews yêu cầu: </label>
+                            `+order_review_html+`
                         </div>
                         <div class="form-group row">
-                            <label class="col-md-6" for="offer_of_reviews">Complete Date</label>
-                            <input type="text" class="form-control form-control-sm col-md-6" id="datepicker_form" name="complete_date" >
+                            <label class="col-md-6" for="offer_of_reviews">Complete Date: </label>
+                            `+complete_date_html+`
                         </div>
                     </div>
-                    <div class="col-md-1" style="border-right: .5px dashed grey">
+                    <!--<div class="col-md-1" style="border-right: .5px dashed grey">
 
-                    </div>
-                    <div class="col-md-5">
+                    </div>-->
+                    <!--<div class="col-md-5">
                         <input type="file" hidden id="file" name="" value="">
                         <input type="button" class="btn btn-sm btn-secondary" onclick="uploadFile()" value="Upload attachment files" name="">
                         <input type="file" id="upload_file" hidden class="" value="" name="list_file[]" multiple><br>
                         <span id="file_names"></span>
-                    </div>
+                    </div>-->
 
                 </div>
                 <div class="form-group">
-                    <label for="desription">Description</label>
-                    <textarea class="form-control form-control-sm desription" name="desription" rows="3"></textarea>
+                    <label for="desription">Description: </label>
+                    `+description_html+`
                 </div>
                 `;
             }
             if(input_form_type == 2){
+                let product_name_html = "";
+                let style_customer_html = "";
+                let link_html = "";
+                let website_html = "";
+                let main_color_html ="";
+
+                if(content !== null && typeof(content['product_name']) != "undefined" && content['product_name'] !== null)
+                    product_name_html = '<b>'+content['product_name']+'</b>';
+                else
+                    product_name_html = `<input type="text" class="form-control form-control-sm" id="product_name" name="product_name" value="" placeholder="">`;
+
+                if(content !== null && typeof(content['style_customer']) != "undefined" && content['style_customer'] !== null)
+                    style_customer_html = '<b>'+content['style_customer']+'</b>';
+                else
+                    style_customer_html = `<input type="text" class="form-control form-control-sm" id="kind_of" name="style_customer" value="" placeholder="">`;
+
+                if(content !== null && typeof(content['link']) != "undefined" && content['link'] !== null)
+                    link_html = '<b>'+content['link']+'</b>';
+                else
+                    link_html = `<input type="text" class="form-control form-control-sm" id="facebook_link" name="link" value="" placeholder="">`;
+
+                if(content !== null && typeof(content['website']) != "undefined" && content['website'] !== null)
+                    website_html = '<b>'+content['website']+'</b>';
+                else
+                    website_html = `<input type="text" class="form-control form-control-sm" id="website" name="website" value="" placeholder="">`;
+
+                if(content !== null && typeof(content['main_color']) != "undefined" && content['main_color'] !== null)
+                    main_color_html = '<b>'+content['main_color']+'</b>';
+                else
+                    main_color_html = `<input type="text" class="form-control form-control-sm" id="main_color" name="main_color" value="" placeholder="">`;
+
+
                 content_html = `
-                <label for="product_name">Tên sản phẩm</label>
-                <input type="text" class="form-control form-control-sm" id="product_name" name="product_name" value="" placeholder="">
+                <label for="product_name">Tên sản phẩm: </label>
+                `+product_name_html+`<br>
                 <label for="main_color">Màu chủ đạo</label>
-                <input type="text" class="form-control form-control-sm" id="main_color" name="main_color" value="" placeholder="">
+                `+main_color_html+`<br>
                 <label for="kind_of">Thể loại hoặc phong cách khách hàng hướng đến</label>
-                <input type="text" class="form-control form-control-sm" id="kind_of" name="style_customer" value="" placeholder="">
+                `+style_customer_html+`<br>
                 <label for="facebook_link">Facebook Link</label>
-                <input type="text" class="form-control form-control-sm" id="facebook_link" name="link" value="" placeholder="">
+                `+link_html+`<br>
                 <label for="website">Website</label>
-                <input type="text" class="form-control form-control-sm" id="website" name="website" value="" placeholder="">
-                <div class="border border-secondary p-2 rounded">
+                 `+website_html+`<br>
+                <!--<div class="border border-secondary p-2 rounded">
                     <p>Upload Logo images or file</p>
                     <input type="button" class="btn btn-sm btn-secondary" onclick="uploadFile()" value="Upload attachment files" name="">
                     <input type="file" id="upload_file" hidden class="" value="" name="list_file[]" multiple><br>
                         <span id="file_names"></span>
-                </div>
+                </div>-->
                 <div class="form-group">
                     <label for="desription">Description</label>
                     <textarea class="form-control form-control-sm desription" name="desription" rows="3"></textarea>
@@ -386,46 +504,90 @@
                 `;
             }
             if(input_form_type == 3){
+
+                let link_html = "";
+                let promotion_html = "";
+                let number_html ="";
+                let admin_html ="";
+                let user_html ="";
+                let password_html = "";
+                let image_html ="";
+
+                if(content !== null && typeof(content['link']) != "undefined" && content['link'] !== null)
+                    link_html = '<b>'+content['link']+'</b>';
+                else
+                    link_html = `<input type="text" class="form-control form-control-sm"  id="facebook-link" name="link" value="">`;
+
+                if(content !== null && typeof(content['promotion']) != "undefined" && content['promotion'] !== null)
+                    promotion_html = '<b>'+content['promotion']+'</b>';
+                else
+                    promotion_html = `<input type="text" class="form-control form-control-sm"  id="promotion" name="promotion" value="">`;
+
+                if(content !== null && typeof(content['number']) != "undefined" && content['number'] !== null)
+                    number_html = '<b>'+content['number']+'</b>';
+                else
+                    number_html = `<input type="text" class="form-control form-control-sm col-md-6"  id="number_of_stars" name="number" value="">`;
+
+                if(content !== null && typeof(content['admin']) != "undefined" && content['admin'] !== null)
+                    admin_html = '<b>Yes</b>';
+                else
+                    admin_html = `<input type="checkbox" class="col-md-6"  id="add_admin" name="admin" value="1">`;
+
+                if(content !== null && typeof(content['user']) != "undefined" && content['user'] !== null)
+                    user_html = '<b>'+content['user']+'</b>';
+                else
+                    user_html = `<input type="text" class="form-control form-control-sm col-md-6"  id="facebook_username" name="user" value="">`;
+
+                if(content !== null && typeof(content['password']) != "undefined" && content['password'] !== null)
+                    password_html = '<b>'+content['password']+'</b>';
+                else
+                    password_html = `<input type="text" class="form-control form-control-sm col-md-6" id="facebook_password" name="password" value="">`;
+
+                if(content !== null && typeof(content['image']) != "undefined" && content['image_html'] !== null && content['image'] == 1)
+                    image_html = '<b>Yes</b>';
+                else
+                    image_html = `<input type="checkbox" class="col-md-6"  id="image" name="image" value="1">`;
+
                 content_html = `
                 <div class="form-group">
                 <label for="facebook-link">Facebook Link</label>
-                <input type="text" class="form-control form-control-sm"  id="facebook-link" name="link" value="">
+                `+link_html+`
                 </div>
                 <div class="form-group">
                     <label for="worker-name">Promotion</label>
-                    <input type="text" class="form-control form-control-sm"  id="promotion" name="promotion" value="">
+                    `+promotion_html+`
                 </div>
                 <div class="col-md-12 row">
                     <div class="col-md-6">
                         <div class="form-group row">
                             <label for="number_of_stars" class="col-md-6">Số lượng bài viết</label>
-                            <input type="text" class="form-control form-control-sm col-md-6"  id="number_of_stars" name="number" value="">
+                            `+number_html+`
                         </div>
                         <div class="form-group row">
                             <label for="add_admin" class="col-md-6">Đã add admin chưa?</label>
-                            <input type="checkbox" class="col-md-6"  id="add_admin" name="admin" value="1">
+                            `+admin_html+`
                         </div>
                         <div class="form-group row">
                             <label for="facebook_username" class="col-md-6">Facebook Username</label>
-                            <input type="text" class="form-control form-control-sm col-md-6"  id="facebook_username" name="user" value="">
+                            `+user_html+`
                         </div>
                         <div class="form-group row">
                             <label class="col-md-6" for="facebook_password">Facebook Password</label>
-                            <input type="text" class="form-control form-control-sm col-md-6" id="facebook_password" name="password" value="">
+                            `+password_html+`
                         </div>
                        <div class="form-group row">
                             <label for="image" class="col-md-6">Có lấy được hình ảnh?</label>
-                            <input type="checkbox" class="col-md-6"  id="image" name="image" value="1">
+                            `+image_html+`
                         </div>
                     </div>
-                    <div class="col-md-1" style="border-right: .5px dashed grey">
+                    <!--<div class="col-md-1" style="border-right: .5px dashed grey">
 
-                    </div>
-                    <div class="col-md-5">
+                    </div>-->
+                   <!-- <div class="col-md-5">
                         <input type="button" class="btn btn-sm btn-secondary" onclick="uploadFile()" value="Upload attachment files" name="">
                         <input type="file" id="upload_file" hidden class="" value="" name="list_file[]" multiple><br>
                         <span id="file_names"></span>
-                    </div>
+                    </div>-->
                 </div>
                 <div class="form-group">
                     <label for="desription">Description</label>
@@ -434,32 +596,76 @@
                 `;
             }
             if(input_form_type == 4){
+
+                let domain = "";
+                let theme = "";
+                let show_price = "";
+                let business_name = "";
+                let business_phone = "";
+                let email = "";
+                let address = "";
+
+                if(content !== null && typeof(content['domain']) != "undefined" && content['domain'] !== null)
+                    domain = '<b>'+content['domain']+'</b>';
+                else
+                    domain = `<input type="text" id="domain" class="form-control form-control-sm" name="domain">`;
+
+                if(content !== null && typeof(content['theme']) != "undefined" && content['theme'] !== null)
+                    theme = '<b>'+content['theme']+'</b>';
+                else
+                    theme = `<input type="text" id="theme" class="form-control form-control-sm col-md-10" name="theme">`;
+
+                if(content !== null && typeof(content['show_price']) != "undefined" && content['show_price'] !== null && content['show_price'] == 1)
+                    show_price = '<b>Yes</b>';
+                else
+                    show_price = `<input type="checkbox" class="col-md-2 mt-1" id="show_price" name="show_price" value="1">`;
+
+                if(content !== null && typeof(content['business_name']) != "undefined" && content['business_name'] !== null)
+                    business_name = '<b>'+content['business_name']+'</b>';
+                else
+                    business_name = `<input type="text" class="col-md-3 form-control form-control-sm" id="business_name" name="business_name">`;
+
+                if(content !== null && typeof(content['business_phone']) != "undefined" && content['business_phone'] !== null)
+                    business_phone = '<b>'+content['business_phone']+'</b>';
+                else
+                    business_phone = `<input type="number" class="col-md-3 form-control form-control-sm" id="business_phone" name="business_phone">`;
+
+                if(content !== null && typeof(content['email']) != "undefined" && content['email'] !== null)
+                    email = '<b>'+content['email']+'</b>';
+                else
+                    email = `<input type="email" id="email" class="col-md-3 form-control form-control-sm" name="email">`;
+
+                if(content !== null && typeof(content['address']) != "undefined" && content['address'] !== null)
+                    address = '<b>'+content['address']+'</b>';
+                else
+                    address = `<input type="text" id="address" class="col-md-3 form-control form-control-sm" name="address">`;
+
                 content_html = `
                 <label for="domain">Domain</label>
-                <input type="text" id="domain" class="form-control form-control-sm" name="domain">
+                `+domain+`
                 <div class="col-md-12 row mt-2">
                     <div class="col-md-6 row pr-3" style="border-right: .5px dashed grey">
                         <label class="col-md-2" for="theme">Theme</label>
-                        <input type="text" id="theme" class="form-control form-control-sm col-md-10" name="theme">
-                        <input type="checkbox" class="col-md-2 mt-1" id="show_price" name="show_price" value="1">
+                        `+theme+`<br>
+                        `+show_price+`
                         <label for="show_price" class="col-md-10 mt-1">Is show Service Price?</label>
                     </div>
-                    <div class="col-md-6 pl-3">
+                    <!--<div class="col-md-6 pl-3">
                         <input type="button" class="btn btn-sm btn-secondary" onclick="uploadFile()" value="Upload attachment files" name="">
                         <input type="file" id="upload_file" hidden class="" value="" name="list_file[]" multiple><br>
                         <span id="file_names"></span>
-                    </div>
+                    </div>-->
                 </div>
                 <h5><b>BUSINESS INFO</b></h5>
                 <div class="col-md-12 row">
                     <label class="col-md-3" for="business_name">Business Name</label>
-                    <input type="text" class="col-md-3 form-control form-control-sm" id="business_name" name="business_name">
+                    `+business_name+`<br>
                     <label class="col-md-3" for="business_phone">Business Phone</label>
-                    <input type="number" class="col-md-3 form-control form-control-sm" id="business_phone" name="business_phone">
+                    `+business_phone+`<br>
                     <label for="email" class="col-md-3">Email</label>
-                    <input type="email" id="email" class="col-md-3 form-control form-control-sm" name="email">
+                     `+email+`
                     <label for="address" class="col-md-3">Address</label>
-                    <input type="email" id="address" class="col-md-3 form-control form-control-sm" name="address">
+                    `+address+`
                 </div>
                 <div class="form-group">
                     <label for="note">Description</label>
@@ -480,25 +686,9 @@
                     </div>
                 `;
             }
-            $("#content-form").html(content_html);
-            $("#datepicker_form").datepicker({
-              todayHighlight: true,
-              setDate: new Date(),
-            });
-            // $(".desription").summernote({
-            //     placeholder: 'Text Description...',
-            //     toolbar: [
-            //         // [groupName, [list of button]]
-            //         ['style', ['bold', 'italic', 'underline', 'clear']],
-            //         ['font', ['strikethrough', 'superscript', 'subscript']],
-            //         ['fontsize', ['fontsize']],
-            //         ['color', ['color']],
-            //         ['para', ['ul', 'ol', 'paragraph']],
-            //         ['height', ['height']]
-            //     ]
-            // });
-            $("#modal-input-form").modal('show');
-        });
+
+            return content_html;
+        }
         $(".add-comment").click(function(){
 
             task_id = $(this).attr('task_id');
@@ -549,7 +739,7 @@
                     toastr.success(data.message);
                     $("#content-form").html("");
                     $("#modal-input-form").modal('hide');
-                    service_table.draw();
+                    // service_table.draw();
                     // table.draw();
                 }
             })

@@ -311,12 +311,13 @@ Route::group(['middleware' => ['auth']], function () {
         Route::post('change-status-order', 'OrdersController@changeStatusOrder')->name('change-status-order');
         Route::post('resend-invoice', 'OrdersController@resendInvoice')->name('resend-invoice');
         Route::get('dowload-invoice/{id}', 'OrdersController@dowloadInvoice')->name('dowload-invoice');
+        Route::get('get-data-input-form', 'OrdersController@getDataInputForm')->name('input_form.task');
+
 
         Route::get('payment-orders-list','OrdersController@paymentOrderList')->name('payment-order-list');
         Route::get('payment-orders/{id}','OrdersController@paymentOrder')->name('payment-order');
         Route::post('add-order','OrdersController@addOrder')->name('post-add-order');
         Route::get('payment-order-datatable', 'OrdersController@paymentOrderDatatable')->name('payment-order-datatable');
-
 
     });
     Route::group(['prefix' => 'task','namespace' => 'Task'], function() {

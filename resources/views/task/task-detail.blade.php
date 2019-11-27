@@ -265,6 +265,14 @@
         <input type="text" class="form-control" name="email_list" id="email_list_2" placeholder="">
       </div>
     <p>CC Multiple Email for example:<i> email_1@gmail.com;email_2@gmail.com</i></p>
+    @if($task_info->status == 3)
+        <label for="status" class="required">Change Status</label>
+        <select name="status" id="status" class="form-control form-control-sm">
+            @foreach(getStatusTask() as $key => $status)
+                <option value="{{$key}}">{{$status}}</option>
+            @endforeach
+        </select><br>
+    @endif
     <button type="button" class="btn btn-sm btn-primary submit-comment">Submit Comment</button>
 </form>
 @endsection

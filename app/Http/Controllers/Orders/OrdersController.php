@@ -684,7 +684,7 @@ class OrdersController extends Controller
         $service_arr = [];
 
         //GET TASK LIST
-        $data['task_list'] = MainTask::leftjoin('main_user', function ($join) {
+        $data['task_list'] = MainTask::with('getService')->leftjoin('main_user', function ($join) {
             $join->on('main_task.updated_by', 'main_user.user_id');
         })
             ->where('main_task.order_id', $id)
@@ -848,7 +848,6 @@ class OrdersController extends Controller
     public function submitInfoTask(Request $request){
         $input = $request->all();
         $current_month = Carbon::now()->format('m');
-        $tracking_arr = [];
 
         unset($input['list_file']);
         unset($input['_token']);
@@ -868,8 +867,54 @@ class OrdersController extends Controller
         ];
         $tracking_create = MainTrackingHistory::create($tracking_arr);
 
+        $task_info = MainTask::find($request->task_id);
+        if($task_info->content != "" || $task_info->content != null){
+
+            $content_arr = json_decode($task_info->content);
+            $change = 0;
+
+            if($task_info->getService->cs_form_type == 1){
+                if(isset($request->google_link)) {$content_arr->google_link = $request->google_link;$change++;}
+                if(isset($request->worker_name)) {$content_arr->worker_name = $request->worker_name;$change++;}
+                if(isset($request->star)) {$content_arr->star = $request->star;$change++;}
+                if(isset($request->current_review)) {$content_arr->current_review = $request->current_review;$change++;}
+                if(isset($request->order_review)) {$content_arr->order_review = $request->order_review;$change++;}
+                if(isset($request->complete_date)) {$content_arr->complete_date = $request->complete_date;$change++;}
+            }
+            elseif($task_info->getService->cs_form_type == 2){
+                if(isset($request->product_name)) {$content_arr->product_name = $request->product_name;$change++;}
+                if(isset($request->main_color)) {$content_arr->main_color = $request->main_color;$change++;}
+                if(isset($request->style_customer)) {$content_arr->style_customer = $request->style_customer;$change++;}
+                if(isset($request->link)) {$content_arr->link = $request->link;$change++;}
+                if(isset($request->website)) {$content_arr->website = $request->website;$change++;}
+            }
+            elseif($task_info->getService->cs_form_type == 3){
+                if(isset($request->link)) {$content_arr->link = $request->link;$change++;}
+                if(isset($request->promotion)) {$content_arr->promotion = $request->promotion;$change++;}
+                if(isset($request->number)) {$content_arr->number = $request->number;$change++;}
+                if(isset($request->admin)) {$content_arr->admin = $request->admin;$change++;}
+                if(isset($request->user)) {$content_arr->user = $request->user;$change++;}
+                if(isset($request->password)) {$content_arr->password = $request->password;$change++;}
+                if(isset($request->image)) {$content_arr->image = $request->image;$change++;}
+            }
+            elseif($task_info->getService->cs_form_type == 4){
+                if(isset($request->domain)) {$content_arr->domain = $request->domain;$change++;}
+                if(isset($request->theme)) {$content_arr->theme = $request->theme;$change++;}
+                if(isset($request->show_price)) $content_arr->show_price = $request->show_price;
+                if(isset($request->business_name)) {$content_arr->business_name = $request->business_name;$change++;}
+                if(isset($request->business_phone)) {$content_arr->business_phone = $request->business_phone;$change++;}
+                if(isset($request->email)) {$content_arr->email = $request->email;$change++;}
+                if(isset($request->address)) {$content_arr->address = $request->address;$change++;}
+            }
+            $content = json_encode($content_arr);
+        }
         //UPDATE TASK
-        $task_update = MainTask::where('id', $request->task_id)->update(['content' => $content, 'desription' => $request->desription, 'updated_by' => Auth::user()->user_id]);
+        if($task_info->status == 3 && $change > 0)
+            $task_update = MainTask::where('id', $request->task_id)
+                ->update(['status'=>2,'content' => $content, 'desription' => $request->desription, 'updated_by' => Auth::user()->user_id]);
+        else
+            $task_update = MainTask::where('id', $request->task_id)
+                ->update(['content' => $content, 'desription' => $request->desription, 'updated_by' => Auth::user()->user_id]);
 
         //DELETE OLD FILE
         $file_delete = MainFile::where('task_id', $request->task_id)->delete();
@@ -1252,6 +1297,15 @@ class OrdersController extends Controller
             })
             ->rawColumns(['servivce','information','customer','order_date','action','total_charge'])
             ->make(true);
+    }
+    public function getDataInputForm(Request $request){
+
+        $task_info = MainTask::find($request->task_id);
+
+        if(!isset($task_info))
+            return response(['status'=>'error','message'=>'Failed!']);
+
+        return response(['status'=>'success','content'=>$task_info->content]);
     }
 }
 
