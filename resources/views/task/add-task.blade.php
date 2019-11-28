@@ -52,7 +52,9 @@
                     <th>
                         <select name="status" class="form-control form-control-sm">
                             @foreach(getStatusTask() as $key => $category)
-                            <option value="{{$key}}">{{$category}}</option>
+                                @if($key ==1)
+                                    <option value="{{$key}}">{{$category}}</option>
+                                @endif
                             @endforeach
                         </select>
                     </th>

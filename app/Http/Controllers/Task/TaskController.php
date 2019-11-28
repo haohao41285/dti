@@ -110,13 +110,14 @@ class TaskController extends Controller
     		->make(true);
     }
     public function postComment(Request $request){
+//        return $request->all();
     	$rule = [
     		'order_id' => 'required',
             'note' => 'required'
     	];
     	$message = [
     		'order_id.required' => 'Order not exist!',
-            'note.required' => 'Comment Empty!'
+            'note.required' => 'Comment required!'
     	];
     	$validator = Validator::make($request->all(),$rule,$message);
     	if($validator->fails())
@@ -142,6 +143,10 @@ class TaskController extends Controller
     	];
     	DB::beginTransaction();
     	$tracking_create = MainTrackingHistory::create($tracking_arr);
+    	//CHANGE STATUS
+        $change_status_task = 'ok';
+        if(isset($request->status))
+            $change_status_task = MainTask::find($task_id)->update(['status'=>$request->status]);
 
     	//SAVE NOTIFICATION
         $task_id = "";
@@ -183,7 +188,7 @@ class TaskController extends Controller
             }
             $file_create = MainFile::insert($file_arr);
 
-            if(!isset($tracking_create) || !isset($file_create) || !isset($notification_create))
+            if(!isset($tracking_create) || !isset($file_create) || !isset($notification_create) || !isset($change_status_task))
             {
                 DB::callback();
                 return response(['status'=>'error', 'message'=> 'Failed!']);
@@ -229,6 +234,7 @@ class TaskController extends Controller
     public function taskTracking(Request $request){
 
         $task_id = $request->task_id;
+        $task_id = 93;
 
         $order_tracking = MainUser::join('main_tracking_history',function($join){
             $join->on('main_tracking_history.created_by','main_user.user_id');
@@ -248,7 +254,7 @@ class TaskController extends Controller
                 return "<a href='' >Task#".$row->task_id."</a>";
             })
             ->editColumn('content',function($row){
-                $file_list = $row->getFiles;
+                $file_list = MainFile::where('tracking_id',$row->id)->get();
                 $file_name = "<div class='row '>";
 
                     foreach ($file_list as $key => $file) {
@@ -313,7 +319,6 @@ class TaskController extends Controller
             $input['date_start'] = format_date_db($request->date_start);
         if($request->date_end != "")
             $input['date_end'] = format_date_db($request->date_end);
-//        return $input;
 
         if(!isset($request->id)){
 
@@ -332,9 +337,28 @@ class TaskController extends Controller
             $notification_create = MainNotification::create($notification_arr);
 
         }else{
+            $task_info = MainTask::find($request->id);
+            $subTaskTotal = count($task_info->getSubTask);
+            $complete_percent_sub = 0;
+;            if( $subTaskTotal > 0 ){
+                $complete_percent_total = 0;
+                foreach($task_info->getSubTask as $subTask){
+                    $complete_percent_total += $subTask->complete_percent;
+                }
+                $complete_percent_sub = $complete_percent_total/$subTaskTotal;
+            }
+            //GET STATUS TASK FOLLOW PERCENT COMPLETE
+            $input['complete_percent'] +=  $complete_percent_sub;
+            if($complete_percent_sub > 0)
+                $input['complete_percent'] = $input['complete_percent']/2;
+
+            if($input['complete_percent'] == 0)
+                $input['status'] = 1;
+            elseif($input['complete_percent'] > 0 && $input['complete_percent'] < 100)
+                $input['status'] = 2;
+            else $input['status'] = 3;
             //UPDATE TASK
             $input['updated_by'] = Auth::user()->user_id;
-            $task_info = MainTask::find($request->id);
             $task_save = $task_info->update($input);
 
             //ADD TRACKING HISTORY
@@ -344,7 +368,7 @@ class TaskController extends Controller
                 'created_by' => Auth::user()->user_id,
                 'content' => $request->note,
             ];
-            $tracking_history = MainTrackingHistory::find($task_info->order_id)->create($task_tracking);
+            $tracking_history = MainTrackingHistory::create($task_tracking);
 
             //SAVE NOTIFICATION
             $content = Auth::user()->user_nickname. " updated a task #".$request->id;
@@ -582,8 +606,15 @@ class TaskController extends Controller
         if($id>0){
             $data['task_name'] = MainTask::find($id)->subject;
         }
-
         return view('task.cskh-task',$data);
+    }
+    public function getStatusTaskOrder(Request $request){
+        $order_id = $request->order_id;
+        $task_id = $request->task_id;
+
+        $task_info = MainTask::find($task_id)->status;
+        $task_status = getStatusTask()[$task_info];
+//        $order_info = Main
     }
 
 }

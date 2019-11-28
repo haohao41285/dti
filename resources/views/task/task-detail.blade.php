@@ -64,8 +64,8 @@
             </tr>
             <tr>
                 <th>{{$task_info->category}}</th>
-                <th class="text-info">{{\App\Helpers\GeneralHelper::getPriorityTask()[$task_info->priority]}}</th>
-                <th class="text-info">{{\App\Helpers\GeneralHelper::getStatusTask()[$task_info->status]}}</th>
+                <th class="text-info">{{getPriorityTask()[$task_info->priority]}}</th>
+                <th class="text-info status-task">{{getStatusTask()[$task_info->status]}}</th>
                 <th>{{format_datetime($task_info->created_at)}}</th>
                 <th>{{$task_info->getCreatedBy->user_nickname}}<span class="text-capitalize">({{$task_info->getCreatedBy->user_firstname}} {{$task_info->getCreatedBy->user_lastname}})</span></th>
                 <th colspan="2">
@@ -102,7 +102,12 @@
                 <tr>
                     <th class="text-info" colspan="2"><a href="{{route('order-view',$task_info->order_id)}}" title="Go To Order">#{{$task_info->order_id}}</a></th>
                     <th class="text-info">
-                        @php
+                        @if($task_info->getOrder->csb_status == 0)
+                            NOTPAYMENT
+                        @else
+                            PAID
+                        @endif
+                       {{-- @php
                             $count = 0;
                             $task_status = 0;
 
@@ -119,7 +124,7 @@
                         else
                             $status = 'DONE';
                         @endphp
-                        {{$status}}
+                        {{$status}}--}}
                     </th>
                     <th>{{format_datetime($task_info->created_at)}}</th>
                     <th class="text-capitalize">{{$task_info->getCreatedBy->user_firstname}} {{$task_info->getCreatedBy->user_lastname}}</th>
@@ -251,7 +256,8 @@
     @csrf()
     <input type="hidden" name="receiver_id" value="{{$task_info->assign_to==\Illuminate\Support\Facades\Auth::user()->user_id?$task_info->created_by:$task_info->assign_to}}">
     <textarea  id="summernote2" class="form-control form-control-sm"  name="note" placeholder="Text Content..."></textarea>
-    <input type="button" class="btn btn-sm btn-secondary mt-2" name="" value="Upload attchment's file" onclick="getFile2()" placeholder="">
+    <input type="button" class="btn btn-sm btn-secondary mt-2" name="" value="Upload attchment's file" onclick="getFile2()" placeholder=""><br>
+    <span id="file_names"></span>
     <input type="file" hidden id="file_image_list_2" multiple name="file_image_list[]">
     <p>(The maximum upload file size: 100M)</p>
     <div style="height: 10px" class="bg-info">
@@ -266,12 +272,16 @@
       </div>
     <p>CC Multiple Email for example:<i> email_1@gmail.com;email_2@gmail.com</i></p>
     @if($task_info->status == 3)
-        <label for="status" class="required">Change Status</label>
-        <select name="status" id="status" class="form-control form-control-sm">
-            @foreach(getStatusTask() as $key => $status)
-                <option value="{{$key}}">{{$status}}</option>
-            @endforeach
-        </select><br>
+        <div class="form-group change-status-form">
+            <label for="status" class="required">Change Status</label>
+            <select name="status" id="status" class="form-control form-control-sm">
+                @foreach(getStatusTask() as $key => $status)
+                    @if($key != 1)
+                        <option value="{{$key}}">{{$status}}</option>
+                    @endif
+                @endforeach
+            </select>
+        </div>
     @endif
     <button type="button" class="btn btn-sm btn-primary submit-comment">Submit Comment</button>
 </form>
@@ -282,7 +292,6 @@
         $("#file_image_list_2").click();
     }
 	$(document).ready(function() {
-
         // $('#summernote2').summernote({
         //     placeholder: 'Text Comment...',
         //     toolbar: [
@@ -366,6 +375,7 @@
                     return myXhr;
                 },
                 success: function (data) {
+                    // console.log(data);
                     // return;
                     // data = JSON.parse(data);
                     if(data.status == 'error'){
@@ -380,6 +390,11 @@
                         toastr.success(data.message);
                         table.draw();
                         clearView();
+                        if($("#status").val() ===  2)
+                            $(".change-status-form").remove();
+                            $(".status-task").text("PROCESSING");
+                        if($("#status").val() === 3)
+                            $(".status-task").text("DONE");
                     }
                 },
                 fail: function() {
@@ -392,6 +407,7 @@
             $("#email_list_2").val("");
             // $('#summernote2').summernote('reset');
             $('#summernote2').val("");
+            $("#file_names").text("");
         }
         $("#send-notification").click(function(){
             $("#form-notification").modal('show');
@@ -452,7 +468,53 @@
             .fail(function() {
                 console.log("error");
             });
-        })
+        });
+        //  GET NAME FILES
+        $(document).on('change','#file_image_list_2',function(e){
+            file_image_list = Array.from(e.target.files);
+            console.log(file_image_list);
+
+            var names = [];
+            var name_html = "";
+
+            for (var i = 0; i < $(this).get(0).files.length; ++i) {
+                names.push($(this).get(0).files[i].name);
+                name_html += "<span>"+$(this).get(0).files[i].name+ "</span><br>";
+
+            }
+            $("#file_names").html(name_html);
+        });
+       /* $(document).on("click",".remove-file",function(){
+            var index = $(this).attr('index');
+            file_image_list.splice(index,1);
+            console.log(file_image_list);
+            $(this).closest('span').remove();
+        })*/
+       function getStatusTaskOrder(){
+           $.ajax({
+               url: '{{route('get_status_task_order')}}',
+               type: 'GET',
+               dataType: 'html',
+               data: {
+                   order_id: '{{$task_info->order_id}}',
+                   task_id: '{{$id}}'
+               },
+           })
+               .done(function(data) {
+                   console.log(data);
+                   return;
+                   data = JSON.parse(data);
+                   if(data.status == 'error'){
+                       toastr.error(data.message);
+                   }else{
+                       toastr.success(data.message);
+                       clearViewNotification();
+                   }
+               })
+               .fail(function() {
+                   console.log("error");
+               });
+       }
 	});
 </script>
 @endpush

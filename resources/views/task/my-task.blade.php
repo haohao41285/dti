@@ -89,7 +89,7 @@
                     { data: 'status', name: 'status',class:'text-center' },
                     { data: 'date_start', name: 'date_start',class:'text-center' },
                     { data: 'date_end', name: 'date_end',class:'text-center' },
-                    { data: 'complete_percent', name: 'complete_percent',class: 'text-center' },
+                    { data: 'complete_percent', name: 'complete_percent',class: 'text-right' },
                     { data: 'category', name: 'category',class: 'text-center' },
                     { data: 'order_id', name: 'order_id',class: 'text-center' },
                     { data: 'updated_at', name: 'updated_at',class: 'text-center'},
@@ -132,7 +132,7 @@
                                     <td>`+val.status+`</td>
                                     <td>`+val.date_start+`</td>
                                     <td>`+val.date_end+`</td>
-                                    <td>`+complete_percent+`</td>
+                                    <td class="text-right">`+complete_percent+`</td>
                                     <td>`+val.category+`</td>
                                     <td>`+val.assign_to+`</td>
                                     <td>`+val.updated_at+`</td>

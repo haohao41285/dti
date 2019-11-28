@@ -307,7 +307,7 @@ Route::group(['middleware' => ['auth']], function () {
         Route::get('view/{id?}', 'OrdersController@orderView')->where(['id'=>'[0-9]+'])->name('order-view');
         Route::get('order-tracking', 'OrdersController@orderTracking')->name('order-tracking');
         Route::get('order-service', 'OrdersController@orderService')->name('order-service');
-        Route::post('submit-info-task', 'OrdersController@submitInfoTask')->name('submit-info-task');
+        Route::post('submit-info-taspost-commentk', 'OrdersController@submitInfoTask')->name('submit-info-task');
         Route::post('change-status-order', 'OrdersController@changeStatusOrder')->name('change-status-order');
         Route::post('resend-invoice', 'OrdersController@resendInvoice')->name('resend-invoice');
         Route::get('dowload-invoice/{id}', 'OrdersController@dowloadInvoice')->name('dowload-invoice');
@@ -340,6 +340,7 @@ Route::group(['middleware' => ['auth']], function () {
         Route::get('all-task-datatable', 'TaskController@allTaskDatatable')->name('all-task-datatable');
 
         Route::get('cskh-task', 'TaskController@cskhTask')->name('cskh-task');
+        Route::get('get-status-task-order', 'TaskController@getStatusTaskOrder')->name('get_status_task_order');
 
     });
     //confirm event

@@ -56,6 +56,9 @@ class MainTask extends BaseModel
     public function getSubTask(){
         return $this->hasMany(MainTask::class,'task_parent_id','id');
     }
+    public function getOrder(){
+        return $this->belongsTo(MainComboServiceBought::class,'order_id','id');
+    }
 
     public static function getPendingTasks(){
         return self::select('id','complete_percent')

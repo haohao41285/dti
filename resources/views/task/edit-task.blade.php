@@ -11,7 +11,7 @@
 @endpush
 @section('content')
 	<div class="table-responsive">
-	<h4 class="border border-info border-top-0 border-right-0 border-left-0 text-info">EDIT TASK #{{$id}} - {{$task_info->getService->cs_name}}</h4>
+	<h4 class="border border-info border-top-0 border-right-0 border-left-0 text-info">EDIT TASK #{{$id}} - {{$task_info->subject}}</h4>
     <form action="{{route('save-task')}}" id="form-task" method="post" accept-charset="utf-8">
         @csrf()
         <table class="table table-striped mt-4 table-bordered" id="dataTableAllCustomer" widtd="100%" cellspacing="0">
@@ -90,7 +90,7 @@
                         <textarea class="fom-control form-control-sm" name="note" id="note">{!!$task_info->note!!}</textarea>
                     </td>
                 </tr>
-                
+
             </tbody>
         </table>
         <div class="form-group">

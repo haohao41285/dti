@@ -8,7 +8,7 @@ if(!function_exists('getCategory')){
 		];
 	}
 }
-if(!function_exists('getPriorityTask')){
+if(!function_exists('getPriorityTPAask')){
 	function getPriorityTask(){
 	    return [
 	        1 => 'LOW',
