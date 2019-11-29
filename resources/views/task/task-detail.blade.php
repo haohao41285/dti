@@ -63,7 +63,7 @@
                 </td>
             </tr>
             <tr>
-                <th>{{$task_info->category}}</th>
+                <th>{{getCategory()[$task_info->category]}}</th>
                 <th class="text-info">{{getPriorityTask()[$task_info->priority]}}</th>
                 <th class="text-info status-task">{{getStatusTask()[$task_info->status]}}</th>
                 <th>{{format_datetime($task_info->created_at)}}</th>

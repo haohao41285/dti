@@ -106,6 +106,10 @@ class TaskController extends Controller
     		->editColumn('updated_at',function($row){
     			return Carbon::parse($row->updated_at)->format('m/d/Y h:i A');
     		})
+            ->editColumn('complete_percent',function($row){
+                if(!empty($row->complete_percent))
+                    return $row->complete_percent."%";
+            })
     		->rawColumns(['order_id','task'])
     		->make(true);
     }
@@ -337,20 +341,53 @@ class TaskController extends Controller
             $notification_create = MainNotification::create($notification_arr);
 
         }else{
+
             $task_info = MainTask::find($request->id);
-            $subTaskTotal = count($task_info->getSubTask);
+
+            //PARENT TASK
+            $subTaskList = $task_info->getSubTask;
+
+            //CHILD TASK
+            if(!empty($task_info->task_parent_id)){
+                $parent_task = MainTask::find($task_info->task_parent_id);
+                $subTaskList = $parent_task->getSubTask->where('id','!=',$request->id);
+
+            }
+            $subTaskTotal = count($subTaskList);
+
             $complete_percent_sub = 0;
-;            if( $subTaskTotal > 0 ){
+            if( $subTaskTotal > 0 ){
                 $complete_percent_total = 0;
-                foreach($task_info->getSubTask as $subTask){
+                foreach($subTaskList as $subTask){
                     $complete_percent_total += $subTask->complete_percent;
                 }
                 $complete_percent_sub = $complete_percent_total/$subTaskTotal;
             }
+
+
             //GET STATUS TASK FOLLOW PERCENT COMPLETE
-            $input['complete_percent'] +=  $complete_percent_sub;
-            if($complete_percent_sub > 0)
-                $input['complete_percent'] = $input['complete_percent']/2;
+            if(!empty($task_info->task_parent_id)){
+                //UPDATE PARENT TASK
+                if($complete_percent_sub > 0)
+                    $parentPercent = ($parent_task->complete_percent + $complete_percent_sub + $input['complete_percent']) / 3;
+                else
+                    $parentPercent = ($parent_task->complete_percent + $input['complete_percent']) / 2;
+
+                if($parentPercent == 0)
+                    $status = 1;
+                elseif($parentPercent > 0 && $parentPercent < 100)
+                    $status = 2;
+                else $status = 3;
+
+                $parent_task->update(['complete_percent'=>$parentPercent,'status'=>$status]);
+
+            }else{
+
+                $input['complete_percent'] +=  $complete_percent_sub;
+                if($complete_percent_sub > 0)
+                    $input['complete_percent'] = $input['complete_percent']/2;
+            }
+
 
             if($input['complete_percent'] == 0)
                 $input['status'] = 1;
@@ -439,6 +476,10 @@ class TaskController extends Controller
             })
             ->editColumn('updated_at',function($row){
                 return format_datetime($row->updated_at)." by ".$row->getUpdatedBy->user_nickname;
+            })
+            ->editColumn('complete_percent',function ($row){
+                if(!empty($row->complete_percent))
+                    return $row->complete_percent."%";
             })
             ->rawColumns(['order_id','task'])
             ->make(true);
@@ -569,6 +610,10 @@ class TaskController extends Controller
                     $date_end = "";
 
                 return $date_end;
+            })
+            ->editColumn('complete_percent',function($row){
+                if(!empty($row->complete_percent))
+                    return $row->complete_percent."%";
             })
             ->editColumn('updated_at',function($row){
                 return Carbon::parse($row->updated_at)->format('m/d/Y h:i A');

@@ -38,7 +38,7 @@
                     <th>
                         <select name="category" class="form-control form-control-sm">
                             @foreach(getCategory() as $key => $category)
-                                <option value="{{$key}}">{{$category}}</option>
+                                <option {{$key==2?"selected":""}} value="{{$key}}">{{$category}}</option>
                             @endforeach
                         </select>
                     </th>
