@@ -78,31 +78,9 @@
               </div>
             </div>
           </div>
-
-        <div class="col-md-12 card shadow py-2">
-            <h4 class="text-black">Proccessing Task</h4>
-            <table class="table table-striped table-hover" id="datatable-task-dashboard" width="100%" cellspacing="0">
-                <thead>
-                    <tr>
-                        <th>Task#</th>
-                        <th>Subject</th>
-                        <th class="text-center">Priority</th>
-                        <th class="text-center">Status</th>
-                        <th class="text-center">Date Start</th>
-                        <th class="text-center">Date end</th>
-                        <th class="text-center">%Complete</th>
-                        <th class="text-center">Category</th>
-                        <th class="text-center">Order#</th>
-                        <th class="text-center">Last Updated</th>
-                    </tr>
-                </thead>
-            </table>
-        </div>
-
           <!-- Content Row -->
 
           <div class="row">
-
             <!-- Area Chart -->
             <div class="col-xl-6 col-lg-6">
               <div class="card shadow mb-4">
@@ -131,21 +109,52 @@
               </div>
             </div>
           </div>
-        <div class="col-md-12 card shadow py-2">
-            <h4 class="text-black">Customer is about to expire</h4>
-            <table class="table table-striped table-hover" id="datatable-customer-service" width="100%" cellspacing="0">
-                <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>Customer Name</th>
-                        <th>Customer Phone</th>
-                        <th>Service</th>
-                        <th>Expired Date</th>
-                        <th>Seller</th>
-                        <th>Action</th>
-                    </tr>
-                </thead>
-            </table>
+        <div class="row">
+            <div class="col-xl-6 col-lg-6">
+                <div class="card shadow mb-4">
+                    <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                        <span class="m-0 font-weight-bold text-primary">Processing Task</span> <a href="{{route('my-task')}}">View More >>></a>
+                    </div>
+                    <table class="table table-striped table-hover" id="datatable-task-dashboard" width="100%" cellspacing="0">
+                        <thead>
+                        <tr>
+                            <th>Task#</th>
+                            <th>Subject</th>
+                            {{--                        <th class="text-center">Priority</th>--}}
+                            <th class="text-center">Status</th>
+                            {{--                        <th class="text-center">Date Start</th>--}}
+                            {{--                        <th class="text-center">Date end</th>--}}
+                            {{--                        <th class="text-center">%Complete</th>--}}
+                            <th class="text-center">Category</th>
+                            <th class="text-center">Order#</th>
+                            <th class="text-center">Last Updated</th>
+                        </tr>
+                        </thead>
+                    </table>
+                </div>
+            </div>
+            @if(\Gate::allows('permission','dashboard-customer'))
+            <div class="col-xl-6 col-lg-6">
+                <div class="card shadow mb-4">
+                    <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                        <span class="m-0 font-weight-bold text-primary">Customer is about to expire</span> <a href="{{route('myCustomers')}}">View More >>></a>
+                    </div>
+                    <table class="table table-striped table-hover" id="datatable-customer-service" width="100%" cellspacing="0">
+                        <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Customer Name</th>
+                            <th>Customer Phone</th>
+                            <th>Service</th>
+                            <th>Expired Date</th>
+                            <th>Seller</th>
+                            <th>Action</th>
+                        </tr>
+                        </thead>
+                    </table>
+                </div>
+            </div>
+            @endif
         </div>
     </div>
 @endsection
@@ -218,13 +227,15 @@
                 ],
                 processing: true,
                 serverSide: true,
+                paging:false,
+                searching: false,
+                info:false,
+                responsive: false,
                 ajax:{ url:"{{ route('customer-service-datatable') }}",
                     data: function (d) {
                     }
-
                 },
                 columns: [
-
                     { data: 'cs_id', name: 'cs_id',class:'text-center' },
                     { data: 'customer_name', name: 'customer_name' },
                     { data: 'customer_phone', name: 'customer_phone' },
@@ -239,8 +250,10 @@
             var table = $('#datatable-task-dashboard').DataTable({
                 // dom: "lBfrtip",
                 responsive: false,
-                order:[[9,'desc']],
+                order:[[5,'desc']],
                 info: false,
+                paging:false,
+                searching: false,
                 buttons: [
                 ],
                 processing: true,
@@ -253,11 +266,11 @@
                 columns: [
                     { data: 'task', name: 'task',class:'text-center' },
                     { data: 'subject', name: 'subject',class:'text-center' },
-                    { data: 'priority', name: 'priority',class:'text-center' },
+                    // { data: 'priority', name: 'priority',class:'text-center' },
                     { data: 'status', name: 'status',class:'text-center' },
-                    { data: 'date_start', name: 'date_start',class:'text-center' },
-                    { data: 'date_end', name: 'date_end',class:'text-center' },
-                    { data: 'complete_percent', name: 'complete_percent',class: 'text-center' },
+                    // { data: 'date_start', name: 'date_start',class:'text-center' },
+                    // { data: 'date_end', name: 'date_end',class:'text-center' },
+                    // { data: 'complete_percent', name: 'complete_percent',class: 'text-center' },
                     { data: 'category', name: 'category',class: 'text-center' },
                     { data: 'order_id', name: 'order_id',class: 'text-center' },
                     { data: 'updated_at', name: 'updated_at',class: 'text-center'},

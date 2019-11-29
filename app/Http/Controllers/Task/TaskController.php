@@ -42,8 +42,8 @@ class TaskController extends Controller
     }
     public function myTaskDatatable(Request $request){
 
-        if(Gate::denies('permission','my-task-read'))
-            return doNotPermission();
+//        if(Gate::denies('permission','my-task-read'))
+//            return doNotPermission();
 
         $task_list = MainTask::where('updated_by',Auth::user()->user_id)->whereNull('task_parent_id');
         if($request->category != "")
@@ -65,7 +65,9 @@ class TaskController extends Controller
             $task_list->where('status',$request->status);
         if(isset($request->task_dashboard)){
             $task_list->where('status','!=',3);
+            $task_list = $task_list->skip(0)->take(5)->get();
         }
+
     	return DataTables::of($task_list)
     		->editColumn('priority',function($row){
     			return getPriorityTask()[$row->priority];

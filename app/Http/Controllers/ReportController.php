@@ -19,6 +19,10 @@ use Gate;
 class ReportController extends Controller
 {
     public function customers(){
+
+        if(Gate::denies('permission','customer-report'))
+            return doNotPermission;
+
         $data['status'] = GeneralHelper::getCustomerStatusList();
         if(Gate::allows('permission','customer-report-admin'))
              $data['teams'] = MainTeam::active()->get();
@@ -132,6 +136,10 @@ class ReportController extends Controller
 
     }
     public function customersDataTable( Request $request){
+
+        if(Gate::denies('permission','customer-report'))
+            return doNotPermission;
+
         $customer_list = self::getCustomerList($request);
         return Datatables::of($customer_list)
             ->editColumn('id',function ($row){
@@ -144,8 +152,10 @@ class ReportController extends Controller
             ->make(true);
     }
     public function services(){
+
         if(Gate::denies('permission','service-report'))
             return doNotPermission;
+
         if(Gate::allows('permission','service-report-admin'))
             $data['sellers'] = MainUser::all();
         elseif(Gate::allows('permission','service-report-leader'))
@@ -225,6 +235,9 @@ class ReportController extends Controller
     }
     public function servicesDataTable(Request $request){
 
+        if(Gate::denies('permission','service-report'))
+            return doNotPermission;
+
         $service_list = self::getServiceList($request);
         return DataTables::of($service_list)
             ->make(true);
@@ -233,6 +246,7 @@ class ReportController extends Controller
 
         if(Gate::denies('permission','seller-report'))
             return doNotPermission;
+
         if(Gate::allows('permission','seller-report-admin'))
             $data['sellers'] = MainUser::all();
 //        elseif(Gate::allows('permission','seller-report-leader'))
@@ -288,6 +302,10 @@ class ReportController extends Controller
         return $seller_list;
     }
     public function sellersDataTable(Request $request){
+
+        if(Gate::denies('permission','seller-report'))
+            return doNotPermission;
+
         $seller_list = self::getSellerList($request);
         return DataTables::of($seller_list)
             ->make(true);

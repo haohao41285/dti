@@ -48,7 +48,7 @@ class DashboardController extends Controller {
 
         return view('dashboard',$data);
     }
-    
+
     public function confirmEvent(){
         try{
             //subHours(11) to get time American
@@ -144,24 +144,22 @@ class DashboardController extends Controller {
         $date_expired = today()->addDays(15);
         $cs_arr = [];
 
-        $customer_service_list = MainCustomerService::join('main_user',function($join){
-            $join->on('main_customer_service.created_by','main_user.user_id');
-        })
+        $customer_service_list = MainCustomerService::with('getUpdatedBy')->with('getCreatedBy')
             ->active()
             ->whereBetween('cs_date_expire',[$today,$date_expired])
-           ->where('main_customer_service.cs_customer_id','!=',null);
+            ->where('cs_customer_id','!=',null);
 
         if(Gate::allows('permission','dashboard-admin')){
 
         }
         elseif(Gate::allows('permission','dashboard-leader'))
-             $customer_service_list = $customer_service_list->whereIn('main_customer_service.created_by',MainUser::getCustomerOfTeam());
+            $customer_service_list = $customer_service_list->whereIn('created_by',MainUser::getCustomerOfTeam());
         else
-            $customer_service_list = $customer_service_list->where('main_customer_service.created_by',Auth::user()->user_id);
+            $customer_service_list = $customer_service_list->where('created_by',Auth::user()->user_id);
 
         $customer_service_list = $customer_service_list->get();
         $customer_service_list = $customer_service_list->groupBy('cs_customer_id');
-
+//        return $customer_service_list;
         foreach ($customer_service_list  as $key => $services){
 
             $customer_info = MainCustomer::where('customer_id',$key)->first();
@@ -170,8 +168,15 @@ class DashboardController extends Controller {
             $expired_date = "";
 
             foreach ($services as $service){
+
+                if(!empty($service->updated_by))
+                    $seller_info .= $service->getUpdatedBy->user_firstname." ".$service->getUpdatedBy->user_lastname."<br>";
+                elseif(!empty($service->created_by))
+                    $seller_info .= $service->getCreatedBy->user_firstname." ".$service->getCreatedBy->user_lastname."<br>";
+
+                if($service->getUpdatedBy->user_firstname)
                 $service_info .= $service->getComboService->cs_name."<br>";
-                $seller_info .= $service->user_firstname." ".$service->user_lastname."<br>";
+
                 $expired_date .= $service->cs_date_expire."<br>";
             }
             $cs_arr[] = [
@@ -193,6 +198,5 @@ class DashboardController extends Controller {
             })
             ->rawColumns(['action','seller_name','service_info','expired_date','cs_id'])
             ->make(true);
-
     }
 }

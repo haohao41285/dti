@@ -48,6 +48,9 @@ class MainCustomerService extends Model
     public function getCustomer(){
 	    return $this->belongsTo(MainCustomer::class,'cs_customer_id','customer_id')->withDefault();
     }
+    public function getUpdatedBy(){
+	    return $this->belongsTo(MainUser::class,'updated_by','user_id')->withDefault();
+    }
 
     public function getNewDateExpireAttribute(){
         return $this->attributes['cs_date_expire'];
