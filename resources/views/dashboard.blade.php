@@ -79,7 +79,7 @@
             </div>
           </div>
           <!-- Content Row -->
-
+        @if(\Gate::allows('permission','dashboard-sale'))
           <div class="row">
             <!-- Area Chart -->
             <div class="col-xl-6 col-lg-6">
@@ -109,6 +109,8 @@
               </div>
             </div>
           </div>
+        @endif
+
         <div class="row">
             <div class="col-xl-6 col-lg-6">
                 <div class="card shadow mb-4">
