@@ -162,6 +162,7 @@
 @endsection
 @push('scripts')
 <script type="text/javascript">
+    @if(\Gate::allows('permission','dashboard-sale'))
 		window.onload = function () {
 			var chartCustomer = new CanvasJS.Chart("new-customer-chart", {
 				title:{
@@ -223,7 +224,11 @@
 			});
 			chartServices.render();
 			$("a.canvasjs-chart-credit").remove();
-            var table = $('#datatable-customer-service').DataTable({
+		}
+    @endif
+		$(document).ready(function () {
+
+            var table_customer = $('#datatable-customer-service').DataTable({
                 // dom: "lBfrtip",
                 buttons: [
                 ],
@@ -247,8 +252,8 @@
                     { data: 'action' , name:'action' ,orderable: false, searcheble: false ,class:'text-center'}
                 ],
             });
-		}
-		$(document).ready(function () {
+
+
             var table = $('#datatable-task-dashboard').DataTable({
                 // dom: "lBfrtip",
                 responsive: false,

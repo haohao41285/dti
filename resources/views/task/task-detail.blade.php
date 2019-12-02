@@ -222,6 +222,57 @@
 
         </tbody>
     </table>
+
+{{--    <div class="row">--}}
+        @if(isset($content_arr['order_review']) && $content_arr['order_review'] > 0)
+            <form>
+                {{--@for ($i = 1; $i <= $content_arr['order_review']; $i++)
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for=""><b>Review {{$i}}</b></label>
+                            <label for="fail_{{$i}}" class="float-right text-danger"><input type="checkbox" id="fail_{{$i}}"> Fail</label>
+                            <label for="done_{{$i}}" class="float-right text-primary"><input type="checkbox" id="done_{{$i}}"> Done</label>
+
+                        </div>
+                    </div>
+                @endfor--}}
+                <h4 class="text-info">Review  List</h4>
+                <table class="table table-hover table-striped" id="table_review">
+                    <thead>
+                        <tr>
+                            <th>Name Review</th>
+                            <th>Note</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    @for ($i = 1; $i <= $content_arr['order_review']; $i++)
+                        <tr>
+                            <td>Review {{$i}}</td>
+                            <td>
+                                <textarea name="" id="" width="100%" class="form-control form-control-sm" rows="2" placeholder="Note"></textarea>
+                            </td>
+                            <td class="text-center">
+                                <div class="custom-control custom-checkbox">
+                                    <input type="checkbox" class="custom-control-input" id="success_{{$i}}" name="example1">
+                                    <label class="custom-control-label text-primary" for="success_{{$i}}">SUCCESSFULLY</label>
+                                </div>
+                                <div class="custom-control custom-checkbox">
+                                    <input type="checkbox" class="custom-control-input" id="fail_{{$i}}" name="example1">
+                                    <label class="custom-control-label text-danger " for="fail_{{$i}}">FAILED</label>
+                                </div>
+                            </td>
+                        </tr>
+                    @endfor
+                    </tbody>
+                </table>
+            </form>
+            <input type="button" class="btn-primary btn-sm btn" value="Submit">
+            <input type="button" class="btn btn-danger btn-sm" value="Reset">
+
+
+        @endif
+{{--    </div>--}}
     @if(count($task_info->getSubTask))
     <div class="border border-info mb-4">
     	<table class="table table-bordered table-hover mb-0" id="subtask-datatable" width="100%" cellspacing="0">
@@ -515,6 +566,31 @@
                    console.log("error");
                });
        }
+       @if(isset($content_arr['order_review']) && $content_arr['order_review'] > 0)
+        var table = $('#table_review').DataTable({
+            // dom: "lBfrtip",
+            // paging: false,
+            // info:false,
+            // searching: false,
+            responsive: false,
+            order:[[0,'desc']],
+            buttons: [
+            ],
+            // processing: true,
+            serverSide: true,
+            ajax:{ url:"{{ route('get_review') }}",
+                data: function (d) {
+                    d.task_id = '{{$id}}',
+                    d.order_review = '{{$content_arr['order_review']}}'
+                }
+            },
+            columns: [
+                { data: 'id', name: 'id',class:'text-center' },
+                { data: 'name', name: 'name', },
+                { data: 'status', name: 'status',class:'text-center' },
+            ],
+        });
+        @endif
 	});
 </script>
 @endpush

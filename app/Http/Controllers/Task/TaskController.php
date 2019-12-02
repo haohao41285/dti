@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Task;
 use App\Models\MainComboService;
 use App\Models\MainGroupUser;
 use App\Models\MainPermissionDti;
+use App\Models\MainUserReview;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use PHPMailer\PHPMailer\PHPMailer;
@@ -240,7 +241,6 @@ class TaskController extends Controller
     public function taskTracking(Request $request){
 
         $task_id = $request->task_id;
-        $task_id = 93;
 
         $order_tracking = MainUser::join('main_tracking_history',function($join){
             $join->on('main_tracking_history.created_by','main_user.user_id');
@@ -662,6 +662,40 @@ class TaskController extends Controller
         $task_info = MainTask::find($task_id)->status;
         $task_status = getStatusTask()[$task_info];
 //        $order_info = Main
+    }
+    public function getReview(Request $request){
+
+        $task_id = $request->task_id;
+//        $task_id = 66;
+        $order_review = $request->order_review;
+//        $order_review = 10;
+        $order_review_list = [];
+
+        $database_review_list = MainUserReview::where('task_id',$task_id)->orderBy('created_at','desc')->get();
+        $database_review_list = collect($database_review_list);
+//        return  $database_review_list->where('review_id',2)->first();
+
+        for ($i=1;$i<=$order_review;$i++){
+            $note = "";
+            $status = "";
+
+            $review_info = $database_review_list->where('review_id',$i)->first();
+            if(isset($review_info) && $review_info != ""){
+                $note = $review_info->note;
+                $status = $review_info->status;
+            }
+
+            $order_review_list[] = [
+                'id' => $i,
+                'name' => 'Review '.$i,
+                'note' => $note,
+                'status' => $status
+            ];
+        }
+//        return $order_review_list;
+        return DataTables::of($order_review_list)
+//            ->editColumn('status')
+        ->make(true);
     }
 
 }

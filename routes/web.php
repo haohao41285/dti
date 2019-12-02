@@ -341,6 +341,8 @@ Route::group(['middleware' => ['auth']], function () {
 
         Route::get('cskh-task', 'TaskController@cskhTask')->name('cskh-task');
         Route::get('get-status-task-order', 'TaskController@getStatusTaskOrder')->name('get_status_task_order');
+        Route::get('get-review', 'TaskController@getReview')->name('get_review');
+
 
     });
     //confirm event
