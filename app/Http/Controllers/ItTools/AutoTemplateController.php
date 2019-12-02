@@ -51,7 +51,7 @@ class AutoTemplateController extends Controller
 
     public function getServicesByPlaceId(Request $request){
         if($request->placeId){
-            $services = PosCateService::getCateServicesAndServicesByPlaceId($request->placeId);
+            $services = PosCateService::getCateServicesByPlaceId($request->placeId);
 
             return response()->json(['status'=>1,'data'=>$services]);
         }

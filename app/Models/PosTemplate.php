@@ -5,6 +5,8 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use DataTables;
 use App\Helpers\ImagesHelper;
+use App\Models\PosCateservice;
+use App\Models\PosTemplateType;
 
 class PosTemplate extends Model
 {
@@ -21,6 +23,7 @@ class PosTemplate extends Model
         'template_discount',
         'template_discount_type',
         'template_list_service',
+        'template_list_cate',
         'template_linkimage',
         'created_at',
         'updated_at',
@@ -65,7 +68,7 @@ class PosTemplate extends Model
 
         $data = self::getByPlaceIdAndType($placeId,$type);
 
-        return DataTables::of($data)
+        return DataTables::of($data, $placeId)
         ->editColumn('action',function($data){
             return '<a class="btn btn-sm btn-secondary editAutoCoupon" data-id="'.$data->template_id.'" href="#" data-toggle="tooltip" title="Edit"><i class="fas fa-edit"></i></a>
             <a class="btn btn-sm btn-secondary deleteAutoCoupon" data-id="'.$data->template_id.'" href="#" data-toggle="tooltip" title="Delete"><i class="fas fa-trash"></i></a>';
@@ -85,16 +88,27 @@ class PosTemplate extends Model
             $type = PosTemplateType::getById($data->template_type_id);
             return $type->template_type_name;
         })
-        ->rawColumns(['action','template_linkimage'])
+        ->editColumn('template_list_cate',function($data) use ($placeId){
+            $listCate = explode(";", $data->template_list_cate);
+            $cate = PosCateservice::getByArrIdAndPlaceId($listCate,$placeId ?? null);
+
+            $result = null;
+            if($cate){
+                foreach ($cate as $value) {
+                    $result .="- ".$value->cateservice_name."<br>";
+                }
+            }
+            return $result;
+        })
+        ->rawColumns(['action','template_linkimage','template_list_cate'])
         ->make(true);
     }
 
-    public static function saveAuto($id, $placeId, $title, $discount, $discountType, $image, $services, $couponType,$tableType){
+    public static function saveAuto($id, $placeId, $title, $discount, $discountType, $image, $cateservices, $couponType,$tableType){
         if($image){
             $image = ImagesHelper::uploadImageToAPI($image,'auto_template');
         }
         
-        // $discountType = $discountType == "$" ? '1' : "0";
 
         $arr = [
             'template_place_id' => $placeId,
@@ -102,7 +116,7 @@ class PosTemplate extends Model
             'template_discount' => $discount,
             'template_discount_type' => $discountType,
             'template_linkimage' => $image,
-            'template_list_service' => $services,
+            'template_list_cate' => $cateservices,
             'template_type_id' => $couponType,
             'template_table_type' => $tableType, 
         ];
@@ -118,13 +132,6 @@ class PosTemplate extends Model
            
             return "updated successfully";
         } else {
-            // $id = self::select('template_id')
-            //             ->where('template_place_id',$placeId)
-            //             ->max('template_id');
-
-            // $arr['template_id'] = $id+1;
-            // if(!$arr['template_id']) $arr['template_id'] = 1;
-            // dd($arr);
 
             self::insert($arr);
 

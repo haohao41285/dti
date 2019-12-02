@@ -37,14 +37,14 @@ class PosCateservice extends BaseModel
     //     return $this->belongsTo('App\PosCustomer','created_by','cateservice_place_id','cateservice_id');
     // }
 
-    public static function getCateServicesAndServicesByPlaceId($placeId){
-        $services = self::select('cateservice_id','cateservice_name','service_id','service_name')
+    public static function getCateServicesByPlaceId($placeId){
+        $services = self::select('cateservice_id','cateservice_name')
                         ->where('cateservice_place_id',$placeId)
                         ->where('cateservice_status',1)
-                        ->join('pos_service',function($joinService){
-                            $joinService->on('cateservice_id','service_cate_id')
-                            ->on('cateservice_place_id','service_place_id');
-                        })
+                        // ->join('pos_service',function($joinService){
+                        //     $joinService->on('cateservice_id','service_cate_id')
+                        //     ->on('cateservice_place_id','service_place_id');
+                        // })
                         ->get();
 
         // $cateServices = $services->distinct('cateservice_id');
@@ -56,32 +56,29 @@ class PosCateservice extends BaseModel
                 'cateservice_name' => $value->cateservice_name,
             ];
         }
-        $arrCate = array_unique($arrCate,0);
+        // $arrCate = array_unique($arrCate,0);
         // dd($arrCate);
-        foreach ($arrCate as $key => $value) {
-            foreach ($services as $valueServices) {
-                if($value['cateservice_id'] == $valueServices->cateservice_id){
-                    $arrCate[$key]['services'][] = [
-                        'service_id' => $valueServices->service_id,
-                        'service_name' => $valueServices->service_name
-                    ]; 
-                }
-            }           
-        }
+        // foreach ($arrCate as $key => $value) {
+        //     foreach ($services as $valueServices) {
+        //         if($value['cateservice_id'] == $valueServices->cateservice_id){
+        //             $arrCate[$key]['services'][] = [
+        //                 'service_id' => $valueServices->service_id,
+        //                 'service_name' => $valueServices->service_name
+        //             ]; 
+        //         }
+        //     }           
+        // }
 
-        dd($arrCate);
+        // dd($arrCate);
 
-        $arr = [
-            [
-                'cate_id' => '1',
-                'cate_name' => 'abc',
-                'cate_services' => [
+        return $arrCate;             
+    }
 
-                ],
-            ],
-        ];
-
-        echo $services; die;                
+    public static function getByArrIdAndPlaceId($arrId,$placeId){
+        return self::select("cateservice_id","cateservice_name")
+                    ->where("cateservice_place_id",$placeId)
+                    ->whereIn("cateservice_id",$arrId)
+                    ->get();
     }
         
 }

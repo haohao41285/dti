@@ -705,12 +705,12 @@
                                 </div>
                                 <div class=" form-group row col-12">
                                     <label class="col-5">Cate Services</label>
-                                    <select name="services" multiple="" class="col-7 form-control form-control-sm" id="boot-multiselect-demo">
-                                        <option value="">1</option>
-                                        <option value="">2</option>
-                                        <option value="">3</option>
-                                        <option value="">4</option>
-                                        <option value="">5</option>
+                                    <select name="cateservices[]" multiple="" class="col-7 form-control form-control-sm" id="cateservices-multiselect">
+                                        {{-- <option value="1">1</option>
+                                        <option value="2">2</option>
+                                        <option value="3">3</option>
+                                        <option value="4">4</option>
+                                        <option value="5">5</option> --}}
                                     </select>
                                 </div>
                                 <div class="form-group col-12 row">
@@ -809,17 +809,31 @@ function listThemePropertiesByThemeId(theme_id) {
 }
 
 function getServicesByPlaceId(placeId) {
+    var result = "";
     $.ajax({
+        async: false,
         url: "{{ route('getServicesByPlaceId') }}",
         method: "get",
         dataType: "json",
         data: { placeId },
         success: function(data) {
             if (data.status) {
-
+                var html = "";
+                for (var i = 0; i < data.data.length; i++) {
+                    html += "<option value='" + data.data[i].cateservice_id + "'>" + data.data[i].cateservice_name + "</option>";
+                }
+                $("#cateservices-multiselect").html(html);
+                result = 1;
+                //console.log(html);
             }
         }
     });
+    return result;
+}
+
+function multiselectReload() {
+    $("#cateservices-multiselect").multiselect('destroy');
+    $("#cateservices-multiselect").multiselect();
 }
 
 $(document).ready(function() {
@@ -1276,7 +1290,10 @@ $(document).ready(function() {
         e.preventDefault();
         placeId = $(this).attr('data-id');
         autoTemplateTable.draw();
-        getServicesByPlaceId(placeId);
+        var check = getServicesByPlaceId(placeId);
+        if (check == 1) {
+            multiselectReload();
+        }
 
         $("#auto-coupon-modal").modal("show");
         $(".resetAddAutoCoupon").trigger("click");
@@ -1310,7 +1327,7 @@ $(document).ready(function() {
             { data: 'template_title', name: 'template_title', class: "template_title" },
             { data: 'template_discount', name: 'template_discount', class: "template_discount" },
             { data: 'template_linkimage', name: 'template_linkimage', class: "template_linkimage" },
-            { data: 'template_list_service', name: 'template_list_service', class: "template_list_service" },
+            { data: 'template_list_cate', name: 'template_list_cate', class: "template_list_cate" },
             { data: 'template_type_id', name: 'template_type_id', class: "template_type_id" },
             { data: 'action', name: 'action', orderable: false, searchable: false, class: 'text-center' }
         ]
@@ -1520,9 +1537,8 @@ $(document).ready(function() {
         $("#extension_service").modal('hide');
     });
 
-    $('#boot-multiselect-demo').multiselect({
-        buttonWidth: '300px',
-
+    $('#cateservices-multiselect').multiselect({
+        buttonWidth: '100%',
     });
 
 
