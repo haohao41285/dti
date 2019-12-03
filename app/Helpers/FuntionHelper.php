@@ -76,4 +76,10 @@ function doNotPermission(){
 function doNotPermissionAjax(){
     return response(['status'=>'error','message'=>'Permission Denies!']);
 }
+function getReviewStatus(){
+    return [
+        0 => 'FAILED',
+        1 => 'SUCCESSFULLY'
+    ];
+}
 ?>

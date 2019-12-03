@@ -7,9 +7,11 @@ use App\Models\MainComboService;
 use App\Models\MainComboServiceBought;
 use App\Models\MainCustomer;
 use App\Models\MainCustomerTemplate;
+use App\Models\MainTask;
 use App\Models\MainTeam;
 use App\Models\MainUser;
 use App\Models\MainUserCustomerPlace;
+use App\Models\MainUserReview;
 use Illuminate\Http\Request;
 use Yajra\DataTables\DataTables;
 use Auth;
@@ -490,5 +492,48 @@ class ReportController extends Controller
                 }
             });
         })->download("xlsx");
+    }
+    public function reviews(){
+        $data['user_list'] = MainUser::get();
+        return view('reports.reviews',$data );
+    }
+    public function reviewsDataTable(Request $request){
+
+        $count_failed_review = MainUserReview::latest()->get()->unique('review_id')->where('status',0)->count();
+        $review_info = MainUserReview::latest()->get();
+        $review_info = collect($review_info);
+        $review_user_list = $review_info->unique('user_id');
+        $review_user_arr = [];
+        $review_list = [];
+
+        foreach($review_user_list as $review_user){
+            $review_user_arr[] = $review_user->user_id;
+        }
+         $user_arr = array_unique(explode(';',implode(';',$review_user_arr)));
+        $user_list = MainUser::whereIn('user_id',$user_arr)->get();
+        foreach($user_list as $user){
+
+            $review_total = MainUserReview::where(function ($query) use ($user){
+                $query->where('user_id',$user->user_id)
+                    ->orWhere('user_id','like','%;'.$user->user_id)
+                    ->orWhere('user_id','like','%;'.$user->user_id.";%")
+                    ->orWhere('user_id','like',$user->user_id,';%');
+            })->latest()->get();
+            $failed_total = $review_total->unique('review_id')->where('status',0)->count();
+            $successfully_total  = $review_total->unique('review_id')->where('status',1)->count();
+
+            MainTask::where(funtion($query) use ($user){
+                $query->where('assign_to',$user->user_id)
+                ->orWhere('assign_to','like','%;'.$user->user_id)
+                ->orWhere('assign_to','like','%;'.$user->user_id.';%')
+                ->orWhere('assign_to','like',$user->user_id.';%');
+            })
+
+            return $successfully_total;
+//            $review_list[] = [
+//                'user' => $user->getFullname()."(".$user->user_nick_name.")",
+//                ''
+//            ];
+        }
     }
 }

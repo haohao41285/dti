@@ -674,6 +674,8 @@ class TaskController extends Controller
         $database_review_list = MainUserReview::where('task_id',$task_id)->orderBy('created_at','desc')->get();
         $database_review_list = collect($database_review_list);
 //        return  $database_review_list->where('review_id',2)->first();
+        //CHECK FAILED REVIEW
+//        $count_failed_review = MainUserReview::latest()->get()->unique('review_id')->where('status',0)->count();
 
         for ($i=1;$i<=$order_review;$i++){
             $note = "";
@@ -694,8 +696,41 @@ class TaskController extends Controller
         }
 //        return $order_review_list;
         return DataTables::of($order_review_list)
-//            ->editColumn('status')
-        ->make(true);
+            ->editColumn('status',function($row){
+                $status = "";
+                if(gettype($row['status']) == "string")
+                     $status ="";
+                else{
+                    if ($row['status'] == 1) {
+                        $status = "<span class='text-primary'>SUCCESSFULLY</span>";
+                    } elseif ($row['status'] == 0)
+                        $status = "<span class='text-danger'>FAILED</span>";
+                }
+                return $status;
+            })
+            ->addColumn('action',function($row){
+                 return '<a class="btn btn-sm edit-review" note="'.$row['note'].'" review_id="'.$row['id'].'"  status="'.$row['status'].'" ><i class="fas fa-edit"></i></a> ';
+            })
+            ->rawColumns(['status','action'])
+            ->make(true);
     }
-
+    public function saveReview(Request $request){
+        $task_id = $request->task_id;
+        $review_id = $request->review_id;
+        $input = $request->all();
+        unset($input['_token']);
+        $latest_review = MainUserReview::where([['task_id',$task_id],['review_id',$review_id]])->latest()->first();
+        if(isset($input['status']) && isset($input['note']) && $latest_review->note == $input['note'] && $latest_review->status == $input['status'])
+            return response(['status'=>'error','message'=>'Failed!Nothing Change to Save']);
+        else{
+            DB::beginTransaction();
+            $update_review = MainUserReview::create($input);
+            if(!isset($update_review))
+                return response(['status'=>'error','message'=>'Failed!Save Error']);
+            else{
+                DB::commit();
+                return response(['status'=>'success','message'=>'Successfully! Change Successfully!']);
+            }
+        }
+    }
 }

@@ -342,6 +342,7 @@ Route::group(['middleware' => ['auth']], function () {
         Route::get('cskh-task', 'TaskController@cskhTask')->name('cskh-task');
         Route::get('get-status-task-order', 'TaskController@getStatusTaskOrder')->name('get_status_task_order');
         Route::get('get-review', 'TaskController@getReview')->name('get_review');
+        Route::post('save-review', 'TaskController@saveReview')->name('save_review');
 
 
     });
@@ -380,6 +381,11 @@ Route::group(['middleware' => ['auth']], function () {
             Route::get('/', 'ReportController@sellers')->name('report.sellers');
             Route::get('datatable', 'ReportController@sellersDataTable')->name('report.sellers.datatable');
             Route::get('export', 'ReportController@sellerExport')->name('report.sellers.export');
+        });
+        Route::group(['prefix' => 'reviews'], function () {
+            Route::get('/', 'ReportController@reviews')->name('report.reviews');
+            Route::get('datatable', 'ReportController@reviewsDataTable')->name('report.reviews.datatable');
+            Route::get('export', 'ReportController@reviewsExport')->name('report.reviews.export');
         });
     });
 });

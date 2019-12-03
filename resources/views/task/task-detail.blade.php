@@ -45,6 +45,43 @@
     </div>
 </div>
 {{-- END MODAL --}}
+{{--MODAL DETAIL REVIEW--}}
+<div class="modal fade" id="detail_review">
+    <div class="modal-dialog">
+        <div class="modal-content">
+
+            <!-- Modal Header -->
+            <div class="modal-header">
+                <h4 class="modal-title">Detail Review</h4>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+            <!-- Modal body -->
+            <form id="review-form">
+            <div class="modal-body">
+
+                    <div class="form-group">
+                        <label for="">Name</label>
+                        <input type="text" disabled value="" id="review_name" class="form-control form-control-sm">
+                        <input type="hidden" name="review_id" id="review_id" value="">
+                    </div>
+                    <div class="form-group">
+                        <label for="">Note</label>
+                        <textarea name="note" id="note_review" class="form-control form-control-sm" rows="3"></textarea>
+                    </div>
+                    <div class="form-group status-form">
+
+                    </div>
+            </div>
+            <!-- Modal footer -->
+            <div class="modal-footer">
+                <button type="button" class="btn btn-sm btn-danger btn-cancel-review" >Cancel</button>
+                <button type="button" class="btn btn-sm btn-primary btn-submit-review" >Submit</button>
+            </div>
+            </form>
+        </div>
+    </div>
+</div>
+{{--END MODAL DETAIL REVIEW--}}
 <div class="table-responsive">
 	<h4 class="border border-info border-top-0 border-right-0 border-left-0 text-info text-uppercase">TASK #{{$id}} - {{$task_info->subject}}</h4>
     <table class="table table-striped mt-4 table-bordered" id="dataTableAllCustomer" widtd="100%" cellspacing="0">
@@ -107,24 +144,6 @@
                         @else
                             PAID
                         @endif
-                       {{-- @php
-                            $count = 0;
-                            $task_status = 0;
-
-                            $order_info = \App\Models\MainComboServiceBought::find($task_info->order_id);
-                            foreach($order_info->getTasks as $task){
-                                $count++;
-                                $task_status = intval($task->status);
-                            }
-                            $order_status = $task_status/$count;
-                        if($order_status == 0)
-                            $status = 'NEW';
-                        elseif($order_status > 0 && $order_status < 1)
-                            $status = 'PROCESSING';
-                        else
-                            $status = 'DONE';
-                        @endphp
-                        {{$status}}--}}
                     </th>
                     <th>{{format_datetime($task_info->created_at)}}</th>
                     <th class="text-capitalize">{{$task_info->getCreatedBy->user_firstname}} {{$task_info->getCreatedBy->user_lastname}}</th>
@@ -240,38 +259,15 @@
                 <table class="table table-hover table-striped" id="table_review">
                     <thead>
                         <tr>
-                            <th>Name Review</th>
+                            <th style="width: 20%">Name Review</th>
                             <th>Note</th>
-                            <th>Status</th>
+                            <th style="width: 20%">Status</th>
+                            <th style="width: 10%" class="text-center"></th>
                         </tr>
                     </thead>
-                    <tbody>
-                    @for ($i = 1; $i <= $content_arr['order_review']; $i++)
-                        <tr>
-                            <td>Review {{$i}}</td>
-                            <td>
-                                <textarea name="" id="" width="100%" class="form-control form-control-sm" rows="2" placeholder="Note"></textarea>
-                            </td>
-                            <td class="text-center">
-                                <div class="custom-control custom-checkbox">
-                                    <input type="checkbox" class="custom-control-input" id="success_{{$i}}" name="example1">
-                                    <label class="custom-control-label text-primary" for="success_{{$i}}">SUCCESSFULLY</label>
-                                </div>
-                                <div class="custom-control custom-checkbox">
-                                    <input type="checkbox" class="custom-control-input" id="fail_{{$i}}" name="example1">
-                                    <label class="custom-control-label text-danger " for="fail_{{$i}}">FAILED</label>
-                                </div>
-                            </td>
-                        </tr>
-                    @endfor
-                    </tbody>
                 </table>
             </form>
-            <input type="button" class="btn-primary btn-sm btn" value="Submit">
-            <input type="button" class="btn btn-danger btn-sm" value="Reset">
-
-
-        @endif
+    @endif
 {{--    </div>--}}
     @if(count($task_info->getSubTask))
     <div class="border border-info mb-4">
@@ -343,19 +339,6 @@
         $("#file_image_list_2").click();
     }
 	$(document).ready(function() {
-        // $('#summernote2').summernote({
-        //     placeholder: 'Text Comment...',
-        //     toolbar: [
-        //         // [groupName, [list of button]]
-        //         ['style', ['bold', 'italic', 'underline', 'clear']],
-        //         ['font', ['strikethrough', 'superscript', 'subscript']],
-        //         ['fontsize', ['fontsize']],
-        //         ['color', ['color']],
-        //         ['para', ['ul', 'ol', 'paragraph']],
-        //         ['height', ['height']]
-        //     ]
-        // });
-
         var table = $('#subtask-datatable').DataTable({
             // dom: "lBfrtip",
             paging: false,
@@ -397,7 +380,6 @@
             }
         },
            columns: [
-
                     { data: 'created_at', name: 'created_at',class:'d-none' },
                     { data: 'user_info', name: 'user_info' },
                     { data: 'content', name: 'content'},
@@ -567,13 +549,13 @@
                });
        }
        @if(isset($content_arr['order_review']) && $content_arr['order_review'] > 0)
-        var table = $('#table_review').DataTable({
+        var table_review = $('#table_review').DataTable({
             // dom: "lBfrtip",
             // paging: false,
             // info:false,
             // searching: false,
             responsive: false,
-            order:[[0,'desc']],
+            // order:[[0,'desc']],
             buttons: [
             ],
             // processing: true,
@@ -585,12 +567,104 @@
                 }
             },
             columns: [
-                { data: 'id', name: 'id',class:'text-center' },
-                { data: 'name', name: 'name', },
+                { data: 'name', name: 'name',class:'text-center' },
+                { data: 'note', name: 'note', },
                 { data: 'status', name: 'status',class:'text-center' },
+                {data: 'action', name: 'action', orderable: false, searchable: false, class: 'text-center' }
             ],
         });
         @endif
+        /*$('#table_review tbody').on( 'click', 'tr td:nth-of-type(2)', function () {
+            var note = table.cell( this ).data();
+            var note_html = `<textarea name="" id="" class="form-control form-control-sm" rows="3">`+note+`</textarea>`;
+            $(this).html(note_html);
+        }).blur(function(){
+            alert('ok');
+        })*/
+        $(document).on('click','.edit-review',function(){
+
+            var note = $(this).attr('note');
+            var review_id = $(this).attr('review_id');
+            var status = $(this).attr('status');
+
+            var status_html = "";
+            var check_1 = "";
+            var check_2 = "";
+
+            if(status == ""){
+                status_html = `
+                 <div class="custom-control custom-radio">
+                    <input type="radio" class="custom-control-input" checked id="successfully" name="status" value="1">
+                    <label class="custom-control-label text-primary" for="successfully">SUCCESSFULLY</label>
+                </div>
+                `;
+            }else{
+                if(status == 1){
+                    check_1 = "checked";
+                    check_2 = "";
+                }else{
+                    check_1 ="";
+                    check_2 = "checked";
+                }
+                status_html = `
+                    <div class="custom-control custom-radio">
+                        <input type="radio" class="custom-control-input" `+check_1+` id="successfully" name="status" value="1">
+                        <label class="custom-control-label text-primary" for="successfully">SUCCESSFULLY</label>
+                    </div>
+                    <div class="custom-control custom-radio">
+                        <input type="radio" class="custom-control-input" `+check_2+` id="failed" name="status" value="0">
+                        <label class="custom-control-label text-danger" for="failed">FAILED</label>
+                    </div>
+                `;
+            }
+            $("#review_id").val(review_id);
+            $("#review_name").val("Review "+review_id);
+            $("#note_review").val(note);
+            $(".status-form").html(status_html);
+            $("#detail_review").modal('show');
+        });
+        $(".btn-cancel-review").click(function(){
+            clearModalReview();
+        });
+        $(".btn-submit-review").click(function(){
+            var formData = new FormData($(this).parents('form')[0]);
+            formData.append('task_id',{{$id}});
+            formData.append('_token','{{csrf_token()}}');
+            formData.append('user_id','{{$task_info->assign_to}}');
+            formData.append('place_id','{{$task_info->place_id}}');
+            $.ajax({
+                url: '{{route('save_review')}}',
+                type: 'POST',
+                data: formData,
+                cache: false,
+                contentType: false,
+                processData: false,
+                async: true,
+                xhr: function() {
+                    var myXhr = $.ajaxSettings.xhr();
+                    return myXhr;
+                },
+            })
+                .done(function(data) {
+
+                    // console.log(data);
+                    // return;
+                    if(data.status == 'error'){
+                        toastr.error(data.message);
+                    }else{
+                        toastr.success(data.message);
+                        table_review.ajax.reload(null, false);
+                        clearModalReview();
+                    }
+                })
+                .fail(function() {
+                    console.log("error");
+                })
+        });
+        function clearModalReview(){
+            $("#review-form")[0].reset();
+            $("#detail_review").modal('hide');
+        }
 	});
 </script>
 @endpush
