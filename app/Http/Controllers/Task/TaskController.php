@@ -720,16 +720,30 @@ class TaskController extends Controller
         $input = $request->all();
         unset($input['_token']);
         $latest_review = MainUserReview::where([['task_id',$task_id],['review_id',$review_id]])->latest()->first();
+
+
+
         if(isset($input['status']) && isset($input['note']) && $latest_review->note == $input['note'] && $latest_review->status == $input['status'])
             return response(['status'=>'error','message'=>'Failed!Nothing Change to Save']);
         else{
             DB::beginTransaction();
             $update_review = MainUserReview::create($input);
-            if(!isset($update_review))
+            //GET PERCENT COMPLETE
+            $successfully_review = MainUserReview::where('task_id',$task_id)->latest()->get()->unique('review_id')->where('status',1)->count();
+            $percent_complete = round($successfully_review/$request->total_order*100);
+
+            if($percent_complete < 100)
+                $status = 2;
+            else
+                $status = 3;
+
+            $task_update = MainTask::find($task_id)->update(['complete_percent'=>$percent_complete,'status'=>$status]);
+
+            if(!isset($update_review) || !isset($task_update))
                 return response(['status'=>'error','message'=>'Failed!Save Error']);
             else{
                 DB::commit();
-                return response(['status'=>'success','message'=>'Successfully! Change Successfully!']);
+                return response(['status'=>'success','message'=>'Successfully! Change Successfully!','percent_complete'=>$percent_complete,'status'=>$status]);
             }
         }
     }

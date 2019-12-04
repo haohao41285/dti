@@ -494,23 +494,38 @@ class ReportController extends Controller
         })->download("xlsx");
     }
     public function reviews(){
+
+        if(Gate::denies('permission','review-report'))
+            return doNotPermission();
+
         $data['user_list'] = MainUser::get();
         return view('reports.reviews',$data );
     }
     public function reviewsDataTable(Request $request){
 
-        $count_failed_review = MainUserReview::latest()->get()->unique('review_id')->where('status',0)->count();
-        $review_info = MainUserReview::latest()->get();
-        $review_info = collect($review_info);
-        $review_user_list = $review_info->unique('user_id');
+        if(Gate::denies('permission','review-report'))
+            return doNotPermission();
+
         $review_user_arr = [];
         $review_list = [];
 
-        foreach($review_user_list as $review_user){
-            $review_user_arr[] = $review_user->user_id;
+        $review_info = MainUserReview::latest()->get();
+        $review_info = collect($review_info);
+
+        if(isset($request->user_id))
+            $user_list = MainUser::where('user_id',$request->user_id)->get();
+        else{
+            $review_user_list = $review_info->unique('user_id');
+            foreach($review_user_list as $review_user){
+                $review_user_arr[] = $review_user->user_id;
+            }
+            $user_arr = array_unique(explode(';',implode(';',$review_user_arr)));
+            $user_list = MainUser::whereIn('user_id',$user_arr)->get();
         }
-         $user_arr = array_unique(explode(';',implode(';',$review_user_arr)));
-        $user_list = MainUser::whereIn('user_id',$user_arr)->get();
+        //GET COMBO SERVICE
+        $combo_service_list = MainComboService::select('id')->where('cs_form_type',1)->orWhere('cs_form_type',3)->get()->toArray();
+        $combo_service_arr = array_values($combo_service_list);
+
         foreach($user_list as $user){
 
             $review_total = MainUserReview::where(function ($query) use ($user){
@@ -518,22 +533,55 @@ class ReportController extends Controller
                     ->orWhere('user_id','like','%;'.$user->user_id)
                     ->orWhere('user_id','like','%;'.$user->user_id.";%")
                     ->orWhere('user_id','like',$user->user_id,';%');
-            })->latest()->get();
-            $failed_total = $review_total->unique('review_id')->where('status',0)->count();
-            $successfully_total  = $review_total->unique('review_id')->where('status',1)->count();
+            })->latest();
 
-            MainTask::where(funtion($query) use ($user){
+            $task_list = MainTask::where(function($query) use ($user){
                 $query->where('assign_to',$user->user_id)
                 ->orWhere('assign_to','like','%;'.$user->user_id)
                 ->orWhere('assign_to','like','%;'.$user->user_id.';%')
                 ->orWhere('assign_to','like',$user->user_id.';%');
-            })
+            })->whereIn('service_id',$combo_service_arr)->where('content','!=',null);
 
-            return $successfully_total;
-//            $review_list[] = [
-//                'user' => $user->getFullname()."(".$user->user_nick_name.")",
-//                ''
-//            ];
+            if($request->start_date != ""  && $request->end_date != ""){
+                $start_date = format_date_db($request->start_date);
+                $end_date = format_date_db($request->end_date);
+                $review_total->whereBetween('updated_at',[$start_date,$end_date]);
+                $task_list->whereBetween('updated_at',[$start_date,$end_date]);
+            }
+            $review_total = $review_total->get();
+            $task_list = $task_list->select('content')->get();
+
+            $failed_total = $review_total->unique('review_id')->where('status',0)->count();
+            $successfully_total  = $review_total->unique('review_id')->where('status',1)->count();
+
+            $review_total = 0;
+            $percent_complete = 0;
+
+            foreach($task_list as $task){
+                $content = json_decode($task->content,TRUE);
+
+                if( isset($content['order_review']) && !empty($content['order_review'])){
+                    $review_total += intval($content['order_review']);
+                }elseif(isset($content['number']) && !empty($content['number']) )
+                    $review_total += intval($content['number']);
+            }
+            if($review_total > 0)
+                $percent_complete = round(($successfully_total/$review_total)*100);
+
+            $review_list[] = [
+                'id' => $user->user_id,
+                'user' => "<span class='text-capitalize'>".$user->getFullname()."</span>(".$user->user_nickname.")",
+                'total_reviews' => $review_total,
+                'successfully_total' => $successfully_total,
+                'failed_total' => $failed_total,
+                'percent_complete' => $percent_complete
+            ];
         }
+        return DataTables::of($review_list)
+            ->editColumn('percent_complete',function($row){
+                return $row['percent_complete']."%";
+            })
+            ->rawColumns(['user'])
+            ->make(true);
     }
 }

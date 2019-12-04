@@ -8,7 +8,7 @@
         <form id="customer_form">
             <div class="form-group col-md-12 row">
                 <div class="col-md-4">
-                    <label for="">Created date</label>
+                    <label for="">Updated date</label>
                     <div class="input-daterange input-group" id="created_at">
                         <input type="text" class="input-sm form-control form-control-sm" id="start_date" name="start_date" />
                         <span class="input-group-addon">to</span>
@@ -17,18 +17,10 @@
                 </div>
                 <div class="col-md-3">
                     <label for="">User</label>
-                    <select id="team_id" name="team_id" class="form-control form-control-sm">
+                    <select id="user_id" name="team_id" class="form-control form-control-sm">
+                            <option value="">--All--</option>
                         @foreach ($user_list as $key =>  $user)
                             <option value="{{$user->user_id}}">{{$user->getFullname()."(".$user->user_nickname.")"}}</option>
-                        @endforeach
-                    </select>
-                </div>
-                <div class="col-md-2">
-                    <label for="">Status</label>
-                    <select id="status-customer" name="status_customer" class="form-control form-control-sm">
-                        <option value="">-- ALL --</option>
-                        @foreach (getReviewStatus() as $key =>  $element)
-                            <option value="{{$key}}">{{$element}}</option>
                         @endforeach
                     </select>
                 </div>
@@ -43,13 +35,14 @@
 
         <table class="table table-striped table-hover" id="dataTableReviews" width="100%" cellspacing="0">
             <thead>
-                <th>ID</th>
-                <th>User</th>
-                <th>Total Reviews</th>
-                <th>Successfully Total</th>
-                <th>Failed Total</th>
-                <th>%Complete</th>
-            </tr>
+                <tr>
+                    <th>ID</th>
+                    <th>User</th>
+                    <th>Total Reviews</th>
+                    <th>Successfully Total</th>
+                    <th>Failed Total</th>
+                    <th>%Complete</th>
+                </tr>
             </thead>
         </table>
     </div>
@@ -58,29 +51,21 @@
 @push('scripts')
     <script type="text/javascript">
         $(document).ready(function() {
-            $("#created_at").datepicker({});
+            $("#created_at").datepicker();
             var team_id = $("#team_id").val();
             var table = $('#dataTableReviews').DataTable({
                 // dom: "lBfrtip",
-                order:[[6,"desc"]],
+                // order:[[6,"desc"]],
                 processing: true,
                 serverSide: true,
                 buttons: [
-                    // {
-                    //     text: '<i class="fas fa-exchange-alt"></i> Move Customers',
-                    //     className: "btn-sm move-customers"
-                    // },
-                        {{--{--}}
-                        {{--    text: '<i class="fas fa-download"></i> Import',--}}
-                        {{--    className: "btn-sm import-show"--}}
-                        {{--},--}}
-                    {
+                   /* {
                         text: '<i class="fas fa-upload"></i> Export',
                         className: "btn-sm",
                         action: function ( e, dt, node, config ) {
                             document.location.href = "{{route('report.customers.export')}}"+"/"+team_id
                         }
-                    }
+                    }*/
                 ],
                 ajax:{ url:"{{ route('report.reviews.datatable') }}",
                     data: function (d) {

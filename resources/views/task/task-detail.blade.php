@@ -123,7 +123,7 @@
             <tr>
                 <th>{{$task_info->date_start!=""?format_date($task_info->date_start):""}}</th>
                 <th>{{$task_info->date_start!=""?format_date($task_info->date_end):""}}</th>
-                <th>{{$task_info->complete_percent}}</th>
+                <th class="percent_complete">{{$task_info->complete_percent}}%</th>
                 <th>{{format_datetime($task_info->updated_at)}}</th>
                 <th class="text-capitalize">{{$task_info->getUpdatedBy->user_firstname}} {{$task_info->getUpdatedBy->user_lastname}}</th>
                 <th colspan="2"><a href="{{route('edit-task',$id)}}"><i class=" fas fa-edit"></i><span class="text-info">Edit Task</span></a> <a href="javascript:void(0)" id="send-notification"><i class="fas fa-bell"></i><span class="text-info ">Send Email & Notification to CSR</span></a></th>
@@ -243,7 +243,9 @@
     </table>
 
 {{--    <div class="row">--}}
-        @if(isset($content_arr['order_review']) && $content_arr['order_review'] > 0)
+        @if((isset($content_arr['order_review']) && $content_arr['order_review'] > 0)
+            || (isset($content_arr['number']) && $content_arr['number'] > 0)
+            )
             <form>
                 {{--@for ($i = 1; $i <= $content_arr['order_review']; $i++)
                     <div class="col-md-4">
@@ -548,7 +550,9 @@
                    console.log("error");
                });
        }
-       @if(isset($content_arr['order_review']) && $content_arr['order_review'] > 0)
+       @if( (isset($content_arr['number']) && $content_arr['number'] > 0)
+        || (isset($content_arr['order_review']) && $content_arr['order_review'] > 0)
+       )
         var table_review = $('#table_review').DataTable({
             // dom: "lBfrtip",
             // paging: false,
@@ -563,7 +567,11 @@
             ajax:{ url:"{{ route('get_review') }}",
                 data: function (d) {
                     d.task_id = '{{$id}}',
-                    d.order_review = '{{$content_arr['order_review']}}'
+                    @if( isset($content_arr['order_review']) )
+                        d.order_review = '{{$content_arr['order_review']}}'
+                    @elseif(isset($content_arr['number']))
+                        d.order_review = '{{$content_arr['number']}}'
+                    @endif
                 }
             },
             columns: [
@@ -573,7 +581,6 @@
                 {data: 'action', name: 'action', orderable: false, searchable: false, class: 'text-center' }
             ],
         });
-        @endif
         /*$('#table_review tbody').on( 'click', 'tr td:nth-of-type(2)', function () {
             var note = table.cell( this ).data();
             var note_html = `<textarea name="" id="" class="form-control form-control-sm" rows="3">`+note+`</textarea>`;
@@ -632,6 +639,11 @@
             formData.append('_token','{{csrf_token()}}');
             formData.append('user_id','{{$task_info->assign_to}}');
             formData.append('place_id','{{$task_info->place_id}}');
+            @if(isset($content_arr['order_review']) )
+            formData.append('total_order','{{$content_arr['order_review']}}');
+            @elseif(isset($content_arr['number']) )
+            formData.append('total_order','{{$content_arr['number']}}');
+            @endif
             $.ajax({
                 url: '{{route('save_review')}}',
                 type: 'POST',
@@ -647,14 +659,19 @@
             })
                 .done(function(data) {
 
-                    // console.log(data);
-                    // return;
                     if(data.status == 'error'){
                         toastr.error(data.message);
                     }else{
                         toastr.success(data.message);
                         table_review.ajax.reload(null, false);
                         clearModalReview();
+                        if(data.status == 2)
+                            var status = "PROCESSING";
+                        else
+                            var status = 'DONE';
+
+                        $(".status-task").text(status);
+                        $(".percent_complete").text(data.percent_complete+"%");
                     }
                 })
                 .fail(function() {
@@ -665,6 +682,7 @@
             $("#review-form")[0].reset();
             $("#detail_review").modal('hide');
         }
+        @endif
 	});
 </script>
 @endpush
