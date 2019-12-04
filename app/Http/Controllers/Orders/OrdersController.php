@@ -521,7 +521,7 @@ class OrdersController extends Controller
         if($request->start_date != "" && $request->end_date != ""){
             $start_date = Carbon::parse($request->start_date)->subDay(1)->format('Y-m-d');
             $end_date = Carbon::parse($request->end_date)->addDay(1)->format('Y-m-d');
-            $my_order_list = $my_order_list->whereBetween('main_combo_service_bought.created_at', [$start_date.$end_date]);
+            $my_order_list = $my_order_list->whereBetween('main_combo_service_bought.created_at', [$start_date,$end_date]);
         }
 
         $my_order_list = $my_order_list->select('main_combo_service_bought.*', 'main_customer.customer_lastname', 'main_customer.customer_firstname','main_customer.customer_phone','main_customer.customer_email', 'main_user.user_nickname')
