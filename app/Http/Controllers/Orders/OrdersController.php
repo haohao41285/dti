@@ -506,8 +506,6 @@ class OrdersController extends Controller
 
     public function myOrderDatatable(Request $request)
     {
-        $start_date = $request->start_date;
-        $end_date = $request->end_date;
         $my_order_arr = [];
 
         $my_order_list = MainComboServiceBought::with('getPlace')->join('main_customer', function ($join) {
@@ -520,13 +518,10 @@ class OrdersController extends Controller
         if (isset($request->my_order)) {
             $my_order_list = $my_order_list->where('main_combo_service_bought.created_by', Auth::user()->user_id);
         }
-        if ($start_date != "") {
-            $start_date = format_date_db($request->start_date);
-            $my_order_list = $my_order_list->whereDate('main_combo_service_bought.created_at', '>=', $start_date);
-        }
-        if ($end_date != "") {
-            $end_date = format_date_db($request->end_date);
-            $my_order_list = $my_order_list->whereDate('main_combo_service_bought.created_at', '<=', $end_date);
+        if($request->start_date != "" && $request->end_date != ""){
+            $start_date = Carbon::parse($request->start_date)->subDay(1)->format('Y-m-d');
+            $end_date = Carbon::parse($request->end_date)->addDay(1)->format('Y-m-d');
+            $my_order_list = $my_order_list->whereBetween('main_combo_service_bought.created_at', [$start_date.$end_date]);
         }
 
         $my_order_list = $my_order_list->select('main_combo_service_bought.*', 'main_customer.customer_lastname', 'main_customer.customer_firstname','main_customer.customer_phone','main_customer.customer_email', 'main_user.user_nickname')
@@ -536,7 +531,7 @@ class OrdersController extends Controller
 
             //GET INFORMATION CARD
             if (!isset($request->my_order)){
-                if ($order->csb_status == 1)
+                if($order->csb_status == 1)
                     $infor = "<span>ID: " . $order->csb_trans_id . "</span><br><span>Name: " . $order->csb_card_type . "</span><br><span>Number: " . $order->csb_card_number . "</span>";
                 else
                     $infor = "<span>Account Number: " . $order->account_number . "</span><br><span>Name: " . $order->routing_number . "</span><br><span>Bank Name: " . $order->bank_name . "</span>";
@@ -590,8 +585,6 @@ class OrdersController extends Controller
         if (Gate::denies('permission', 'new-order-create'))
             return doNotPermission();
 
-        $start_date = $request->start_date;
-        $end_date = $request->end_date;
         $service_id = $request->service_id;
         $seller_id = $request->seller_id;
         $team_id = Auth::user()->user_team;
@@ -605,13 +598,10 @@ class OrdersController extends Controller
         if (isset($team_leader) && $team_leader != "") {
             $order_list = $order_list->where('main_user.user_team', $team_id);
         }
-        if ($start_date != "") {
-            $start_date = format_date_db($start_date);
-            $order_list = $order_list->whereDate('main_combo_service_bought.created_at', '>=', $start_date);
-        }
-        if ($end_date != "") {
-            $end_date = format_date_db($end_date);
-            $order_list = $order_list->whereDate('main_combo_service_bought.created_at', '<=', $end_date);
+        if($request->start_date != "" && $request->end_date != ""){
+            $start_date = Carbon::parse($request->start_date)->subDay(1)->format('Y-m-d');
+            $end_date = Carbon::parse($request->end_date)->addDay(1)->format('Y-m-d');
+            $order_list = $order_list->whereBetween('main_combo_service_bought.created_at',[$start_date,$end_date]);
         }
         if ($seller_id != "") {
             $order_list = $order_list->where('main_combo_service_bought.created_by', $seller_id);
@@ -1225,8 +1215,6 @@ class OrdersController extends Controller
     }
     public function paymentOrderDatatable(Request $request)
     {
-        $start_date =$request->start_date;
-        $end_date = $request->end_date;
         $my_order_arr = [];
 
         $my_order_list = MainComboServiceBought::with('getPlace')->join('main_customer',function($join){
@@ -1240,13 +1228,11 @@ class OrdersController extends Controller
         if(isset($request->my_order)){
             $my_order_list = $my_order_list->where('main_combo_service_bought.created_by',Auth::user()->user_id);
         }
-        if($start_date != ""){
-            $start_date = format_date_db($request->start_date);
-            $my_order_list = $my_order_list->whereDate('main_combo_service_bought.created_at','>=',$start_date);
-        }
-        if($end_date != ""){
-            $end_date = format_date_db($request->end_date);
-            $my_order_list = $my_order_list->whereDate('main_combo_service_bought.created_at','<=',$end_date);
+
+        if($request->start_date != "" && $request->end_date != ""){
+            $start_date = Carbon::parse($request->start_date)->subDay(1)->format('Y-m-d');
+            $end_date = Carbon::parse($request->end_date)->addDay(1)->format('Y-m-d');
+            $my_order_list = $my_order_list->whereBetween('main_combo_service_bought.created_at',[$start_date,$end_date]);
         }
 
         $my_order_list = $my_order_list->select('main_combo_service_bought.*','main_customer.customer_lastname','main_customer.customer_firstname','main_user.user_nickname')
