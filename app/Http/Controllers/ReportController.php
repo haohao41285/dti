@@ -543,8 +543,8 @@ class ReportController extends Controller
             })->whereIn('service_id',$combo_service_arr)->where('content','!=',null);
 
             if($request->start_date != ""  && $request->end_date != ""){
-                $start_date = format_date_db($request->start_date);
-                $end_date = format_date_db($request->end_date);
+                $start_date = Carbon::parse($request->start_date)->subDay(1)->format('Y-m-d');
+                $end_date = Carbon::parse($request->end_date)->addDay(1)->format('Y-m-d');
                 $review_total->whereBetween('updated_at',[$start_date,$end_date]);
                 $task_list->whereBetween('updated_at',[$start_date,$end_date]);
             }

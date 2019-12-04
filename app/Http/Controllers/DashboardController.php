@@ -194,7 +194,7 @@ class DashboardController extends Controller {
                 return '<a href="'.route('customer-detail',$row['customer_customer_template_id']).'">'.$row['cs_id'].'</a>';
             })
             ->addColumn('action',function($row){
-                return '<a class="btn btn-sm btn-secondary order-service" href="'.route('add-order',$row['customer_customer_template_id']).'" title="Go To Order"><i class="fas fa-shopping-cart"></i></a>';
+                return '<a class="order-service" href="'.route('add-order',$row['customer_customer_template_id']).'" title="Go To Order"><i class="fas fa-shopping-cart"></i></a>';
             })
             ->rawColumns(['action','seller_name','service_info','expired_date','cs_id'])
             ->make(true);

@@ -237,7 +237,7 @@
                 paging:false,
                 searching: false,
                 info:false,
-                responsive: false,
+                // responsive: false,
                 ajax:{ url:"{{ route('customer-service-datatable') }}",
                     data: function (d) {
                     }
