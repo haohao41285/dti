@@ -316,13 +316,8 @@
                                 <tr>
                                     <td>`+val.task+`</td>
                                     <td>`+val.subject+`</td>
-                                    <td>`+val.priority+`</td>
                                     <td>`+val.status+`</td>
-                                    <td>`+val.date_start+`</td>
-                                    <td>`+val.date_end+`</td>
-                                    <td>`+complete_percent+`</td>
                                     <td>`+val.category+`</td>
-                                    <td>`+val.assign_to+`</td>
                                     <td>`+val.updated_at+`</td>
                                 </tr> `;
                             });
@@ -341,13 +336,8 @@
             <tr class="bg-info text-white">
                 <th scope="col">SubTask</th>
                 <th scope="col">Subject</th>
-                <th class="text-center">Priority</th>
                 <th class="text-center">Status</th>
-                <th class="text-center">Date Start</th>
-                <th class="text-center">Date end</th>
-                <th class="text-center">%Complete</th>
                 <th class="text-center">Category</th>
-                <th class="text-center">Assign To</th>
                 <th class="text-center">Last Updated</th>
             </tr>`;
         }
