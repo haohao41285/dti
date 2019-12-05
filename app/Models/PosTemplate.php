@@ -20,6 +20,7 @@ class PosTemplate extends Model
         'template_id',
         'template_place_id',
         'template_title',
+        'template_color',
         'template_discount',
         'template_discount_type',
         'template_list_service',
@@ -29,7 +30,8 @@ class PosTemplate extends Model
         'updated_at',
         'template_status',
         'template_type_id',
-        'template_table_type',
+        'template_table_type'
+
     ];
 
     protected $guarded = [];
@@ -104,7 +106,7 @@ class PosTemplate extends Model
         ->make(true);
     }
 
-    public static function saveAuto($id, $placeId, $title, $discount, $discountType, $image, $cateservices, $couponType,$tableType){
+    public static function saveAuto($id, $placeId, $title,$color , $discount, $discountType, $image, $cateservices, $couponType,$tableType){
         if($image){
             $image = ImagesHelper::uploadImageToAPI($image,'auto_template');
         }
@@ -113,6 +115,7 @@ class PosTemplate extends Model
         $arr = [
             'template_place_id' => $placeId,
             'template_title' => $title,
+            'template_color' => $color,
             'template_discount' => $discount,
             'template_discount_type' => $discountType,
             'template_linkimage' => $image,
