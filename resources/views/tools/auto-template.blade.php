@@ -73,19 +73,19 @@
                             @endforeach
                         </select>
                     </div>
+                    <div class="form-group col-12 row">
+                        <label class="col-5">Color</label>
+                        <label class="col-7 form-control-sm" style="border: 1px solid #000" data-color="#fff" id="value-color"></label>
+                        <div class="half readout"></div>
+                        <div class="half text-center" style="margin: auto;">
+                            <div class="colorPicker"></div>
+                        </div>
+                    </div>
                     <div class="form-group col-12">
                         <label>Image</label>
                         <div class="previewImage">
                             <img id="previewImageAutoCoupon" src="{{ asset('/images/no-image.png') }}">
                             <input type="file" class="custom-file-input" name="image" previewimageid="previewImageAutoCoupon">
-                        </div>
-                    </div>
-                    <div class="form-group col-12 row">
-                        <label class="col-5">Color</label>
-                        <label class="col-7" id="value-color">Color</label>
-                        <div class="half readout"></div>
-                        <div class="half">
-                            <div class="colorPicker"></div>
                         </div>
                     </div>
                     {{-- <div class=" form-group row col-12">
@@ -179,7 +179,7 @@ $(document).ready(function() {
         e.preventDefault();
         var form = $(this)[0];
         var form_data = new FormData(form);
-        var color = $("#value-color").text();
+        var color = $("#value-color").attr('data-color');
         form_data.append('type', type);
         form_data.append('color', color);
         $.ajax({
@@ -234,6 +234,11 @@ $(document).ready(function() {
                     $("select[name='templateType']").find("option:selected").attr("selected", false);
                     $("select[name='templateType']").find("option[value='" + data.data.template_type_id + "']").attr("selected", true);
 
+                    color = "#fff";
+                    if (data.data.template_color) {
+                        color = data.data.template_color;
+                    }
+                    $("#value-color").css("background-color", color);
                 }
             },
             error: function() {
@@ -281,16 +286,16 @@ $(document).ready(function() {
     $("#btn-coupon").trigger("click");
 
     var colorPicker = new iro.ColorPicker(".colorPicker", {
-        width: 100,
+        width: 200,
         borderWidth: 1,
         borderColor: "#fff",
     });
-    var values = document.getElementById("value-color");
+
     colorPicker.on(["color:init", "color:change"], function(color) {
         // color = color.hexString;
-        values.innerHTML = [
-            color.hexString
-        ].join("<br>");
+        // console.log(color.hexString);
+        $("#value-color").css("background-color", color.hexString);
+        $("#value-color").attr('data-color', color.hexString);
     });
 });
 
