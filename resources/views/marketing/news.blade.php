@@ -105,7 +105,7 @@ News
                 <div class="modal-body" style="position: relative;overflow: auto;max-height:70vh;width: 100%;">
                     <div class="form-group row col-12">
                         <label class="col-2 ">Title</label>
-                        <input class="form-control-sm form-control col-10" type="text" name="title">
+                        <input required="" class="form-control-sm form-control col-10" type="text" name="title">
                     </div>
                     <div class="form-group row col-12">
                         <label class="col-2 ">Image</label>
@@ -116,12 +116,12 @@ News
                     </div>
                     <div class="form-group row col-12">
                         <label class="col-2 ">Short Content</label>
-                        <input class="form-control-sm form-control col-10" type="text" name="short_content">
+                        <input required="" class="form-control-sm form-control col-10" type="text" name="short_content">
                     </div>
                     <div class="form-group row col-12">
                         <label class="col-2 ">Content</label>
                         <div class="col-10 row">
-                            <textarea name="content" class="form-control summernote col-12"></textarea>
+                            <textarea required="" name="content" class="form-control summernote col-12"></textarea>
                         </div>
                     </div>
                 </div>
