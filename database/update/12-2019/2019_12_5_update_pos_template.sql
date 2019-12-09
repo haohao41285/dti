@@ -1,0 +1,1 @@
+ALTER TABLE `pos_template` ADD `template_color` VARCHAR(110) NULL AFTER `template_title`;

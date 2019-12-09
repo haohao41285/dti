@@ -42,7 +42,7 @@
         </div>
         <div class="card shadow mb-4 ">
             <div class="card-header py-2">
-                <h6 class="m-0 font-weight-bold text-primary " id="auto-template-title">Add</h6>
+                <h6 class="m-0 font-weight-bold text-primary " id="auto-template-title">Add </h6>
             </div>
             <div class="card-body">
                 <form method="post" id="auto-template-form" enctype="multipart/form-data">
@@ -73,6 +73,14 @@
                             @endforeach
                         </select>
                     </div>
+                    <div class="form-group col-12 row">
+                        <label class="col-5">Color</label>
+                        <label class="col-7 form-control-sm" style="border: 1px solid #000" data-color="#fff" id="value-color"></label>
+                        <div class="half readout"></div>
+                        <div class="half text-center" style="margin: auto;">
+                            <div class="colorPicker"></div>
+                        </div>
+                    </div>
                     <div class="form-group col-12">
                         <label>Image</label>
                         <div class="previewImage">
@@ -98,9 +106,10 @@
 </div>
 @endsection
 @push('scripts')
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@jaames/iro/dist/iro.min.js"></script>
 <script>
-function reset() {
-    $("#auto-template-title").text("Add");
+function reset(title) {
+    $("#auto-template-title").text("Add " + title);
     $("input[name='action']").val("create");
     $("#auto-template-form")[0].reset();
     $(".previewImage img").attr("src", "{{ asset('images/no-image.png') }}");
@@ -111,24 +120,29 @@ function reset() {
 }
 $(document).ready(function() {
     var type = null;
+    var title = null;
+    // var color = null;
     perviewImage();
 
     $("#btn-coupon").on('click', function(e) {
         e.preventDefault();
+        title = "Coupon";
         type = 1;
         $(".table-title").text("Auto coupon list");
         autoTemplateTable.draw();
-        reset();
+        reset(title);
         $(".coupon").show();
         $(".promotion").hide();
+
     });
 
     $("#btn-promotion").on('click', function(e) {
         e.preventDefault();
+        title = "Promotion";
         type = 2;
         $(".table-title").text("Auto promotion list");
         autoTemplateTable.draw();
-        reset();
+        reset(title);
         $(".coupon").hide();
         $(".promotion").show();
     });
@@ -165,7 +179,9 @@ $(document).ready(function() {
         e.preventDefault();
         var form = $(this)[0];
         var form_data = new FormData(form);
+        var color = $("#value-color").attr('data-color');
         form_data.append('type', type);
+        form_data.append('color', color);
         $.ajax({
             url: "{{ route('saveAutoTemplate') }}",
             method: "post",
@@ -200,7 +216,7 @@ $(document).ready(function() {
             dataType: "json",
             success: function(data) {
                 if (data.status) {
-                    $("#auto-template-title").text("Update");
+                    $("#auto-template-title").text("Update " + title);
                     $("input[name='action']").val("update");
 
                     $("input[name='id']").val(id);
@@ -213,11 +229,16 @@ $(document).ready(function() {
 
 
                     $("#previewImageAutoCoupon").attr("src", "{{env('URL_FILE_VIEW')}}" + data.data.template_linkimage);
-                    $("input[name='services']").val("sada");
+                    $("input[name='services']").val("");
 
                     $("select[name='templateType']").find("option:selected").attr("selected", false);
                     $("select[name='templateType']").find("option[value='" + data.data.template_type_id + "']").attr("selected", true);
 
+                    color = "#fff";
+                    if (data.data.template_color) {
+                        color = data.data.template_color;
+                    }
+                    $("#value-color").css("background-color", color);
                 }
             },
             error: function() {
@@ -259,10 +280,23 @@ $(document).ready(function() {
 
     $(".resetAdd").on("click", function(e) {
         e.preventDefault();
-        reset();
+        reset(title);
     });
 
     $("#btn-coupon").trigger("click");
+
+    var colorPicker = new iro.ColorPicker(".colorPicker", {
+        width: 200,
+        borderWidth: 1,
+        borderColor: "#fff",
+    });
+
+    colorPicker.on(["color:init", "color:change"], function(color) {
+        // color = color.hexString;
+        // console.log(color.hexString);
+        $("#value-color").css("background-color", color.hexString);
+        $("#value-color").attr('data-color', color.hexString);
+    });
 });
 
 </script>
