@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Setting;
 
 use App\Http\Controllers\Controller;
+use Validator;
 use Illuminate\Http\Request;
 use App\Helpers\GeneralHelper;
 use App\Models\MainTeam;
@@ -260,6 +261,20 @@ class SetupTeamController  extends Controller
 	}
 	public function addTeamType(Request $request)
 	{
+	    $rule = [
+	        'team_type_description' => 'required',
+	        'team_type_name' => 'required',
+        ];
+	    $message = [
+	        'team_type_description.required' => 'Description is required',
+            'team_type_name.required' => 'Name is required'
+        ];
+	    $validattor = Validator::make($request->all(),$rule,$message);
+	    if($validattor->fails())
+	        return response([
+	            'status' => 'error',
+                'message' => $validattor->getMessageBag()->toArray(),
+            ]);
 		$id = $request->id;
 		$team_type_description = $request->team_type_description;
 		$team_type_name = $request->team_type_name;

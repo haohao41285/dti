@@ -122,7 +122,11 @@ $(document).ready(function($) {
         var team_type_description = $("#team_type_description").val();
         var team_type_name = $("#team_type_name").val();
 
-        if (team_type_name != "") {
+        if(team_type_description === ""){
+            toastr.error('Description is required!');
+            return;
+        }
+        if (team_type_name !== "") {
             $.ajax({
                     url: '{{route('add-team-type')}}',
                     type: 'GET',
@@ -135,8 +139,14 @@ $(document).ready(function($) {
                 })
                 .done(function(data) {
                     data = JSON.parse(data);
-                    if (data.status == 'error') {
-                        toastr.error(data.message);
+                    if (data.status === 'error') {
+                        if(typeof(data.message) === 'string' )
+                            toastr.error(data.message);
+                        else{
+                            $.each(data.message,function (ind,val) {
+                                toastr.error(val);
+                            });
+                        }
                     } else {
                         clearView();
                         dataTable.draw();
@@ -147,7 +157,7 @@ $(document).ready(function($) {
                     // console.log(thrownError + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText);
                 });
         } else {
-            toastr.error('Please enter Team type name!')
+            toastr.error('Name is required');
         }
     });
     $(".cancel-tt").click(function() {

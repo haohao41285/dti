@@ -10,9 +10,9 @@
                 <div class="col-md-4">
                     <label for="">Updated date</label>
                     <div class="input-daterange input-group" id="created_at">
-                        <input type="text" class="input-sm form-control form-control-sm" id="start_date" name="start_date" />
+                        <input type="text" class="input-sm form-control form-control-sm" value="{{today()->format('m/d/Y')}}" id="start_date" name="start_date" />
                         <span class="input-group-addon">to</span>
-                        <input type="text" class="input-sm form-control form-control-sm" id="end_date" name="end_date" />
+                        <input type="text" class="input-sm form-control form-control-sm" value="{{today()->format('m/d/Y')}}" id="end_date" name="end_date" />
                     </div>
                 </div>
                 <div class="col-md-3">

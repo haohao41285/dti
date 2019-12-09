@@ -189,7 +189,11 @@ Route::group(['middleware' => ['auth']], function () {
             Route::post('/save-auto-template', 'AutoTemplateController@saveAutoTemplate')->name('saveAutoTemplate');
             Route::get('get-services-by-place-id', 'AutoTemplateController@getServicesByPlaceId')->name('getServicesByPlaceId');
         });
-
+        Route::group(['prefix' => 'demo-places'],function(){
+            Route::get('/','DemoPlaceController@index');
+            Route::get('datatable','DemoPlaceController@datatable')->name('demo_place.datatable');
+            Route::get('change-demo-status','DemoPlaceController@changeDemoStatus')->name('demo_place.change_demo_status');
+        });
     });
 
     Route::group(['prefix' => 'recentlog'], function() {
