@@ -71,12 +71,6 @@ if (!function_exists('format_month')){
     }
 }
 
-if (!function_exists('format_year')){
-    function format_year($date){
-        return Carbon::parse($date)->format('Y');
-    }
-}
-
 if (!function_exists('gettime_by_datetime')) {
     function gettime_by_datetime($date)
     {
@@ -106,20 +100,6 @@ if (!function_exists('get_endOfMonth')) {
     function get_endOfMonth()
     {
         return Carbon::today()->endOfMonth() ;
-    }
-}
-
-if (!function_exists('getStartMonthByDate')) {
-    function getStartMonthByDate($date)
-    {
-        return Carbon::parse($date)->startOfMonth() ;
-    }
-}
-
-if (!function_exists('getEndMonthByDate')) {
-    function getEndMonthByDate($date)
-    {
-        return Carbon::parse($date)->endOfMonth() ;
     }
 }
 
