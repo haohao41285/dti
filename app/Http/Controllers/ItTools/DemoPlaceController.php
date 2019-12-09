@@ -19,7 +19,7 @@ class DemoPlaceController extends Controller
                 if($row->place_demo  == 1)
                     $check = 'checked';
                 else $check = "";
-                return '<input type="checkbox" place_demo="'.$row->place_demo.'" place_id="'.$row->place_id.'" class="js-switch"'.$check.'/>';
+                return '<input type="checkbox" place-demo="'.$row->place_demo.'" place- id="'.$row->place_id.'" class="js-switch"'.$check.'/>';
             })
             ->addColumn('action',function($row){
                 return '<a class="btn btn-sm btn-secondary edit-team" href="javascript:void(0)"><i class="fas fa-edit"></i></a>';
