@@ -345,7 +345,7 @@
 @push('scripts')
     <script type="text/javascript">
         $(document).ready(function(){
-            autoTemplateTable = $('#places-datatable').DataTable({
+            placeDatatable = $('#places-datatable').DataTable({
                 // dom: "lBfrtip",
                 processing: true,
                 serverSide: true,
@@ -380,28 +380,25 @@
                 }
             });
             $(document).on('click','.switchery',function(){
-                alert('ok');
-                return;
                 var place_demo  = $(this).siblings('input').attr('place_demo');
                 var place_id = $(this).siblings('input').attr('place_id');
-                alert(place_id);
-                return;
 
                 $.ajax({
                     url: "{{ route('demo_place.change_demo_status') }}",
                     method: "get",
                     dataType: "html",
                     data: {
-                        place_demo:place_demo,
-                        place_id:place_id
+                        place_demo,
+                        place_id
                     },
                     success: function(data) {
-                        console.log(data);return;
+                        var data = JSON.parse(data);
                         if (data.status === 'error') {
                             toastr.error(data.message);
                         }else{
                             toastr.success(data.message);
                         }
+                        placeDatatable.ajax.reload( null, false );
                     },
                     error: function() {
                         toastr.error("Failed! Change Demo Status Failed!");

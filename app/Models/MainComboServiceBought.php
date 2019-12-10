@@ -57,6 +57,9 @@ class MainComboServiceBought extends Model
     public function getUpdatedBy(){
         return $this->belongsTo(MainUser::class,'updated_by','user_id');
     }
+    public function getDemoPlace(){
+        return $this->belongsTo(PosPlace::class,'csb_place_id','place_id')->withDefault()->where('place_demo','!=',1);
+    }
 
     public static function getSumChargeByYear($year){
         $sum_charge = self::select('csb_charge','created_by')

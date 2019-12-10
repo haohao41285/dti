@@ -1217,13 +1217,20 @@ class OrdersController extends Controller
     {
         $my_order_arr = [];
 
-        $my_order_list = MainComboServiceBought::with('getPlace')->join('main_customer',function($join){
-            $join->on('main_combo_service_bought.csb_customer_id','main_customer.customer_id');
-        })
+        $my_order_list = MainComboServiceBought::join('main_customer',function($join){
+                $join->on('main_combo_service_bought.csb_customer_id','main_customer.customer_id');
+            })
             ->join('main_user',function($join){
                 $join->on('main_combo_service_bought.created_by','main_user.user_id');
             })
-        ->where('main_combo_service_bought.csb_status',0);
+            ->leftjoin('pos_place',function($join){
+                $join->on('main_combo_service_bought.csb_place_id','pos_place.place_id');
+            })
+            ->where(function ($query){
+                $query->where('pos_place.place_demo','=',null)
+                    ->orWhere('pos_place.place_demo','=',0);
+            })
+            ->where('main_combo_service_bought.csb_status',0);
 
         if(isset($request->my_order)){
             $my_order_list = $my_order_list->where('main_combo_service_bought.created_by',Auth::user()->user_id);
@@ -1279,7 +1286,7 @@ class OrdersController extends Controller
                 return '<span class="text-danger"><b>'.$row['total_charge'].'</b></span>';
             })
             ->addColumn('action',function ($row){
-                return '<a class="btn btn-sm btn-secondary"  href="'.route('payment-order',$row['id']).'" title="Payment Order"><i class="fas fa-money-bill"></i></a>';
+                return '<a class="btn btn-sm"  href="'.route('payment-order',$row['id']).'" title="Payment Order"><i class="fas fa-wallet"></i></a>';
             })
             ->rawColumns(['servivce','information','customer','order_date','action','total_charge'])
             ->make(true);

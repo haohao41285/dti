@@ -19,7 +19,7 @@ class DemoPlaceController extends Controller
                 if($row->place_demo  == 1)
                     $check = 'checked';
                 else $check = "";
-                return '<input type="checkbox" place-demo="'.$row->place_demo.'" place-id="'.$row->place_id.'" class="js-switch"'.$check.'/>';
+                return '<input type="checkbox" place_demo="'.$row->place_demo.'" place_id="'.$row->place_id.'" class="js-switch"'.$check.'/>';
             })
             ->addColumn('action',function($row){
                 return '<a class="btn btn-sm btn-secondary edit-team" href="javascript:void(0)"><i class="fas fa-edit"></i></a>';
@@ -31,7 +31,15 @@ class DemoPlaceController extends Controller
 
         $place_demo = $request->place_demo;
         $place_id = $request->place_id;
-        return $request->all();
+        if($place_demo == 1)
+            $place_demo_update = 0;
+        else
+            $place_demo_update = 1;
+        $update_place = PosPlace::where('place_id',$place_id)->update(['place_demo'=>$place_demo_update]);
 
+        if(!isset($update_place))
+            return response(['status'=>'error','message'=>'Failed! Change Demo Status Failed!']);
+        else
+            return response(['status'=>'success','message'=>'Successfully! Change Demo Status Successfully!']);
     }
 }
