@@ -28,7 +28,7 @@
                             <th>Phone</th>
                             <th>License</th>
                             <th>Demo Place</th>
-                            <th class="w-30">Action</th>
+                            {{--<th class="w-30">Action</th>--}}
                         </tr>
                         </thead>
                     </table>
@@ -367,7 +367,7 @@
                     { data: 'place_phone', name: 'place_phone', },
                     { data: 'place_ip_license', name: 'place_ip_license', class: "text-center" },
                     { data: 'place_demo', name: 'place_demo', class: "text-center" },
-                    { data: 'action', name: 'action', orderable: false, searchable: false, class: 'text-center' }
+                    // { data: 'action', name: 'action', orderable: false, searchable: false, class: 'text-center' }
                 ],
                 fnDrawCallback:function (oSettings) {
                     var elems = Array.prototype.slice.call(document.querySelectorAll('.js-switch'));
