@@ -31,7 +31,7 @@
             </div>
         </div>
         <hr>
-        <table class="table table-bordered table-hover" id="dataTableAllCustomer" width="100%" cellspacing="0">
+        <table class="table table-sm table-bordered table-hover" id="dataTableAllCustomer" width="100%" cellspacing="0">
             <thead>
                 <tr class="text-center">
                     <th>Id</th>

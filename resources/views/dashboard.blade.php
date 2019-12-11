@@ -117,7 +117,7 @@
                     <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
                         <span class="m-0 font-weight-bold text-primary">Processing Task</span> <a href="{{route('my-task')}}">View More >>></a>
                     </div>
-                    <table class="table table-striped table-hover" id="datatable-task-dashboard" width="100%" cellspacing="0">
+                    <table class="table table-sm table-striped table-hover" id="datatable-task-dashboard" width="100%" cellspacing="0">
                         <thead>
                         <tr>
                             <th>Task#</th>
@@ -141,7 +141,7 @@
                     <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
                         <span class="m-0 font-weight-bold text-primary">Customer is about to expire</span> <a href="{{route('myCustomers')}}">View More >>></a>
                     </div>
-                    <table class="table table-striped table-hover" id="datatable-customer-service" width="100%" cellspacing="0">
+                    <table class="table table-sm table-striped table-hover" id="datatable-customer-service" width="100%" cellspacing="0">
                         <thead>
                         <tr>
                             <th>ID</th>

@@ -20,7 +20,7 @@
         </div>
         <div class="card-body">
             <div class="table-responsive">
-                <table class="table table-bordered" id="places-datatable" width="100%" cellspacing="0">
+                <table class="table table-bordered table-hover" id="places-datatable" width="100%" cellspacing="0">
                     <thead>
                         <tr>
                             <th>ID</th>
@@ -850,6 +850,7 @@ $(document).ready(function() {
         processing: true,
         serverSide: true,
         ajax: { url: "{{ route('getPlacesDatatable') }}" },
+        order: [[0,'desc']],
         columns: [
 
             { data: 'place_id', name: 'place_id', class: 'text-center' },

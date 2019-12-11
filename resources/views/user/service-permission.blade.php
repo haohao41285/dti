@@ -9,7 +9,7 @@
             <div class="card-header py-3">
                 <h5><b>Permission for <i class="text-danger"></i> team</b></h5>
             </div>
-            <table class="table table-hover table-bordered" id="service-permission">
+            <table class="table table-sm table-hover table-bordered" id="service-permission">
                 <thead class="text-center thead-light">
                 <th>Services/Permissions</th>
                 @foreach($team_list as $team)

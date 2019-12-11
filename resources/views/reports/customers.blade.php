@@ -58,7 +58,7 @@
                 </tbody>
             </table>
         </div>
-        <table class="table table-striped table-hover" id="dataTableAllCustomer" width="100%" cellspacing="0">
+        <table class="table table-sm table-striped table-hover" id="dataTableAllCustomer" width="100%" cellspacing="0">
             <thead>
             <th>ID</th>
             <th>Nail Shop</th>

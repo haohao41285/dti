@@ -29,7 +29,7 @@
 
                 </div>
                 <hr>
-                <table class="table table-striped table-hover" id="customer_user_1" width="100%" cellspacing="0">
+                <table class="table table-sm table-striped table-hover" id="customer_user_1" width="100%" cellspacing="0">
                     <thead>
                         <tr>
                             <th>ID</th>
@@ -47,7 +47,7 @@
                     </select>
                 </div>
                 <hr>
-                <table class="table table-striped table-hover" id="customer_user_2" width="100%" cellspacing="0">
+                <table class="table table-sm table-striped table-hover" id="customer_user_2" width="100%" cellspacing="0">
                     <thead>
                         <tr>
                             <th>ID</th>

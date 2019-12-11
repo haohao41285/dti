@@ -38,7 +38,7 @@
                 </div>
         </div>
     </form>
-        <table class="table table-striped table-hover" id="dataTableAllService" width="100%" cellspacing="0">
+        <table class="table table-sm table-striped table-hover" id="dataTableAllService" width="100%" cellspacing="0">
             <thead>
                 <tr>
                     <th>ID</th>

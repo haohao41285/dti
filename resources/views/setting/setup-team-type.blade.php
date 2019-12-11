@@ -10,7 +10,7 @@ Team Type List
                 <h6 class="m-0 font-weight-bold text-primary">Team Type List</h6>
             </div>
             <div class="card-body">
-                <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                <table class="table table-sm table-bordered" id="dataTable" width="100%" cellspacing="0">
                     <thead>
                         <tr>
                             <th class="text-center">ID</th>

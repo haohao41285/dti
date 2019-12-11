@@ -51,7 +51,7 @@ if (!function_exists('format_dayMonth')){
 
 if (!function_exists('format_dayWeek')){
     function format_dayWeek($date)
-    {   
+    {
         $weekMap = [
             0 => 'SUN',
             1 => 'MON',
@@ -71,6 +71,12 @@ if (!function_exists('format_month')){
     }
 }
 
+if (!function_exists('format_year')){
+    function format_year($date){
+        return Carbon::parse($date)->format('Y');
+    }
+}
+
 if (!function_exists('gettime_by_datetime')) {
     function gettime_by_datetime($date)
     {
@@ -87,7 +93,7 @@ if (!function_exists('get_nowDate')) {
         }else{
             return Carbon::now()->format($format);
         }
-        
+
     }
 }
 if (!function_exists('get_startofMonth')) {
@@ -100,6 +106,20 @@ if (!function_exists('get_endOfMonth')) {
     function get_endOfMonth()
     {
         return Carbon::today()->endOfMonth() ;
+    }
+}
+
+if (!function_exists('getStartMonthByDate')) {
+    function getStartMonthByDate($date)
+    {
+        return Carbon::parse($date)->startOfMonth() ;
+    }
+}
+
+if (!function_exists('getEndMonthByDate')) {
+    function getEndMonthByDate($date)
+    {
+        return Carbon::parse($date)->endOfMonth() ;
     }
 }
 
