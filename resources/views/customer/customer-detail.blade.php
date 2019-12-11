@@ -54,7 +54,7 @@
     </ul>
     <div class="tab-content" id="myTabContent">
         <div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">
-            <table class="table table-hover table-bordered" id="task-datatable" widtd="100%" cellspacing="0">
+            <table class="table table-hover table-sm table-bordered" id="task-datatable" widtd="100%" cellspacing="0">
         <thead  class="thead-light">
             <tr class="text-center">
                 <th>ORDER ID</th>
@@ -108,7 +108,7 @@
     </table>
         </div>
         <div class="tab-pane fade" id="profile" role="tabpanel" aria-labelledby="profile-tab">
-            <table class="table table-hover table-bordered" id="place-order-datatable" widtd="100%" cellspacing="0">
+            <table class="table table-hover table-sm table-bordered" id="place-order-datatable" widtd="100%" cellspacing="0">
                 <thead  class="thead-light">
                 <tr class="text-center">
                     <th>Place Name</th>

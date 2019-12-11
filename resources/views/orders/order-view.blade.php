@@ -146,7 +146,7 @@
         </thead>
 
     </table>--}}
-    <table class="table mt-4 table-hover table-bordered" id="" widtd="100%" cellspacing="0">
+    <table class="table mt-4 table-sm table-hover table-bordered" id="" widtd="100%" cellspacing="0">
         <thead  class="thead-light">
             <tr>
                 <th>TASK#</th>

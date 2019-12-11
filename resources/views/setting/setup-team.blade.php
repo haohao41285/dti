@@ -265,6 +265,7 @@ Setup Team
             $("#editModal").modal('hide');
             table.draw();
             memberTable.draw();
+            userTable.draw();
             toastr.success(data.message);
           }
         })

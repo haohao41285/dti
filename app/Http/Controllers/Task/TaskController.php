@@ -287,6 +287,7 @@ class TaskController extends Controller
         $data['user_list'] = MainUser::all();
         $data['task_parent_id'] = $id;
          $data['task_name'] = "";
+         $data['assign_to_team'] = MainTeam::active()->get();
 
         if($id>0){
             $data['task_name'] = MainTask::find($id)->subject;

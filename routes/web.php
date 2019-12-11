@@ -193,6 +193,7 @@ Route::group(['middleware' => ['auth']], function () {
             Route::get('/','DemoPlaceController@index');
             Route::get('datatable','DemoPlaceController@datatable')->name('demo_place.datatable');
             Route::get('change-demo-status','DemoPlaceController@changeDemoStatus')->name('demo_place.change_demo_status');
+            Route::post('save-demo-place','DemoPlaceController@save')->name('demo_place.save');
         });
     });
 
