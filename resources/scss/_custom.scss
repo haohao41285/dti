@@ -55,7 +55,7 @@
 }
 
 /* Apply css on any version of Firefox*/
-@-moz-document url-prefix() { 
+@-moz-document url-prefix() {
     .navbar-nav .nav-item.dropdown .dropdown-toggle::after{
         margin-top: -20px;
     }
@@ -65,7 +65,7 @@
     -moz-appearance: none;
     appearance: none;
 }
-.dataTables_filter label{ 
+.dataTables_filter label{
     padding-left: 5px;
 }
 .md-tabs .nav-item.open .nav-link, .md-tabs .nav-link.active {
@@ -74,14 +74,14 @@
     transition: all 1s;
 }
 .workingtime{
-    .col-day{        
+    .col-day{
         float:left;
         width: 14.22%;
         min-width: 100px;
         max-width: 140px;
         text-align:center;
-        label{ 
-            margin-top: 10px; 
+        label{
+            margin-top: 10px;
             margin-bottom: 0px;
         }
     }
@@ -110,8 +110,8 @@ form.sb-form .form-inline{
     }
 }
 .tableFilter .dt-buttons,
-.tableFilter .dataTables_filter{    
-    float:right !important;    
+.tableFilter .dataTables_filter{
+    float:right !important;
     padding-left:5px;
 }
 
@@ -136,6 +136,12 @@ form{
 /*custom */
 table>tbody>tr>td>span.switchery>small{
     top:-1px;
+    height: 25px;
+    width: 25px;
+}
+.switchery{
+    height: 25px!important;
+    width: 40px!important;
 }
 ul.toggled>li>div.show{
     border-radius: 5px;

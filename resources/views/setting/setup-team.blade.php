@@ -30,16 +30,17 @@ Setup Team
     <div class="card shadow mb-4 ">
       <div class="card-header py-2">
         <h6 class="m-0 font-weight-bold text-primary">Team List <button type="button" class="float-right btn btn-primary btn-sm add-team">Add Team</button></h6>
-
       </div>
       <div class="card-body">
-          <table class="table table-sm table-bordered table-hover" id="team-table" width="100%" height="50%" cellspacing="0">
+          <table class="table table-sm table-bordered table-hover" id="team-table" width="100%"  cellspacing="0">
             <thead>
-               <th>ID</th>
-               <th>Team name</th>
-               <th>Leader</th>
-               <th>Team type</th>
-               <th>Action</th>
+                <tr>
+                   <th>ID</th>
+                   <th>Team name</th>
+                   <th>Leader</th>
+                   <th>Team type</th>
+                   <th>Action</th>
+                </tr>
             </thead>
          </table>
       </div>
