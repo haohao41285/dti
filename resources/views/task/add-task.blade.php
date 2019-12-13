@@ -72,6 +72,9 @@
                             @foreach($user_list as $key => $user)
                             <option value="{{$user->user_id}}" >{{$user->user_nickname}}({{$user->getFullname()}})</option>
                             @endforeach
+                            {{-- @foreach($assign_to_team as $team)
+                                <option value="{{$team->id}}" >{{$team->team_name}}</option>
+                            @endforeach --}}
                         </select>
                     </th>
                 </tr>

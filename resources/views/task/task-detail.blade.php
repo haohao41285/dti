@@ -14,6 +14,17 @@
 </style>
 @endpush
 @section('content')
+
+@if(isset($button))
+<div class="text-center">
+    <form method="POST" action="{{route('update_assign_task')}}">
+        @csrf()
+        <h4>This Task for multi-staff, click Accept to view and work this Task</h4>
+        <input type="hidden" value="{{$id}}" name="task_id">
+        <button class="btn btn-primary" type="">Accept</button>
+    </form>
+</div>
+@else
 {{-- MODAL SEND MAIL --}}
 <div class="modal fade" id="form-notification" role="dialog">
     <div class="modal-dialog modal-lg">
@@ -334,6 +345,7 @@
     @endif
     <button type="button" class="btn btn-sm btn-primary submit-comment">Submit Comment</button>
 </form>
+@endif
 @endsection
 @push('scripts')
 <script>

@@ -273,6 +273,11 @@ Route::group(['middleware' => ['auth']], function () {
             Route::post('save', 'SetupTypeTemplateController@save')->name('saveSetupTypeTemplate');
             Route::post('delete', 'SetupTypeTemplateController@delete')->name('deleteSetupTypeTemplate');
         });
+        Route::group(['prefix' => 'setup-cskh-team'], function() {
+            Route::get('/', 'SetupTeamController@index');
+            Route::get('datatable', 'SetupTeamController@cskhDatatable')->name('getDatatableSetupTypeTemplate');
+            Route::post('save', 'SetupTeamController@cskhSave')->name('saveSetupTypeTemplate');
+        });
 
     });
 
@@ -349,6 +354,7 @@ Route::group(['middleware' => ['auth']], function () {
         Route::get('get-status-task-order', 'TaskController@getStatusTaskOrder')->name('get_status_task_order');
         Route::get('get-review', 'TaskController@getReview')->name('get_review');
         Route::post('save-review', 'TaskController@saveReview')->name('save_review');
+        Route::post('update-assign-task', 'TaskController@updateAssignTask')->name('update_assign_task');
 
 
     });
