@@ -38,56 +38,23 @@
     </div>
     {{-- detail place --}}
     <div class="modal fade" id="detail" tabindex="-1" role="dialog">
-        <div style="max-width: 90%" class="modal-dialog" role="document">
+        <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-body row">
                     <div class="col-12 ">
                         <div class="">
                             <div class="card-header py-2 row ">
-                                <div class="col-6">
-                                    <h6 class="m-0 font-weight-bold text-primary">Add Customer</h6>
-                                </div>
-                                <div class="col-6">
-                                    <h6 class="m-0 font-weight-bold text-primary">Add Place</h6>
-                                </div>
+                                    <h6 class="m-0 font-weight-bold text-primary">Infomation Customer</h6>
                             </div>
                             <form id="add-form">
                                 <div class="card-body">
                                     <div class="col-12 row">
-                                        <div class="col-6">
                                             <div class="input-group mb-3 input-group-sm">
                                                 <div class="input-group-prepend">
-                                                    <span class="input-group-text">Customer Firstname</span>
-                                                </div>
-                                                <input type="text" class="form-control" name="customer_firstname">
-                                            </div>
-                                            <div class="input-group mb-3 input-group-sm">
-                                                <div class="input-group-prepend">
-                                                    <span class="input-group-text">Customer Lastname</span>
-                                                </div>
-                                                <input type="text" class="form-control" name="customer_lastname">
-                                            </div>
-                                            <div class="input-group mb-3 input-group-sm">
-                                                <div class="input-group-prepend">
-                                                    <span class="input-group-text">Customer Phone</span>
+                                                    <span class="input-group-text">Customer Phone<sup class="text-danger">*</sup></span>
                                                 </div>
                                                 <input type="text" class="form-control" name="customer_phone">
                                             </div>
-                                        </div>
-                                        <div class="col-6">
-                                            <div class="input-group mb-3 input-group-sm">
-                                                <div class="input-group-prepend">
-                                                    <span class="input-group-text">Place Name</span>
-                                                </div>
-                                                <input type="text" class="form-control" name="place_name">
-                                            </div>
-                                            <div class="input-group mb-3 input-group-sm">
-                                                <div class="input-group-prepend">
-                                                    <span class="input-group-text">Place Phone</span>
-                                                </div>
-                                                <input type="text" class="form-control" name="place_phone">
-                                            </div>
-                                        </div>
                                         <div class="col-12">
                                             <div class="form-group float-right">
                                                 <input type="button" class="btn btn-sm btn-danger cancel" data-dismiss="modal" value="Cancel">
@@ -179,10 +146,11 @@
                 });
             });
             $(".cancel").click(function () {
-               clearModal();
+               cleanModal();
             });
-            function clearModal(){
+            function cleanModal(){
                 $("#add-form")[0].reset();
+                $("#detail").modal('hide');
             }
             $(".add-place").click(function(){
                 $("#detail").modal('show');
@@ -205,21 +173,58 @@
                         return myXhr;
                     },
                     success: function (data) {
-                        console.log(data);
-                        return;
-                        // data = JSON.parse(data);
+                        // var data = JSON.parse(data);
+                        // console.log(data);
+                        // return;
                         if(data.status == 'error'){
-                            toastr.error(data.message);
+                            if(typeof(data.message) === 'string')
+                                toastr.error(data.message);
+                            else
+                                $.each(data.message,function(ind,val){
+                                    toastr.error(val);
+                                })
                         }else{
                             toastr.success(data.message);
-                            clearView();
-                            // table.draw();
+                            cleanModal();
+                            placeDatatable.draw();
                         }
                     },
                     fail: function() {
                         console.log("error");
                     }
                 });
+            });
+            $(document).on('click','.delete',function(){
+                if(confirm('Do you want to delete this demo place ?')){
+                    let place_id = $(this).attr('place_id');
+                    $.ajax({
+                        url: '{{route('demo_place.delete')}}',
+                        type: 'POST',
+                        dataType: 'html',
+                        data: {
+                            place_id: place_id,
+                            _token: '{{csrf_token()}}'
+                        },
+                    })
+                    .done(function(data) {
+
+                        data = JSON.parse(data);
+                        // console.log(data);
+                        // return;
+
+                        if(data.status === 'error')
+                            toastr.error(data.message);
+                        else{
+                            placeDatatable.ajax.reload( null, false );
+                            toastr.success(data.message);
+                        }
+                    })
+                    .fail(function() {
+                        console.log("Failed! Delete Place Failed!");
+                    });
+                }else{
+                    return;
+                }
             })
         });
     </script>

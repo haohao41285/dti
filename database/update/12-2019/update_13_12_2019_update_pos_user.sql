@@ -1,0 +1,1 @@
+ALTER TABLE `pos_user` ADD `user_demo` BOOLEAN NULL COMMENT 'user demo for test' AFTER `enable_status`;
