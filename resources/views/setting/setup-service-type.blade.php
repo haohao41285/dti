@@ -8,13 +8,13 @@
             <h5><b>Service Type List</b></h5>
             <table class="table table-sm table-bordered table-hover" id="dataTable" width="100%" cellspacing="0">
                 <thead>
-                <tr>
-                    <th class="text-center">ID</th>
-                    <th>Name</th>
-                    <th>Description</th>
-                    <th>Discount(%)</th>
-                    <th>Status</th>
-                </tr>
+                    <tr class="thead-light">
+                        <th class="text-center">ID</th>
+                        <th>Name</th>
+                        <th>Description</th>
+                        <th>Discount(%)</th>
+                        <th>Status</th>
+                    </tr>
                 </thead>
             </table>
         </div>

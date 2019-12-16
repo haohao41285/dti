@@ -38,8 +38,15 @@ class OrderObserver
                 }
             }
         }
-        if(count($support_team) != 0){
-            $user_list = MainUser::active()->whereIn('user_group_id',$support_team)->get();
+
+        $user_info = MainUser::where('user_id',$mainComboServiceBought->created_by)->first();
+
+        if( isset($user_info->getTeam) 
+            && $user_info->getTeam->team_cskh_id != "" 
+            && $user_info->getTeam->team_cskh_id != null)
+        {
+            $user_list = MainUser::where('user_team',$user_info->getTeam->team_cskh_id)->get();
+
             foreach ($user_list as $user){
                 $content = $mainComboServiceBought->getCreatedBy->user_nickname." created a order #".$mainComboServiceBought->id;
                 //ADD NOTIFICATION TO DATABASE
@@ -54,6 +61,7 @@ class OrderObserver
                 //SEND NOTIFICATION WITH ONESIGNAL
                 $input_onesignal['order_id'] = $mainComboServiceBought->id;
                 $input_onesignal['user_id'] = $user->user_id;
+
                 dispatch(new SendNotificationOrderOnesignal($input_onesignal))->delay(now()->addSecond(5));
 
 //                OneSignal::sendNotificationUsingTags('New Order',

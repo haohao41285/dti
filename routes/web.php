@@ -274,11 +274,15 @@ Route::group(['middleware' => ['auth']], function () {
             Route::post('delete', 'SetupTypeTemplateController@delete')->name('deleteSetupTypeTemplate');
         });
         Route::group(['prefix' => 'setup-cskh-team'], function() {
-            Route::get('/', 'SetupTeamController@index');
-            Route::get('datatable', 'SetupTeamController@cskhDatatable')->name('getDatatableSetupTypeTemplate');
+            Route::get('/', 'SetupTeamController@indexCskh');
+            Route::get('datatable-cskh', 'SetupTeamController@cskhDatatable')->name('cskh_datatable');
+            Route::get('datatable-other', 'SetupTeamController@otherDatatable')->name('other_datatable');
+            Route::get('datatable-teams', 'SetupTeamController@teamsDatatable')->name('teams_datatable');
+            Route::get('user-cskh-datatable', 'SetupTeamController@userCskhDatatable')->name('user_cskh_datatable');
+            Route::post('add-team-to-team-cskh', 'SetupTeamController@addTeamToTeamCskh')->name('add_team_to_team_cskh');
+            Route::post('remove-team', 'SetupTeamController@removeTeam')->name('remove_team');
             Route::post('save', 'SetupTeamController@cskhSave')->name('saveSetupTypeTemplate');
         });
-
     });
 
     Route::group(['prefix'=>'user'],function(){

@@ -12,7 +12,7 @@ Team Type List
             <div class="card-body">
                 <table class="table table-sm table-bordered table-hover" id="dataTable" width="100%" cellspacing="0">
                     <thead>
-                        <tr>
+                        <tr class="thead-light">
                             <th class="text-center">ID</th>
                             <th>Team Type Name</th>
                             <th>Description</th>
