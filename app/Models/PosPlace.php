@@ -59,6 +59,7 @@ class PosPlace extends BaseModel
         'place_auto_print',
         'place_orderservice_price',
         'place_theme_code',
+        'place_demo'
     ];
 
     protected $guarded = [];

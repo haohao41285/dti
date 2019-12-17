@@ -23,6 +23,7 @@
                 <tr>
                     <th colspan="7">
                         <input type="text" id="subject" required class="form-control form-control-sm" name="subject">
+                        <input type="hidden" name="cskh_task" value="cskh_task">
                     </th>
                 </tr>
                 <tr>
@@ -67,8 +68,11 @@
                     </th>
                     <th>
                         <select name="assign_to" class="form-control form-control-sm text-capitalize">
-                            @foreach($user_list as $key => $user)
+                            {{-- @foreach($user_list as $key => $user)
                                 <option value="{{$user->user_id}}" >{{$user->user_nickname}}({{$user->getFullname()}})</option>
+                            @endforeach --}}
+                            @foreach($assign_to_team as $team)
+                                <option value="{{$team->id}}" >{{$team->team_name}}</option>
                             @endforeach
                         </select>
                     </th>

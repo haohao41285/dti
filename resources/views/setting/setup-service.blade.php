@@ -13,9 +13,9 @@ Combo/Service List
 @section('content')
 <div class="col-12">
 <h5><b>Combo/Service List</b></h5>
-<table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+<table class="table table-sm table-bordered table-hover" id="dataTable" width="100%" cellspacing="0">
   <thead>
-    <tr>
+    <tr class="thead-light">
       <th class="text-center">ID</th>
       <th>Name</th>
       <th class="text-center">Type</th>

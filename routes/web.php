@@ -189,7 +189,13 @@ Route::group(['middleware' => ['auth']], function () {
             Route::post('/save-auto-template', 'AutoTemplateController@saveAutoTemplate')->name('saveAutoTemplate');
             Route::get('get-services-by-place-id', 'AutoTemplateController@getServicesByPlaceId')->name('getServicesByPlaceId');
         });
-
+        Route::group(['prefix' => 'demo-places'],function(){
+            Route::get('/','DemoPlaceController@index');
+            Route::get('datatable','DemoPlaceController@datatable')->name('demo_place.datatable');
+            Route::get('change-demo-status','DemoPlaceController@changeDemoStatus')->name('demo_place.change_demo_status');
+            Route::post('save-demo-place','DemoPlaceController@save')->name('demo_place.save');
+            Route::post('delete','DemoPlaceController@delete')->name('demo_place.delete');
+        });
     });
 
     Route::group(['prefix' => 'recentlog'], function() {
@@ -267,7 +273,16 @@ Route::group(['middleware' => ['auth']], function () {
             Route::post('save', 'SetupTypeTemplateController@save')->name('saveSetupTypeTemplate');
             Route::post('delete', 'SetupTypeTemplateController@delete')->name('deleteSetupTypeTemplate');
         });
-
+        Route::group(['prefix' => 'setup-cskh-team'], function() {
+            Route::get('/', 'SetupTeamController@indexCskh');
+            Route::get('datatable-cskh', 'SetupTeamController@cskhDatatable')->name('cskh_datatable');
+            Route::get('datatable-other', 'SetupTeamController@otherDatatable')->name('other_datatable');
+            Route::get('datatable-teams', 'SetupTeamController@teamsDatatable')->name('teams_datatable');
+            Route::get('user-cskh-datatable', 'SetupTeamController@userCskhDatatable')->name('user_cskh_datatable');
+            Route::post('add-team-to-team-cskh', 'SetupTeamController@addTeamToTeamCskh')->name('add_team_to_team_cskh');
+            Route::post('remove-team', 'SetupTeamController@removeTeam')->name('remove_team');
+            Route::post('save', 'SetupTeamController@cskhSave')->name('saveSetupTypeTemplate');
+        });
     });
 
     Route::group(['prefix'=>'user'],function(){
@@ -343,6 +358,7 @@ Route::group(['middleware' => ['auth']], function () {
         Route::get('get-status-task-order', 'TaskController@getStatusTaskOrder')->name('get_status_task_order');
         Route::get('get-review', 'TaskController@getReview')->name('get_review');
         Route::post('save-review', 'TaskController@saveReview')->name('save_review');
+        Route::post('update-assign-task', 'TaskController@updateAssignTask')->name('update_assign_task');
 
 
     });
