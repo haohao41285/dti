@@ -7,14 +7,23 @@ use Illuminate\Routing\Controller;
 use App\Models\MainTheme;
 use DataTables;
 use App\Helpers\ImagesHelper;
+use Gate;
 
 Class WebsiteThemeController extends Controller
 {
     public function index(){
+
+        if(Gate::denies('permission','website-theme'))
+            return doNotPermission();
+
         return view('tools.website-themes');
     }
 
     public function datatable(){
+
+        if(Gate::denies('permission','website-theme'))
+            return doNotPermission();
+        
         return MainTheme::getDatatable();
     }
     /**

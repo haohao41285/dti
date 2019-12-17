@@ -10,14 +10,23 @@ use App\Models\MainTheme;
 use App\Helpers\ImagesHelper;
 use App\Models\MainApp;
 use App\Models\MainAppBanners;
+use Gate;
 
 class AppBannerController extends Controller
 {
     public function index(){
+
+        if(Gate::denies('permission','app-banners'))
+            return doNotPermission();
+
         return view('tools.app-banners');
     }
 
     public function appDataTable(){
+
+        if(Gate::denies('permission','app-banners'))
+            return doNotPermission();
+
         $app = MainApp::all();
 
         return DataTables::of($app)
@@ -34,6 +43,10 @@ class AppBannerController extends Controller
      * @return 
      */
     public function appBannerDataTable(Request $request){
+
+        if(Gate::denies('permission','app-banners'))
+            return doNotPermission();
+
        $app = MainAppBanners::where('app_id',$request->appId)->get();
 
         return DataTables::of($app)
