@@ -7,6 +7,7 @@ if (!function_exists('format_date')) {
         return Carbon::parse($date)->format('m/d/Y') ;
     }
 }
+
 if (!function_exists('format_date_m_d')) {
     function format_date_m_d($date)
     {
