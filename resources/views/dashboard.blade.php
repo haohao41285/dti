@@ -114,12 +114,12 @@
         <div class="row">
             <div class="col-xl-6 col-lg-6">
                 <div class="card shadow mb-4">
-                    <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                    <div class="card-header  d-flex flex-row align-items-center justify-content-between border-0">
                         <span class="m-0 font-weight-bold text-primary">Processing Task</span> <a href="{{route('my-task')}}">View More >>></a>
                     </div>
-                    <table class="table table-sm table-striped table-hover" id="datatable-task-dashboard" width="100%" cellspacing="0">
+                    <table class="table table-sm table-hover" id="datatable-task-dashboard" width="100%" cellspacing="0">
                         <thead>
-                        <tr>
+                        <tr class="thead-light">
                             <th>Task#</th>
                             <th>Subject</th>
                             {{--                        <th class="text-center">Priority</th>--}}
@@ -138,12 +138,12 @@
             @if(\Gate::allows('permission','dashboard-customer'))
             <div class="col-xl-6 col-lg-6">
                 <div class="card shadow mb-4">
-                    <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                    <div class="card-header d-flex flex-row align-items-center justify-content-between border-0" >
                         <span class="m-0 font-weight-bold text-primary">Customer is about to expire</span> <a href="{{route('myCustomers')}}">View More >>></a>
                     </div>
-                    <table class="table table-sm table-striped table-hover" id="datatable-customer-service" width="100%" cellspacing="0">
+                    <table class="table table-sm table-hover" id="datatable-customer-service" width="100%" cellspacing="0">
                         <thead>
-                        <tr>
+                        <tr class="thead-light">
                             <th>ID</th>
                             <th>Customer Name</th>
                             <th>Customer Phone</th>

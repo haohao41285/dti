@@ -68,21 +68,6 @@ Setup Team
   <div class="col-md-4" >
     <div class="card shadow mb-4 ">
       <div class="card-header py-2">
-        <h6 class="m-0 font-weight-bold text-primary">Teams of <b class="team-name-list"></b> Team</h6>
-      </div>
-      <div class="card-body">
-        <table class="table table-sm table-bordered table-hover" id="member-table" width="100%" cellspacing="0">
-            <thead>
-              <tr class="thead-light">
-                <th>Teams</th>
-                <th>Action</th>
-              </tr>
-            </thead>
-         </table>
-      </div>
-    </div>
-    <div class="card shadow mb-4 ">
-      <div class="card-header py-2">
         <h6 class="m-0 font-weight-bold text-primary">User's CSKH Team</h6>
       </div>
       <div class="card-body"  >
@@ -94,6 +79,21 @@ Setup Team
               </tr>
             </thead>
           </table>
+      </div>
+    </div>
+    <div class="card shadow mb-4 ">
+      <div class="card-header py-2">
+        <h6 class="m-0 font-weight-bold text-primary">Teams of <b class="team-name-list"></b> Team</h6>
+      </div>
+      <div class="card-body">
+        <table class="table table-sm table-bordered table-hover" id="member-table" width="100%" cellspacing="0">
+            <thead>
+              <tr class="thead-light">
+                <th>Teams</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+         </table>
       </div>
     </div>
   </div>
@@ -161,7 +161,7 @@ Setup Team
          searching: false,
          paging: false,
          info: false,
-         scrollY: "200px",
+         scrollY: "300px",
          buttons: [
          ],
          processing: true,
@@ -202,7 +202,7 @@ Setup Team
          // dom: "lBfrtip",
          searching: false,
          paging: false,
-         scrollY: "300px",
+         scrollY: "200px",
          info: false,
          buttons: [
          ],

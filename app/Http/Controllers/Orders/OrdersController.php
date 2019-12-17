@@ -1232,9 +1232,15 @@ class OrdersController extends Controller
             })
             ->where('main_combo_service_bought.csb_status',0);
 
-        if(isset($request->my_order)){
-            $my_order_list = $my_order_list->where('main_combo_service_bought.created_by',Auth::user()->user_id);
-        }
+            if(Gate::allows('permission','admin-payment-orders')){
+
+            }else{
+                //GET USER OF TEAM CSKH
+                $team_id = MainTeam::where('team_cskh_id',Auth::user()->user_team)->first();
+                $user_list = MainUser::where('user_team',$team_id->id)->select('user_id')->get()->toArray();
+                $user_arr = array_values($user_list);
+                $my_order_list = $my_order_list->whereIn('main_combo_service_bought.created_by',$user_arr);
+            }
 
         if($request->start_date != "" && $request->end_date != ""){
             $start_date = Carbon::parse($request->start_date)->subDay(1)->format('Y-m-d');

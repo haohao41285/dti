@@ -125,14 +125,17 @@
                 <th></th>
                 <th>{{$order_info->customer_phone}}</th>
             </tr>
+            @if(\Gate::allows('permission','order-invoice'))
             <tr>
                 <td colspan="2">ORDER NOTES: {{$order_info->csb_note}}</td>
                 <td>
                     <a href="{{route('dowload-invoice',$id)}}"><button class="btn btn-sm btn-info"><i class="fas fa-file-pdf text-danger"></i> PRINT INVOICE</button></a>
                     <button class="btn btn-sm btn-info resend-invoice"><i class="fas fa-envelope text-danger"></i> RESEND INVOICE</button>
                 </td>
-                <td class="align-left"><i class="text-primary">Last sent invoice:</i></td>
+                <td></td>
+                {{-- <td class="align-left"><i class="text-primary">Last sent invoice:</i></td> --}}
             </tr>
+            @endif
         </tbody>
     </table>
     {{--<table class="table mt-4 table table-hover" id="service-datatable" widtd="100%" cellspacing="0">
@@ -148,17 +151,17 @@
     </table>--}}
     <table class="table mt-4 table-sm table-hover table-bordered" id="" widtd="100%" cellspacing="0">
         <thead  class="thead-light">
-            <tr>
+            <tr class="text-center">
                 <th>TASK#</th>
                 <th>SERVICE</th>
                 <th>ACTION</th>
-                <th class="text-center">PRIORITY</th>
-                <th class="text-center">STATUS</th>
-                <th class="text-center">DATE START</th>
-                <th class="text-center">DATE END</th>
-                <th class="text-center">%COMPLETE</th>
-                <th class="text-center">ASSIGNE</th>
-                <th class="text-center">LAST UPDATE</th>
+                <th>PRIORITY</th>
+                <th>STATUS</th>
+                <th>DATE START</th>
+                <th>DATE END</th>
+                <th>%COMPLETE</th>
+                <th>ASSIGNE</th>
+                <th>LAST UPDATE</th>
 {{--                <th class="text-center">ACTION</th>--}}
             </tr>
         </thead>
