@@ -18,7 +18,8 @@ class MainComboService extends Model
     	'cs_type', // Service or Combo
     	'cs_assign_to',
         'cs_form_type',
-        'cs_combo_service_type' //main_combo_service_type
+        'cs_combo_service_type', //main_combo_service_type
+        'cs_app_website_type' //1:website 2:inailso app //nullable
     ];
 
     public function getComboServiceType(){

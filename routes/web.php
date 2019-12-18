@@ -283,6 +283,8 @@ Route::group(['middleware' => ['auth']], function () {
             Route::post('remove-team', 'SetupTeamController@removeTeam')->name('remove_team');
             Route::post('save', 'SetupTeamController@cskhSave')->name('saveSetupTypeTemplate');
         });
+
+        Route::get('menu-app','SetupServiceController@menuApp')->name('get_menu_app');
     });
 
     Route::group(['prefix'=>'user'],function(){
