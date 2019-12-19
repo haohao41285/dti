@@ -153,6 +153,26 @@
                 </div>
             </div>
             @endif
+            {{-- REMIDER CUSTOMER'S REVIEW--}}
+            <div class="col-xl-6 col-lg-6">
+                <div class="card shadow mb-4">
+                    <div class="card-header d-flex flex-row align-items-center justify-content-between border-0" >
+                        <span class="m-0 font-weight-bold text-primary">Remider Customer's Review</span> <a href="javascript:void(0)">View More >>></a>
+                    </div>
+                    <table class="table table-sm table-hover" id="datatable-review" width="100%" cellspacing="0">
+                        <thead>
+                        <tr class="thead-light">
+                            <th>ID</th>
+                            <th>Place Name</th>
+                            <th>Customer Phone</th>
+                            <th>Order Review</th>
+                            <th>Month Review</th>
+                            <th>Action</th>
+                        </tr>
+                        </thead>
+                    </table>
+                </div>
+            </div>
         </div>
     </div>
 @endsection
@@ -325,6 +345,30 @@
                         });
                 }
             } );
+            var table_customer = $('#datatable-review').DataTable({
+                // dom: "lBfrtip",
+                buttons: [
+                ],
+                processing: true,
+                serverSide: true,
+                paging:false,
+                searching: false,
+                info:false,
+                // responsive: false,
+                ajax:{ url:"{{ route('datatable_dashboard_review') }}",
+                    data: function (d) {
+                    }
+                },
+                columns: [
+                    { data: 'cs_id', name: 'cs_id',class:'text-center' },
+                    { data: 'customer_name', name: 'customer_name' },
+                    { data: 'customer_phone', name: 'customer_phone' },
+                    { data: 'service_info', name: 'service_info'},
+                    { data: 'expired_date', name: 'expired_date',class: 'text-center'},
+                    { data: 'seller_name', name: 'seller_name'},
+                    { data: 'action' , name:'action' ,orderable: false, searcheble: false ,class:'text-center'}
+                ],
+            });
         });
         function format ( d ) {
             // `d` is the original data object for the row

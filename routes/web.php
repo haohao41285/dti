@@ -372,6 +372,8 @@ Route::group(['middleware' => ['auth']], function () {
     Route::get('check-all-notification', 'DashboardController@checkAllNotification')->name('check-all-notification');
     Route::get('get-notification', 'DashboardController@getNotification')->name('get-notification');
     Route::get('customer-service-datatable', 'DashboardController@customerServiceDatatable')->name('customer-service-datatable');
+    Route::get('review-customer-datatable', 'DashboardController@reviewDashboardDatatable')->name('datatable_dashboard_review');
+
 
 
     Route::group(['prefix' => 'notification'], function() {
