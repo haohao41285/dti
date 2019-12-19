@@ -20,9 +20,9 @@
         </div>
         <div class="card-body">
             <div class="table-responsive">
-                <table class="table table-bordered table-hover" id="places-datatable" width="100%" cellspacing="0">
+                <table class="table table-sm  table-bordered table-hover" id="places-datatable" width="100%" cellspacing="0">
                     <thead>
-                        <tr>
+                        <tr class="thead-light">
                             <th>ID</th>
                             <th>Name</th>
                             {{-- <th>Address</th> --}}
@@ -30,7 +30,9 @@
                             <th>Email</th>
                             --}}
                             <th>Phone</th>
+                            <th>Website</th>
                             <th>License</th>
+                            <th>Status</th>
                             {{-- <th>Created Date</th> --}}
                             <th class="w-30">Action</th>
                         </tr>
@@ -856,12 +858,23 @@ $(document).ready(function() {
             { data: 'place_id', name: 'place_id', class: 'text-center' },
             { data: 'place_name', name: 'place_name' },
             { data: 'place_phone', name: 'place_phone', class: 'text-center' },
+            { data: 'place_website', name: 'place_website', },
             { data: 'place_ip_license', name: 'place_ip_license' },
+            { data: 'place_status', name: 'place_status', class:'text-center' },
             { data: 'action', name: 'action', orderable: false, searchable: false, class: 'text-center' }
         ],
         buttons: [
 
         ],
+        fnDrawCallback:function (oSettings) {
+            var elems = Array.prototype.slice.call(document.querySelectorAll('.js-switch'));
+            elems.forEach(function (html) {
+                var switchery = new Switchery(html, {
+                    color: '#0874e8',
+                    className : 'switchery switchery-small'
+                });
+            });
+        }
     });
 
     var customerTable = $('#user-datatable').DataTable({
@@ -1538,11 +1551,37 @@ $(document).ready(function() {
         $("#extension_service").modal('hide');
     });
 
-    $('#cateservices-multiselect').multiselect({
-        buttonWidth: '100%',
+    // $('#cateservices-multiselect').multiselect({
+    //     buttonWidth: '100%',
+    // });
+    $(document).on('click','.switchery',function(){
+
+        let place_id = $(this).siblings('input').attr('place_id');
+        let place_status = $(this).siblings('input').attr('place_status');
+
+        $.ajax({
+            url: '{{route('change_place_status')}}',
+            type: 'POST',
+            dataType: 'html',
+            data: {
+                place_id: place_id,
+                place_status: place_status,
+                _token: '{{csrf_token()}}'
+            },
+        })
+        .done(function(data) {
+            data = JSON.parse(data);
+            if(data.status === 'error')
+                toastr.error(data.message);
+            else
+                toastr.success(data.message);
+
+            placeTable.draw();
+        })
+        .fail(function() {
+            console.log('Faield! Change Status Faield');
+        });
     });
-
-
 });
 
 </script>
