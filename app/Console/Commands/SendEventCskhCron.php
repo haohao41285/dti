@@ -42,7 +42,7 @@ class SendEventCskhCron extends Command
      */
     public function handle()
     {
-        $today = today();
+        //SEND BEFORE A MONTH
         $date_after_a_month = today()->addMonth(1)->format('d');
         $month_after_a_month = today()->addMonth(1)->format('m');
 
