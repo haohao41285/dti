@@ -320,6 +320,8 @@ class ReportController extends Controller
         $assigned_total = 0;
         $serviced_total = 0;
         $disabled_total = 0;
+        $discount_total = 0;
+        $charged_total = 0;
 
         if(Gate::allows('permission','customer-report-admin')){
             $customer_list = MainCustomerTemplate::select('*');
