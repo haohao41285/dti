@@ -122,12 +122,8 @@
                         <tr class="thead-light">
                             <th>Task#</th>
                             <th>Subject</th>
-                            {{--                        <th class="text-center">Priority</th>--}}
                             <th class="text-center">Status</th>
-                            {{--                        <th class="text-center">Date Start</th>--}}
-                            {{--                        <th class="text-center">Date end</th>--}}
-                            {{--                        <th class="text-center">%Complete</th>--}}
-                            <th class="text-center">Category</th>
+                            <th class="text-center">(%)Percent Complete</th>
                             <th class="text-center">Order#</th>
                             <th class="text-center">Last Updated</th>
                         </tr>
@@ -278,7 +274,7 @@
                     // { data: 'date_start', name: 'date_start',class:'text-center' },
                     // { data: 'date_end', name: 'date_end',class:'text-center' },
                     // { data: 'complete_percent', name: 'complete_percent',class: 'text-center' },
-                    { data: 'category', name: 'category',class: 'text-center' },
+                    { data: 'complete_percent', name: 'complete_percent',class: 'text-right' },
                     { data: 'order_id', name: 'order_id',class: 'text-center' },
                     { data: 'updated_at', name: 'updated_at',class: 'text-center'},
                 ],
@@ -309,7 +305,7 @@
                             $.each(data.data, function(index,val){
 
                                 var complete_percent = "";
-                                if(val.complete_percent == null)  complete_percent = "";
+                                if(val.complete_percent === null)  complete_percent = "";
                                 else complete_percent = val.complete_percent;
 
                                 subtask_html += `
@@ -317,7 +313,7 @@
                                     <td>`+val.task+`</td>
                                     <td>`+val.subject+`</td>
                                     <td>`+val.status+`</td>
-                                    <td>`+val.category+`</td>
+                                    <td class="text-right">`+complete_percent+`</td>
                                     <td>`+val.updated_at+`</td>
                                 </tr> `;
                             });
@@ -337,7 +333,7 @@
                 <th scope="col">SubTask</th>
                 <th scope="col">Subject</th>
                 <th class="text-center">Status</th>
-                <th class="text-center">Category</th>
+                <th class="text-center">(%)Percent Complete</th>
                 <th class="text-center">Last Updated</th>
             </tr>`;
         }

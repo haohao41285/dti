@@ -29,5 +29,8 @@ class MainTeam extends Model
     public function getCskhTeam(){
         return $this->belongsTo(self::class,'team_cskh_id','id');
     }
+    public function getUserOfTeam(){
+        return $this->hasMany(MainUser::class,'user_team','id');
+    }
 
 }
