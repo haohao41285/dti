@@ -321,7 +321,7 @@ class ReportController extends Controller
         $serviced_total = 0;
         $disabled_total = 0;
         $discount_total = 0;
-        $charged_total = 0;
+        $charged_total  = 0;
 
         if(Gate::allows('permission','customer-report-admin')){
             $customer_list = MainCustomerTemplate::select('*');
@@ -384,12 +384,19 @@ class ReportController extends Controller
                     }
                 }
             }
+            $customers = self::getCustomerList($request);
+            foreach ($customers as $key => $customer) {
+                $discount_total += $customer['discount_total'];
+                $charged_total += $customer['charged_total'];
+            }
 
         return response([
             'arrivals_total' => $arrivals_total,
             'assigned_total' => $assigned_total,
             'serviced_total' => $serviced_total,
-            'disabled_total' => $disabled_total
+            'disabled_total' => $disabled_total,
+            'charged_total' => $charged_total,
+            'discount_total' => $discount_total 
         ]);
     }
     public function customersExport(Request $request){
