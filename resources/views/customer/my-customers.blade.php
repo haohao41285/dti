@@ -11,7 +11,7 @@
                 </div>
                 <form action="" method="get" accept-charset="utf-8">
                     <div class="modal-body">
-                        <table class="table table-hover table-striped">
+                        <table class="table table-sm table-hover table-striped">
                             <thead>
                                 <tr class="text-center">
                                     <th>Customer</th>
@@ -179,7 +179,7 @@
         </div>
     </div>
     <hr>
-    <table class="table table-striped table-hover" id="dataTableAllCustomer" width="100%" cellspacing="0">
+    <table class="table table-sm table-striped table-hover" id="dataTableAllCustomer" width="100%" cellspacing="0">
         <thead>
             <th>ID</th>
             <th>Nail Shop</th>

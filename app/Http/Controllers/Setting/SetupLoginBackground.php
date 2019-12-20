@@ -8,14 +8,23 @@ use App\Models\MainLoginBackground;
 use DataTables;
 use Validator;
 use App\Helpers\ImagesHelper;
+use Gate;
 
 class SetupLoginBackground  extends Controller
 {
 	public function index(){
+
+        if(Gate::denies('permission','setup-login-background'))
+            return doNotPermission();
+
 		return view('setting.login-background');
 	}
 
 	public function datatable(){
+
+        if(Gate::denies('permission','setup-login-background'))
+            return doNotPermission();
+        
 		$data = MainLoginBackground::all();
 
 		return DataTables::of($data)

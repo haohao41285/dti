@@ -13,6 +13,7 @@ use DataTables;
 use DB;
 use Auth;
 use Gate;
+use App\Models\MainMenuAppINailSo;
 
 class SetupServiceController extends Controller
 {
@@ -159,26 +160,42 @@ class SetupServiceController extends Controller
 		}
 		else{//SERVICE
 			$menu_html = "";
-			$menu_list = PosMerchantMenus::orderBy('mer_menu_index','asc')->get();
-			$menu_list = collect($menu_list);
-			$menu_parents = $menu_list->where('mer_menu_parent_id',0);
 
-			//GET MENU ID LIST
 			$cs_info = MainComboService::find($cs_id);
+			//GET MENU ID LIST
 			$cs_menu_id = $cs_info->cs_menu_id;
 			$menu_id_arr = explode(";", $cs_menu_id);
 
+			if($cs_info->cs_app_website_type == 1){
 
-			foreach ($menu_parents as $key => $menu_parent) {
-				$check = "";
-				$id = ''.$menu_parent->mer_menu_id;
-				if(in_array($menu_parent->mer_menu_id, $menu_id_arr))
-					$check = "checked";
-				$menu_html .= '<div class="checkbox">
-	                    <label><input type="checkbox" '.$check.' parent_id="0" class="service_id " id="'.$id.'"  style="height: 20px;width: 20px" value="'.$menu_parent->mer_menu_id.'">'.$menu_parent->mer_menu_text.'</label>
-	                </div>';
-	             $menu_html .= self::getMenuSon($menu_list,$menu_parent->mer_menu_id,$menu_id_arr);
+				$menu_list = PosMerchantMenus::orderBy('mer_menu_index','asc')->get();
+				$menu_list = collect($menu_list);
+				$menu_parents = $menu_list->where('mer_menu_parent_id',0);
 
+				foreach ($menu_parents as $key => $menu_parent) {
+					$check = "";
+					$id = ''.$menu_parent->mer_menu_id;
+					if(in_array($menu_parent->mer_menu_id, $menu_id_arr))
+						$check = "checked";
+					$menu_html .= '<div class="checkbox">
+		                    <label><input type="checkbox" '.$check.' parent_id="0" class="service_id " id="'.$id.'"  style="height: 20px;width: 20px" value="'.$menu_parent->mer_menu_id.'">'.$menu_parent->mer_menu_text.'</label>
+		                </div>';
+		             $menu_html .= self::getMenuSon($menu_list,$menu_parent->mer_menu_id,$menu_id_arr);
+				}
+			}
+			elseif($cs_info->cs_app_website_type == 2){
+
+				$menus = MainMenuAppINailSo::active()->get();
+
+				foreach ($menus as $key => $menu) {
+					$check = "";
+					$id = ''.$menu->id;
+					if(in_array($menu->id, $menu_id_arr))
+						$check = "checked";
+					$menu_html .= '<div class="checkbox">
+		                    <label><input type="checkbox" '.$check.'  class="service_id" id="'.$id.'"  style="height: 20px;width: 20px" value="'.$menu->id.'">'.$menu->name.'</label>
+		                </div>';
+				}
 			}
 			if($menu_html != ""){
 				$data['menu_html'] = $menu_html;
@@ -274,7 +291,8 @@ class SetupServiceController extends Controller
                 'cs_description'=>$cs_description,
                 'cs_assign_to'=>$cs_assign_to,
                 'cs_combo_service_type'=>$cs_combo_service_type,
-                'cs_form_type' => $cs_form_type
+                'cs_form_type' => $cs_form_type,
+                'cs_app_website_type' => $request->cs_app_website_type??null
             ]);
         else{
             if($cs_type == 1)
@@ -396,5 +414,42 @@ class SetupServiceController extends Controller
 	        return response(['status'=>'error','message'=>'Save Service Type Failed!']);
 	    else
 	        return response(['status'=>'success','message'=>'Save Service Type Successfully!']);
+    }
+    public function menuApp(Request $request){
+
+    	$type_app = $request->type_app;
+    	$menu_html = "";
+
+    	if($type_app == 1){
+			$menu_list = PosMerchantMenus::orderBy('mer_menu_index','asc')->get();
+			$menu_list = collect($menu_list);
+			$menu_parents = $menu_list->where('mer_menu_parent_id',0);
+
+			$menu_id_arr = [];
+
+			foreach ($menu_parents as $key => $menu_parent) {
+				$check = "";
+				$id = ''.$menu_parent->mer_menu_id;
+				if(in_array($menu_parent->mer_menu_id, $menu_id_arr))
+					$check = "checked";
+				$menu_html .= '<div class="checkbox">
+	                    <label><input type="checkbox" name="cs_menu_id[]" '.$check.' parent_id="0" class="service_id " id="'.$id.'"  style="height: 20px;width: 20px" value="'.$menu_parent->mer_menu_id.'">'.$menu_parent->mer_menu_text.'</label>
+	                </div>';
+	             $menu_html .= self::getMenuSon($menu_list,$menu_parent->mer_menu_id,$menu_id_arr);
+			}
+    	}
+    	elseif($type_app == 2){
+
+    		$menus = MainMenuAppINailSo::active()->get();
+
+    		foreach ($menus as $key => $menu) {
+    			$menu_html .= '<div class="checkbox">
+	                    <label><input type="checkbox" name="cs_menu_id[]" class="service_id " id="'.$menu->id.'"  style="height: 20px;width: 20px" value="'.$menu->id.'">'.$menu->name.'</label>
+	                </div>';
+    		}
+    	}
+		$data['menu_html'] = $menu_html;
+
+		return $data;
     }
 }

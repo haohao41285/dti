@@ -104,8 +104,8 @@ class CustomerController extends Controller
 
         if($start_date != "" && $end_date != ""){
 
-            $start_date = format_date_db($start_date);
-            $end_date = format_date_db($end_date);
+            $start_date = Carbon::parse($request->start_date)->subDay(1)->format('Y-m-d');
+            $end_date = Carbon::parse($request->end_date)->addDay(1)->format('Y-m-d');
 
             $customers->whereDate('main_customer_template.created_at','>=',$start_date)
                     ->whereDate('main_customer_template.created_at','<=',$end_date);
@@ -373,8 +373,8 @@ class CustomerController extends Controller
 
         if($start_date != "" && $end_date != ""){
 
-            $start_date = Carbon::parse($start_date)->format('Y-m-d');
-            $end_date = Carbon::parse($end_date)->format('Y-m-d');
+            $start_date = Carbon::parse($start_date)->subDay(1)->format('Y-m-d');
+            $end_date = Carbon::parse($end_date)->addDay(1)->format('Y-m-d');
 
             $customer_list->whereDate('main_customer_template.created_at','>=',$start_date)
                     ->whereDate('main_customer_template.created_at','<=',$end_date);

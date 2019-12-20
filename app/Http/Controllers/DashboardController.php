@@ -18,6 +18,7 @@ use Illuminate\Http\Request;
 use Auth;
 use DataTables;
 use Gate;
+use App\Models\MainUserCustomerPlace;
 
 
 class DashboardController extends Controller {
@@ -95,11 +96,14 @@ class DashboardController extends Controller {
 
         $customer_phone = $request->customer_phone;
 
-        $customer_list = Auth::user()->user_customer_list;
+        // $customer_list = Auth::user()->user_customer_list;
+        $customer_list = MainUserCustomerPlace::select('customer_id')->where('user_id',Auth::user()->user_id);
 
-        if($customer_list == "")
+        if($customer_list->count() == 0)
             return response(['status'=>'error','message'=>'Customer empty!']);
-        $customer_arr = explode(";",$customer_list);
+        $customer_arr = $customer_list->get()->toArray();
+        $customer_arr = array_values($customer_arr);
+        // return $customer_arr;
 
         $customer_info =  MainCustomerTemplate::where('ct_active',1)
                         ->whereIn('id',$customer_arr)
@@ -108,7 +112,7 @@ class DashboardController extends Controller {
                                 ->orWhere('ct_cell_phone',$customer_phone);
                         })->first();
         if($customer_info == "")
-            return response(['status'=>'error','message'=>'Customer empty!']);
+            return response(['status'=>'error','message'=>'Customer Error!']);
         else
             return response(['status'=>'success','id'=>$customer_info->id]);
     }
@@ -194,9 +198,12 @@ class DashboardController extends Controller {
                 return '<a href="'.route('customer-detail',$row['customer_customer_template_id']).'">'.$row['cs_id'].'</a>';
             })
             ->addColumn('action',function($row){
-                return '<a class="btn btn-sm btn-secondary order-service" href="'.route('add-order',$row['customer_customer_template_id']).'" title="Go To Order"><i class="fas fa-shopping-cart"></i></a>';
+                return '<a class="order-service" href="'.route('add-order',$row['customer_customer_template_id']).'" title="Go To Order"><i class="fas fa-shopping-cart"></i></a>';
             })
             ->rawColumns(['action','seller_name','service_info','expired_date','cs_id'])
             ->make(true);
+    }
+    public function reviewDashboardDatatable(Request $request){
+        
     }
 }

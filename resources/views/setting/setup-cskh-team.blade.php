@@ -29,7 +29,7 @@ Setup Team
   <div class="col-md-8">
     <div class="card shadow mb-4 ">
       <div class="card-header py-2">
-        <h6 class="m-0 font-weight-bold text-primary">Team List <button type="button" class="float-right btn btn-primary btn-sm add-team">Add Team</button></h6>
+        <h6 class="m-0 font-weight-bold text-primary">CSKH Teams{{-- <button type="button" class="float-right btn btn-primary btn-sm add-team">Add Team</button> --}}</h6>
       </div>
       <div class="card-body">
           <table class="table table-sm table-bordered table-hover" id="team-table" width="100%"  cellspacing="0">
@@ -38,8 +38,8 @@ Setup Team
                    <th>ID</th>
                    <th>Team name</th>
                    <th>Leader</th>
-                   <th>Team type</th>
-                   <th>Action</th>
+                   {{-- <th>Team type</th> --}}
+                   {{-- <th>Action</th> --}}
                 </tr>
             </thead>
          </table>
@@ -48,15 +48,16 @@ Setup Team
 
     <div class="card shadow mb-4 ">
       <div class="card-header py-2">
-        <h6 class="m-0 font-weight-bold text-primary">User List</h6>
+        <h6 class="m-0 font-weight-bold text-primary">Other Teams</h6>
       </div>
       <div class="card-body"  >
           <table class="table table-sm table-bordered table-hover"  id="user-table" width="100%"  cellspacing="0">
             <thead>
               <tr class="thead-light">
-                <th>ID</th>
-                <th>Member</th>
-                 <th>Team</th>
+                <th class="text-center">ID</th>
+                <th>Name</th>
+                <th>Leader</th>
+                <th>CSKH Team</th>
               </tr>
             </thead>
           </table>
@@ -67,13 +68,28 @@ Setup Team
   <div class="col-md-4" >
     <div class="card shadow mb-4 ">
       <div class="card-header py-2">
-        <h6 class="m-0 font-weight-bold text-primary">Members of <b class="team-name-list"></b> Team</h6>
+        <h6 class="m-0 font-weight-bold text-primary">User's CSKH Team</h6>
+      </div>
+      <div class="card-body"  >
+          <table class="table table-sm table-bordered table-hover"  id="user-cskh-table" width="100%"  cellspacing="0">
+            <thead>
+              <tr class="thead-light">
+                <th class="text-center">ID</th>
+                <th>Name</th>
+              </tr>
+            </thead>
+          </table>
+      </div>
+    </div>
+    <div class="card shadow mb-4 ">
+      <div class="card-header py-2">
+        <h6 class="m-0 font-weight-bold text-primary">Teams of <b class="team-name-list"></b> Team</h6>
       </div>
       <div class="card-body">
         <table class="table table-sm table-bordered table-hover" id="member-table" width="100%" cellspacing="0">
             <thead>
               <tr class="thead-light">
-                <th>Member</th>
+                <th>Teams</th>
                 <th>Action</th>
               </tr>
             </thead>
@@ -127,16 +143,16 @@ Setup Team
              ],
          processing: true,
          serverSide: true,
-         ajax:{ url:"{{ route('get-team-list') }}",
+         ajax:{ url:"{{ route('cskh_datatable') }}",
          data: function (d) {
               }
           },
          columns: [
-                  { data: 'id', name: 'id' },
+                  { data: 'id', name: 'id', class:'text-center' },
                   { data: 'team_name', name: 'team_name' },
                   { data: 'team_leader', name: 'team_leader',class: 'text-capitalize' },
-                  { data: 'team_type_name', name: 'team_type_name'},
-                  { data: 'action' , name:'action' ,class:'text-center'}
+                  // { data: 'team_type_name', name: 'team_type_name'},
+                  // { data: 'action' , name:'action' ,class:'text-center'}
           ],
     });
       //GET MEMBER LIST
@@ -145,18 +161,18 @@ Setup Team
          searching: false,
          paging: false,
          info: false,
-         scrollY: true,
+         scrollY: "300px",
          buttons: [
          ],
          processing: true,
          serverSide: true,
-         ajax:{ url:"{{ route('get-member-list') }}",
+         ajax:{ url:"{{ route('teams_datatable') }}",
          data: function (d) {
             d.team_id = team_id
               }
           },
          columns: [
-            { data: 'user_fullname', name: 'user_fullname',class: 'text-capitalize' },
+            { data: 'team_name', name: 'team_name' },
             { data: 'action' , name:'action' ,orderable: false, searcheble: false ,class:'text-center'}
           ],
         });
@@ -171,14 +187,35 @@ Setup Team
          ],
          processing: true,
          serverSide: true,
-         ajax:{ url:"{{ route('get-user-list') }}",
+         ajax:{ url:"{{ route('other_datatable') }}",
          data: function (d) {
               }
           },
          columns: [
-            { data: 'user_id', name: 'user_id'},
-            { data: 'user_fullname', name: 'user_fullname', class: 'text-capitalize' },
-            { data: 'team_name', name: 'team_name' }
+            { data: 'id', name: 'id', class: 'text-center'},
+            { data: 'team_name', name: 'team_name',},
+            { data: 'team_leader', name: 'team_leader', class: 'text-capitalize'  },
+            { data: 'team_cskh_id', name: 'team_cskh_id',}
+          ],
+        });
+      var userCskhTable = $('#user-cskh-table').DataTable({
+         // dom: "lBfrtip",
+         searching: false,
+         paging: false,
+         scrollY: "200px",
+         info: false,
+         buttons: [
+         ],
+         processing: true,
+         serverSide: true,
+         ajax:{ url:"{{ route('user_cskh_datatable') }}",
+         data: function (d) {
+            d.team_id = team_id;
+              }
+          },
+         columns: [
+            { data: 'user_id', name: 'user_id', class: 'text-center'},
+            { data: 'user_name', name: 'user_name'},
           ],
         });
 
@@ -313,18 +350,22 @@ Setup Team
         team_id = table.row(this).data()['id'];
         var team_name = table.row(this).data()['team_name'];
         memberTable.draw();
+        userCskhTable.draw();
         $(".team-name-list").html(team_name);
       });
 
       $(document).on('click','.remove-member',function(){
 
-        var user_id = $(this).attr('user_id');
+        var member_id = $(this).attr('team_id');
 
         $.ajax({
-          url: '{{route('remove-member-from-team')}}',
-          type: 'GET',
+          url: '{{route('remove_team')}}',
+          type: 'POST',
           dataType: 'html',
-          data: {user_id: user_id},
+          data: {
+            member_id: member_id,
+            _token: '{{csrf_token()}}'
+          },
         })
         .done(function(data) {
           data = JSON.parse(data);
@@ -342,22 +383,32 @@ Setup Team
       });
       $("#user-table tbody").on('click','tr',function(){
 
-        if(team_id == 0)
+        if(team_id == 0){
           toastr.error('Choose Team want to add, first!');
+          return;
+        }
         else{
+          var member_id = userTable.row(this).data()['id'];
+          var cskh_team = userTable.row(this).data()['team_cskh_id'];
 
-          var user_id = userTable.row(this).data()['user_id'];
+            if(cskh_team != ""){
+              toastr.error('Remove CSKH Team Before Add New!');
+              return;
+            }
 
           $.ajax({
-            url: '{{route('add-member-to-team')}}',
-            type: 'GET',
+            url: '{{route('add_team_to_team_cskh')}}',
+            type: 'POST',
             dataType: 'html',
             data: {
-              user_id: user_id,
-              team_id: team_id
+              member_id: member_id,
+              team_id: team_id,
+              _token:'{{csrf_token()}}'
             },
           })
           .done(function(data) {
+            // console.log(data);
+            // return;
             data = JSON.parse(data);
             if(data.status == 'error')
               toastr.error(data.message);

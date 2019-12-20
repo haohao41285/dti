@@ -62,10 +62,7 @@ class PlaceController extends Controller
 
         $user_id = Auth::user()->user_id;
 
-
-
-        $places = PosPlace::select('place_id','place_name','place_address','place_email','place_phone','place_ip_license','created_at')
-            ->where('place_status',1);
+        $places = PosPlace::select('place_website','place_status','place_id','place_name','place_address','place_email','place_phone','place_ip_license','created_at');
         if(Gate::allows('permission','place-admin')){}
         elseif(Gate::allows('permission','place-staff')){
             $place_id_arr = MainTask::where(function($query) use ($user_id) {
@@ -82,8 +79,6 @@ class PlaceController extends Controller
             $places = $places->whereIn('place_id',$place_id_arr);
         }
 
-
-
         return DataTables::of($places)
         ->editColumn('action',function($places){
             return '<a class="btn btn-sm btn-secondary view" data-id="'.$places->place_id.'" href="#" data-toggle="tooltip" title="View users"><i class="fas fa-user-cog"></i></a>
@@ -93,10 +88,15 @@ class PlaceController extends Controller
             <a class="btn btn-sm btn-secondary btn-auto-coupon" data-id="'.$places->place_id.'" href="#" data-toggle="tooltip" title="Auto coupon"><i class="fas fa-images"></i></a>
             <a class="btn btn-sm btn-secondary extension-service" place_id="'.$places->place_id.'" href="javascript:void(0)" title="Extension for Place"><i class="fas fa-shopping-cart"></i></a>';
         })
+        ->editColumn('place_status',function($row){
+            if($row->place_status == 1) $checked='checked';
+            else $checked="";
+                return '<input type="checkbox" place_id="'.$row->place_id.'" place_status="'.$row->place_status.'" class="js-switch"'.$checked.'/>';
+        })
         ->editColumn('created_at',function($places){
             return format_datetime($places->created_at);
         })
-        ->rawColumns(['action'])
+        ->rawColumns(['action','place_status'])
         ->make(true);
     }
     /**
@@ -282,6 +282,23 @@ class PlaceController extends Controller
             // dd($template);
             return response()->json(['status'=>1,'data'=>$template]);
         }
+    }
+    public function changePlaceStatus(Request $request){
+
+        $place_id = $request->place_id;
+        $place_status = $request->place_status;
+
+        if($place_status == 1)
+            $status = 0;
+        else
+            $status = 1;
+
+        $place_update = PosPlace::where('place_id',$place_id)->update(['place_status'=>$status]);
+
+        if(!isset($place_update))
+            return response(['status'=>'error','message'=>'Failed! Change Status Failed!']);
+
+        return response(['status'=>'success','message'=>'Successfully! Change Status Successfully!']);
     }
 
 

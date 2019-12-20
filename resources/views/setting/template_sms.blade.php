@@ -5,7 +5,7 @@
 @section('content')
 <div class="modal fade" id="short-link-modal" role="dialog">
     <div class="modal-dialog">
-    
+
       <!-- Modal content-->
       <div class="modal-content">
         <div class="modal-header">
@@ -15,13 +15,13 @@
             <input type="text" name="link" id="link" class="form-control form-control-sm col-md-10" placeholder="Enter Your Link">
             <button class="col-md-2 bg-primary text-white text-center" id="shorten">Shorten</button>
           </div>
-          
+
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-danger btn-sm" data-dismiss="modal">Cancel</button>
         </div>
       </div>
-      
+
     </div>
   </div>
 <div class="col-12">
@@ -33,7 +33,7 @@
     </div>
     <div class="card-body">
       <div class="table-responsive">
-        <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+        <table class="table table-sm table-bordered table-hover" id="dataTable" width="100%" cellspacing="0">
           <thead>
             <tr>
               <!-- <th>Id</th> -->
@@ -41,7 +41,7 @@
               <th>SMS Content Template</th>
               <th style="width: 80px">Action</th>
             </tr>
-          </thead>  
+          </thead>
         </table>
       </div>
     </div>
@@ -59,7 +59,7 @@
             <div class="col-lg-9">
                <input class="late form-control" name="template_title" id="template_title" type="text">
             </div>
-            
+
         </div>
         <div class="form-group row"  >
           <label class="col-lg-3 col-form-label form-control-label">SMS Content Template</label>
@@ -85,7 +85,7 @@
 
          <div class="form-group row">
             <label class="col-lg-3 col-form-label form-control-label"></label>
-            <div class="col-lg-9">                     
+            <div class="col-lg-9">
                {{-- <a href="" class="btn btn-sm btn-danger">Cancel</a> --}}
                <input type="button" value="Cancel" id="reset" class="btn btn-danger btn-sm" name="">
                <input type="button" class="btn btn-sm btn-primary save-change" value=" Save " />
@@ -95,7 +95,7 @@
     </div>
   </div>
 </div>
- 
+
 </div>
 </div>
 @endsection
@@ -154,7 +154,7 @@
            var str = $("#textMessage").val();
            var s_str = str.substring(0,MaxLength);
            $("#textMessage").val(s_str);
-        }   
+        }
     }
     $("#short-link").click(function(){
       $("#short-link-modal").modal('show');
@@ -172,9 +172,9 @@
          /* {data:'id',name: 'id', class: 'text-center'},*/
           {data:'template_title',name:'template_title'},
           {data:'sms_content_template',name:'sms_content_template'},
-          {data:'action',name:'action',orderable: false, searcheble: false, class: 'text-center'},        
+          {data:'action',name:'action',orderable: false, searcheble: false, class: 'text-center'},
         ]
-      });       
+      });
 
       $(document).on('click','.delete-template',function(e){
           e.preventDefault();
@@ -276,8 +276,8 @@
       .fail(function() {
         toastr.error('Saving Error!');
       });
-      
-        
+
+
     })
 
   });

@@ -114,20 +114,16 @@
         <div class="row">
             <div class="col-xl-6 col-lg-6">
                 <div class="card shadow mb-4">
-                    <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                    <div class="card-header  d-flex flex-row align-items-center justify-content-between border-0">
                         <span class="m-0 font-weight-bold text-primary">Processing Task</span> <a href="{{route('my-task')}}">View More >>></a>
                     </div>
-                    <table class="table table-striped table-hover" id="datatable-task-dashboard" width="100%" cellspacing="0">
+                    <table class="table table-sm table-hover" id="datatable-task-dashboard" width="100%" cellspacing="0">
                         <thead>
-                        <tr>
+                        <tr class="thead-light">
                             <th>Task#</th>
                             <th>Subject</th>
-                            {{--                        <th class="text-center">Priority</th>--}}
                             <th class="text-center">Status</th>
-                            {{--                        <th class="text-center">Date Start</th>--}}
-                            {{--                        <th class="text-center">Date end</th>--}}
-                            {{--                        <th class="text-center">%Complete</th>--}}
-                            <th class="text-center">Category</th>
+                            <th class="text-center">(%)Percent Complete</th>
                             <th class="text-center">Order#</th>
                             <th class="text-center">Last Updated</th>
                         </tr>
@@ -138,12 +134,12 @@
             @if(\Gate::allows('permission','dashboard-customer'))
             <div class="col-xl-6 col-lg-6">
                 <div class="card shadow mb-4">
-                    <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                    <div class="card-header d-flex flex-row align-items-center justify-content-between border-0" >
                         <span class="m-0 font-weight-bold text-primary">Customer is about to expire</span> <a href="{{route('myCustomers')}}">View More >>></a>
                     </div>
-                    <table class="table table-striped table-hover" id="datatable-customer-service" width="100%" cellspacing="0">
+                    <table class="table table-sm table-hover" id="datatable-customer-service" width="100%" cellspacing="0">
                         <thead>
-                        <tr>
+                        <tr class="thead-light">
                             <th>ID</th>
                             <th>Customer Name</th>
                             <th>Customer Phone</th>
@@ -157,6 +153,26 @@
                 </div>
             </div>
             @endif
+            {{-- REMIDER CUSTOMER'S REVIEW--}}
+            <div class="col-xl-6 col-lg-6">
+                <div class="card shadow mb-4">
+                    <div class="card-header d-flex flex-row align-items-center justify-content-between border-0" >
+                        <span class="m-0 font-weight-bold text-primary">Remider Customer's Review</span> <a href="javascript:void(0)">View More >>></a>
+                    </div>
+                    <table class="table table-sm table-hover" id="datatable-review" width="100%" cellspacing="0">
+                        <thead>
+                        <tr class="thead-light">
+                            <th>ID</th>
+                            <th>Place Name</th>
+                            <th>Customer Phone</th>
+                            <th>Order Review</th>
+                            <th>Month Review</th>
+                            <th>Action</th>
+                        </tr>
+                        </thead>
+                    </table>
+                </div>
+            </div>
         </div>
     </div>
 @endsection
@@ -237,7 +253,7 @@
                 paging:false,
                 searching: false,
                 info:false,
-                responsive: false,
+                // responsive: false,
                 ajax:{ url:"{{ route('customer-service-datatable') }}",
                     data: function (d) {
                     }
@@ -278,7 +294,7 @@
                     // { data: 'date_start', name: 'date_start',class:'text-center' },
                     // { data: 'date_end', name: 'date_end',class:'text-center' },
                     // { data: 'complete_percent', name: 'complete_percent',class: 'text-center' },
-                    { data: 'category', name: 'category',class: 'text-center' },
+                    { data: 'complete_percent', name: 'complete_percent',class: 'text-right' },
                     { data: 'order_id', name: 'order_id',class: 'text-center' },
                     { data: 'updated_at', name: 'updated_at',class: 'text-center'},
                 ],
@@ -309,20 +325,15 @@
                             $.each(data.data, function(index,val){
 
                                 var complete_percent = "";
-                                if(val.complete_percent == null)  complete_percent = "";
+                                if(val.complete_percent === null)  complete_percent = "";
                                 else complete_percent = val.complete_percent;
 
                                 subtask_html += `
                                 <tr>
                                     <td>`+val.task+`</td>
                                     <td>`+val.subject+`</td>
-                                    <td>`+val.priority+`</td>
                                     <td>`+val.status+`</td>
-                                    <td>`+val.date_start+`</td>
-                                    <td>`+val.date_end+`</td>
-                                    <td>`+complete_percent+`</td>
-                                    <td>`+val.category+`</td>
-                                    <td>`+val.assign_to+`</td>
+                                    <td class="text-right">`+complete_percent+`</td>
                                     <td>`+val.updated_at+`</td>
                                 </tr> `;
                             });
@@ -334,6 +345,30 @@
                         });
                 }
             } );
+            var table_customer = $('#datatable-review').DataTable({
+                // dom: "lBfrtip",
+                buttons: [
+                ],
+                processing: true,
+                serverSide: true,
+                paging:false,
+                searching: false,
+                info:false,
+                // responsive: false,
+                ajax:{ url:"{{ route('datatable_dashboard_review') }}",
+                    data: function (d) {
+                    }
+                },
+                columns: [
+                    { data: 'cs_id', name: 'cs_id',class:'text-center' },
+                    { data: 'customer_name', name: 'customer_name' },
+                    { data: 'customer_phone', name: 'customer_phone' },
+                    { data: 'service_info', name: 'service_info'},
+                    { data: 'expired_date', name: 'expired_date',class: 'text-center'},
+                    { data: 'seller_name', name: 'seller_name'},
+                    { data: 'action' , name:'action' ,orderable: false, searcheble: false ,class:'text-center'}
+                ],
+            });
         });
         function format ( d ) {
             // `d` is the original data object for the row
@@ -341,13 +376,8 @@
             <tr class="bg-info text-white">
                 <th scope="col">SubTask</th>
                 <th scope="col">Subject</th>
-                <th class="text-center">Priority</th>
                 <th class="text-center">Status</th>
-                <th class="text-center">Date Start</th>
-                <th class="text-center">Date end</th>
-                <th class="text-center">%Complete</th>
-                <th class="text-center">Category</th>
-                <th class="text-center">Assign To</th>
+                <th class="text-center">(%)Percent Complete</th>
                 <th class="text-center">Last Updated</th>
             </tr>`;
         }

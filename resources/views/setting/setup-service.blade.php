@@ -13,9 +13,9 @@ Combo/Service List
 @section('content')
 <div class="col-12">
 <h5><b>Combo/Service List</b></h5>
-<table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+<table class="table table-sm table-bordered table-hover" id="dataTable" width="100%" cellspacing="0">
   <thead>
-    <tr>
+    <tr class="thead-light">
       <th class="text-center">ID</th>
       <th>Name</th>
       <th class="text-center">Type</th>
@@ -45,6 +45,7 @@ Combo/Service List
 <script type="text/javascript">
   //DEFINE VAR
   var cs_assign_id = [];
+  var cs_app_website_type = '';
 
   $(document).ready(function($) {
     dataTable = $("#dataTable").DataTable({
@@ -59,7 +60,7 @@ Combo/Service List
              ],
           ajax:{ url:"{{route('service-datatable')}}"},
                 columns:[
-                  {data:'id', name:'id'},
+                  {data:'id', name:'id',class:'text-center'},
                   {data:'cs_name', name:'cs_name'},
                   {data:'cs_combo_service_type', name:'cs_combo_service_type',class: 'text-center'},
                   {data:'cs_price', name:'cs_price',class: 'text-right'},
@@ -442,8 +443,13 @@ Combo/Service List
         </div>
         <div class="col-md-6">
             <h6><b> List</b></h6>
+            <div class="row col-12 my-2 app-website-box">
+              <button type="button" class="btn btn-sm btn-primary border-primary mx-2 type-app" type-app="1">Website</button>
+              <button type="button" class="btn btn-sm btn-default border-primary mx-2 type-app"type-app="2">INailSo App</button>
+              <input type="hidden" name="cs_app_website_type" id="type-app-website" value="1">
+            </div>
             <div style="max-height: 33em;overflow-y: auto" id="cs-box">
-`+data.menu_html+`
+                `+data.menu_html+`
                 </div>
                 <div class="form-group row float-right">
                   <button type="button" class="btn btn-danger btn-sm cancel-add-edit">Cancel</button>
@@ -490,6 +496,9 @@ Combo/Service List
             });
 
           if(cs_type == 1){
+            $(".app-website-box").css('display', 'none');
+            $("#type-app-website").val(null);
+
             $.each(cs_list, function(index, val)
             {
               service_list_html += `<div class="checkbox">
@@ -499,6 +508,12 @@ Combo/Service List
             $(".service-content-son").html('');
 
           }else{
+              $(".app-website-box").css('display', 'inline');
+              if(cs_app_website_type == "")
+                $("#type-app-website").val(1);
+              else
+                $("#type-app-website").val(cs_app_website_type);
+
               $(".service-content").after(`
 
               <div class="form-group service-content-son">
@@ -529,6 +544,34 @@ Combo/Service List
       .fail(function() {
         console.log("error");
       });
+    });
+    $(document).on('click','.type-app',function(){
+
+      $(".type-app").removeClass('btn-primary').removeClass('btn-default').addClass('btn-default');
+      $(this).addClass('btn-primary').removeClass('btn-default').removeClass('btn-default');
+
+      let type_app = $(this).attr('type-app');
+      cs_app_website_type = type_app;
+      $("#type-app-website").val(type_app);
+
+      $.ajax({
+        url: '{{route('get_menu_app')}}',
+        type: 'GET',
+        dataType: 'html',
+        data: {type_app: type_app },
+      })
+      .done(function(data) {
+        data = JSON.parse(data);
+        $("#cs-box").html(data.menu_html);
+        console.log(data.menu_html);
+      })
+      .fail(function() {
+        console.log("error");
+      })
+      .always(function() {
+        console.log("complete");
+      });
+      
     })
   });
 </script>

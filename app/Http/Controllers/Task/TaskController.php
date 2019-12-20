@@ -235,6 +235,10 @@ class TaskController extends Controller
         $data['assign_to'] = MainUser::whereIn('user_id',$assign_to_arr)->get();
         $data['team'] = MainTeam::all();
 
+        if(in_array(Auth::user()->user_id, $assign_to_arr) && $data['assign_to']->count() > 2){
+            $data['button'] = 'button';
+        }
+
         return view('task.task-detail',$data);
     }
 
@@ -287,6 +291,7 @@ class TaskController extends Controller
         $data['user_list'] = MainUser::all();
         $data['task_parent_id'] = $id;
          $data['task_name'] = "";
+         $data['assign_to_team'] = MainTeam::active()->get();
 
         if($id>0){
             $data['task_name'] = MainTask::find($id)->subject;
@@ -310,7 +315,7 @@ class TaskController extends Controller
         }
     }
     public function saveTask(Request $request){
-//        return $request->all();
+
         if(Gate::denies('permission','create-new-task'))
             return doNotPermission();
 
@@ -321,22 +326,37 @@ class TaskController extends Controller
         }
 
         $input =  $request->all();
+
         if($request->date_start != "")
             $input['date_start'] = format_date_db($request->date_start);
         if($request->date_end != "")
             $input['date_end'] = format_date_db($request->date_end);
 
+        if(isset($request->cskh_task)){
+            $assign_arr = [];
+
+            $assign_list = MainUser::active()->where('user_team',$request->assign_to)->where('user_id','!=',Auth::user()->user_id)->select('user_id')->get();
+            if($assign_list->count() == 0)
+                return back()->with(['error'=>'Team empty for assign!']);
+
+            foreach ($assign_list as $key => $value) {
+                $assign_arr[] = $value->user_id;
+            }
+            $assign_list = implode(';', $assign_arr);
+            $input['assign_to'] = $assign_list; 
+        }
+
         if(!isset($request->id)){
 
             $input['created_by'] = Auth::user()->user_id;
-            $input['updated_by'] = Auth::user()->user_id;
+            $input['updated_by'] = Auth::user()->user_id ;
             $task_save = MainTask::create($input);
             //SAVE NOTIFICATION
             $content = Auth::user()->user_nickname. "created a task #".$task_save->id;
             $notification_arr = [
                 'content' => $content,
                 'href_to' => route('task-detail',$task_save->id),
-                'receiver_id' => $request->assign_to,
+                'receiver_id' => $input['assign_to'],
                 'read_not' => 0,
                 'created_by' => Auth::user()->user_id,
             ];
@@ -411,15 +431,32 @@ class TaskController extends Controller
 
             //SAVE NOTIFICATION
             $content = Auth::user()->user_nickname. " updated a task #".$request->id;
-            $notification_arr = [
-                'content' => $content,
-                'href_to' => route('task-detail',$request->id),
-                'receiver_id' => $request->assign_to,
-                'read_not' => 0,
-                'created_by' => Auth::user()->user_id,
-            ];
-            $notification_create = MainNotification::create($notification_arr);
 
+            if(isset($request->cskh_task)){
+
+                $assign_list = MainUser::active()->where('user_team',$request->assign_to)->where('user_id','!=',Auth::user()->user_id)->select('user_id')->get();
+
+                foreach ($assign_list as $key => $value) {
+                    $notification_arr = [
+                        'content' => $content,
+                        'href_to' => route('task-detail',$request->id),
+                        'receiver_id' => $value->user_id,
+                        'read_not' => 0,
+                        'created_by' => Auth::user()->user_id,
+                    ];
+                    $notification_create = MainNotification::create($notification_arr);
+                }
+            }else{
+
+                $notification_arr[] = [
+                    'content' => $content,
+                    'href_to' => route('task-detail',$request->id),
+                    'receiver_id' => $request->assign_to,
+                    'read_not' => 0,
+                    'created_by' => Auth::user()->user_id,
+                ];
+                $notification_create = MainNotification::create($notification_arr);
+            }
             if(!isset($task_save) || !isset($tracking_history) || !isset($notification_create))
                 return back()->with(['error'=>'Save Error. Check Again, Please!']);
             else
@@ -653,6 +690,7 @@ class TaskController extends Controller
         if($id>0){
             $data['task_name'] = MainTask::find($id)->subject;
         }
+        $data['assign_to_team'] = MainTeam::active()->get();
         return view('task.cskh-task',$data);
     }
     public function getStatusTaskOrder(Request $request){
@@ -746,5 +784,17 @@ class TaskController extends Controller
                 return response(['status'=>'success','message'=>'Successfully! Change Successfully!','percent_complete'=>$percent_complete,'status'=>$status]);
             }
         }
+    }
+    public function updateAssignTask(Request $request){
+
+        $task_info = MainTask::find($request->task_id);
+        if (strpos($task_info->assign_to, ';') !== false) {
+            $update_task = $task_info->update(['assign_to'=>Auth::user()->user_id]);
+            if(!$update_task)
+                return back()->with(['error'=>'Accept Failed!']);
+            else
+                return redirect()->route('task-detail',$request->task_id);
+        }else
+            return redirect()->route('my-task')->with(['success'=>'This Task had accpeted by other!Thanks']);
     }
 }

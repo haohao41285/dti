@@ -62,7 +62,7 @@ class SendNotification implements ShouldQueue
         //Recipients
         $mail->setFrom(env('MAIL_USERNAME'), 'DataeGlobal Web Master');
          $mail->addAddress($this->input['email'], $this->input['name']);     // nguyenthieupro93@gmail.com
-        if(isset($this->input['email_arr'])){
+        if(isset($this->input['email_arr']) && !empty($this->input['email_arr'])) {
             foreach($this->input['email_arr'] as $email){
                 $mail->addAddress($email);
             }

@@ -67,8 +67,8 @@ class ReportController extends Controller
 
             if($start_date != "" && $end_date != ""){
 
-                $start_date = Carbon::parse($start_date)->format('Y-m-d');
-                $end_date = Carbon::parse($end_date)->format('Y-m-d');
+                $start_date = Carbon::parse($start_date)->subDay(1)->format('Y-m-d');
+                $end_date = Carbon::parse($end_date)->addDay(1)->format('Y-m-d');
 
                 $customer_list->whereDate('created_at','>=',$start_date)
                     ->whereDate('created_at','<=',$end_date);
@@ -199,8 +199,8 @@ class ReportController extends Controller
                 });
 
                 if($request->start_date != "" && $request->end_date != ""){
-                    $start_date = format_date_db($request->start_date);
-                    $end_date = format_date_db($request->end_date);
+                    $start_date = Carbon::parse($request->start_date)->subDay(1)->format('Y-m-d');
+                    $end_date = Carbon::parse($request->end_date)->addDay(1)->format('Y-m-d');
                     $service_customer = $service_customer->whereBetween('main_combo_service_bought.created_at',[$start_date,$end_date]);
                 }
 
@@ -214,8 +214,8 @@ class ReportController extends Controller
             }else{
 
                 if($request->start_date != "" && $request->end_date != ""){
-                    $start_date = format_date_db($request->start_date);
-                    $end_date = format_date_db($request->end_date);
+                    $start_date = Carbon::parse($request->start_date)->subDay(1)->format('Y-m-d');
+                    $end_date = Carbon::parse($request->end_date)->addDay(1)->format('Y-m-d');
                     $service_customer = $service_customer->whereBetween('created_at',[$start_date,$end_date]);
                 }
                 if($request->seller_id != ""){
@@ -265,8 +265,8 @@ class ReportController extends Controller
             $user_list = MainUser::where('user_team',Auth::user()->user_team);
 
         if($request->start_date != "" && $request->end_date){
-            $start_date = format_date_db($request->start_date);
-            $end_date = format_date_db($request->end_date);
+            $start_date = Carbon::parse($request->start_date)->subDay(1)->format('Y-m-d');
+            $end_date = Carbon::parse($request->end_date)->addDay(1)->format('Y-m-d');
             $user_list->whereBetween('created_at',[$start_date,$end_date]);
         }
         if($request->seller_id != ""){
@@ -320,6 +320,8 @@ class ReportController extends Controller
         $assigned_total = 0;
         $serviced_total = 0;
         $disabled_total = 0;
+        $discount_total = 0;
+        $charged_total = 0;
 
         if(Gate::allows('permission','customer-report-admin')){
             $customer_list = MainCustomerTemplate::select('*');
@@ -342,8 +344,8 @@ class ReportController extends Controller
         }
 
             if($request->start_date != "" && $request->end_date != ""){
-                $start_date = format_date_db($request->start_date);
-                $end_date = format_date_db($request->start_date);
+                $start_date = Carbon::parse($request->start_date)->subDay(1)->format('Y-m-d');
+                $end_date = Carbon::parse($request->end_date)->addDay(1)->format('Y-m-d');
 
                 $customer_list->whereDate('created_at','>=',$start_date)
                     ->whereDate('created_at','<=',$end_date);
@@ -543,8 +545,8 @@ class ReportController extends Controller
             })->whereIn('service_id',$combo_service_arr)->where('content','!=',null);
 
             if($request->start_date != ""  && $request->end_date != ""){
-                $start_date = format_date_db($request->start_date);
-                $end_date = format_date_db($request->end_date);
+                $start_date = Carbon::parse($request->start_date)->subDay(1)->format('Y-m-d');
+                $end_date = Carbon::parse($request->end_date)->addDay(1)->format('Y-m-d');
                 $review_total->whereBetween('updated_at',[$start_date,$end_date]);
                 $task_list->whereBetween('updated_at',[$start_date,$end_date]);
             }
