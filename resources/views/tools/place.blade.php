@@ -109,304 +109,306 @@
 {{-- detail place --}}
 <div class="modal fade" id="detail" tabindex="-1" role="dialog">
     <div style="max-width: 90%" class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                {{--
-                <h5 class="modal-title">Detail place</h5>
-                --}}
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body row">
-                <div class="col-12 ">
-                    <div class="card shadow mb-4 ">
-                        <div class="card-header py-2">
-                            <h6 class="m-0 font-weight-bold text-primary">Detail place</h6>
-                        </div>
-                        <div class="card-body">
-                            <div class="col-12 row">
-                                <div class="col-6">
-                                    <div class="row col-12 row-detail">
-                                        <label class="col-sm-4">Logo</label>
-                                        <div class="previewImage" id="logo">
-                                            <img id="previewImageAppbanner" src="http://localhost:8000/images/no-image.png">
-                                        </div>
-                                    </div>
-                                    <div class="row col-12 row-detail">
-                                        <label class="col-sm-4">Business name</label>
-                                        <label class="col-sm-8" id="bussiness-name">Business name</label>
-                                    </div>
-                                    <div class="row col-12 row-detail">
-                                        <label class="col-sm-4">Tax code</label>
-                                        <label class="col-sm-8" id="tax-code">Tax code</label>
-                                    </div>
-                                    <div class="row col-12 row-detail">
-                                        <label class="col-sm-4">Business phone</label>
-                                        <label class="col-sm-8" id="business-phone">Business phone</label>
-                                    </div>
-                                    <div class="row col-12 row-detail">
-                                        <label class="col-sm-4">Price floor</label>
-                                        <label class="col-sm-8" id="price-floor">Price floor</label>
-                                    </div>
-                                </div>
-                                <div class="col-6">
-                                    <div class="row col-12 row-detail">
-                                        <label class="col-sm-4">Favicon</label>
-                                        <div class="previewImage" id="favicon">
-                                            <img id="previewImageAppbanner" src="http://localhost:8000/images/no-image.png">
-                                        </div>
-                                    </div>
-                                    <div class="row col-12 row-detail">
-                                        <label class="col-sm-4">Address</label>
-                                        <label class="col-sm-8" id="address">Address</label>
-                                    </div>
-                                    <div class="row col-12 row-detail">
-                                        <label class="col-sm-4">Email</label>
-                                        <label class="col-sm-8" id="email">Email</label>
-                                    </div>
-                                    <div class="row col-12 row-detail">
-                                        <label class="col-sm-4">Website</label>
-                                        <label class="col-sm-8" id="website">Website</label>
-                                    </div>
-                                    <div class="row col-12 row-detail">
-                                        <label class="col-sm-4">Interest($)</label>
-                                        <label class="col-sm-8" id="interest">Interest($)</label>
-                                    </div>
-                                </div>
+        <form id="form-detail-place" method="post" enctype="multipart/form-data">
+            <div class="modal-content">
+                <div class="modal-header">
+                    {{--
+                    <h5 class="modal-title">Detail place</h5>
+                    --}}
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body row">
+                    <div class="col-12 ">
+                        <div class="card shadow mb-4 ">
+                            <div class="card-header py-2">
+                                <h6 class="m-0 font-weight-bold text-primary">Detail place</h6>
                             </div>
-                            <div class="col-12">
-                                <div class="row col-12 row-detail">
-                                    <label class="col-sm-2">Hide service price</label>
-                                    <label class="col-sm-8 row" id="hide-service-price">Hide service price</label>
-                                </div>
-                                <div class=" form-group">
-                                    <div class="col-md-12 row row-detail">
-                                        <label class="col-sm-2" ">Working Day</label>
-                                        <div class=" col-sm-10 workingtime">
-                                            <div class="col-day">
-                                                <label>Monday</label>
-                                                <div class="btn-group btn-group-toggle working-day" rel="monday">
-                                                    <label class="btn btn-sm btn-day " rel="open">
-                                                        <input disabled value="1" type="radio"> Open
-                                                    </label>
-                                                    <label class="btn btn-sm btn-day " rel="close">
-                                                        <input disabled value="0" type="radio"> Close
-                                                    </label>
-                                                </div>
+                            <div class="card-body">
+                                <div class="col-12 row">
+                                    <div class="col-6">
+                                        <div class="row col-12 row-detail">
+                                            <label class="col-sm-4">Logo</label>
+                                            <div class="previewImage" id="logo">
+                                                <img id="previewImageLogo" src="{{ asset('images/no-image.png') }}">
+                                                <input type="file" accept="image/*" name="image" class="custom-file-input" previewimageid="previewImageLogo" value="" style="display: none">
                                             </div>
-                                            <div class="col-day">
-                                                <label>Tuesday</label>
-                                                <div class="btn-group btn-group-toggle working-day" rel="tuesday">
-                                                    <label class="btn btn-sm btn-day " rel="open">
-                                                        <input disabled name="work_tue" value="1" type="radio"> Open
-                                                    </label>
-                                                    <label class="btn btn-sm btn-day " rel="close">
-                                                        <input disabled name="work_tue" value="0" type="radio"> Close
-                                                    </label>
-                                                </div>
+                                        </div>
+                                        <div class="row col-12 row-detail">
+                                            <label class="col-sm-4">Business name</label>
+                                            <label class="col-sm-8" id="bussiness-name">Business name</label>
+                                        </div>
+                                        <div class="row col-12 row-detail">
+                                            <label class="col-sm-4">Tax code</label>
+                                            <label class="col-sm-8" id="tax-code">Tax code</label>
+                                        </div>
+                                        <div class="row col-12 row-detail">
+                                            <label class="col-sm-4">Business phone</label>
+                                            <label class="col-sm-8" id="business-phone">Business phone</label>
+                                        </div>
+                                        <div class="row col-12 row-detail">
+                                            <label class="col-sm-4">Price floor</label>
+                                            <label class="col-sm-8" id="price-floor">Price floor</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-6">
+                                        <div class="row col-12 row-detail">
+                                            <label class="col-sm-4">Favicon</label>
+                                            <div class="previewImage" id="favicon">
+                                                <img id="previewImageFavicon" src="{{ asset('images/no-image.png') }}">
+                                                <input type="file" accept="image/*" name="image" class="custom-file-input" previewimageid="previewImageFavicon" value="" style="display: none">
                                             </div>
-                                            <div class="col-day">
-                                                <label>Wednesday</label>
-                                                <div class="btn-group btn-group-toggle working-day" rel="wednesday">
-                                                    <label class="btn btn-sm btn-day  " rel="open">
-                                                        <input disabled name="work_wed" value="1" type="radio"> Open
-                                                    </label>
-                                                    <label class="btn btn-sm btn-day " rel="close">
-                                                        <input disabled name="work_wed" value="0" type="radio"> Close
-                                                    </label>
-                                                </div>
-                                            </div>
-                                            <div class="col-day">
-                                                <label>Thursday</label>
-                                                <div class="btn-group btn-group-toggle working-day" rel="thursday">
-                                                    <label class="btn btn-sm btn-day " rel="open">
-                                                        <input disabled name="work_thur" value="1" type="radio"> Open
-                                                    </label>
-                                                    <label class="btn btn-sm btn-day " rel="close">
-                                                        <input disabled name="work_thur" value="0" type="radio"> Close
-                                                    </label>
-                                                </div>
-                                            </div>
-                                            <div class="col-day">
-                                                <label>Friday</label>
-                                                <div class="btn-group btn-group-toggle working-day" rel="friday">
-                                                    <label class="btn btn-sm btn-day " rel="open">
-                                                        <input disabled name="work_fri" value="1" type="radio"> Open
-                                                    </label>
-                                                    <label class="btn btn-sm btn-day" rel="close">
-                                                        <input disabled name="work_fri" value="0" type="radio"> Close
-                                                    </label>
-                                                </div>
-                                            </div>
-                                            <div class="col-day">
-                                                <label>Saturday</label>
-                                                <div class="btn-group btn-group-toggle working-day" rel="saturday">
-                                                    <label class="btn btn-sm btn-day " rel="open">
-                                                        <input disabled name="work_sat" value="1" type="radio"> Open
-                                                    </label>
-                                                    <label class="btn btn-sm btn-day " rel="close">
-                                                        <input disabled name="work_sat" value="0" type="radio"> Close
-                                                    </label>
-                                                </div>
-                                            </div>
-                                            <div class="col-day">
-                                                <label>Sunday</label>
-                                                <div class="btn-group btn-group-toggle working-day" rel="sunday">
-                                                    <label class="btn btn-sm btn-day" rel="open">
-                                                        <input disabled name="work_sun" value="1" type="radio"> Open
-                                                    </label>
-                                                    <label class="btn btn-sm btn-day " rel="close">
-                                                        <input disabled name="work_sun" value="0" type="radio"> Close
-                                                    </label>
-                                                </div>
-                                            </div>
+                                        </div>
+                                        <div class="row col-12 row-detail">
+                                            <label class="col-sm-4">Address</label>
+                                            <label class="col-sm-8" id="address">Address</label>
+                                        </div>
+                                        <div class="row col-12 row-detail">
+                                            <label class="col-sm-4">Email</label>
+                                            <label class="col-sm-8" id="email">Email</label>
+                                        </div>
+                                        <div class="row col-12 row-detail">
+                                            <label class="col-sm-4">Website</label>
+                                            <label class="col-sm-8" id="website">Website</label>
+                                        </div>
+                                        <div class="row col-12 row-detail">
+                                            <label class="col-sm-4">Interest($)</label>
+                                            <label class="col-sm-8" id="interest">Interest($)</label>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                            <div>
-                                <div class=" form-group">
-                                    <div class="col-md-12 row">
-                                        <label class="col-sm-2">Time Start</label>
-                                        <div class="col-sm-10 time-start workingtime">
-                                            <div class="col-day input-group-spaddon day_monday">
-                                                <div class="input-group date">
-                                                    <input disabled type="text" id="mon-start" value="19:00" class="form-control form-control-sm timepicker">
-                                                    <span class="input-group-addon">
-                                                        <span class="glyphicon glyphicon-time"></span>
-                                                    </span>
+                                <div class="col-12">
+                                    <div class="row col-12 row-detail">
+                                        <label class="col-sm-2">Hide service price</label>
+                                        <label class="col-sm-8 row" id="hide-service-price">Hide service price</label>
+                                    </div>
+                                    <div class=" form-group">
+                                        <div class="col-md-12 row row-detail">
+                                            <label class="col-sm-2">Working Day</label>
+                                            <div class=" col-sm-10 workingtime">
+                                                <div class="col-day">
+                                                    <label>Monday</label>
+                                                    <div class="btn-group btn-group-toggle working-day" rel="monday">
+                                                        <label class="btn btn-sm btn-day " rel="open">
+                                                            <input value="1" type="radio"> Open
+                                                        </label>
+                                                        <label class="btn btn-sm btn-day " rel="close">
+                                                            <input value="0" type="radio"> Close
+                                                        </label>
+                                                    </div>
                                                 </div>
-                                            </div>
-                                            <div class="col-day input-group-spaddon day_tuesday">
-                                                <div class="input-group date">
-                                                    <input disabled type="text" id="tue-start" value="21:00" class="form-control form-control-sm timepicker">
-                                                    <span class="input-group-addon">
-                                                        <span class="glyphicon glyphicon-time"></span>
-                                                    </span>
+                                                <div class="col-day">
+                                                    <label>Tuesday</label>
+                                                    <div class="btn-group btn-group-toggle working-day" rel="tuesday">
+                                                        <label class="btn btn-sm btn-day " rel="open">
+                                                            <input name="work_tue" value="1" type="radio"> Open
+                                                        </label>
+                                                        <label class="btn btn-sm btn-day " rel="close">
+                                                            <input name="work_tue" value="0" type="radio"> Close
+                                                        </label>
+                                                    </div>
                                                 </div>
-                                            </div>
-                                            <div class="col-day input-group-spaddon day_wednesday">
-                                                <div class="input-group date">
-                                                    <input disabled type="text" id="wed-start" value="21:00" class="form-control form-control-sm timepicker">
-                                                    <span class="input-group-addon">
-                                                        <span class="glyphicon glyphicon-time"></span>
-                                                    </span>
+                                                <div class="col-day">
+                                                    <label>Wednesday</label>
+                                                    <div class="btn-group btn-group-toggle working-day" rel="wednesday">
+                                                        <label class="btn btn-sm btn-day  " rel="open">
+                                                            <input name="work_wed" value="1" type="radio"> Open
+                                                        </label>
+                                                        <label class="btn btn-sm btn-day " rel="close">
+                                                            <input name="work_wed" value="0" type="radio"> Close
+                                                        </label>
+                                                    </div>
                                                 </div>
-                                            </div>
-                                            <div class="col-day input-group-spaddon day_thursday">
-                                                <div class="input-group date">
-                                                    <input disabled type="text" id="thustart" value="21:00" class="form-control form-control-sm timepicker">
-                                                    <span class="input-group-addon">
-                                                        <span class="glyphicon glyphicon-time"></span>
-                                                    </span>
+                                                <div class="col-day">
+                                                    <label>Thursday</label>
+                                                    <div class="btn-group btn-group-toggle working-day" rel="thursday">
+                                                        <label class="btn btn-sm btn-day " rel="open">
+                                                            <input name="work_thur" value="1" type="radio"> Open
+                                                        </label>
+                                                        <label class="btn btn-sm btn-day " rel="close">
+                                                            <input name="work_thur" value="0" type="radio"> Close
+                                                        </label>
+                                                    </div>
                                                 </div>
-                                            </div>
-                                            <div class="col-day input-group-spaddon day_friday">
-                                                <div class="input-group date">
-                                                    <input disabled type="text" id="fri-start" value="21:00" class="form-control form-control-sm timepicker">
-                                                    <span class="input-group-addon">
-                                                        <span class="glyphicon glyphicon-time"></span>
-                                                    </span>
+                                                <div class="col-day">
+                                                    <label>Friday</label>
+                                                    <div class="btn-group btn-group-toggle working-day" rel="friday">
+                                                        <label class="btn btn-sm btn-day " rel="open">
+                                                            <input name="work_fri" value="1" type="radio"> Open
+                                                        </label>
+                                                        <label class="btn btn-sm btn-day" rel="close">
+                                                            <input name="work_fri" value="0" type="radio"> Close
+                                                        </label>
+                                                    </div>
                                                 </div>
-                                            </div>
-                                            <div class="col-day input-group-spaddon day_saturday">
-                                                <div class="input-group date">
-                                                    <input disabled type="text" id="sat-start" value="21:00" class="form-control form-control-sm timepicker">
-                                                    <span class="input-group-addon">
-                                                        <span class="glyphicon glyphicon-time"></span>
-                                                    </span>
+                                                <div class="col-day">
+                                                    <label>Saturday</label>
+                                                    <div class="btn-group btn-group-toggle working-day" rel="saturday">
+                                                        <label class="btn btn-sm btn-day " rel="open">
+                                                            <input name="work_sat" value="1" type="radio"> Open
+                                                        </label>
+                                                        <label class="btn btn-sm btn-day " rel="close">
+                                                            <input name="work_sat" value="0" type="radio"> Close
+                                                        </label>
+                                                    </div>
                                                 </div>
-                                            </div>
-                                            <div class="col-day input-group-spaddon day_sunday">
-                                                <div class="input-group date">
-                                                    <input disabled type="text" id="sun-start" value="23:00" class="form-control form-control-sm timepicker">
-                                                    <span class="input-group-addon">
-                                                        <span class="glyphicon glyphicon-time"></span>
-                                                    </span>
+                                                <div class="col-day">
+                                                    <label>Sunday</label>
+                                                    <div class="btn-group btn-group-toggle working-day" rel="sunday">
+                                                        <label class="btn btn-sm btn-day" rel="open">
+                                                            <input name="work_sun" value="1" type="radio"> Open
+                                                        </label>
+                                                        <label class="btn btn-sm btn-day " rel="close">
+                                                            <input name="work_sun" value="0" type="radio"> Close
+                                                        </label>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
-                                </div>
-                                <div class=" form-group">
-                                    <div class="col-md-12 row">
-                                        <label class="col-sm-2">Time End</label>
-                                        <div class="col-sm-10 time-end workingtime">
-                                            <div class="col-day input-group-spaddon day_monday">
-                                                <div class="input-group date">
-                                                    <input disabled type="text" id="mon-end" value="19:00" class="form-control form-control-sm timepicker">
-                                                    <span class="input-group-addon">
-                                                        <span class="glyphicon glyphicon-time"></span>
-                                                    </span>
-                                                </div>
-                                            </div>
-                                            <div class="col-day input-group-spaddon day_tuesday">
-                                                <div class="input-group date">
-                                                    <input disabled type="text" id="tue-end" value="21:00" class="form-control form-control-sm timepicker">
-                                                    <span class="input-group-addon">
-                                                        <span class="glyphicon glyphicon-time"></span>
-                                                    </span>
-                                                </div>
-                                            </div>
-                                            <div class="col-day input-group-spaddon day_wednesday">
-                                                <div class="input-group date">
-                                                    <input disabled type="text" id="wed-end" value="21:00" class="form-control form-control-sm timepicker">
-                                                    <span class="input-group-addon">
-                                                        <span class="glyphicon glyphicon-time"></span>
-                                                    </span>
-                                                </div>
-                                            </div>
-                                            <div class="col-day input-group-spaddon day_thursday">
-                                                <div class="input-group date">
-                                                    <input disabled type="text" id="thu-end" value="21:00" class="form-control form-control-sm timepicker">
-                                                    <span class="input-group-addon">
-                                                        <span class="glyphicon glyphicon-time"></span>
-                                                    </span>
-                                                </div>
-                                            </div>
-                                            <div class="col-day input-group-spaddon day_friday">
-                                                <div class="input-group date">
-                                                    <input disabled type="text" id="fri-end" value="21:00" class="form-control form-control-sm timepicker">
-                                                    <span class="input-group-addon">
-                                                        <span class="glyphicon glyphicon-time"></span>
-                                                    </span>
-                                                </div>
-                                            </div>
-                                            <div class="col-day input-group-spaddon day_saturday">
-                                                <div class="input-group date">
-                                                    <input disabled type="text" id="sat-end" value="21:00" class="form-control form-control-sm timepicker">
-                                                    <span class="input-group-addon">
-                                                        <span class="glyphicon glyphicon-time"></span>
-                                                    </span>
-                                                </div>
-                                            </div>
-                                            <div class="col-day input-group-spaddon day_sunday">
-                                                <div class="input-group date">
-                                                    <input disabled type="text" id="sun-end" value="23:00" class="form-control form-control-sm timepicker">
-                                                    <span class="input-group-addon">
-                                                        <span class="glyphicon glyphicon-time"></span>
-                                                    </span>
+                                    <div>
+                                        <div class=" form-group">
+                                            <div class="col-md-12 row">
+                                                <label class="col-sm-2">Time Start</label>
+                                                <div class="col-sm-10 time-start workingtime">
+                                                    <div class="col-day input-group-spaddon day_monday">
+                                                        <div class="input-group date">
+                                                            <input type="text" id="mon-start" value="19:00" class="form-control form-control-sm timepicker">
+                                                            <span class="input-group-addon">
+                                                                <span class="glyphicon glyphicon-time"></span>
+                                                            </span>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-day input-group-spaddon day_tuesday">
+                                                        <div class="input-group date">
+                                                            <input type="text" id="tue-start" value="21:00" class="form-control form-control-sm timepicker">
+                                                            <span class="input-group-addon">
+                                                                <span class="glyphicon glyphicon-time"></span>
+                                                            </span>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-day input-group-spaddon day_wednesday">
+                                                        <div class="input-group date">
+                                                            <input type="text" id="wed-start" value="21:00" class="form-control form-control-sm timepicker">
+                                                            <span class="input-group-addon">
+                                                                <span class="glyphicon glyphicon-time"></span>
+                                                            </span>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-day input-group-spaddon day_thursday">
+                                                        <div class="input-group date">
+                                                            <input type="text" id="thustart" value="21:00" class="form-control form-control-sm timepicker">
+                                                            <span class="input-group-addon">
+                                                                <span class="glyphicon glyphicon-time"></span>
+                                                            </span>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-day input-group-spaddon day_friday">
+                                                        <div class="input-group date">
+                                                            <input type="text" id="fri-start" value="21:00" class="form-control form-control-sm timepicker">
+                                                            <span class="input-group-addon">
+                                                                <span class="glyphicon glyphicon-time"></span>
+                                                            </span>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-day input-group-spaddon day_saturday">
+                                                        <div class="input-group date">
+                                                            <input type="text" id="sat-start" value="21:00" class="form-control form-control-sm timepicker">
+                                                            <span class="input-group-addon">
+                                                                <span class="glyphicon glyphicon-time"></span>
+                                                            </span>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-day input-group-spaddon day_sunday">
+                                                        <div class="input-group date">
+                                                            <input type="text" id="sun-start" value="23:00" class="form-control form-control-sm timepicker">
+                                                            <span class="input-group-addon">
+                                                                <span class="glyphicon glyphicon-time"></span>
+                                                            </span>
+                                                        </div>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
+                                        <div class=" form-group">
+                                            <div class="col-md-12 row">
+                                                <label class="col-sm-2">Time End</label>
+                                                <div class="col-sm-10 time-end workingtime">
+                                                    <div class="col-day input-group-spaddon day_monday">
+                                                        <div class="input-group date">
+                                                            <input type="text" id="mon-end" value="19:00" class="form-control form-control-sm timepicker">
+                                                            <span class="input-group-addon">
+                                                                <span class="glyphicon glyphicon-time"></span>
+                                                            </span>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-day input-group-spaddon day_tuesday">
+                                                        <div class="input-group date">
+                                                            <input type="text" id="tue-end" value="21:00" class="form-control form-control-sm timepicker">
+                                                            <span class="input-group-addon">
+                                                                <span class="glyphicon glyphicon-time"></span>
+                                                            </span>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-day input-group-spaddon day_wednesday">
+                                                        <div class="input-group date">
+                                                            <input type="text" id="wed-end" value="21:00" class="form-control form-control-sm timepicker">
+                                                            <span class="input-group-addon">
+                                                                <span class="glyphicon glyphicon-time"></span>
+                                                            </span>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-day input-group-spaddon day_thursday">
+                                                        <div class="input-group date">
+                                                            <input type="text" id="thu-end" value="21:00" class="form-control form-control-sm timepicker">
+                                                            <span class="input-group-addon">
+                                                                <span class="glyphicon glyphicon-time"></span>
+                                                            </span>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-day input-group-spaddon day_friday">
+                                                        <div class="input-group date">
+                                                            <input type="text" id="fri-end" value="21:00" class="form-control form-control-sm timepicker">
+                                                            <span class="input-group-addon">
+                                                                <span class="glyphicon glyphicon-time"></span>
+                                                            </span>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-day input-group-spaddon day_saturday">
+                                                        <div class="input-group date">
+                                                            <input type="text" id="sat-end" value="21:00" class="form-control form-control-sm timepicker">
+                                                            <span class="input-group-addon">
+                                                                <span class="glyphicon glyphicon-time"></span>
+                                                            </span>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-day input-group-spaddon day_sunday">
+                                                        <div class="input-group date">
+                                                            <input type="text" id="sun-end" value="23:00" class="form-control form-control-sm timepicker">
+                                                            <span class="input-group-addon">
+                                                                <span class="glyphicon glyphicon-time"></span>
+                                                            </span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <label class="col-sm-2">Description</label>
+                                            <label class="col-sm-8" id="description">Description</label>
+                                        </div>
                                     </div>
-                                </div>
-                                <div>
-                                    <label class="col-sm-2">Description</label>
-                                    <label class="col-sm-8" id="description">Description</label>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
-        </div>
-        {{--
-        <div class="modal-footer">
-            <button type="button" class="btn-sm btn btn-primary">Save changes</button>
-            <button type="button" class="btn-sm btn btn-secondary" data-dismiss="modal">Close</button>
-        </div>
-        --}}
+                <div class="modal-footer">
+                    <button type="button" class="btn-sm btn btn-primary">Save changes</button>
+                    <button type="button" class="btn-sm btn btn-secondary" data-dismiss="modal">Close</button>
+                </div>
+        </form>
     </div>
 </div>
 </div>
@@ -838,6 +840,11 @@ function multiselectReload() {
 
 $(document).ready(function() {
     perviewImage();
+
+    $('input.timepicker').timepicker({
+        // format: 'LT'
+    });
+
     var type = null;
     var placeId = null;
     var userId = null;
