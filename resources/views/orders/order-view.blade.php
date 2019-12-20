@@ -337,7 +337,8 @@
                         toatr.error(data.mesage);
                     else{
                         var content = data.content;
-                        var content_html = getHtmlForm(input_form_type,content);
+                        var task_expire = data.task_expire;
+                        var content_html = getHtmlForm(input_form_type,content,task_expire);
                         $("#content-form").html(content_html);
                         $("#datepicker_form").datepicker({
                             todayHighlight: true,
@@ -354,9 +355,9 @@
             return;
 
         });
-        function getHtmlForm(input_form_type,content){
+        function getHtmlForm(input_form_type,content,task_expire){
             content = JSON.parse(content);
-            console.log(content);
+            // console.log(content);
 
              var content_html = "";
 
@@ -395,8 +396,9 @@
                 else
                     order_review_html = '<input type="number" class="form-control form-control-sm col-md-6"  id="number_of_reviews" name="order_review" value="">';
 
-                if(content !== null && typeof(content['complete_date']) != "undefined" && content['complete_date'] !== null)
-                    complete_date_html = "<b>"+content['complete_date']+"</b>";
+                // if(content !== null && typeof(content['complete_date']) != "undefined" && content['complete_date'] !== null)
+                if(task_expire != "")
+                    complete_date_html = "<b>"+task_expire+"</b><input type='hidden'  name='complete_date' value='"+task_expire+"' >";
                 else
                     complete_date_html = '<input type="text" class="form-control form-control-sm col-md-6" id="datepicker_form" name="complete_date" >';
 
