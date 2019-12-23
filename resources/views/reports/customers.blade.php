@@ -54,8 +54,8 @@
                         <td style="padding-right: 30px;">TOTAL SERVICED: <span id="totalServicedCustomer" class="text-danger">0</span></td>
                         <td style="padding-right: 30px;">TOTAL ASSIGNED: <span id="totalAssignedCustomer" class="text-danger">0</span></td>
                         <td style="padding-right: 30px;">TOTAL DISABLED: <span id="totalDisabledCustomer" class="text-danger">0</span></td>
-                        <td style="padding-right: 30px;">TOTAL DISCOUNT: <span id="totalDiscount" class="text-danger">0</span></td>
-                        <td style="padding-right: 30px;">TOTAL CHARGED: <span id="totalCharged" class="text-danger">0</span></td>
+                        <td style="padding-right: 30px;">TOTAL DISCOUNT($): <span id="totalDiscount" class="text-danger">0</span></td>
+                        <td style="padding-right: 30px;">TOTAL CHARGED($): <span id="totalCharged" class="text-danger">0</span></td>
 
                     </tr>
                 </tbody>
@@ -152,13 +152,14 @@
                 data: formData,
             })
                 .done(function(data) {
-                    // console.log(data);
-                    // return;
+
                     data = JSON.parse(data);
                     $("#totalNewCustomer").text(data.arrivals_total);
                     $("#totalServicedCustomer").text(data.serviced_total);
                     $("#totalAssignedCustomer").text(data.assigned_total);
                     $("#totalDisabledCustomer").text(data.disabled_total);
+                    $("#totalDiscount").text(data.discount_total);
+                    $("#totalCharged").text(data.charged_total);
 
                 })
                 .fail(function() {
@@ -178,8 +179,8 @@
                 data: formData,
             })
                 .done(function(data) {
-                    console.log(data);
-                    return;
+                    // console.log(data);
+                    // return;
                     data = JSON.parse(data);
                     $("#totalNewCustomer").text(data.arrivals_total);
                     $("#totalServicedCustomer").text(data.serviced_total);

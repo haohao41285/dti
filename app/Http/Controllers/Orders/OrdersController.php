@@ -1311,12 +1311,20 @@ class OrdersController extends Controller
     }
     public function getDataInputForm(Request $request){
 
-        $task_info = MainTask::find($request->task_id);
+        // $task_info = MainTask::find($request->task_id);
+        $task_info = MainTask::where('id',$request->task_id)->with('getService')->first();
+
+        //GET EXPIRED OF SERVICE
+        $task_expire = "";
+        if($task_info->getService->cs_expiry_period != null && $task_info->getService->cs_expiry_period != "" ){
+            $cs_expiry_period = $task_info->getService->cs_expiry_period;
+            $task_expire = today()->addMonths($cs_expiry_period)->format('m/d/Y');
+        }
 
         if(!isset($task_info))
             return response(['status'=>'error','message'=>'Failed!']);
 
-        return response(['status'=>'success','content'=>$task_info->content]);
+        return response(['status'=>'success','content'=>$task_info->content,'task_expire'=>$task_expire]);
     }
 }
 
