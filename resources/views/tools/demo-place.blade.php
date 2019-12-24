@@ -53,8 +53,10 @@
                                                 <div class="input-group-prepend">
                                                     <span class="input-group-text">Customer Phone<sup class="text-danger">*</sup></span>
                                                 </div>
-                                                <input type="text" class="form-control" name="customer_phone">
+                                                <input type="text" class="form-control customer_phone" name="customer_phone">
                                             </div>
+                                            <span class="text-danger" style="font-size: 12px">Customer Phone is not with character "0" at the first</span>
+                                            <span class="text-danger" style="font-size: 12px">Customer Phone includes 10 characters</span>
                                         <div class="col-12">
                                             <div class="form-group float-right">
                                                 <input type="button" class="btn btn-sm btn-danger cancel" data-dismiss="modal" value="Cancel">
@@ -224,6 +226,13 @@
                     });
                 }else{
                     return;
+                }
+            });
+            $(".customer_phone").keypress(function(){
+                let customer_phone = $(this).val();
+                if(customer_phone.length > 9){
+                    toastr.error('Customer Phone not over 10 character');
+                    return false;
                 }
             })
         });
