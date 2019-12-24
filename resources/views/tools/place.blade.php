@@ -10,6 +10,9 @@
         tbody tr .disabled{
         text-decoration: line-through solid red;
     }
+    .cursor{
+        cursor: pointer;
+    }
 </style>
 @endpush
 @section('content')
@@ -112,6 +115,7 @@
 <div class="modal fade" id="detail" tabindex="-1" role="dialog">
     <div style="max-width: 90%" class="modal-dialog" role="document">
         <form id="form-detail-place" method="post" enctype="multipart/form-data">
+            @csrf
             <div class="modal-content">
                 <div class="modal-header">
                     {{--
@@ -134,28 +138,28 @@
                                             <label class="col-sm-4">Logo</label>
                                             <div class="previewImage" id="logo">
                                                 <img id="previewImageLogo" src="{{ asset('images/no-image.png') }}">
-                                                <input type="file" accept="image/*" name="image" class="custom-file-input" previewimageid="previewImageLogo" value="" style="display: none">
+                                                <input type="file" accept="image/*" name="logo" class="custom-file-input" previewimageid="previewImageLogo" value="" style="display: none">
                                             </div>
                                         </div>
                                         <div class="row col-12 row-detail">
                                             <label class="col-sm-4">Business name</label>
                                             {{-- <label class="col-sm-8" id="bussiness-name">Business name</label> --}}
-                                            <input type="text" name="business-name" class="col-sm-8 form-control-sm form-control" id="business-name">
+                                            <input type="text" name="business_name" class="col-sm-8 form-control-sm form-control" id="business-name">
                                         </div>
                                         <div class="row col-12 row-detail">
                                             <label class="col-sm-4">Tax code</label>
                                             {{-- <label class="col-sm-8" id="tax-code">Tax code</label> --}}
-                                            <input type="text" name="tax-code" class="col-sm-8 form-control-sm form-control" id="tax-code">
+                                            <input type="text" name="tax_code" class="col-sm-8 form-control-sm form-control" id="tax-code">
                                         </div>
                                         <div class="row col-12 row-detail">
                                             <label class="col-sm-4">Business phone</label>
                                             {{-- <label class="col-sm-8" id="business-phone">Business phone</label> --}}
-                                            <input type="text" name="business-phone" class="col-sm-8 form-control-sm form-control" id="business-phone">
+                                            <input type="text" name="business_phone" class="col-sm-8 form-control-sm form-control" id="business-phone">
                                         </div>
                                         <div class="row col-12 row-detail">
                                             <label class="col-sm-4">Price floor($)</label>
                                             {{-- <label class="col-sm-8" id="price-floor">Price floor</label> --}}
-                                            <input type="number" name="price-floor" class="col-sm-8 form-control-sm form-control" id="price-floor">
+                                            <input type="number" name="price_floor" class="col-sm-8 form-control-sm form-control" id="price-floor">
                                         </div>
                                     </div>
                                     <div class="col-6">
@@ -163,7 +167,7 @@
                                             <label class="col-sm-4">Favicon</label>
                                             <div class="previewImage" id="favicon">
                                                 <img id="previewImageFavicon" src="{{ asset('images/no-image.png') }}">
-                                                <input type="file" accept="image/*" name="image" class="custom-file-input" previewimageid="previewImageFavicon" value="" style="display: none">
+                                                <input type="file" accept="image/*" name="favicon" class="custom-file-input" previewimageid="previewImageFavicon" value="" style="display: none">
                                             </div>
                                         </div>
                                         <div class="row col-12 row-detail">
@@ -191,8 +195,15 @@
                                 <div class="col-12">
                                     <div class="row col-12 row-detail">
                                         <label class="col-sm-2">Hide service price</label>
-                                        <label class="col-sm-8 row" id="hide-service-price">Hide service price</label>
-                                        {{-- <input type="text" name="hide-service-price" class="col-sm-8 form-control-sm form-control" id="hide-service-price"> --}}
+                                        {{-- <label class="col-sm-8 row" id="hide-service-price">Hide service price</label> --}}
+                                        <div class="btn-group btn-group-toggle working-day" rel="hide-service-price">
+                                            <label class="btn btn-sm btn-day cursor" rel="on">
+                                                <input name="hide_service_price" value="1" type="radio"> On
+                                            </label>
+                                            <label class="btn btn-sm btn-day cursor" rel="off">
+                                                <input name="hide_service_price" value="0" type="radio"> Off
+                                            </label>
+                                        </div>
                                     </div>
                                     <div class=" form-group">
                                         <div class="col-md-12 row row-detail">
@@ -201,21 +212,21 @@
                                                 <div class="col-day">
                                                     <label>Monday</label>
                                                     <div class="btn-group btn-group-toggle working-day" rel="monday">
-                                                        <label class="btn btn-sm btn-day " rel="open">
-                                                            <input value="1" type="radio"> Open
+                                                        <label class="btn btn-sm btn-day cursor" rel="open">
+                                                            <input name="work_mon" value="1" type="radio"> Open
                                                         </label>
-                                                        <label class="btn btn-sm btn-day " rel="close">
-                                                            <input value="0" type="radio"> Close
+                                                        <label class="btn btn-sm btn-day cursor" rel="close">
+                                                            <input name="work_mon" value="0" type="radio"> Close
                                                         </label>
                                                     </div>
                                                 </div>
                                                 <div class="col-day">
                                                     <label>Tuesday</label>
                                                     <div class="btn-group btn-group-toggle working-day" rel="tuesday">
-                                                        <label class="btn btn-sm btn-day " rel="open">
+                                                        <label class="btn btn-sm btn-day cursor" rel="open">
                                                             <input name="work_tue" value="1" type="radio"> Open
                                                         </label>
-                                                        <label class="btn btn-sm btn-day " rel="close">
+                                                        <label class="btn btn-sm btn-day cursor" rel="close">
                                                             <input name="work_tue" value="0" type="radio"> Close
                                                         </label>
                                                     </div>
@@ -223,10 +234,10 @@
                                                 <div class="col-day">
                                                     <label>Wednesday</label>
                                                     <div class="btn-group btn-group-toggle working-day" rel="wednesday">
-                                                        <label class="btn btn-sm btn-day  " rel="open">
+                                                        <label class="btn btn-sm btn-day  cursor" rel="open">
                                                             <input name="work_wed" value="1" type="radio"> Open
                                                         </label>
-                                                        <label class="btn btn-sm btn-day " rel="close">
+                                                        <label class="btn btn-sm btn-day cursor" rel="close">
                                                             <input name="work_wed" value="0" type="radio"> Close
                                                         </label>
                                                     </div>
@@ -234,21 +245,21 @@
                                                 <div class="col-day">
                                                     <label>Thursday</label>
                                                     <div class="btn-group btn-group-toggle working-day" rel="thursday">
-                                                        <label class="btn btn-sm btn-day " rel="open">
-                                                            <input name="work_thur" value="1" type="radio"> Open
+                                                        <label class="btn btn-sm btn-day cursor" rel="open">
+                                                            <input name="work_thu" value="1" type="radio"> Open
                                                         </label>
-                                                        <label class="btn btn-sm btn-day " rel="close">
-                                                            <input name="work_thur" value="0" type="radio"> Close
+                                                        <label class="btn btn-sm btn-day cursor" rel="close">
+                                                            <input name="work_thu" value="0" type="radio"> Close
                                                         </label>
                                                     </div>
                                                 </div>
                                                 <div class="col-day">
                                                     <label>Friday</label>
                                                     <div class="btn-group btn-group-toggle working-day" rel="friday">
-                                                        <label class="btn btn-sm btn-day " rel="open">
+                                                        <label class="btn btn-sm btn-day cursor" rel="open">
                                                             <input name="work_fri" value="1" type="radio"> Open
                                                         </label>
-                                                        <label class="btn btn-sm btn-day" rel="close">
+                                                        <label class="btn btn-sm btn-day cursor" rel="close">
                                                             <input name="work_fri" value="0" type="radio"> Close
                                                         </label>
                                                     </div>
@@ -256,10 +267,10 @@
                                                 <div class="col-day">
                                                     <label>Saturday</label>
                                                     <div class="btn-group btn-group-toggle working-day" rel="saturday">
-                                                        <label class="btn btn-sm btn-day " rel="open">
+                                                        <label class="btn btn-sm btn-day cursor" rel="open">
                                                             <input name="work_sat" value="1" type="radio"> Open
                                                         </label>
-                                                        <label class="btn btn-sm btn-day " rel="close">
+                                                        <label class="btn btn-sm btn-day cursor" rel="close">
                                                             <input name="work_sat" value="0" type="radio"> Close
                                                         </label>
                                                     </div>
@@ -267,10 +278,10 @@
                                                 <div class="col-day">
                                                     <label>Sunday</label>
                                                     <div class="btn-group btn-group-toggle working-day" rel="sunday">
-                                                        <label class="btn btn-sm btn-day" rel="open">
+                                                        <label class="btn btn-sm btn-day cursor" rel="open">
                                                             <input name="work_sun" value="1" type="radio"> Open
                                                         </label>
-                                                        <label class="btn btn-sm btn-day " rel="close">
+                                                        <label class="btn btn-sm btn-day cursor" rel="close">
                                                             <input name="work_sun" value="0" type="radio"> Close
                                                         </label>
                                                     </div>
@@ -285,7 +296,7 @@
                                                 <div class="col-sm-10 time-start workingtime">
                                                     <div class="col-day input-group-spaddon day_monday">
                                                         <div class="input-group date">
-                                                            <input type="text" id="mon-start" value="19:00" class="form-control form-control-sm timepicker">
+                                                            <input type="text" id="mon-start" name="mon_start" value="19:00" class="form-control form-control-sm timepicker">
                                                             <span class="input-group-addon">
                                                                 <span class="glyphicon glyphicon-time"></span>
                                                             </span>
@@ -293,7 +304,7 @@
                                                     </div>
                                                     <div class="col-day input-group-spaddon day_tuesday">
                                                         <div class="input-group date">
-                                                            <input type="text" id="tue-start" value="21:00" class="form-control form-control-sm timepicker">
+                                                            <input type="text" id="tue-start" name="tue_start" value="21:00" class="form-control form-control-sm timepicker">
                                                             <span class="input-group-addon">
                                                                 <span class="glyphicon glyphicon-time"></span>
                                                             </span>
@@ -301,7 +312,7 @@
                                                     </div>
                                                     <div class="col-day input-group-spaddon day_wednesday">
                                                         <div class="input-group date">
-                                                            <input type="text" id="wed-start" value="21:00" class="form-control form-control-sm timepicker">
+                                                            <input type="text" id="wed-start" name="wed_start" value="21:00" class="form-control form-control-sm timepicker">
                                                             <span class="input-group-addon">
                                                                 <span class="glyphicon glyphicon-time"></span>
                                                             </span>
@@ -309,7 +320,7 @@
                                                     </div>
                                                     <div class="col-day input-group-spaddon day_thursday">
                                                         <div class="input-group date">
-                                                            <input type="text" id="thustart" value="21:00" class="form-control form-control-sm timepicker">
+                                                            <input type="text" id="thustart" name="thu_start" value="21:00" class="form-control form-control-sm timepicker">
                                                             <span class="input-group-addon">
                                                                 <span class="glyphicon glyphicon-time"></span>
                                                             </span>
@@ -317,7 +328,7 @@
                                                     </div>
                                                     <div class="col-day input-group-spaddon day_friday">
                                                         <div class="input-group date">
-                                                            <input type="text" id="fri-start" value="21:00" class="form-control form-control-sm timepicker">
+                                                            <input type="text" id="fri-start" name="fri_start" value="21:00" class="form-control form-control-sm timepicker">
                                                             <span class="input-group-addon">
                                                                 <span class="glyphicon glyphicon-time"></span>
                                                             </span>
@@ -325,7 +336,7 @@
                                                     </div>
                                                     <div class="col-day input-group-spaddon day_saturday">
                                                         <div class="input-group date">
-                                                            <input type="text" id="sat-start" value="21:00" class="form-control form-control-sm timepicker">
+                                                            <input type="text" id="sat-start" name="sat_start" value="21:00" class="form-control form-control-sm timepicker">
                                                             <span class="input-group-addon">
                                                                 <span class="glyphicon glyphicon-time"></span>
                                                             </span>
@@ -333,7 +344,7 @@
                                                     </div>
                                                     <div class="col-day input-group-spaddon day_sunday">
                                                         <div class="input-group date">
-                                                            <input type="text" id="sun-start" value="23:00" class="form-control form-control-sm timepicker">
+                                                            <input type="text" id="sun-start" name="sun_start" value="23:00" class="form-control form-control-sm timepicker">
                                                             <span class="input-group-addon">
                                                                 <span class="glyphicon glyphicon-time"></span>
                                                             </span>
@@ -348,7 +359,7 @@
                                                 <div class="col-sm-10 time-end workingtime">
                                                     <div class="col-day input-group-spaddon day_monday">
                                                         <div class="input-group date">
-                                                            <input type="text" id="mon-end" value="19:00" class="form-control form-control-sm timepicker">
+                                                            <input type="text" id="mon-end" name="mon_end" value="19:00" class="form-control form-control-sm timepicker">
                                                             <span class="input-group-addon">
                                                                 <span class="glyphicon glyphicon-time"></span>
                                                             </span>
@@ -356,7 +367,7 @@
                                                     </div>
                                                     <div class="col-day input-group-spaddon day_tuesday">
                                                         <div class="input-group date">
-                                                            <input type="text" id="tue-end" value="21:00" class="form-control form-control-sm timepicker">
+                                                            <input type="text" id="tue-end" name="tue_end" value="21:00" class="form-control form-control-sm timepicker">
                                                             <span class="input-group-addon">
                                                                 <span class="glyphicon glyphicon-time"></span>
                                                             </span>
@@ -364,7 +375,7 @@
                                                     </div>
                                                     <div class="col-day input-group-spaddon day_wednesday">
                                                         <div class="input-group date">
-                                                            <input type="text" id="wed-end" value="21:00" class="form-control form-control-sm timepicker">
+                                                            <input type="text" id="wed-end" name="wed_end" value="21:00" class="form-control form-control-sm timepicker">
                                                             <span class="input-group-addon">
                                                                 <span class="glyphicon glyphicon-time"></span>
                                                             </span>
@@ -372,7 +383,7 @@
                                                     </div>
                                                     <div class="col-day input-group-spaddon day_thursday">
                                                         <div class="input-group date">
-                                                            <input type="text" id="thu-end" value="21:00" class="form-control form-control-sm timepicker">
+                                                            <input type="text" id="thu-end" name="thu_end" value="21:00" class="form-control form-control-sm timepicker">
                                                             <span class="input-group-addon">
                                                                 <span class="glyphicon glyphicon-time"></span>
                                                             </span>
@@ -380,7 +391,7 @@
                                                     </div>
                                                     <div class="col-day input-group-spaddon day_friday">
                                                         <div class="input-group date">
-                                                            <input type="text" id="fri-end" value="21:00" class="form-control form-control-sm timepicker">
+                                                            <input type="text" id="fri-end" name="fri_end" value="21:00" class="form-control form-control-sm timepicker">
                                                             <span class="input-group-addon">
                                                                 <span class="glyphicon glyphicon-time"></span>
                                                             </span>
@@ -388,7 +399,7 @@
                                                     </div>
                                                     <div class="col-day input-group-spaddon day_saturday">
                                                         <div class="input-group date">
-                                                            <input type="text" id="sat-end" value="21:00" class="form-control form-control-sm timepicker">
+                                                            <input type="text" id="sat-end" name="sat_end" value="21:00" class="form-control form-control-sm timepicker">
                                                             <span class="input-group-addon">
                                                                 <span class="glyphicon glyphicon-time"></span>
                                                             </span>
@@ -396,7 +407,7 @@
                                                     </div>
                                                     <div class="col-day input-group-spaddon day_sunday">
                                                         <div class="input-group date">
-                                                            <input type="text" id="sun-end" value="23:00" class="form-control form-control-sm timepicker">
+                                                            <input type="text" id="sun-end" name="sun_end" value="23:00" class="form-control form-control-sm timepicker">
                                                             <span class="input-group-addon">
                                                                 <span class="glyphicon glyphicon-time"></span>
                                                             </span>
@@ -408,9 +419,9 @@
                                         <div>
                                             <label class="col-sm-2">Description</label>
                                             {{-- <label class="col-sm-8" id="description">Description</label> --}}
-                                            <div class="col-sm-10">
-                                                <textarea rows="4" class="form-control" placeholder="description" name="description"></textarea>
-                                            </div>
+                                            {{-- <div class="col-sm-10"> --}}
+                                                <textarea rows="4" class="form-control" id="description" placeholder="description" name="description"></textarea>
+                                                {{-- </div> --}}
                                         </div>
                                     </div>
                                 </div>
@@ -419,7 +430,7 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn-sm btn btn-primary">Save changes</button>
+                    <button type="submit" class="btn-sm btn btn-primary">Save changes</button>
                     <button type="button" class="btn-sm btn btn-secondary" data-dismiss="modal">Close</button>
                 </div>
         </form>
@@ -1022,7 +1033,7 @@ $(document).ready(function() {
             data: { placeId },
             success: function(data) {
                 if (data.status == 1) {
-                    var hide_service_price = data.data.place.hide_service_price == 1 ? "On" : "Off";
+                    var hide_service_price = data.data.place.hide_service_price;
                     $("#detail").modal("show");
 
                     $("#logo img").attr('src', "{{env('URL_FILE_VIEW')}}" + data.data.place.place_logo);
@@ -1030,11 +1041,11 @@ $(document).ready(function() {
                     $("#business-name").val(data.data.place.place_name);
                     $("#tax-code").val(data.data.place.place_taxcode);
                     $("#price-floor").val(data.data.place.place_worker_mark_bonus);
-                    $("#hide-service-price").val(hide_service_price);
+                    // $("#hide-service-price").val(hide_service_price);
                     $("#address").val(data.data.place.place_address);
                     $("#email").val(data.data.place.place_email);
                     $("#interest").val(data.data.place.place_interest);
-                    $("#description").val(data.data.place.place_description);
+                    $("#description").text(data.data.place.place_description);
                     $("#business-phone").val(data.data.place.place_phone);
                     $("#website").val(data.data.place.place_website);
 
@@ -1061,6 +1072,7 @@ $(document).ready(function() {
                     var friEnd = data.data.place_actiondate.fri.end;
                     var satEnd = data.data.place_actiondate.sat.end;
                     var sunEnd = data.data.place_actiondate.sun.end;
+                    // alert(hide_service_price);                    
 
                     $("label").removeClass("active")
                     $(".time-start input").css("visibility", "");
@@ -1141,6 +1153,12 @@ $(document).ready(function() {
                         $("div[rel='sunday']").find("label[rel='open']").addClass("active");
                         $("#sun-start").val(sunStart);
                         $("#sun-end").val(sunEnd);
+                    }
+
+                    if (hide_service_price == 1) {
+                        $("div[rel='hide-service-price']").find("label[rel='on']").addClass("active");
+                    } else {
+                        $("div[rel='hide-service-price']").find("label[rel='off']").addClass("active");
                     }
 
 
@@ -1614,11 +1632,30 @@ $(document).ready(function() {
     $('.working-day input').on("change", function(e) {
         // alert('ff');
         var day = $(this).parent().parent().attr("rel");
-        alert(day);
+        // alert(day);
         $(".day_" + day).css('visibility', $(e.target).val() == 1 ? 'visible' : 'hidden');
 
         $(this).parent().parent().find(".active").removeClass("active");
         $(this).parent().addClass("active");
+    });
+
+    $("#form-detail-place").on("submit", function(e) {
+        e.preventDefault();
+        var form = $(this)[0];
+        var form_data = new FormData(form);
+
+        $.ajax({
+            url: "{{route('saveDetailPlace')}}",
+            method: "POST",
+            data: form_data,
+            cache: false,
+            contentType: false,
+            processData: false,
+            dataType: "json",
+            success: function(data) {
+
+            }
+        })
     });
 
 });

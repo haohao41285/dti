@@ -180,6 +180,8 @@ Route::group(['middleware' => ['auth']], function () {
             Route::get('/get-service-place', 'PlaceController@getServicePlace')->name('get-service-place');
             Route::post('/save-expire-date', 'PlaceController@saveExpireDate')->name('save-expire-date');
             Route::post('/change-place-status', 'PlaceController@changePlaceStatus')->name('change_place_status');
+
+            Route::post('save-detail', 'PlaceController@saveDetail')->name('saveDetailPlace');
         });
 
         Route::group(['prefix' => 'auto-template'], function() {

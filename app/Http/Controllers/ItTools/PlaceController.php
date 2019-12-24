@@ -301,6 +301,10 @@ class PlaceController extends Controller
         return response(['status'=>'success','message'=>'Successfully! Change Status Successfully!']);
     }
 
+    public function saveDetail(Request $request){
+        dd($request->all());
+    }
+
 
 }
 
