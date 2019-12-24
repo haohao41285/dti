@@ -5,23 +5,34 @@
 @section('content')
 @php
     $current_month = today()->format('m');
+    $current_year = today()->format('Y');
+    $count = 1;
+    $month = $current_month;
+    $year = $current_year;
+    $change = 0;
 @endphp
     <div class="table-responsive">
         <h4 class="border border-info border-top-0 border-right-0 border-left-0 text-info">REVIEWS REPORT</h4>
         <form id="customer_form">
             <div class="form-group col-md-12 row">
                 <div class="col-md-6">
-                    <label for="">Choose Time</label>
-                    {{-- <div class="input-daterange input-group" id="created_at">
-                        <input type="text" class="input-sm form-control form-control-sm" value="{{today()->format('m/d/Y')}}" id="start_date" name="start_date" />
-                        <span class="input-group-addon">to</span>
-                        <input type="text" class="input-sm form-control form-control-sm" value="{{today()->format('m/d/Y')}}" id="end_date" name="end_date" />
-                    </div> --}}
+                    <label for="">Choose Time <span style="color: black">(Month)</span></label>
                     <div class="row">
-                        {{-- <button class="btn btn-sm border-primary btn-primary ml-1 time" type="button">Today</button> --}}
-                        @for($i=1;$i<13;$i++)
-                        <button class="btn btn-sm border-primary {{ $current_month==$i?"btn-primary":"" }} ml-1 time" style="width: 36px;height: 36px" type="button" value="{{ $i }}">{{ $i }}</button>
-                        @endfor
+                        @while($count < 13)
+                        @php
+                            
+                        @endphp
+                        @php
+                                if($change == 1){ $year = $current_year-1; }
+                        @endphp
+                            <button class="btn btn-sm float-right  ml-1 time {{ $month==$current_month?"btn-primary border-danger":"border-primary" }}" style="width: 36px;height: 36px" id="month-{{ $month }}" year="{{ $year }}" type="button" value="{{ $month }}">{{ $month }}</button>
+                            @php
+                                $month--; $count++;
+                                
+                                if($month == 0){ $month = 12; $change = 1;}
+                            @endphp
+                        @endwhile
+                        {{-- @endfor --}}
                     </div>
                 </div>
                 <div class="col-md-3">
@@ -60,7 +71,9 @@
 @push('scripts')
     <script type="text/javascript">
         $(document).ready(function() {
-            $("#created_at").datepicker();
+
+            var current_month = '{{ $current_month }}';
+            var current_year = '{{ $current_year }}';
             var team_id = $("#team_id").val();
             var table = $('#dataTableReviews').DataTable({
                 // dom: "lBfrtip",
@@ -72,14 +85,14 @@
                         text: '<i class="fas fa-upload"></i> Export',
                         className: "btn-sm",
                         action: function ( e, dt, node, config ) {
-                            document.location.href = "{{route('report.customers.export')}}"+"/"+team_id
+                            document.location.href = ""+"/"+team_id
                         }
                     }*/
                 ],
                 ajax:{ url:"{{ route('report.reviews.datatable') }}",
                     data: function (d) {
-                        d.start_date = $("#start_date").val();
-                        d.end_date = $("#end_date").val();
+                        d.current_month = current_month;
+                        d.current_year = current_year;
                         d.user_id = $("#user_id :selected").val();
                     }
                 },
@@ -93,12 +106,6 @@
                     { data: 'percent_complete', name: 'percent_complete',class:'text-right' },
                 ],
             });
-
-            $("#reset").on('click',function(e){
-                e.preventDefault();
-                table.ajax.reload(null, false);
-            });
-
 
             $(document).on("click",".view",function(){
 
@@ -289,6 +296,10 @@
             });
             $("#reset-btn").on('click',function(e){
                 $(this).parents('form')[0].reset();
+                $(".time").removeClass('btn-primary');
+                current_month = '{{ $current_month }}';
+                current_year = '{{ $current_year }}';
+                $('#month-'+current_month).removeClass('btn-primary').addClass('btn-primary');
                 table.ajax.reload(null, false);
             });
 
@@ -321,6 +332,9 @@
             $(".time").click(function(){
                 $(".time").removeClass('btn-primary');
                 $(this).removeClass('btn-primary').addClass('btn-primary');
+
+                current_month = $(this).val();
+                current_year = $(this).attr('year');
             });
         });
     </script>

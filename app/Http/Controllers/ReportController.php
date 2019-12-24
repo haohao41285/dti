@@ -517,19 +517,13 @@ class ReportController extends Controller
 
         $review_user_arr = [];
         $review_list = [];
-
-        $review_info = MainUserReview::latest()->get();
-        $review_info = collect($review_info);
+        $current_month = $request->current_month;
+        $current_year = $request->current_year;
 
         if(isset($request->user_id))
             $user_list = MainUser::where('user_id',$request->user_id)->get();
         else{
-            $review_user_list = $review_info->unique('user_id');
-            foreach($review_user_list as $review_user){
-                $review_user_arr[] = $review_user->user_id;
-            }
-            $user_arr = array_unique(explode(';',implode(';',$review_user_arr)));
-            $user_list = MainUser::whereIn('user_id',$user_arr)->get();
+            $user_list = MainUser::active()->get();
         }
         //GET COMBO SERVICE
         $combo_service_list = MainComboService::select('id')->where('cs_form_type',1)->orWhere('cs_form_type',3)->get()->toArray();
@@ -549,14 +543,17 @@ class ReportController extends Controller
                 ->orWhere('assign_to','like','%;'.$user->user_id)
                 ->orWhere('assign_to','like','%;'.$user->user_id.';%')
                 ->orWhere('assign_to','like',$user->user_id.';%');
-            })->whereIn('service_id',$combo_service_arr)->where('content','!=',null);
+            })->whereIn('service_id',$combo_service_arr)->where('content','!=',null)
 
-            if($request->start_date != ""  && $request->end_date != ""){
-                $start_date = Carbon::parse($request->start_date)->subDay(1)->format('Y-m-d');
-                $end_date = Carbon::parse($request->end_date)->addDay(1)->format('Y-m-d');
-                $review_total->whereBetween('updated_at',[$start_date,$end_date]);
-                $task_list->whereBetween('updated_at',[$start_date,$end_date]);
-            }
+            ->where(function($query) use($current_year,$current_month){
+                $query->whereDate('date_start','<=',$current_year."-".$current_month."-31")
+                ->whereDate('date_end','>=',$current_year."-".$current_month."-1");
+            });
+
+            
+            $review_total->whereMonth('updated_at',$current_month)->whereYear('updated_at',$current_year);
+                        
+            
             $review_total = $review_total->get();
             $task_list = $task_list->select('content','date_start','date_end')->get();
 
@@ -578,19 +575,38 @@ class ReportController extends Controller
                     && ($task->date_start != "" && $task->date_end != "")
                 ){
                     //GET REVIEW OF MONTH
-                    $start_month = Carbon::parse($task->start_date)->format('m');
-                    $end_month = Carbon::parse($task->end_date)->format('m');
-                    $count_month = $end_month - $start_month;
+                    // $d1 = $task->date_start;
+                    // $d2 = $task->date_end;
+                    // $count_month = (int)abs((strtotime($d1) - strtotime($d2))/(60*60*24*30));
 
-                    $d1 = $task->date_start;
-                    $d2 = $task->date_end;
+                    $start_month = Carbon::parse($task->date_start)->format('m');
+                    $end_month = Carbon::parse($task->date_end)->format('m');
 
-                    $count_month = (int)abs((strtotime($d1) - strtotime($d2))/(60*60*24*30));
+                    $year_start = Carbon::parse($task->date_start)->format('Y');
+                    $year_end = Carbon::parse($task->date_end)->format('Y');
+
+                    $count_year = $year_end - $year_start;
+
+                    if($count_year == 0)
+                        $count_month = $end_month - $start_month +1;
+                    else
+                        $count_month = ($count_year-1)*12+(12-$start_month+1)+$end_month;
 
                     if(isset($content['order_review']))
-                        $review_total += ceil(intval($content['order_review'])/$count_month);
+                        $review_number = $content['order_review'];
                     elseif(isset($content['number']))
-                        $review_total += ceil(intval($content['number'])/$count_month);
+                        $review_number = $content['number'];
+
+                    if($count_month == 0)
+                        $review_total += intval($review_number);
+                    else{
+                        $review_avg_per_month = ceil(intval($review_number)/$count_month);
+
+                        if($current_month == $end_month)
+                            $review_total += $review_number - $review_avg_per_month*($count_month-1);
+                        else
+                            $review_total += $review_avg_per_month;
+                    }
                 }
             }
             if($review_total > 0)
