@@ -162,12 +162,12 @@
                     <table class="table table-sm table-hover" id="datatable-review" width="100%" cellspacing="0">
                         <thead>
                         <tr class="thead-light">
-                            <th>ID</th>
+                            <th>Task ID</th>
                             <th>Place Name</th>
-                            <th>Customer Phone</th>
+                            <th>Business Phone</th>
                             <th>Order Review</th>
-                            <th>Month Review</th>
-                            <th>Action</th>
+                            <th>Date End</th>
+                            {{-- <th>Action</th> --}}
                         </tr>
                         </thead>
                     </table>
@@ -360,13 +360,12 @@
                     }
                 },
                 columns: [
-                    { data: 'cs_id', name: 'cs_id',class:'text-center' },
-                    { data: 'customer_name', name: 'customer_name' },
-                    { data: 'customer_phone', name: 'customer_phone' },
-                    { data: 'service_info', name: 'service_info'},
-                    { data: 'expired_date', name: 'expired_date',class: 'text-center'},
-                    { data: 'seller_name', name: 'seller_name'},
-                    { data: 'action' , name:'action' ,orderable: false, searcheble: false ,class:'text-center'}
+                    { data: 'id', name: ' id',class:'text-center' },
+                    { data: 'place_id', name: 'place_id' },
+                    { data: 'business_phone', name: 'business_phone',class:'text-center' },
+                    { data: 'order_review', name: 'order_review', class:'text-center'},
+                    { data: 'date_end', name: 'date_end',class: 'text-center'},
+                    // { data: 'action' , name:'action' ,orderable: false, searcheble: false ,class:'text-center'}
                 ],
             });
         });

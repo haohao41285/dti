@@ -1124,6 +1124,14 @@ class OrdersController extends Controller
 
         foreach ($service_arr as $key => $service) {
             $service_info = MainComboService::find($service);
+            //ADD EXPIRED FOR REVIEW
+            $content = "";
+            if($service_info->cs_form_type == 1 || $service_info->cs_form_type == 3){
+                $complete_date = today()->addMonths($service_info->cs_expiry_period)->format('m/d/Y');
+                $content = json_encode(['complete_date'=>$complete_date]);
+                $date_end = today()->addMonths($service_info->cs_expiry_period)->format('Y-d-m');
+            }
+            $date_start = today()->format('Y-m-d');
 
             $task_arr = [
                 'subject' => $service_info->cs_name,
@@ -1135,7 +1143,10 @@ class OrdersController extends Controller
                 'service_id' => $service,
                 'place_id' => $place_id,
                 'category' => 1,
-                'assign_to' => $service_info->cs_assign_to
+                'assign_to' => $service_info->cs_assign_to,
+                'content' => $content,
+                'date_start' => $date_start,
+                'date_end' => $date_end
             ];
             $task_create = MainTask::create($task_arr);
         }
@@ -1315,16 +1326,16 @@ class OrdersController extends Controller
         $task_info = MainTask::where('id',$request->task_id)->with('getService')->first();
 
         //GET EXPIRED OF SERVICE
-        $task_expire = "";
-        if($task_info->getService->cs_expiry_period != null && $task_info->getService->cs_expiry_period != "" ){
-            $cs_expiry_period = $task_info->getService->cs_expiry_period;
-            $task_expire = today()->addMonths($cs_expiry_period)->format('m/d/Y');
-        }
+        // $task_expire = "";
+        // if($task_info->getService->cs_expiry_period != null && $task_info->getService->cs_expiry_period != "" ){
+        //     $cs_expiry_period = $task_info->getService->cs_expiry_period;
+        //     $task_expire = today()->addMonths($cs_expiry_period)->format('m/d/Y');
+        // }
 
         if(!isset($task_info))
             return response(['status'=>'error','message'=>'Failed!']);
 
-        return response(['status'=>'success','content'=>$task_info->content,'task_expire'=>$task_expire]);
+        return response(['status'=>'success','content'=>$task_info->content]);
     }
 }
 

@@ -45,7 +45,6 @@ Combo/Service List
 <script type="text/javascript">
   //DEFINE VAR
   var cs_assign_id = [];
-  var cs_app_website_type = '';
 
   $(document).ready(function($) {
     dataTable = $("#dataTable").DataTable({
@@ -278,9 +277,23 @@ Combo/Service List
                     </div>
                     <div class="col-md-6">
                     <h6><b>Menu List</b></h6>
-                    <div style="max-height:33em;overflow-y: auto;" class="scroll">
-                      `+data.menu_html+`
+                    <ul class="nav nav-tabs app-website-box" role="tablist">
+                      <li class="nav-item">
+                        <a class="nav-link active" data-toggle="tab" href="#home">Website</a>
+                      </li>
+                      <li class="nav-item">
+                        <a class="nav-link" data-toggle="tab" href="#menu1">iNailSo App</a>
+                      </li>
+                    </ul>
+                    <div class="tab-content" style="max-height: 33em;overflow-y: auto" id="cs-box">
+                      <div id="home" class="container tab-pane active"><br>
+                        `+data.menu_website_html+`
+                      </div>
+                      <div id="menu1" class="container tab-pane fade"><br>
+                        `+data.menu_app_html+`
+                      </div>
                     </div>
+
                     <div class="form-group row float-right">
                       <button type="button" class="btn btn-danger btn-sm cancel-add-edit">Cancel</button>
                       <button type="button" class="btn btn-primary btn-sm ml-2 submit-add-edit">Submit</button>
@@ -311,9 +324,6 @@ Combo/Service List
           processData: false,
       })
       .done(function(data) {
-          // console.log(data);
-          // return;
-
         data = JSON.parse(data);
 
         if(data.status == 'error'){
@@ -443,14 +453,23 @@ Combo/Service List
         </div>
         <div class="col-md-6">
             <h6><b> List</b></h6>
-            <div class="row col-12 my-2 app-website-box">
-              <button type="button" class="btn btn-sm btn-primary border-primary mx-2 type-app" type-app="1">Website</button>
-              <button type="button" class="btn btn-sm btn-default border-primary mx-2 type-app"type-app="2">INailSo App</button>
-              <input type="hidden" name="cs_app_website_type" id="type-app-website" value="1">
+            <ul class="nav nav-tabs app-website-box" role="tablist">
+              <li class="nav-item">
+                <a class="nav-link active" data-toggle="tab" href="#home">Website</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" data-toggle="tab" href="#menu1">iNailSo App</a>
+              </li>
+            </ul>
+          <div class="tab-content" style="max-height: 33em;overflow-y: auto" id="cs-box">
+            <div id="home" class="container tab-pane active"><br>
+              `+data.menu_website_html+`
             </div>
-            <div style="max-height: 33em;overflow-y: auto" id="cs-box">
-                `+data.menu_html+`
-                </div>
+            <div id="menu1" class="container tab-pane fade"><br>
+              `+data.menu_app_html+`
+            </div>
+          </div>
+           
                 <div class="form-group row float-right">
                   <button type="button" class="btn btn-danger btn-sm cancel-add-edit">Cancel</button>
                   <button type="button" class="btn btn-primary btn-sm ml-2 submit-add-edit">Submit</button>
@@ -495,24 +514,19 @@ Combo/Service List
                 user_html += `<option `+selected+` value="`+val.user_id+`">`+val.user_nickname+`</option>`;
             });
 
-          if(cs_type == 1){
+          if(cs_type == 1){//COMBO
             $(".app-website-box").css('display', 'none');
-            $("#type-app-website").val(null);
 
             $.each(cs_list, function(index, val)
             {
               service_list_html += `<div class="checkbox">
-                    <label><input type="checkbox" name="cs_service_id[]" class="service_id"  style="height: 20px;width: 20px" value="`+val['id']+`">`+val['cs_name']+`</label>
+                    <label><input type="checkbox" name="cs_service_id[]" class="service_id"  style="height: 20px;width: 20px" value="`+val['id']+`"> `+val['cs_name']+`</label>
                 </div>`;
             });
             $(".service-content-son").html('');
 
-          }else{
-              $(".app-website-box").css('display', 'inline');
-              if(cs_app_website_type == "")
-                $("#type-app-website").val(1);
-              else
-                $("#type-app-website").val(cs_app_website_type);
+          }else{//SERVICE
+              $(".app-website-box").css('display', '');
 
               $(".service-content").after(`
 
@@ -536,7 +550,16 @@ Combo/Service List
               </div>
 
               `);
-              service_list_html = data.menu_html;
+              service_list_html = `
+              <div id="home" class="container tab-pane active"><br>
+                `+data.menu_website_html+`
+              </div>
+              <div id="menu1" class="container tab-pane fade"><br>
+                `+data.menu_app_html+`
+              </div>
+              `;
+
+
           }
           $("#cs-box").html(service_list_html);
         }

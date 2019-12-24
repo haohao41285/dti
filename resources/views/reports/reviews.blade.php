@@ -3,16 +3,25 @@
     Reviews Report
 @endsection
 @section('content')
+@php
+    $current_month = today()->format('m');
+@endphp
     <div class="table-responsive">
         <h4 class="border border-info border-top-0 border-right-0 border-left-0 text-info">REVIEWS REPORT</h4>
         <form id="customer_form">
             <div class="form-group col-md-12 row">
-                <div class="col-md-4">
-                    <label for="">Updated date</label>
-                    <div class="input-daterange input-group" id="created_at">
+                <div class="col-md-6">
+                    <label for="">Choose Time</label>
+                    {{-- <div class="input-daterange input-group" id="created_at">
                         <input type="text" class="input-sm form-control form-control-sm" value="{{today()->format('m/d/Y')}}" id="start_date" name="start_date" />
                         <span class="input-group-addon">to</span>
                         <input type="text" class="input-sm form-control form-control-sm" value="{{today()->format('m/d/Y')}}" id="end_date" name="end_date" />
+                    </div> --}}
+                    <div class="row">
+                        {{-- <button class="btn btn-sm border-primary btn-primary ml-1 time" type="button">Today</button> --}}
+                        @for($i=1;$i<13;$i++)
+                        <button class="btn btn-sm border-primary {{ $current_month==$i?"btn-primary":"" }} ml-1 time" style="width: 36px;height: 36px" type="button" value="{{ $i }}">{{ $i }}</button>
+                        @endfor
                     </div>
                 </div>
                 <div class="col-md-3">
@@ -308,7 +317,11 @@
                     .fail(function() {
                         toastr.error('Get List User Failed!');
                     });
-            })
+            });
+            $(".time").click(function(){
+                $(".time").removeClass('btn-primary');
+                $(this).removeClass('btn-primary').addClass('btn-primary');
+            });
         });
     </script>
 @endpush
