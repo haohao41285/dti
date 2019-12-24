@@ -139,19 +139,23 @@
                                         </div>
                                         <div class="row col-12 row-detail">
                                             <label class="col-sm-4">Business name</label>
-                                            <label class="col-sm-8" id="bussiness-name">Business name</label>
+                                            {{-- <label class="col-sm-8" id="bussiness-name">Business name</label> --}}
+                                            <input type="text" name="business-name" class="col-sm-8 form-control-sm form-control" id="business-name">
                                         </div>
                                         <div class="row col-12 row-detail">
                                             <label class="col-sm-4">Tax code</label>
-                                            <label class="col-sm-8" id="tax-code">Tax code</label>
+                                            {{-- <label class="col-sm-8" id="tax-code">Tax code</label> --}}
+                                            <input type="text" name="tax-code" class="col-sm-8 form-control-sm form-control" id="tax-code">
                                         </div>
                                         <div class="row col-12 row-detail">
                                             <label class="col-sm-4">Business phone</label>
-                                            <label class="col-sm-8" id="business-phone">Business phone</label>
+                                            {{-- <label class="col-sm-8" id="business-phone">Business phone</label> --}}
+                                            <input type="text" name="business-phone" class="col-sm-8 form-control-sm form-control" id="business-phone">
                                         </div>
                                         <div class="row col-12 row-detail">
-                                            <label class="col-sm-4">Price floor</label>
-                                            <label class="col-sm-8" id="price-floor">Price floor</label>
+                                            <label class="col-sm-4">Price floor($)</label>
+                                            {{-- <label class="col-sm-8" id="price-floor">Price floor</label> --}}
+                                            <input type="number" name="price-floor" class="col-sm-8 form-control-sm form-control" id="price-floor">
                                         </div>
                                     </div>
                                     <div class="col-6">
@@ -164,19 +168,23 @@
                                         </div>
                                         <div class="row col-12 row-detail">
                                             <label class="col-sm-4">Address</label>
-                                            <label class="col-sm-8" id="address">Address</label>
+                                            {{-- <label class="col-sm-8" id="address">Address</label> --}}
+                                            <input type="text" name="address" class="col-sm-8 form-control-sm form-control" id="address">
                                         </div>
                                         <div class="row col-12 row-detail">
                                             <label class="col-sm-4">Email</label>
-                                            <label class="col-sm-8" id="email">Email</label>
+                                            {{-- <label class="col-sm-8" id="email">Email</label> --}}
+                                            <input type="text" name="email" class="col-sm-8 form-control-sm form-control" id="email">
                                         </div>
                                         <div class="row col-12 row-detail">
                                             <label class="col-sm-4">Website</label>
-                                            <label class="col-sm-8" id="website">Website</label>
+                                            {{-- <label class="col-sm-8" id="website">Website</label> --}}
+                                            <input type="text" name="website" class="col-sm-8 form-control-sm form-control" id="website">
                                         </div>
                                         <div class="row col-12 row-detail">
                                             <label class="col-sm-4">Interest($)</label>
-                                            <label class="col-sm-8" id="interest">Interest($)</label>
+                                            {{-- <label class="col-sm-8" id="interest">Interest($)</label> --}}
+                                            <input type="number" name="interest" class="col-sm-8 form-control-sm form-control" id="interest">
                                         </div>
                                     </div>
                                 </div>
@@ -184,6 +192,7 @@
                                     <div class="row col-12 row-detail">
                                         <label class="col-sm-2">Hide service price</label>
                                         <label class="col-sm-8 row" id="hide-service-price">Hide service price</label>
+                                        {{-- <input type="text" name="hide-service-price" class="col-sm-8 form-control-sm form-control" id="hide-service-price"> --}}
                                     </div>
                                     <div class=" form-group">
                                         <div class="col-md-12 row row-detail">
@@ -398,7 +407,10 @@
                                         </div>
                                         <div>
                                             <label class="col-sm-2">Description</label>
-                                            <label class="col-sm-8" id="description">Description</label>
+                                            {{-- <label class="col-sm-8" id="description">Description</label> --}}
+                                            <div class="col-sm-10">
+                                                <textarea rows="4" class="form-control" placeholder="description" name="description"></textarea>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -859,7 +871,9 @@ $(document).ready(function() {
         processing: true,
         serverSide: true,
         ajax: { url: "{{ route('getPlacesDatatable') }}" },
-        order: [[0,'desc']],
+        order: [
+            [0, 'desc']
+        ],
         columns: [
 
             { data: 'place_id', name: 'place_id', class: 'text-center' },
@@ -867,18 +881,18 @@ $(document).ready(function() {
             { data: 'place_phone', name: 'place_phone', class: 'text-center' },
             { data: 'place_website', name: 'place_website', },
             { data: 'place_ip_license', name: 'place_ip_license' },
-            { data: 'place_status', name: 'place_status', class:'text-center' },
+            { data: 'place_status', name: 'place_status', class: 'text-center' },
             { data: 'action', name: 'action', orderable: false, searchable: false, class: 'text-center' }
         ],
         buttons: [
 
         ],
-        fnDrawCallback:function (oSettings) {
+        fnDrawCallback: function(oSettings) {
             var elems = Array.prototype.slice.call(document.querySelectorAll('.js-switch'));
-            elems.forEach(function (html) {
+            elems.forEach(function(html) {
                 var switchery = new Switchery(html, {
                     color: '#0874e8',
-                    className : 'switchery switchery-small'
+                    className: 'switchery switchery-small'
                 });
             });
         }
@@ -1013,16 +1027,16 @@ $(document).ready(function() {
 
                     $("#logo img").attr('src', "{{env('URL_FILE_VIEW')}}" + data.data.place.place_logo);
                     $("#Favicon img").attr('src', "{{env('URL_FILE_VIEW')}}" + data.data.place.place_favicon);
-                    $("#business-name").text(data.data.place.place_name);
-                    $("#tax-code").text(data.data.place.place_taxcode);
-                    $("#price-floor").text(data.data.place.place_worker_mark_bonus);
-                    $("#hide-service-price").text(hide_service_price);
-                    $("#address").text(data.data.place.place_address);
-                    $("#email").text(data.data.place.place_email);
-                    $("#interest").text(data.data.place.place_interest);
-                    $("#description").text(data.data.place.place_description);
-                    $("#business-phone").text(data.data.place.place_phone);
-                    $("#website").text(data.data.place.place_website);
+                    $("#business-name").val(data.data.place.place_name);
+                    $("#tax-code").val(data.data.place.place_taxcode);
+                    $("#price-floor").val(data.data.place.place_worker_mark_bonus);
+                    $("#hide-service-price").val(hide_service_price);
+                    $("#address").val(data.data.place.place_address);
+                    $("#email").val(data.data.place.place_email);
+                    $("#interest").val(data.data.place.place_interest);
+                    $("#description").val(data.data.place.place_description);
+                    $("#business-phone").val(data.data.place.place_phone);
+                    $("#website").val(data.data.place.place_website);
 
                     var monClosed = data.data.place_actiondate.mon.closed;
                     var tueClosed = data.data.place_actiondate.tue.closed;
@@ -1054,8 +1068,9 @@ $(document).ready(function() {
 
                     if (monClosed == true) {
                         $("div[rel='monday']").find("label[rel='close']").addClass("active");
-                        $("#mon-start").css("visibility", "hidden");
-                        $("#mon-end").css("visibility", "hidden");
+                        // $("#mon-start").css("visibility", "hidden");
+                        // $("#mon-end").css("visibility", "hidden");
+                        $(".day_monday").css("visibility", "hidden");
                     } else {
                         $("div[rel='monday']").find("label[rel='open']").addClass("active");
                         $("#mon-start").val(monStart);
@@ -1064,8 +1079,9 @@ $(document).ready(function() {
 
                     if (tueClosed == true) {
                         $("div[rel='tuesday']").find("label[rel='close']").addClass("active");
-                        $("#tue-start").css("visibility", "hidden");
-                        $("#tue-end").css("visibility", "hidden");
+                        // $("#tue-start").css("visibility", "hidden");
+                        // $("#tue-end").css("visibility", "hidden");
+                        $(".day_tuesday").css("visibility", "hidden");
                     } else {
                         $("div[rel='tuesday']").find("label[rel='open']").addClass("active");
                         $("#tue-start").val(tueStart);
@@ -1074,8 +1090,9 @@ $(document).ready(function() {
 
                     if (wedClosed == true) {
                         $("div[rel='wednesday']").find("label[rel='close']").addClass("active");
-                        $("#wed-start").css("visibility", "hidden");
-                        $("#wed-end").css("visibility", "hidden");
+                        // $("#wed-start").css("visibility", "hidden");
+                        // $("#wed-end").css("visibility", "hidden");
+                        $(".day_wednesday").css("visibility", "hidden");
                     } else {
                         $("div[rel='wednesday']").find("label[rel='open']").addClass("active");
                         $("#wed-start").val(wedStart);
@@ -1084,8 +1101,9 @@ $(document).ready(function() {
 
                     if (thuClosed == true) {
                         $("div[rel='thursday']").find("label[rel='close']").addClass("active");
-                        $("#thu-start").css("visibility", "hidden");
-                        $("#thu-end").css("visibility", "hidden");
+                        // $("#thu-start").css("visibility", "hidden");
+                        // $("#thu-end").css("visibility", "hidden");
+                        $(".day_thursday").css("visibility", "hidden");
                     } else {
                         $("div[rel='thursday']").find("label[rel='open']").addClass("active");
                         $("#thu-start").val(thuStart);
@@ -1094,8 +1112,9 @@ $(document).ready(function() {
 
                     if (friClosed == true) {
                         $("div[rel='friday']").find("label[rel='close']").addClass("active");
-                        $("#fri-start").css("visibility", "hidden");
-                        $("#fri-end").css("visibility", "hidden");
+                        // $("#fri-start").css("visibility", "hidden");
+                        // $("#fri-end").css("visibility", "hidden");
+                        $(".day_friday").css("visibility", "hidden");
                     } else {
                         $("div[rel='friday']").find("label[rel='open']").addClass("active");
                         $("#fri-start").val(friStart);
@@ -1104,8 +1123,9 @@ $(document).ready(function() {
 
                     if (satClosed == true) {
                         $("div[rel='saturday']").find("label[rel='close']").addClass("active");
-                        $("#sat-start").css("visibility", "hidden");
-                        $("#sat-end").css("visibility", "hidden");
+                        // $("#sat-start").css("visibility", "hidden");
+                        // $("#sat-end").css("visibility", "hidden");
+                        $(".day_saturday").css("visibility", "hidden");
                     } else {
                         $("div[rel='saturday']").find("label[rel='open']").addClass("active");
                         $("#sat-start").val(satStart);
@@ -1114,8 +1134,9 @@ $(document).ready(function() {
 
                     if (sunClosed == true) {
                         $("div[rel='sunday']").find("label[rel='close']").addClass("active");
-                        $("#sun-start").css("visibility", "hidden");
-                        $("#sun-end").css("visibility", "hidden");
+                        // $("#sun-start").css("visibility", "hidden");
+                        // $("#sun-end").css("visibility", "hidden");
+                        $(".day_sunday").css("visibility", "hidden");
                     } else {
                         $("div[rel='sunday']").find("label[rel='open']").addClass("active");
                         $("#sun-start").val(sunStart);
@@ -1561,34 +1582,45 @@ $(document).ready(function() {
     // $('#cateservices-multiselect').multiselect({
     //     buttonWidth: '100%',
     // });
-    $(document).on('click','.switchery',function(){
+    $(document).on('click', '.switchery', function() {
 
         let place_id = $(this).siblings('input').attr('place_id');
         let place_status = $(this).siblings('input').attr('place_status');
 
         $.ajax({
-            url: '{{route('change_place_status')}}',
-            type: 'POST',
-            dataType: 'html',
-            data: {
-                place_id: place_id,
-                place_status: place_status,
-                _token: '{{csrf_token()}}'
-            },
-        })
-        .done(function(data) {
-            data = JSON.parse(data);
-            if(data.status === 'error')
-                toastr.error(data.message);
-            else
-                toastr.success(data.message);
+                url: "{{route('change_place_status')}}",
+                type: 'POST',
+                dataType: 'html',
+                data: {
+                    place_id: place_id,
+                    place_status: place_status,
+                    _token: '{{csrf_token()}}'
+                },
+            })
+            .done(function(data) {
+                data = JSON.parse(data);
+                if (data.status === 'error')
+                    toastr.error(data.message);
+                else
+                    toastr.success(data.message);
 
-            placeTable.draw();
-        })
-        .fail(function() {
-            console.log('Faield! Change Status Faield');
-        });
+                placeTable.draw();
+            })
+            .fail(function() {
+                console.log('Faield! Change Status Faield');
+            });
     });
+
+    $('.working-day input').on("change", function(e) {
+        // alert('ff');
+        var day = $(this).parent().parent().attr("rel");
+        alert(day);
+        $(".day_" + day).css('visibility', $(e.target).val() == 1 ? 'visible' : 'hidden');
+
+        $(this).parent().parent().find(".active").removeClass("active");
+        $(this).parent().addClass("active");
+    });
+
 });
 
 </script>
