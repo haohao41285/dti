@@ -58,10 +58,18 @@
                         </select>
                     </th>
                     <th>
-                        <input type="text" id="date_start" class="form-control form-control-sm" value="{{$task_info->date_start}}" name="date_start">
+                        @if($task_info->date_start != "")
+                            <input type="text" id="date_start" disabled class="form-control form-control-sm" value="{{format_date($task_info->date_start)}}" name="date_start">
+                        @else
+                            <input type="text" id="date_start" class="form-control form-control-sm" value="" name="date_start">
+                        @endif
                     </th>
                     <th>
-                        <input type="text" id="date_end" class="form-control form-control-sm" name="date_end" value="{{$task_info->date_end}}">
+                        @if($task_info->date_end != "")
+                            <input type="text" id="date_end" disabled class="form-control form-control-sm" name="date_end" value="{{format_date($task_info->date_end)}}">
+                        @else
+                            <input type="text" id="date_end" disabled class="form-control form-control-sm" name="date_end" value="">
+                        @endif
                     </th>
                     <th>
                         <input type="number" id="complete_percent" class="form-control form-control-sm" value="{{$task_info->complete_percent}}" name="complete_percent">

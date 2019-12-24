@@ -19,6 +19,7 @@ use Auth;
 use DataTables;
 use Gate;
 use App\Models\MainUserCustomerPlace;
+use App\Models\MainComboService;
 
 
 class DashboardController extends Controller {
@@ -204,6 +205,44 @@ class DashboardController extends Controller {
             ->make(true);
     }
     public function reviewDashboardDatatable(Request $request){
-        
+
+        $task_with_review = [];
+
+        //GET REVIEW SERVICE
+        $review_service = MainComboService::where(function($query){
+            $query->where('cs_form_type',1)
+            ->orWhere('cs_form_type',3);
+        })->select('id')->get()->toArray();
+
+        $review_service_arr = array_values($review_service);
+
+        $tasks = MainTask::whereIn('service_id',$review_service_arr)
+        ->where([
+            ['assign_to',Auth::user()->user_id],
+            ['date_end','!=',""],
+            ['status','!=',3]
+        ])
+        ->with('getPlace')->get();
+
+        foreach ($tasks as $key => $task) {
+
+            $content = json_decode($task->content,TRUE);
+
+            if(isset($content['number']) || isset($content['order_review'])){
+
+                $task_with_review[] = [
+                    'id' => '<a href="'.route('task-detail',$task->id).'">#'.$task->id.'</a>',
+                    'place_id' => $task->getPlace->place_name,
+                    'business_phone' => $task->getPlace->place_phone,
+                    'order_review' => $content['number'] ?? $content['order_review'],
+                    'date_end' => format_date($task->date_end)
+                ];
+            }
+        }
+
+        return DataTables::of($task_with_review)
+            
+            ->rawColumns(['id'])
+            ->make(true);
     }
 }

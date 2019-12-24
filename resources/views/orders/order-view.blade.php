@@ -330,23 +330,18 @@
                 },
             })
                 .done(function(data) {
-                    // console.log(data);
-                    // return;
                     data = JSON.parse(data);
                     if(data.status == 'error')
                         toatr.error(data.mesage);
                     else{
                         var content = data.content;
-                        var task_expire = data.task_expire;
-                        var content_html = getHtmlForm(input_form_type,content,task_expire);
+                        var content_html = getHtmlForm(input_form_type,content);
                         $("#content-form").html(content_html);
                         $("#datepicker_form").datepicker({
                             todayHighlight: true,
                             setDate: new Date(),
                         });
                         $("#modal-input-form").modal('show');
-                        // if(data.content == null)
-                        //     console.log('Ok');
                     }
                 })
                 .fail(function() {
@@ -355,10 +350,9 @@
             return;
 
         });
-        function getHtmlForm(input_form_type,content,task_expire){
-            content = JSON.parse(content);
-            // console.log(content);
+        function getHtmlForm(input_form_type,content){
 
+            content = JSON.parse(content);
              var content_html = "";
 
             if(input_form_type == 1){
@@ -396,16 +390,15 @@
                 else
                     order_review_html = '<input type="number" class="form-control form-control-sm col-md-6"  id="number_of_reviews" name="order_review" value="">';
 
-                // if(content !== null && typeof(content['complete_date']) != "undefined" && content['complete_date'] !== null)
-                if(task_expire != "")
-                    complete_date_html = "<b>"+task_expire+"</b><input type='hidden'  name='complete_date' value='"+task_expire+"' >";
+                if(content !== null && typeof(content['complete_date']) != "undefined" && content['complete_date'] !== null)
+                    complete_date_html = "<b>"+content['complete_date']+"</b><input type='hidden'  name='complete_date' value='"+content['complete_date']+"' >";
                 else
                     complete_date_html = '<input type="text" class="form-control form-control-sm col-md-6" id="datepicker_form" name="complete_date" >';
 
                 if(content !== null && typeof(content['desription']) != "undefined" && content['desription'] !== null)
                     description_html = "<span class='text-danger'>"+content['desription']+"</span>";
                 else
-                    description_html = '<textarea class="form-control form-control-sm desription" name="desription" rows="3"></textarea>'
+                    description_html = '<textarea class="form-control form-control-sm desription" name="desription" rows="3"></textarea>';
 
                 content_html = `
                 <div class="form-group">

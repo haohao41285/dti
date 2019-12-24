@@ -1,0 +1,1 @@
+ALTER TABLE `main_combo_service` ADD `cs_menu_inailso_app` VARCHAR(255) NULL COMMENT 'implode id in main_menu_inailso with ;' AFTER `cs_menu_id`; 

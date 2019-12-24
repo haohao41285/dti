@@ -133,8 +133,8 @@
             </tr>
             <tr>
                 <th>{{$task_info->date_start!=""?format_date($task_info->date_start):""}}</th>
-                <th>{{$task_info->date_start!=""?format_date($task_info->date_end):""}}</th>
-                <th class="percent_complete">{{$task_info->complete_percent}}%</th>
+                <th>{{$task_info->date_end!=""?format_date($task_info->date_end):""}}</th>
+                <th class="percent_complete text-right">{{$task_info->complete_percent}}%</th>
                 <th>{{format_datetime($task_info->updated_at)}}</th>
                 <th class="text-capitalize">{{$task_info->getUpdatedBy->user_firstname}} {{$task_info->getUpdatedBy->user_lastname}}</th>
                 <th colspan="2"><a href="{{route('edit-task',$id)}}"><i class=" fas fa-edit"></i><span class="text-info">Edit Task</span></a> <a href="javascript:void(0)" id="send-notification"><i class="fas fa-bell"></i><span class="text-info ">Send Email & Notification to CSR</span></a></th>
@@ -171,45 +171,45 @@
                             @endphp
                             {{-- Google --}}
                             @if($task_info->getService->cs_form_type == 1)
-                                <span>Google Link: <b>{{$content_arr['google_link']}}</b></span><br>
-                                <span>Tên thợ nails: {{$content_arr['worker_name']}}</span><br>
+                                <span>Google Link: <b>{{$content_arr['google_link']??""}}</b></span><br>
+                                <span>Tên thợ nails: {{$content_arr['worker_name']??""}}</span><br>
                                 <div class="row">
-                                    <span class="col-md-6">Number of starts: <b>{{$content_arr['star']}}</b></span>
-                                    <span class="col-md-6">Số review hiện tại: <b>{{$content_arr['current_review']}}</b></span>
-                                    <span class="col-md-6">Conplete date: <b>{{$content_arr['complete_date']}}</b></span>
-                                    <span class="col-md-6">Số review yêu cầu: <b>{{$content_arr['order_review']}}</b></span>
+                                    <span class="col-md-6">Number of starts: <b>{{$content_arr['star']??""}}</b></span>
+                                    <span class="col-md-6">Số review hiện tại: <b>{{$content_arr['current_review']??""}}</b></span>
+                                    <span class="col-md-6">Conplete date: <b>{{$content_arr['complete_date']??""}}</b></span>
+                                    <span class="col-md-6">Số review yêu cầu: <b>{{$content_arr['order_review']??""}}</b></span>
                                 </div>
                             @endif
                             {{-- Website --}}
                             @if($task_info->getService->cs_form_type == 2)
-                                <span>Tên sản phẩm: <b>{{$content_arr['product_name']}}</b></span><br>
-                                <span>Màu chủ đạo: <b>{{$content_arr['main_color']}}</b></span><br>
-                                <span>Thể loại hoặc phong cách khách hàng: <b>{{$content_arr['style_customer']}}</b></span><br>
-                                <span>Facebook Link: <b>{{$content_arr['link']}}</b></span><br>
-                                <span>Website: <b>{{$content_arr['website']}}</b></span><br>
+                                <span>Tên sản phẩm: <b>{{$content_arr['product_name']??""}}</b></span><br>
+                                <span>Màu chủ đạo: <b>{{$content_arr['main_color']??""}}</b></span><br>
+                                <span>Thể loại hoặc phong cách khách hàng: <b>{{$content_arr['style_customer']??""}}</b></span><br>
+                                <span>Facebook Link: <b>{{$content_arr['link']??""}}</b></span><br>
+                                <span>Website: <b>{{$content_arr['website']??""}}</b></span><br>
                             @endif
                             {{-- Facebook --}}
                             @if($task_info->getService->cs_form_type == 3)
-                                <span>Facebook Link: <b>{{$content_arr['link']}}</b></span><br>
-                                <span>Promotion: <b>{{$content_arr['promotion']}}</b></span><br>
-                                <span>Số lượng bài viết: <b>{{$content_arr['number']}}</b></span><br>
+                                <span>Facebook Link: <b>{{$content_arr['link']??""}}</b></span><br>
+                                <span>Promotion: <b>{{$content_arr['promotion']??""}}</b></span><br>
+                                <span>Số lượng bài viết: <b>{{$content_arr['number']??""}}</b></span><br>
                                 <div class="row">
                                     <span class="col-md-6">Đã có admin chưa: <b>{{isset($admin)?"YES":"NO"}}</b></span>
-                                    <span class="col-md-6">Username: <b>{{$content_arr['user']}}</b></span>
+                                    <span class="col-md-6">Username: <b>{{$content_arr['user']??""}}</b></span>
                                     <span class="col-md-6">Có lấy được hình ảnh: <b>{{isset($image)?"YES":"NO"}}</b></span>
-                                    <span class="col-md-6">Password: <b>{{$content_arr['password']}}</b></span>
+                                    <span class="col-md-6">Password: <b>{{$content_arr['password']??""}}</b></span>
                                 </div>
                             @endif
                             {{-- Domain --}}
                             @if($task_info->getService->cs_form_type == 4)
-                                <span>Domain:<b>{{$content_arr['domain']}}</b></span>
+                                <span>Domain:<b>{{$content_arr['domain']??""}}</b></span>
                                 <div class="row">
                                     <span class="col-md-6">Is Show Service Price: <b>Yes</b></span>
-                                    <span class="col-md-6">Themes: <b>{{$content_arr['theme']}}</b></span>
-                                    <span class="col-md-6">Business Name: <b>{{$content_arr['business_name']}}</b></span>
-                                    <span class="col-md-6">Business Phone: <b>{{$content_arr['business_phone']}}</b></span>
-                                    <span class="col-md-6">Business Email: <b>{{$content_arr['email']}}</b></span>
-                                    <span class="col-md-6">Business Phone: <b>{{$content_arr['address']}}</b></span>
+                                    <span class="col-md-6">Themes: <b>{{$content_arr['theme']??""}}</b></span>
+                                    <span class="col-md-6">Business Name: <b>{{$content_arr['business_name']??""}}</b></span>
+                                    <span class="col-md-6">Business Phone: <b>{{$content_arr['business_phone']??""}}</b></span>
+                                    <span class="col-md-6">Business Email: <b>{{$content_arr['email']??""}}</b></span>
+                                    <span class="col-md-6">Business Phone: <b>{{$content_arr['address']??""}}</b></span>
                                 </div>
                             @endif
                         @endif
@@ -252,36 +252,23 @@
 
         </tbody>
     </table>
-
-{{--    <div class="row">--}}
-        @if((isset($content_arr['order_review']) && $content_arr['order_review'] > 0)
-            || (isset($content_arr['number']) && $content_arr['number'] > 0)
-            )
-            <form>
-                {{--@for ($i = 1; $i <= $content_arr['order_review']; $i++)
-                    <div class="col-md-4">
-                        <div class="form-group">
-                            <label for=""><b>Review {{$i}}</b></label>
-                            <label for="fail_{{$i}}" class="float-right text-danger"><input type="checkbox" id="fail_{{$i}}"> Fail</label>
-                            <label for="done_{{$i}}" class="float-right text-primary"><input type="checkbox" id="done_{{$i}}"> Done</label>
-
-                        </div>
-                    </div>
-                @endfor--}}
-                <h4 class="text-info">Review  List</h4>
-                <table class="table table-hover table-striped" id="table_review">
-                    <thead>
-                        <tr>
-                            <th style="width: 20%">Name Review</th>
-                            <th>Note</th>
-                            <th style="width: 20%">Status</th>
-                            <th style="width: 10%" class="text-center"></th>
-                        </tr>
-                    </thead>
-                </table>
-            </form>
+    @if((isset($content_arr['order_review']) && $content_arr['order_review'] > 0)
+        || (isset($content_arr['number']) && $content_arr['number'] > 0)
+        )
+        <form>
+            <h4 class="text-info">Review  List</h4>
+            <table class="table table-sm table-hover" id="table_review">
+                <thead>
+                    <tr class="thead-light">
+                        <th style="width: 20%">Name Review</th>
+                        <th>Note</th>
+                        <th style="width: 20%">Status</th>
+                        <th style="width: 10%" class="text-center"></th>
+                    </tr>
+                </thead>
+            </table>
+        </form>
     @endif
-{{--    </div>--}}
     @if(count($task_info->getSubTask))
     <div class="border border-info mb-4">
     	<table class="table table-bordered table-hover mb-0" id="subtask-datatable" width="100%" cellspacing="0">

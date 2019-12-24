@@ -558,21 +558,40 @@ class ReportController extends Controller
                 $task_list->whereBetween('updated_at',[$start_date,$end_date]);
             }
             $review_total = $review_total->get();
-            $task_list = $task_list->select('content')->get();
+            $task_list = $task_list->select('content','date_start','date_end')->get();
 
             $failed_total = $review_total->unique('review_id')->where('status',0)->count();
             $successfully_total  = $review_total->unique('review_id')->where('status',1)->count();
 
             $review_total = 0;
             $percent_complete = 0;
-
             foreach($task_list as $task){
                 $content = json_decode($task->content,TRUE);
 
-                if( isset($content['order_review']) && !empty($content['order_review'])){
-                    $review_total += intval($content['order_review']);
-                }elseif(isset($content['number']) && !empty($content['number']) )
-                    $review_total += intval($content['number']);
+                // if( isset($content['order_review']) && !empty($content['order_review'])){
+                //     $review_total += intval($content['order_review']);
+                // }elseif(isset($content['number']) && !empty($content['number']) )
+                //     $review_total += intval($content['number']);
+
+                if( ((isset($content['order_review']) && !empty($content['order_review']))
+                    || (isset($content['number']) && !empty($content['number'])))
+                    && ($task->date_start != "" && $task->date_end != "")
+                ){
+                    //GET REVIEW OF MONTH
+                    $start_month = Carbon::parse($task->start_date)->format('m');
+                    $end_month = Carbon::parse($task->end_date)->format('m');
+                    $count_month = $end_month - $start_month;
+
+                    $d1 = $task->date_start;
+                    $d2 = $task->date_end;
+
+                    $count_month = (int)abs((strtotime($d1) - strtotime($d2))/(60*60*24*30));
+
+                    if(isset($content['order_review']))
+                        $review_total += ceil(intval($content['order_review'])/$count_month);
+                    elseif(isset($content['number']))
+                        $review_total += ceil(intval($content['number'])/$count_month);
+                }
             }
             if($review_total > 0)
                 $percent_complete = round(($successfully_total/$review_total)*100);
