@@ -71,4 +71,16 @@ class PosPlace extends BaseModel
                     ->first();
     }
 
+    public function getLicenseByPlaceId($placeId){
+        return self::select('place_id','place_ip_license')
+                    ->where('place_id',$placeId)
+                    ->where('place_status',1)
+                    ->first();
+    }
+
+    public function updateByPlaceIdAndArr($placeId, $arr){
+        return $this->where('place_id',$placeId)
+                    ->update($arr);
+    }
+
 }

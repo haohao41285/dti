@@ -23,12 +23,19 @@ use App\Models\PosTemplateType;
 use DB;
 use Gate;
 use Auth;
+use App\Helpers\ImagesHelper;
 
 
 
 
 class PlaceController extends Controller
 {
+    private $place;
+
+    public function __construct(){
+        $this->place = new PosPlace;
+    }
+
     public function index(){
 
         if(Gate::allows('permission','place-admin')
@@ -158,7 +165,8 @@ class PlaceController extends Controller
                                     'place_email','place_amount','place_description',
                                     'place_actiondate','place_logo','place_favicon',
                                     'hide_service_price','place_worker_mark_bonus',
-                                    'place_interest','place_website','place_phone'
+                                    'place_interest','place_website','place_phone','place_url_plugin',
+                                    'place_map_direction'
                                 )
                 ->where('place_id',$request->placeId)
                 ->where('place_status',1)
@@ -302,7 +310,51 @@ class PlaceController extends Controller
     }
 
     public function saveDetail(Request $request){
-        dd($request->all());
+        //dd($request->all());
+        $placeId = $request->placeId;
+
+        $place = $this->place->getLicenseByPlaceId($placeId);
+
+        $license = $place->place_ip_license;
+
+        $pathUpload = $license.'/logo/photos';
+
+        if($request->hasFile('logo')){
+            $logo = ImagesHelper::uploadImageToAPI($request->logo,$pathUpload);
+        }
+
+        if($request->hasFile('favicon')){
+            $favicon = ImagesHelper::uploadImageToAPI($request->favicon,$pathUpload);
+        }
+
+        $arr = [
+              'place_name' => $request->business_name,
+              'place_phone' => $request->business_phone,
+              'hide_service_price' => $request->hide_service_price,
+              'place_address' => $request->address,
+              'place_email' => $request->email,
+              'place_website' => $request->website,
+              'place_interest' => $request->interest,
+              'place_description' => $request->description,
+              'place_logo' => $logo ?? null,
+              'place_favicon' => $favicon ?? null,
+              'place_taxcode' => $request->tax_code,
+              'place_worker_mark_bonus' => $request->price_floor,
+              'place_url_plugin' => $request->place_url_plugin,
+              'place_map_direction' => $request->place_map_direction,
+        ];
+
+        if(!isset($logo)){
+            unset($arr['place_logo']);
+        }
+
+        if(!isset($favicon)){
+            unset($arr['place_favicon']);
+        }
+
+        $this->place->updateByPlaceIdAndArr($placeId, $arr);
+
+        return response()->json(['status'=>1,'data'=>['msg'=>'saved successfully']]);
     }
 
 
