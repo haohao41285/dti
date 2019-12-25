@@ -165,7 +165,7 @@
                             <th>Task ID</th>
                             <th>Place Name</th>
                             <th>Business Phone</th>
-                            <th>Order Review</th>
+                            <th>Review</th>
                             <th>Date End</th>
                             {{-- <th>Action</th> --}}
                         </tr>
