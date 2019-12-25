@@ -53,7 +53,7 @@
                                                 <div class="input-group-prepend">
                                                     <span class="input-group-text">Customer Phone<sup class="text-danger">*</sup></span>
                                                 </div>
-                                                <input type="text" class="form-control customer_phone" name="customer_phone">
+                                                <input type="text" onkeypress="return isNumberKey(event)" class="form-control customer_phone" name="customer_phone">
                                             </div>
                                             <span class="text-danger" style="font-size: 12px">Customer Phone is not with character "0" at the first</span>
                                             <span class="text-danger" style="font-size: 12px">Customer Phone includes 10 characters</span>
@@ -234,7 +234,8 @@
                     toastr.error('Customer Phone not over 10 character');
                     return false;
                 }
-            })
+            });
+            
         });
     </script>
 @endpush
