@@ -407,6 +407,7 @@ Route::group(['middleware' => ['auth']], function () {
             Route::get('/', 'ReportController@reviews')->name('report.reviews');
             Route::get('datatable', 'ReportController@reviewsDataTable')->name('report.reviews.datatable');
             Route::get('export', 'ReportController@reviewsExport')->name('report.reviews.export');
+            Route::get('review-today', 'ReportController@reviewsToday')->name('report.reviews.review_today');
         });
     });
 });

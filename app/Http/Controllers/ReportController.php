@@ -535,7 +535,7 @@ class ReportController extends Controller
                 $query->where('user_id',$user->user_id)
                     ->orWhere('user_id','like','%;'.$user->user_id)
                     ->orWhere('user_id','like','%;'.$user->user_id.";%")
-                    ->orWhere('user_id','like',$user->user_id,';%');
+                    ->orWhere('user_id','like',$user->user_id.';%');
             })->latest();
 
             $task_list = MainTask::where(function($query) use ($user){
@@ -614,7 +614,7 @@ class ReportController extends Controller
 
             $review_list[] = [
                 'id' => $user->user_id,
-                'user' => "<span class='text-capitalize'>".$user->getFullname()."</span>(".$user->user_nickname.")",
+                'user' => "<a href='javascript:void(0)' title='View Reviews Today' class='user' id='".$user->user_id."'><span class='text-capitalize'>".$user->getFullname()."</span>(".$user->user_nickname.")</a>",
                 'total_reviews' => $review_total,
                 'successfully_total' => $successfully_total,
                 'failed_total' => $failed_total,
@@ -627,5 +627,27 @@ class ReportController extends Controller
             })
             ->rawColumns(['user'])
             ->make(true);
+    }
+    public function reviewsToday(Request $request){
+
+        $user_id = $request->user_id;
+        $successfully_total = 0;
+        $failed_total = 0;
+
+        $review_total = MainUserReview::where(function ($query) use ($user_id){
+            $query->where('user_id',$user_id)
+                ->orWhere('user_id','like','%;'.$user_id)
+                ->orWhere('user_id','like','%;'.$user_id.";%")
+                ->orWhere('user_id','like',$user_id.';%');
+        })->latest();
+
+        $review_total = $review_total->whereDate('updated_at',today())->get();
+        $failed_total = $review_total->unique('review_id')->where('status',0)->count();
+        $successfully_total  = $review_total->unique('review_id')->where('status',1)->count();
+
+        $data['successfully_total'] = $successfully_total;
+        $data['failed_total'] = $failed_total;
+        $data['today'] = today()->format('m-d-Y');
+        return $data;
     }
 }
