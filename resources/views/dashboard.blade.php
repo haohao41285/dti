@@ -157,7 +157,7 @@
             <div class="col-xl-6 col-lg-6">
                 <div class="card shadow mb-4">
                     <div class="card-header d-flex flex-row align-items-center justify-content-between border-0" >
-                        <span class="m-0 font-weight-bold text-primary">Remider Customer's Review</span> <a href="javascript:void(0)">View More >>></a>
+                        <span class="m-0 font-weight-bold text-primary">Remider Customer's Review</span> <a href="{{ route('my-task') }}">View More >>></a>
                     </div>
                     <table class="table table-sm table-hover" id="datatable-review" width="100%" cellspacing="0">
                         <thead>

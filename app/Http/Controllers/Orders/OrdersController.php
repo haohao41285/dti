@@ -1129,7 +1129,7 @@ class OrdersController extends Controller
             if($service_info->cs_form_type == 1 || $service_info->cs_form_type == 3){
                 $complete_date = today()->addMonths($service_info->cs_expiry_period)->format('m/d/Y');
                 $content = json_encode(['complete_date'=>$complete_date]);
-                $date_end = today()->addMonths($service_info->cs_expiry_period)->format('Y-d-m');
+                $date_end = today()->addMonths($service_info->cs_expiry_period)->format('Y-m-d');
             }
             $date_start = today()->format('Y-m-d');
 
