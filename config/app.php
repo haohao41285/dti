@@ -182,7 +182,6 @@ return [
         Maatwebsite\Excel\ExcelServiceProvider::class,
         App\Providers\ComposerServiceProvider::class,
         Berkayk\OneSignal\OneSignalServiceProvider::class,
-        Barryvdh\Debugbar\ServiceProvider::class,
     ],
 
     /*
@@ -235,7 +234,7 @@ return [
         'View' => Illuminate\Support\Facades\View::class,
         'Excel' => Maatwebsite\Excel\Facades\Excel::class,
         'OneSignal' => Berkayk\OneSignal\OneSignalFacade::class,
-        'Debugbar' => Barryvdh\Debugbar\Facade::class,
+
     ],
 
     /*
