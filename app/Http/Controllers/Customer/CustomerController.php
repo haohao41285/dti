@@ -919,8 +919,8 @@ class CustomerController extends Controller
                 $size_total += $file->getSize();
             }
             $size_total = number_format($size_total / 1048576, 2); //Convert KB to MB
-            if($size_total > 100){
-                return response(['status'=>'error','message'=>'Total Size Image maximum 100M!']);
+            if($size_total > 50){
+                return response(['status'=>'error','message'=>'Total Size Image maximum 50M!']);
             }
             //Upload Image
             foreach ($file_list as $key => $file) {

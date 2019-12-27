@@ -21,7 +21,8 @@
                     <tr class="thead-light">
                         <td colspan="{{$team_list->count()+1}}"><b>{{$service_type->name}}</b></td>
                     </tr>
-                    @foreach($service_type->getComboService as $service)
+                    {{-- @foreach($service_type->getComboService as $service) --}}
+                    @foreach($combo_service_list->where('cs_combo_service_type',$service_type->id) as $service)
                     <tr>
                         <td>#{{$service->id}}-{{$service->cs_name}}</td>
                         @foreach($team_list as $team)

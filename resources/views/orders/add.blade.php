@@ -98,7 +98,7 @@
                     <div id="t{{$type->id}}" class="collapse " data-parent="#accordion">
                         <div class="card-body row">
 {{--                            {{dd($service_permission_arr)}}--}}
-                             @foreach($type->getComboService as $service)
+                             @foreach($combo_service_list->where('cs_combo_service_type',$type->id) as $service)
                                  @if(in_array($service->id,$service_permission_arr))
                                 <label class="col-md-6"><input style="width:20px;height: 20px" type="checkbox" max_discount="{{$type->max_discount}}" class="combo_service" cs_price="{{$service->cs_price}}" name="cs_id[]"  value="{{$service->id}}"> {{$service->cs_name}}{{$service->cs_type==1?"(Combo)":"(Service)"}} - ${{$service->cs_price}}</label><br>
                                 @endif
