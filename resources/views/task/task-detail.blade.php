@@ -302,11 +302,11 @@
 <form  enctype="multipart/form-data" accept-charset="utf-8">
     @csrf()
     <input type="hidden" name="receiver_id" value="{{$task_info->assign_to==\Illuminate\Support\Facades\Auth::user()->user_id?$task_info->created_by:$task_info->assign_to}}">
-    <textarea  id="summernote2" class="form-control form-control-sm"  name="note" placeholder="Text Content..."></textarea>
+    <textarea  id="summernote2" class="form-control form-control-sm"  name="note" placeholder="Text Comment..."></textarea>
     <input type="button" class="btn btn-sm btn-secondary mt-2" name="" value="Upload attchment's file" onclick="getFile2()" placeholder=""><br>
     <span id="file_names"></span>
     <input type="file" hidden id="file_image_list_2" multiple name="file_image_list[]">
-    <p>(The maximum upload file size: 100M)</p>
+    <p class="text-danger">(The maximum upload file size: 50M<br>Amount of files <= 20 files)</p>
     <div style="height: 10px" class="bg-info">
     </div>
     <hr style="border-top: 1px dotted grey;">
@@ -395,6 +395,12 @@
             formData.append('order_id',{{$task_info->order_id}});
             formData.append('task_id',{{$id}});
             formData.append('_token','{{csrf_token()}}');
+            amount_files = file_image_list.length;
+
+            if(amount_files > 20){
+                toastr.error("Amount of files maximum is 20 files");
+                return;
+            }
 
             $.ajax({
                 url: '{{route('post-comment')}}',
@@ -409,9 +415,6 @@
                     return myXhr;
                 },
                 success: function (data) {
-                    // console.log(data);
-                    // return;
-                    // data = JSON.parse(data);
                     if(data.status == 'error'){
                         if(typeof(data.message) == "string")
                             toastr.error(data.message);
@@ -510,10 +513,12 @@
 
             var names = [];
             var name_html = "";
+            var stt = 0;
 
             for (var i = 0; i < $(this).get(0).files.length; ++i) {
+                stt = i +1;
                 names.push($(this).get(0).files[i].name);
-                name_html += "<span>"+$(this).get(0).files[i].name+ "</span><br>";
+                name_html += "<span>"+"<span class='text-danger '>"+stt+"-</span>"+$(this).get(0).files[i].name+ "</span><br>";
 
             }
             $("#file_names").html(name_html);

@@ -14,7 +14,7 @@
 			<th>Email</th>
 			<th>Group</th>
 			<th>Status</th>
-			<th>Action</th>
+			<th class="w-20">Action</th>
 		</tr>
 	</thead>
 </table>

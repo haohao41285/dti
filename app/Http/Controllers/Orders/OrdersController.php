@@ -131,11 +131,14 @@ class OrdersController extends Controller
         $service_permission_arr = explode(';', $service_permission_list);
         $data['service_permission_arr'] = $service_permission_arr;
 
-//        return $service_permission_arr;
         //GET COMBO SERVICE NOT TYPE
         $data['combo_service_orther'] = MainComboService::where('cs_status', 1)->whereIn('id', $service_permission_arr)->whereNull('cs_combo_service_type')->get();
 
-        $data['combo_service_type'] = MainComboServiceType::active()->get();
+        $data['combo_service_type'] = DB::table('main_combo_service_type')->where('status',1)->get();
+
+        //GET COMBO SERVICE COLLECTION INSIDE TYPE
+        $combo_service = MainComboService::whereIn('id',$service_permission_arr)->get();
+        $data['combo_service_list'] = collect($combo_service);
 
         return view('orders.add', $data);
     }
@@ -453,6 +456,12 @@ class OrdersController extends Controller
 
         $my_order_list = $my_order_list->select('main_combo_service_bought.*', 'main_customer.customer_lastname', 'main_customer.customer_firstname','main_customer.customer_phone','main_customer.customer_email', 'main_user.user_nickname')
             ->get();
+        //GET COLLECTION COMBO SERVICE
+        $service_all = MainComboService::select('cs_name','id')->get();
+        $service_all = collect($service_all);
+        //GET USER COLLECT USER
+        $user_list = MainUser::all();
+        $user_list = collect($user_list);
 
         foreach ($my_order_list as $key => $order) {
 
@@ -468,7 +477,7 @@ class OrdersController extends Controller
 
             $services = explode(";", $order->csb_combo_service_id);
 
-            $service_list = MainComboService::whereIn('id', $services)->select('cs_name')->get();
+            $service_list = $service_all->whereIn('id', $services);
             $service_name = "";
             foreach ($service_list as $service) {
                 $service_name .= "-" . $service->cs_name . "<br>";
@@ -483,8 +492,11 @@ class OrdersController extends Controller
             $customer = "<span>Customer: <b>" . $order->customer_firstname . " " . $order->customer_lastname . "</b></span><br><span>Business Phone: <b>" . $order->getPlace->place_phone . "</b></span><br><span>Email: <b>" . $order->getPlace->place_email . "</b></span>";
 
             $updated_at = "";
-            if($order->updated_by != "")
-                $updated_at = format_datetime($order->updated_at)."<br> by ".$order->getUpdatedBy->user_nickname;
+            if($order->updated_by != ""){
+
+                $updated_by = $user_list->where('user_id',$order->updated_by)->first();
+                $updated_at = format_datetime($order->updated_at)."<br> by ".$updated_by->user_nickname;
+            }
 
             $my_order_arr[] = [
                 'id' => $order->id,
@@ -543,22 +555,34 @@ class OrdersController extends Controller
         }
         $order_list = $order_list->select('main_combo_service_bought.*', 'main_user.user_nickname')->get();
 
+        //GET COMBO SERVICE COLLECTION
+        $combo_service_list = MainComboService::select('cs_name','id')->get();
+        $combo_service_list = collect($combo_service_list);
+
+        //GET CUSTOMER COLLECTION
+        $customer_list = MainCustomer::select('customer_firstname','customer_lastname','customer_id')->get();
+        $customer_list = collect($customer_list);
+
         foreach ($order_list as $key => $order) {
 
             $infor = "<span>ID: " . $order->csb_trans_id . "</span><br><span>Name: " . $order->csb_card_type . "</span><br><span>Number: " . $order->csb_card_number . "</span>";
 
             $services = explode(";", $order->csb_combo_service_id);
 
-            $service_list = MainComboService::whereIn('id', $services)->select('cs_name')->get();
+            $service_list = $combo_service_list->whereIn('id', $services);
             $service_name = "";
             foreach ($service_list as $service) {
                 $service_name .= "-" . $service->cs_name . "<br>";
             }
 
+            //GET CUSTOMER INFO
+            $customer_info = $customer_list->where('customer_id',$order->csb_customer_id)->first();
+            $customer_info = $customer_info->customer_firstname. " " . $customer_info->customer_lastname;
+
             $order_arr[] = [
                 'id' => $order->id,
                 'order_date' => Carbon::parse($order->created_at)->format('m/d/Y H:i:s'),
-                'customer' => $order->getCustomer->customer_firstname . " " . $order->getCustomer->customer_lastname,
+                'customer' => $customer_info,
                 'servivce' => $service_name,
                 'subtotal' => $order->csb_amount,
                 'discount' => $order->csb_amount_deal,
@@ -1129,7 +1153,7 @@ class OrdersController extends Controller
             if($service_info->cs_form_type == 1 || $service_info->cs_form_type == 3){
                 $complete_date = today()->addMonths($service_info->cs_expiry_period)->format('m/d/Y');
                 $content = json_encode(['complete_date'=>$complete_date]);
-                $date_end = today()->addMonths($service_info->cs_expiry_period)->format('Y-d-m');
+                $date_end = today()->addMonths($service_info->cs_expiry_period)->format('Y-m-d');
             }
             $date_start = today()->format('Y-m-d');
 

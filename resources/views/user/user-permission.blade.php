@@ -33,8 +33,8 @@
         <tr id="{{$menu->id}}" class="permission_parent ">
             <th colspan="{{$role_list->count()+1}}"><i id="parent_{{$menu->id}}" class="fas fa-plus-circle text-primary"></i>{{$menu->name}}</th>
         </tr>
-        @if(count($menu->getPermission) != 0)
-            @foreach($menu->getPermission as $permission)
+        @if($permission_list->where('menu_id',$menu->id)->count() != 0)
+            @foreach($permission_list->where('menu_id',$menu->id) as $permission)
                 <tr class="child_{{$menu->id}} d-none">
                     <td class="pl-5">{{$permission->permission_name}}</td>
                     @foreach($role_list as $role)
@@ -48,9 +48,9 @@
                 </tr>
             @endforeach
         @else
-            @foreach($menu->getMenuChild as $menu_child)
+            @foreach($menu_list_all->where('parent_id',$menu->id) as $menu_child)
 
-                @foreach($menu_child->getPermission as $permission)
+                @foreach($permission_list->where('menu_id',$menu_child->id) as $permission)
 
                     <tr class="child_{{$menu->id}} d-none">
                         <td class="pl-5">{{$permission->permission_name}}</td>

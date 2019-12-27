@@ -21,11 +21,11 @@ Role List
 	<div class="col-md-5 offset-md-1" style="padding-top: 0px">
 		<h5><b class="role-tip">Add Role</b></h5>
 		<div class="form-group">
-			<label for="">Role Name</label>
+			<label for="">Name</label>
 			<input type="text" class="form-control form-control-sm" name="" id="gu_name">
 		</div>
 		<div class="form-group">
-			<label for="">Role Description</label>
+			<label for="">Description</label>
 			<textarea class="form-control form-control-sm" rows="3" id="gu_descript" ></textarea>
 		</div>
 		<div class="form-group">
@@ -108,7 +108,11 @@ Role List
 	    	var gu_descript = $("#gu_descript").val();
 	    	var gu_name = $("#gu_name").val();
 
-	    	if(gu_descript != "" && gu_name != ""){
+	    	if(gu_descript === "")
+	    		toastr.error('Description is required!');
+	    	else if(gu_name === "")
+	    		toastr.error('Name is required!');
+	    	else{
 	    		$.ajax({
 		    		url: '{{route('add-role')}}',
 		    		type: 'GET',

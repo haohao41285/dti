@@ -22,6 +22,7 @@ use Gate;
 use Validator;
 use Hash;
 use App\Models\MainComboServiceType;
+use Session;
 
 class UserController extends Controller
 {
@@ -383,7 +384,10 @@ class UserController extends Controller
 
         $data['role_list'] = MainGroupUser::active()->get();
         $data['team_list'] = MainTeamType::active()->get();
-        $data['service_type_list'] = MainComboServiceType::active()->get();
+        // $data['service_type_list'] = MainComboServiceType::active()->get();
+        $data['service_type_list'] = DB::table('main_combo_service_type')->where('status',1)->get();
+        $combo_service_list = DB::table('main_combo_service')->where('cs_status',1)->get();
+        $data['combo_service_list'] = collect($combo_service_list);
 
         return view('user.service-permission',$data);
     }
@@ -425,9 +429,14 @@ class UserController extends Controller
 
         $data['role_list'] = MainGroupUser::active()->get();
 
-        $data['permission_other'] = MainPermissionDti::active()->whereNull('menu_id')->get();
+        $data['permission_list'] = Session::get('permission_list');
 
-        $data['menu_parent'] = MainMenuDti::active()->where('parent_id',0)->with('getMenuChild')->with('getPermission')->get();
+        $data['menu_list_all'] = Session::get('menu_list_all');
+
+        $data['permission_other'] = $data['permission_list']->where('menu_id',null);
+
+        $data['menu_parent'] = $data['menu_list_all']->where('parent_id',0);
+
 
         return view('user.user-permission',$data);
 

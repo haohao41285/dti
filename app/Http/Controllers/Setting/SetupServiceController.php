@@ -30,14 +30,23 @@ class SetupServiceController extends Controller
             return doNotPermission();
 
 		$combo_service_arr = [];
-//		$service_combo_list = MainComboService::leftjoin('main_user',function($join){
-//			$join->on('main_combo_service.cs_assign_to','main_user.user_id');
-//		})
-//			->select('main_combo_service.*','main_user.user_nickname','main_user.user_id')
-//			->get();
-        $service_combo_list = MainComboService::where('cs_status',1)->get();
 
-		foreach ($service_combo_list as $key => $service_combo) {
+        //GET COMBO SERVICE COLLECTION
+        $combo_service_list = DB::table('main_combo_service')->where('cs_status',1)->get();
+        $combo_service_list = collect($combo_service_list);
+
+        //GET USER COLLECTION
+        $user_list = DB::table('main_user')
+        			->where('user_status',1)
+        			->select('user_id','user_nickname','user_lastname','user_firstname')
+        			->get();
+        $user_list = collect($user_list);
+
+        //GET COMBO SERVICE TYPE
+        $combo_service_type = DB::table('main_combo_service_type')->where('status',1)->get();
+        $combo_service_type = collect($combo_service_type);
+
+		foreach ($combo_service_list as $key => $service_combo) {
 
 			$service_name_arr = "";
 
@@ -45,7 +54,7 @@ class SetupServiceController extends Controller
 
 				$service_id = explode(";",$service_combo->cs_service_id);
 
-				$service_name = MainComboService::whereIn('id',$service_id)->get();
+				$service_name = $combo_service_list->whereIn('id',$service_id);
 
 				foreach ($service_name as $key => $value) {
 					$service_name_arr .= "<span>- ".$value->cs_name."</span><br>";
@@ -55,9 +64,10 @@ class SetupServiceController extends Controller
             $cs_assign_id = [];
 			if(!empty($service_combo->cs_assign_to)){
 			    $assign_arr = explode(';',$service_combo->cs_assign_to);
-			    $assign_list = MainUser::whereIn('user_id',$assign_arr)->select('user_id','user_nickname','user_lastname','user_firstname')->get();
+			    $assign_list = $user_list->whereIn('user_id',$assign_arr);
 			    foreach($assign_list as $assign){
-                    $cs_assign_to .= "<span class='text-capitalize'>".$assign->user_nickname."(".$assign->getFullname().")</span><br>";
+                    $cs_assign_to .= "<span class='text-capitalize'>".$assign->user_nickname."(".$assign->user_firstname."
+                    ".$assign->user_lastname.")</span><br>";
                     $cs_assign_id[] = $assign->user_id;
                 }
 
@@ -74,7 +84,7 @@ class SetupServiceController extends Controller
 				'cs_assign_id' => implode(';',$cs_assign_id),
 				'cs_status' => $service_combo->cs_status,
                 'cs_form_type' => $service_combo->cs_form_type,
-                'cs_combo_service_type' => $service_combo->getComboServiceType['name'],
+                'cs_combo_service_type' => $combo_service_type->where('id',$service_combo->cs_combo_service_type)->first()->name,
                 'cs_expiry_period' => $service_combo->cs_expiry_period,
                 'cs_combo_service_type_id' => $service_combo->cs_combo_service_type
 			];

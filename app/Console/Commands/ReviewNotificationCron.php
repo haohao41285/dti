@@ -45,7 +45,7 @@ class ReviewNotificationCron extends Command
     {
         $date = date('d');
 
-        if($date  == 10 || $date == 20){
+        if($date  == 10 || $date == 25){
             $current_month = date('m');
             $current_month = date('m');
             $current_year = date('Y');
@@ -128,9 +128,9 @@ class ReviewNotificationCron extends Command
                         }
                     }
                 }
-                if($successfully_total < $review_this_month && $user->user_email != ""){
+                if($successfully_total < $review_total && $user->user_email != ""){
 
-                    $review_order = $review_this_month - $successfully_total;
+                    $review_order = $review_total - $successfully_total;
                     $message = "You have <span style='color:red'>".$review_order."</span> Reviews <span style='color:red'>must to complete</span> for this month!";
                     $input['subject'] = 'REVIEW NOTIFICATION!';
                     $input['email'] = $user->user_email;

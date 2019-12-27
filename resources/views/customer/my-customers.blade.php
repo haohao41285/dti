@@ -335,11 +335,11 @@
             content_table +=  `<tr>
                   <td>`+index+`</td>
                   <td>`+val+`</td>
-                </tr>;`
+                </tr>`
             });
-            place_service = `<table class="table table-hovered table-bordered" style="width: 100%">
+            place_service = `<table class="table-sm table table-hover table-bordered" style="width: 100%">
               <thead>
-                <tr>
+                <tr class="thead-light">
                   <th>Places</th>
                   <th>Service</th>
                 </tr>

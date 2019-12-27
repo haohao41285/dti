@@ -14,6 +14,7 @@ use App\Helpers\MenuHelper;
 use Validator;
 use Session;
 use DB;
+use App\Models\MainMenuDti;
 
 class LoginController extends Controller
 {
@@ -77,6 +78,15 @@ class LoginController extends Controller
                 ->get();
             if($user_list[0]->user_group_id == 1) $role = 1;
             else $role = 0;
+
+            //SET PERMISSION LIST TO SESSION
+            $permission_list = MainPermissionDti::all();
+            $permission_list = collect($permission_list);
+            Session::put('permission_list',$permission_list);
+            //SET MENU LIST ALL FOR SESSION
+            $menu_list_all = MainMenuDti::active()->get();
+            $menu_list_all = collect($menu_list_all);
+            Session::put('menu_list_all',$menu_list_all);
 
             //CHECK PERMISSION EXIST IN GU_ROLE_NEW
             if($user_list[0]->gu_role_new == null || $role == 1){
