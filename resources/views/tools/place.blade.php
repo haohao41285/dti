@@ -213,10 +213,10 @@
                                                     <label>Monday</label>
                                                     <div class="btn-group btn-group-toggle working-day" rel="monday">
                                                         <label class="btn btn-sm btn-day cursor" rel="open">
-                                                            <input name="work_mon[]" value="1" type="radio"> Open
+                                                            <input name="work_mon" value="1" type="radio"> Open
                                                         </label>
                                                         <label class="btn btn-sm btn-day cursor" rel="close">
-                                                            <input name="work_mon[]" value="0" type="radio"> Close
+                                                            <input name="work_mon" value="0" type="radio"> Close
                                                         </label>
                                                     </div>
                                                 </div>
@@ -224,10 +224,10 @@
                                                     <label>Tuesday</label>
                                                     <div class="btn-group btn-group-toggle working-day" rel="tuesday">
                                                         <label class="btn btn-sm btn-day cursor" rel="open">
-                                                            <input name="work_tue[]" value="1" type="radio"> Open
+                                                            <input name="work_tue" value="1" type="radio"> Open
                                                         </label>
                                                         <label class="btn btn-sm btn-day cursor" rel="close">
-                                                            <input name="work_tue[]" value="0" type="radio"> Close
+                                                            <input name="work_tue" value="0" type="radio"> Close
                                                         </label>
                                                     </div>
                                                 </div>
@@ -235,10 +235,10 @@
                                                     <label>Wednesday</label>
                                                     <div class="btn-group btn-group-toggle working-day" rel="wednesday">
                                                         <label class="btn btn-sm btn-day  cursor" rel="open">
-                                                            <input name="work_wed[]" value="1" type="radio"> Open
+                                                            <input name="work_wed" value="1" type="radio"> Open
                                                         </label>
                                                         <label class="btn btn-sm btn-day cursor" rel="close">
-                                                            <input name="work_wed[]" value="0" type="radio"> Close
+                                                            <input name="work_wed" value="0" type="radio"> Close
                                                         </label>
                                                     </div>
                                                 </div>
@@ -246,10 +246,10 @@
                                                     <label>Thursday</label>
                                                     <div class="btn-group btn-group-toggle working-day" rel="thursday">
                                                         <label class="btn btn-sm btn-day cursor" rel="open">
-                                                            <input name="work_thu[]" value="1" type="radio"> Open
+                                                            <input name="work_thu" value="1" type="radio"> Open
                                                         </label>
                                                         <label class="btn btn-sm btn-day cursor" rel="close">
-                                                            <input name="work_thu[]" value="0" type="radio"> Close
+                                                            <input name="work_thu" value="0" type="radio"> Close
                                                         </label>
                                                     </div>
                                                 </div>
@@ -257,10 +257,10 @@
                                                     <label>Friday</label>
                                                     <div class="btn-group btn-group-toggle working-day" rel="friday">
                                                         <label class="btn btn-sm btn-day cursor" rel="open">
-                                                            <input name="work_fri[]" value="1" type="radio"> Open
+                                                            <input name="work_fri" value="1" type="radio"> Open
                                                         </label>
                                                         <label class="btn btn-sm btn-day cursor" rel="close">
-                                                            <input name="work_fri[]" value="0" type="radio"> Close
+                                                            <input name="work_fri" value="0" type="radio"> Close
                                                         </label>
                                                     </div>
                                                 </div>
@@ -268,10 +268,10 @@
                                                     <label>Saturday</label>
                                                     <div class="btn-group btn-group-toggle working-day" rel="saturday">
                                                         <label class="btn btn-sm btn-day cursor" rel="open">
-                                                            <input name="work_sat[]" value="1" type="radio"> Open
+                                                            <input name="work_sat" value="1" type="radio"> Open
                                                         </label>
                                                         <label class="btn btn-sm btn-day cursor" rel="close">
-                                                            <input name="work_sat[]" value="0" type="radio"> Close
+                                                            <input name="work_sat" value="0" type="radio"> Close
                                                         </label>
                                                     </div>
                                                 </div>
@@ -279,10 +279,10 @@
                                                     <label>Sunday</label>
                                                     <div class="btn-group btn-group-toggle working-day" rel="sunday">
                                                         <label class="btn btn-sm btn-day cursor" rel="open">
-                                                            <input name="work_sun[]" value="1" type="radio"> Open
+                                                            <input name="work_sun" value="1" type="radio"> Open
                                                         </label>
                                                         <label class="btn btn-sm btn-day cursor" rel="close">
-                                                            <input name="work_sun[]" value="0" type="radio"> Close
+                                                            <input name="work_sun" value="0" type="radio"> Close
                                                         </label>
                                                     </div>
                                                 </div>
@@ -1094,10 +1094,12 @@ $(document).ready(function() {
                         // $("#mon-start").css("visibility", "hidden");
                         // $("#mon-end").css("visibility", "hidden");
                         $(".day_monday").css("visibility", "hidden");
+                        $("div[rel='monday']").find("input[value='0']").attr('checked', "checked");
                     } else {
                         $("div[rel='monday']").find("label[rel='open']").addClass("active");
                         $("#mon-start").val(monStart);
                         $("#mon-end").val(monEnd);
+                        $("div[rel='monday']").find("input[value='1']").attr('checked', "checked");
                     }
 
                     if (tueClosed == true) {
@@ -1105,10 +1107,12 @@ $(document).ready(function() {
                         // $("#tue-start").css("visibility", "hidden");
                         // $("#tue-end").css("visibility", "hidden");
                         $(".day_tuesday").css("visibility", "hidden");
+                        $("div[rel='tuesday']").find("input[value='0']").attr('checked', "checked");
                     } else {
                         $("div[rel='tuesday']").find("label[rel='open']").addClass("active");
                         $("#tue-start").val(tueStart);
                         $("#tue-end").val(tueEnd);
+                        $("div[rel='tuesday']").find("input[value='1']").attr('checked', "checked");
                     }
 
                     if (wedClosed == true) {
@@ -1116,10 +1120,12 @@ $(document).ready(function() {
                         // $("#wed-start").css("visibility", "hidden");
                         // $("#wed-end").css("visibility", "hidden");
                         $(".day_wednesday").css("visibility", "hidden");
+                        $("div[rel='wednesday']").find("input[value='0']").attr('checked', "checked");
                     } else {
                         $("div[rel='wednesday']").find("label[rel='open']").addClass("active");
                         $("#wed-start").val(wedStart);
                         $("#wed-end").val(wedEnd);
+                        $("div[rel='wednesday']").find("input[value='1']").attr('checked', "checked");
                     }
 
                     if (thuClosed == true) {
@@ -1127,10 +1133,12 @@ $(document).ready(function() {
                         // $("#thu-start").css("visibility", "hidden");
                         // $("#thu-end").css("visibility", "hidden");
                         $(".day_thursday").css("visibility", "hidden");
+                        $("div[rel='thursday']").find("input[value='0']").attr('checked', "checked");
                     } else {
                         $("div[rel='thursday']").find("label[rel='open']").addClass("active");
                         $("#thu-start").val(thuStart);
                         $("#thu-end").val(thuEnd);
+                        $("div[rel='thursday']").find("input[value='1']").attr('checked', "checked");
                     }
 
                     if (friClosed == true) {
@@ -1138,10 +1146,12 @@ $(document).ready(function() {
                         // $("#fri-start").css("visibility", "hidden");
                         // $("#fri-end").css("visibility", "hidden");
                         $(".day_friday").css("visibility", "hidden");
+                        $("div[rel='friday']").find("input[value='0']").attr('checked', "checked");
                     } else {
                         $("div[rel='friday']").find("label[rel='open']").addClass("active");
                         $("#fri-start").val(friStart);
                         $("#fri-end").val(friEnd);
+                        $("div[rel='friday']").find("input[value='1']").attr('checked', "checked");
                     }
 
                     if (satClosed == true) {
@@ -1149,10 +1159,12 @@ $(document).ready(function() {
                         // $("#sat-start").css("visibility", "hidden");
                         // $("#sat-end").css("visibility", "hidden");
                         $(".day_saturday").css("visibility", "hidden");
+                        $("div[rel='saturday']").find("input[value='0']").attr('checked', "checked");
                     } else {
                         $("div[rel='saturday']").find("label[rel='open']").addClass("active");
                         $("#sat-start").val(satStart);
                         $("#sat-end").val(satEnd);
+                        $("div[rel='saturday']").find("input[value='1']").attr('checked', "checked");
                     }
 
                     if (sunClosed == true) {
@@ -1160,10 +1172,12 @@ $(document).ready(function() {
                         // $("#sun-start").css("visibility", "hidden");
                         // $("#sun-end").css("visibility", "hidden");
                         $(".day_sunday").css("visibility", "hidden");
+                        $("div[rel='sunday']").find("input[value='0']").attr('checked', "checked");
                     } else {
                         $("div[rel='sunday']").find("label[rel='open']").addClass("active");
                         $("#sun-start").val(sunStart);
                         $("#sun-end").val(sunEnd);
+                        $("div[rel='sunday']").find("input[value='1']").attr('checked', "checked");
                     }
 
                     if (hide_service_price == 1) {

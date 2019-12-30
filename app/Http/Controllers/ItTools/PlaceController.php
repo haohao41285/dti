@@ -327,6 +327,44 @@ class PlaceController extends Controller
             $favicon = ImagesHelper::uploadImageToAPI($request->favicon,$pathUpload);
         }
 
+        $arrActiondate = [
+            'mon' => [
+                'start' => $request->mon_start,
+                'end' => $request->mon_end,
+                'closed' => $request->work_mon == 0 ? true : false,
+            ],
+            'tue' => [
+                'start' => $request->tue_start,
+                'end' => $request->tue_end,
+                'closed' => $request->work_tue == 0 ? true : false,
+            ],
+            'wed' => [
+                'start' => $request->wed_start,
+                'end' => $request->wed_end,
+                'closed' => $request->work_wed == 0 ? true : false,
+            ],
+            'thur' => [
+                'start' => $request->thu_start,
+                'end' => $request->thu_end,
+                'closed' => $request->work_thu == 0 ? true : false,
+            ],
+            'fri' => [
+                'start' => $request->fri_start,
+                'end' => $request->fri_end,
+                'closed' => $request->work_fri == 0 ? true : false,
+            ],
+            'sat' => [
+                'start' => $request->sat_start,
+                'end' => $request->sat_end,
+                'closed' => $request->work_sat == 0 ? true : false,
+            ],
+            'sun' => [
+                'start' => $request->sun_start,
+                'end' => $request->sun_end,
+                'closed' => $request->work_sun == 0 ? true : false,
+            ],
+        ];
+
         $arr = [
               'place_name' => $request->business_name,
               'place_phone' => $request->business_phone,
@@ -342,6 +380,7 @@ class PlaceController extends Controller
               'place_worker_mark_bonus' => $request->price_floor,
               'place_url_plugin' => $request->place_url_plugin,
               'place_map_direction' => $request->place_map_direction,
+              'place_actiondate' => json_encode($arrActiondate),
         ];
 
         if(!isset($logo)){
