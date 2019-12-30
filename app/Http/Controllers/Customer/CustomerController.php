@@ -570,8 +570,13 @@ class CustomerController extends Controller
             $end_row = $request->end_row;
             $update_exist = $request->check_update_exist;
             $insert_count = 0;
-
+            
             DB::beginTransaction();
+
+            //GET ALL CUSTOMER IN MAIN_CUSTOMER_TEMPLATE
+            $customers = MainCustomerTemplate::select('*')->get();
+            $customers = collect($customers);
+
             try{
                 $data = \Excel::load($path)->toArray();
 
@@ -585,14 +590,14 @@ class CustomerController extends Controller
                                 ||$value['firstname'] == ""||$value['lastname'] == ""
                                 ||$value['business_phone'] == ""||$value['cell_phone'] == "")
 
-                                return response([
+                                /*return response([
                                     'status' => 'error',
                                     'message' => 'Import Error.(Busines Name, Fullname,Firstname, Lastname, Business Phone, Cell phone not empty. Check again!'
-                                ]);
+                                ]);*/
+                            $check_phone = 0;
                             //CHECK PHONE NUMBER EXIST
-                            $check_phone = MainCustomerTemplate::where('ct_business_phone',$value['business_phone'])->where('ct_cell_phone',$value['cell_phone'])->count();
 
-                            if($check_phone == 0){
+                            if($customers->where('ct_business_phone',$value['business_phone'])->where('ct_cell_phone',$value['cell_phone'])->count()  == 0){
                                 $customer_arr[] = [
                                     'ct_salon_name' => $value['business_name'],
                                     'ct_fullname' => $value['fullname'],
@@ -611,14 +616,14 @@ class CustomerController extends Controller
                         }
                     }
                     if($insert_count == 0){
-                        DB::callback();
+                        // DB::callback();
                         return response([
                             'status' => 'error',
                             'message' => 'Import Error.This file had imported. Check again!'
                         ]);
                     }
 
-                    if(isset($request->check_my_customer)){
+                    /*if(isset($request->check_my_customer)){
                         $customer_id_max = MainCustomerTemplate::max('id');
                         $customer_id = $request->customer_id;
                         $team_id = Auth::user()->user_team;
@@ -648,7 +653,7 @@ class CustomerController extends Controller
                             $user_customer_arr = array_merge($user_customer_arr,$my_customer);
                         }
                         $user_customer_list_after = implode(";", $user_customer_arr);
-                    //UPDATE LIST CUSTOMER
+                         //UPDATE LIST CUSTOMER
                         $update_user = MainUser::where('user_id',$user_id)->update(['user_customer_list'=>$user_customer_list_after]);
 
                         if(!isset($insert_customer) || !isset($update_customer) || !isset($update_user)){
@@ -666,7 +671,7 @@ class CustomerController extends Controller
                                 'message' => 'Success! Import '.$insert_count.' rows'
                             ]);
                         }
-                    }
+                    }*/
                     $insert_customer = MainCustomerTemplate::insert($customer_arr);
                     if(!isset($insert_customer)){
                         DB::callback();
@@ -685,7 +690,7 @@ class CustomerController extends Controller
                     }
                 }
             }catch(\Exception $e){
-                \Log::info($e->getMessage());
+                \Log::info($e);
                 return response([
                             'status' => 'error',
                             'message' => 'Import Error. Check again!'
@@ -1234,5 +1239,16 @@ class CustomerController extends Controller
             return back()->with('error','Create Busines Failed!');
         else
             return redirect()->route('myCustomers')->with('success','Create Business Successfully!');
+    }
+    public function getImportTemplateCustomer(){
+        //PDF file is stored under project/public/download/info.pdf
+        if(file_exists(public_path(). "/file/template_import.xlsx")){
+            $file= public_path(). "/file/template_import.xlsx";
+
+            $headers = array(
+                      'Content-Type: application/pdf',
+                    );
+            return response()->download($file, 'template_import.xlsx', $headers);
+        }
     }
 }

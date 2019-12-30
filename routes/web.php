@@ -68,7 +68,7 @@ Route::group(['middleware' => ['auth']], function () {
          Route::post('move-place','CustomerController@movePlace')->name('move_place');
          Route::get('get_user_form_team','CustomerController@getUserFromTeam')->name('get_user_form_team');
          Route::post('save-my-business','CustomerController@saveMyBusiness')->name('save_my_business');
-
+         Route::get('get-import-template-customer','CustomerController@getImportTemplateCustomer')->name('get_import_template_customer');
 
 
     });
