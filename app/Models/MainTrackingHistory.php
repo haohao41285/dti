@@ -23,7 +23,7 @@ class MainTrackingHistory extends Model
     public $timestamps = false;
 
     public function getFiles(){
-    	return $this->hasMany(MainFile::class,'tracking_id','id')->withDefault();
+    	return $this->hasMany(MainFile::class,'tracking_id','id');
     }
     public function getUserCreated(){
         return $this->belongsTo(MainUser::class,'created_by','user_id')->withDefault();

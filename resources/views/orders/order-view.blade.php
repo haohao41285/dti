@@ -180,21 +180,10 @@
                 <td>{{$task->complete_percent}}</td>
                 <td>{{$task->getUser->user_nickname}}</td>
                 <td class="text-left">{{format_datetime($task->updated_at)}} by {{$task->user_nickname}}</td>
-{{--                <td class="text-primary add-comment" order_id="{{$id}}" created_by="{{$task->created_by}}" task_id="{{$task->id}}" assign_to="{{$task->assign_to}}" ><a href="javascript:void(0)" title="">Add comment</a></td>--}}
             </tr>
             @endforeach
         </tbody>
     </table>
-{{--    <table class="table mt-4 table-bordered table-hover" id="tracking_history" width="100%" cellspacing="0">--}}
-{{--        <thead  class="thead-light">--}}
-{{--            <tr>--}}
-{{--                <th hidden></th>--}}
-{{--                <th style="width:20%">TRACKING HISTORY</th>--}}
-{{--                <th style="width:10%"></th>--}}
-{{--                <th style="width:70%"></th>--}}
-{{--            </tr>--}}
-{{--        </thead>--}}
-{{--    </table>--}}
 </div>
 
 @endsection

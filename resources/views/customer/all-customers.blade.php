@@ -89,22 +89,25 @@
           <form  method="post" id="customer-import-form" enctype="multipart/form-data" name="customer-import-form">
             <div class="col-md-12">
                 <div class="row col-md-12">
-                  <a href="" class="blue">Download an import template spreadsheet</a>
+                  <a href="{{ route('get_import_template_customer') }}" class="blue">Download an import template spreadsheet</a>
                 </div>
                 <div class="row col-md-12">
-                  <input type="file" class="btn btn-sm" id="file" name="file">
-                </div>
+                  <div class="custom-file">
+                    <input type="file" class="custom-file-input form-control form-control-sm" id="file" name="file">
+                    <label class="custom-file-label" for="file">Choose file</label>
+                  </div>
+                </div><br>
                 <div class="row col-md-12">
                   <label class="col-md-6">Begin Row Index</label>
-                  <input type='number' name="begin_row" id="begin_row" class="form-control form-control-sm col-md-6" value="0"/>
+                  <input type='text' onkeypress="return isNumberKey(event)" name="begin_row" id="begin_row" class="form-control form-control-sm col-md-6" value="0"/>
                 </div>
                 <div class="row col-md-12">
                   <label class="col-md-6">End Row Index</label>
-                  <input type='number' name="end_row" id="end_row" class="form-control form-control-sm col-md-6" value="1000"/>
+                  <input type='text' onkeypress="return isNumberKey(event)" name="end_row" id="end_row" class="form-control form-control-sm col-md-6" value="1000"/>
                 </div>
-                <div class="row col-md-12 ">
+                <div class="col-md-12 mt-1 float-right text-right">
+                     <button type="button" class="btn ml-1 btn-primary btn-sm ml-2 float-right submit-form" >Submit</button>
                      <button type="button" class="btn btn-danger btn-sm float-right cancle-import" >Cancle</button>
-                     <button type="button" class="btn btn-primary btn-sm ml-2 float-right submit-form" >Submit</button>
                 </div>
             </div>
         </form>
@@ -554,6 +557,8 @@
       })
       .done(function(data) {
         data = JSON.parse(data);
+        // console.log(data);
+        // return;
         if(data.status == 'success'){
           $("#import-modal").modal('hide');
           table.draw();
@@ -561,7 +566,7 @@
         }
         else
           toastr.error(data.message);
-        console.log(data);
+        // console.log(data);
       })
       .fail(function() {
         console.log("error");
@@ -711,6 +716,10 @@
      $(".cancel-move").click(function () {
          cleanModalPlace();
      });
+     $(".custom-file-input").on("change", function() {
+      var fileName = $(this).val().split("\\").pop();
+      $(this).siblings(".custom-file-label").addClass("selected").html(fileName);
+    });
 });
 </script>
 @endpush
