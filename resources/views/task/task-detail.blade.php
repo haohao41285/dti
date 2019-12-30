@@ -299,18 +299,19 @@
     </table>
 </div>
 <h4 class="border border-info border-top-0 border-right-0 border-left-0 text-info mt-5">ADD NEW COMMENT</h4>
-<form  enctype="multipart/form-data" accept-charset="utf-8">
+<form  enctype="multipart/form-data" accept-charset="utf-8" id="comment-form">
     @csrf()
     <input type="hidden" name="receiver_id" value="{{$task_info->assign_to==\Illuminate\Support\Facades\Auth::user()->user_id?$task_info->created_by:$task_info->assign_to}}">
     <textarea  id="summernote2" class="form-control form-control-sm"  name="note" placeholder="Text Comment..."></textarea>
     <input type="button" class="btn btn-sm btn-secondary mt-2" name="" value="Upload attchment's file" onclick="getFile2()" placeholder=""><br>
     <span id="file_names"></span>
+    <span id="total_file_size"></span>
     <input type="file" hidden id="file_image_list_2" multiple name="file_image_list[]">
-    <p class="text-danger">(The maximum upload file size: 50M<br>Amount of files <= 20 files)</p>
+    <p class="text-danger">- The maximum upload file size: 50 MB<br>- The maximum amount of files: 20 files</p>
     <div style="height: 10px" class="bg-info">
     </div>
     <hr style="border-top: 1px dotted grey;">
-    <p class="text-primary">An email notification will send to {{\Auth::user()->user_email}}</p>
+    <p class="text-primary">An email notification will also send to {{\Auth::user()->user_email}}</p>
      <div class="input-group mb-2 mr-sm-2">
         <div class="input-group-prepend">
           <div class="input-group-text">Add CC:</div>
@@ -340,6 +341,10 @@
         $("#file_image_list_2").click();
     }
 	$(document).ready(function() {
+
+        var file_size_total = 0;
+        var file_image_list = [];
+
         var table = $('#subtask-datatable').DataTable({
             // dom: "lBfrtip",
             paging: false,
@@ -401,6 +406,9 @@
                 toastr.error("Amount of files maximum is 20 files");
                 return;
             }
+            if(file_size_total > 50){
+                toastr.error("Total Files Size maximum is 50 MB!");
+            }
 
             $.ajax({
                 url: '{{route('post-comment')}}',
@@ -442,9 +450,10 @@
         });
         function clearView(){
             $("#email_list_2").val("");
-            // $('#summernote2').summernote('reset');
             $('#summernote2').val("");
             $("#file_names").text("");
+            $("#comment-form")[0].reset();
+            $("#total_file_size").text("");
         }
         $("#send-notification").click(function(){
             $("#form-notification").modal('show');
@@ -508,9 +517,8 @@
         });
         //  GET NAME FILES
         $(document).on('change','#file_image_list_2',function(e){
+            file_size_total = 0;
             file_image_list = Array.from(e.target.files);
-            console.log(file_image_list);
-
             var names = [];
             var name_html = "";
             var stt = 0;
@@ -518,10 +526,14 @@
             for (var i = 0; i < $(this).get(0).files.length; ++i) {
                 stt = i +1;
                 names.push($(this).get(0).files[i].name);
+                file_size_total += parseFloat($(this).get(0).files[i].size/1048576);
                 name_html += "<span>"+"<span class='text-danger '>"+stt+"-</span>"+$(this).get(0).files[i].name+ "</span><br>";
 
             }
             $("#file_names").html(name_html);
+            file_size_total = file_size_total.toFixed(2); 
+            $("#total_file_size").html("<b>TOTAL FILES SIZE: "+file_size_total+" MB<br>TOTAL FILES: "+stt+" files</b>");
+            // console.log(file_size_total);
         });
        /* $(document).on("click",".remove-file",function(){
             var index = $(this).attr('index');
