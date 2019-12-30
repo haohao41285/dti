@@ -298,8 +298,8 @@ class SetupServiceController extends Controller
             $cs_update = MainComboService::insert([
                 'cs_name'=>$cs_name,
                 'cs_service_id'=>$service_id_list,
-                'cs_menu_id'=>$cs_menu_id,
-                'cs_menu_inailso_app' => $cs_menu_inailso_app,
+                'cs_menu_id'=> $cs_type == 1?null:$cs_menu_id,
+                'cs_menu_inailso_app' => $cs_type == 1?null:$cs_menu_inailso_app,
                 'cs_expiry_period' => $request->cs_expiry_period,
                 'cs_price'=>$cs_price,
                 'cs_type'=>$cs_type,
@@ -307,7 +307,7 @@ class SetupServiceController extends Controller
                 'cs_description'=>$cs_description,
                 'cs_assign_to'=>$cs_assign_to,
                 'cs_combo_service_type'=>$cs_combo_service_type,
-                'cs_form_type' => $cs_form_type,
+                'cs_form_type' => $cs_form_type??0,
             ]);
         else{
             if($cs_type == 1)
