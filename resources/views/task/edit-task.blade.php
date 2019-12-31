@@ -58,26 +58,26 @@
                         </select>
                     </th>
                     <th>
-                        @if($task_info->date_start != "")
+                        @if($task_info->date_start != "" && $task_info->date_start != null)
                             <input type="text" id="date_start" disabled class="form-control form-control-sm" value="{{format_date($task_info->date_start)}}" name="date_start">
                         @else
                             <input type="text" id="date_start" class="form-control form-control-sm" value="" name="date_start">
                         @endif
                     </th>
                     <th>
-                        @if($task_info->date_end != "")
+                        @if($task_info->date_end != "" && $task_info->date_end != null)
                             <input type="text" id="date_end" disabled class="form-control form-control-sm" name="date_end" value="{{format_date($task_info->date_end)}}">
                         @else
-                            <input type="text" id="date_end" disabled class="form-control form-control-sm" name="date_end" value="">
+                            <input type="text" id="date_end" class="form-control form-control-sm" name="date_end" value="">
                         @endif
                     </th>
                     <th>
-                        <input type="number" id="complete_percent" class="form-control form-control-sm" value="{{$task_info->complete_percent}}" name="complete_percent">
+                        <input type="text" id="complete_percent" onkeypress="return isNumberKey(event)" class="form-control form-control-sm" value="{{$task_info->complete_percent}}" name="complete_percent">
                     </th>
                     <th>
                         <select name="assign_to" class="form-control form-control-sm text-capitalize">
                             @foreach($user_list as $key => $user)
-                            <option {{$task_info->status==$user->user_id?"selected":""}} value="{{$user->user_id}}" >{{$user->user_nickname}}({{$user->getFullname()}})</option>
+                            <option {{$task_info->assign_to==$user->user_id?"selected":""}} value="{{$user->user_id}}" >{{$user->user_nickname}}({{$user->getFullname()}})</option>
                             @endforeach
                         </select>
                     </th>
@@ -164,6 +164,15 @@
                 return;
             }
             $("#form-task").submit();
+        });
+        $('#complete_percent').on('keydown keyup', function(e){
+            if ($(this).val() > 100 
+                && e.keyCode !== 46 // keycode for delete
+                && e.keyCode !== 8 // keycode for backspace
+               ) {
+               e.preventDefault();
+               $(this).val(100);
+            }
         });
 	});
 </script>
