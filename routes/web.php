@@ -180,6 +180,7 @@ Route::group(['middleware' => ['auth']], function () {
             Route::get('/get-service-place', 'PlaceController@getServicePlace')->name('get-service-place');
             Route::post('/save-expire-date', 'PlaceController@saveExpireDate')->name('save-expire-date');
             Route::post('/change-place-status', 'PlaceController@changePlaceStatus')->name('change_place_status');
+            Route::get('/place-webbuilder/{place_id}', 'PlaceController@placeWebbuilder')->name('place.webbuilder');
         });
 
         Route::group(['prefix' => 'auto-template'], function() {
@@ -198,6 +199,32 @@ Route::group(['middleware' => ['auth']], function () {
             Route::post('delete','DemoPlaceController@delete')->name('demo_place.delete');
         });
     });
+    Route::group(['prefix'=>'tools','namespace'=>'Webbuilder'],function(){
+
+        Route::group(['prefix' => 'service-categories'],function(){
+            Route::get('/','CateServiceController@index')->name('places.cateservice');
+        });
+        Route::group(['prefix' => 'services'],function(){
+            Route::get('/','ServiceController@index')->name('places.services');
+        });
+        Route::group(['prefix' => 'menus'],function(){
+            Route::get('/','MenuController@index')->name('places.menus');
+        });
+        Route::group(['prefix' => 'banners'],function(){
+            Route::get('/','BannerController@index')->name('places.banners');
+        });
+        Route::group(['prefix' => 'contacts'],function(){
+            Route::get('/','ContactController@index')->name('places.contact');
+        });
+        Route::group(['prefix' => 'socail-network'],function(){
+            Route::get('/','SocialController@index')->name('places.socail_network');
+        });
+
+
+    });
+
+
+
 
     Route::group(['prefix' => 'recentlog'], function() {
         Route::get('/', 'RecentLogController@index')->name('recentlog');
