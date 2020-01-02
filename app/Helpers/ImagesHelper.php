@@ -130,6 +130,26 @@ class ImagesHelper
         // \Log::info($content);
         return $content;
     }
+    public static function uploadImageWebbuilder($file, $folder_upload, $place_ip_license) {
 
+        $pathFile = config('app.url_file_write');
+        $name = $file->getClientOriginalName();
+        $name = str_replace(" ", "-", $name);
+        $pathImage = '/images/' . $place_ip_license . '/website/' . $folder_upload;
+        $filename = strtotime('now') . strtolower($name);
+        //dd(config('app.url_file_write'));
+        if (!file_exists($pathFile . $pathImage)) {
+            mkdir($pathFile . $pathImage, 0777, true);
+        }
+        $file->move($pathImage, $filename);
+        // $file->move("tmp-upload", $filename);
+        // $tmpUpload = "tmp-upload/".$filename;
+
+        // self::sendRequestToApi($tmpUpload,$filename,$pathImage);
+        // unlink("tmp-upload/".$filename);
+
+        // die();
+        return $pathImage. '/' . $filename;
+    }
 }
 

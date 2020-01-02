@@ -203,28 +203,48 @@ Route::group(['middleware' => ['auth']], function () {
 
         Route::group(['prefix' => 'service-categories'],function(){
             Route::get('/','CateServiceController@index')->name('places.cateservice');
+            Route::get('edit/{place_id}/{id?}','CateServiceController@edit')->where(['place_id' => '[0-9]+'])->where(['id' => '[0-9]+'])->name('places.cateservice.edit');
+            Route::post('save/{id?}','CateServiceController@save')->name('places.cateservice.save');
+            Route::post('delete','CateServiceController@delete')->name('places.cateservice.delete');
         });
         Route::group(['prefix' => 'services'],function(){
             Route::get('/','ServiceController@index')->name('places.services');
+            Route::get('/edit/{place_id}/{id?}','ServiceController@edit')->where(['place_id' => '[0-9]+'])->where(['id' => '[0-9]+'])->name('places.service.edit');
+            Route::post('/save','ServiceController@save')->name('places.service.save');
+            Route::post('upload-multi-images-service','ServiceController@uploadMultiImages')->name('upload-multi-images-service');
+            Route::get('remove-image-service','ServiceController@removeMultiImage')->name('remove-image-service');
+            Route::get('/export','ServiceController@export')->name('places.service.export');
+            Route::get('/import','ServiceController@import')->name('places.service.import');
+            Route::post('/import','ServiceController@importServices')->name('places.service.post_import');
+            Route::post('upload-image-service','ServiceController@uploadImageService')->name('upload-image-service');
+
+
         });
         Route::group(['prefix' => 'menus'],function(){
             Route::get('/','MenuController@index')->name('places.menus');
+            Route::get('/import','MenuController@import')->name('places.menus.import');
+            Route::post('/import','MenuController@postImport')->name('places.menus.post_import');
+            Route::get('/export','MenuController@export')->name('places.menus.export');
+            Route::get('/edit/{place_id}/{id?}','MenuController@edit')->where(['place_id'=>'[0-9]+'])->where(['id' => '[0-9]+'])->name('places.menus.edit');
+            Route::post('save','MenuController@save')->name('places.menus.save');
+            Route::post('upload-multi-images','MenuController@uploadMultiImages')->name('upload-multi-images');
+            Route::get('remove-image-menu','MenuController@removeMenu')->name('remove-image-menu');
         });
         Route::group(['prefix' => 'banners'],function(){
             Route::get('/','BannerController@index')->name('places.banners');
-        });
-        Route::group(['prefix' => 'contacts'],function(){
-            Route::get('/','ContactController@index')->name('places.contact');
+            Route::get('/{place_id}/{id?}','BannerController@edit')->where(['place_id'=>'[0-9]+'])->where(['id' => '[0-9]+'])->name('places.banners.edit');
+            Route::post('save','BannerController@save')->name('places.banners.save');
+            Route::get('delete-banner','BannerController@destroyBanner')->name('delete-banner')->middleware('permission:delete-banners');
+            Route::get('change-banner-status','BannerController@changeBannerStatus')->name('change-banner-status')->middleware('permission:update-banners');
         });
         Route::group(['prefix' => 'socail-network'],function(){
             Route::get('/','SocialController@index')->name('places.socail_network');
+            Route::get('/list','SocialController@list')->name('places.social_network.list');
+            Route::post('/save','SocialController@save')->name('places.social_network.save');
         });
 
 
     });
-
-
-
 
     Route::group(['prefix' => 'recentlog'], function() {
         Route::get('/', 'RecentLogController@index')->name('recentlog');

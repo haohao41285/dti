@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use yajra\Datatables\Datatables;
 use App\Models\PosPlace;
+use Session;
 
 class SocialController extends Controller
 {
@@ -31,7 +32,15 @@ class SocialController extends Controller
         'Github'
     ];
     public function index(Request $request){
-    	$contact_list = PosPlace::where('place_id',$request->place_id)->first()->place_social_network;
+
+    	$input = $request->all();
+        $social_list = $this->getList($input);
+
+        return Datatables::of($social_list)
+        	->make(true);
+    }
+    public function getList($input){
+        $contact_list = PosPlace::where('place_id',$input['place_id'])->first()->place_social_network;
 
         if($contact_list != ""){
 
@@ -39,17 +48,38 @@ class SocialController extends Controller
 
             $social_array = str_replace(";",",", $social_array);
         }
-        $socialNetworkArr = [];
+        $social_list = [];
         
         foreach ($this->socialNetworkArr as $key => $social) {
 
-            $socialNetworkArr[] = [
-            	'position' =>$key+1,
-            	'name' => $social,
-            	'link' => ($contact_list)?$social_array[$key]:""
+            $social_list[] = [
+                'position' =>$key+1,
+                'name' => $social,
+                'link' => ($contact_list)?$social_array[$key]:""
             ];
         }
-        return Datatables::of($socialNetworkArr)
-        	->make(true);
+        return $social_list;
+    }
+    public function list(Request $request){
+
+        $input = $request->all();
+        $social_list = $this->getList($input);
+
+        if(!isset($social_list))
+            return response(['status'=>'error','message'=>'Failed! Get List Social Network Failed!']);
+
+        return response(['social_list'=>$social_list]);
+    }
+    public function save(Request $request){
+
+        $social_list = implode(';', $request->social_list);
+
+        $place_update = PosPlace::where('place_id',Session::get('place_id'))
+                 ->update(['place_social_network'=>$social_list]);
+
+        if(!isset($place_update))
+            return response(['status'=>'error','message'=>'Failed! Save Social Changes Failed!']);
+
+        return response(['status'=>'success','message'=>'Successfully! Save Changes Successfully!']);
     }
 }

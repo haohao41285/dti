@@ -25,6 +25,7 @@ use Gate;
 use Auth;
 use App\Models\PosCateservice;
 use App\Models\PosService;
+use Session;
 
 
 
@@ -307,6 +308,9 @@ class PlaceController extends Controller
         // $service_category = PosCateservice::where('cateservice_place_id',$place_id)->get();
         // $services = Pos
         $data['place_id'] = $place_id;
+        $place_ip_license = PosPlace::where('place_id',$place_id)->first()->place_ip_license;
+        Session::put('place_id',$place_id);
+        Session::put('place_ip_license',$place_ip_license);
         return view('tools.webbuilder',$data);
     }
 
