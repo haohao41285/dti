@@ -199,6 +199,14 @@ Route::group(['middleware' => ['auth']], function () {
             Route::post('save-demo-place','DemoPlaceController@save')->name('demo_place.save');
             Route::post('delete','DemoPlaceController@delete')->name('demo_place.delete');
         });
+
+        Route::group(['prefix' => 'app-background'], function() {
+            Route::get('/', "AppBackgroundController@index")->name('appBackground');
+            Route::get('/app-datatable', "AppBackgroundController@datatable")->name('appBackground.datatable');
+            Route::post('/save-app', "AppBackgroundController@save")->name('appBackground.save');
+            Route::post('/delete-app', "AppBackgroundController@delete")->name('appBackground.delete');
+
+        });
     });
 
     Route::group(['prefix' => 'recentlog'], function() {
