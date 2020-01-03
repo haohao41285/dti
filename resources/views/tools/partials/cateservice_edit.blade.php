@@ -1,9 +1,6 @@
 @extends('layouts.app')
 @section('content-title', ($id!=0)?'Website Builder | Edit Category':'Website Builder | Add Category')
 @push('styles')
- <link href="{{ asset('plugins/iCheck/skins/flat/green.css') }}" rel="stylesheet">
- <link href="{{ asset('plugins/summernote/summernote-bs4.css') }}" rel="stylesheet">     
- <link href="{{ asset('plugins/dropzone/dist/dropzone.min.css') }}" rel="stylesheet">
  <style>
      .dropzone {
         border: 2px solid #757575;
@@ -95,9 +92,6 @@
 </div>
 @stop
 @push('scripts')
-<script type="text/javascript" src="{{ asset('plugins/iCheck/icheck.min.js') }}"></script>
-<script type="text/javascript" src="{{ asset('plugins/dropzone/dist/dropzone.min.js') }}"></script>
-<script type="text/javascript" src="{{ asset('plugins/summernote/summernote-bs4.js') }}"></script>
 <script type="text/javascript">
   $(document).ready(function(){
         $("#submit").on( "click", function(event){

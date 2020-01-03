@@ -13,7 +13,6 @@ use DataTables;
 use App\Helpers\GeneralHelper;
 use App\Helpers\RunShFileHelper;
 use Validator;
-// use App\Http\Controllers\ItTools\WebsiteThemeController;
 use App\Models\MainTheme;
 use Symfony\Component\Process\Process;
 use Symfony\Component\Process\Exception\ProcessFailedException;
@@ -26,6 +25,7 @@ use Auth;
 use App\Models\PosCateservice;
 use App\Models\PosService;
 use Session;
+use App\Models\PosWebSeo;
 
 
 
@@ -305,8 +305,11 @@ class PlaceController extends Controller
         return response(['status'=>'success','message'=>'Successfully! Change Status Successfully!']);
     }
     public function placeWebbuilder($place_id){
-        // $service_category = PosCateservice::where('cateservice_place_id',$place_id)->get();
-        // $services = Pos
+
+        $data['webSeo'] = PosWebSeo::select('web_seo_descript','web_seo_meta')
+                            ->where('web_seo_place_id',$place_id)
+                            ->first();
+
         $data['place_id'] = $place_id;
         $place_ip_license = PosPlace::where('place_id',$place_id)->first()->place_ip_license;
         Session::put('place_id',$place_id);

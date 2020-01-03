@@ -218,57 +218,57 @@
 @stop
 @push('scripts')
 <script type="text/javascript">
-// Dropzone.autoDiscover = false;    
-// function initializeDropZone() {
-//     /*references: https://smarttutorials.net/ajax-image-upload-using-dropzone-js-normal-form-fields-button-click-using-php/*/
-//     myDropzone = new Dropzone('div#multiUploadImages', {
-//            url: '{{ route('upload-multi-images-service') }}',
-//            headers: {
-//                'X-CSRF-TOKEN': '{!! csrf_token() !!}'
-//            },
-//            addRemoveLinks: true,
-//            autoProcessQueue: true,
-//            uploadMultiple: true,
-//            parallelUploads: 10,
-//            maxFiles: 10,
-//            maxFilesize: 2,
-//            acceptedFiles: ".jpeg,.jpg,.png,.gif",
-//            dictFileTooBig: 'Image is bigger than 2MB',
-//            addRemoveLinks: true,
-//             removedfile: function(file) {
-//                 var name = file.name;
-//                 $('#'+name.replace(/[^A-Z0-9]+/ig,'_')).val('');
-//                 var _ref;
-//                  return (_ref = file.previewElement) != null ? _ref.parentNode.removeChild(file.previewElement) : void 0;        
-//               },
-//              init: function () {
+Dropzone.autoDiscover = false;    
+function initializeDropZone() {
+    /*references: https://smarttutorials.net/ajax-image-upload-using-dropzone-js-normal-form-fields-button-click-using-php/*/
+    myDropzone = new Dropzone('div#multiUploadImages', {
+           url: '{{ route('upload-multi-images-service') }}',
+           headers: {
+               'X-CSRF-TOKEN': '{!! csrf_token() !!}'
+           },
+           addRemoveLinks: true,
+           autoProcessQueue: true,
+           uploadMultiple: true,
+           parallelUploads: 10,
+           maxFiles: 10,
+           maxFilesize: 2,
+           acceptedFiles: ".jpeg,.jpg,.png,.gif",
+           dictFileTooBig: 'Image is bigger than 2MB',
+           addRemoveLinks: true,
+            removedfile: function(file) {
+                var name = file.name;
+                $('#'+name.replace(/[^A-Z0-9]+/ig,'_')).val('');
+                var _ref;
+                 return (_ref = file.previewElement) != null ? _ref.parentNode.removeChild(file.previewElement) : void 0;        
+              },
+             init: function () {
 
-//             var myDropzone = this;
+            var myDropzone = this;
 
-//             this.on('sending', function (file, xhr, formData) {
-//                 // Append all form inputs to the formData Dropzone will POST
-//                 var data = $("#service_form").serializeArray();
-//                 $.each(data, function (key, el) {
-//                     formData.append(el.name, el.value);
-//                 });
-//                 // console.log(formData);
+            this.on('sending', function (file, xhr, formData) {
+                // Append all form inputs to the formData Dropzone will POST
+                var data = $("#service_form").serializeArray();
+                $.each(data, function (key, el) {
+                    formData.append(el.name, el.value);
+                });
+                // console.log(formData);
 
-//             });
-//         },
-//         successmultiple: function (file, response) {
-//             // console.log(file);
-//             // console.log(response);
-//             jQuery.each( response, function( i, val ) {
-//                 var str = val.slice(val.lastIndexOf("/")+1);
+            });
+        },
+        successmultiple: function (file, response) {
+            // console.log(file);
+            // console.log(response);
+            jQuery.each( response, function( i, val ) {
+                var str = val.slice(val.lastIndexOf("/")+1);
                 
-//             $('.list_image').append('<input type="hidden" name="multi_image_add[]" id="'+str.replace(/[^A-Z0-9]+/ig,'_')+'" value="'+val+'">');
-//             });
+            $('.list_image').append('<input type="hidden" name="multi_image_add[]" id="'+str.replace(/[^A-Z0-9]+/ig,'_')+'" value="'+val+'">');
+            });
 
-//             $("#success-icon").attr("class", "fas fa-thumbs-up");
-//             $("#success-text").html(response.message);
-//         },
-//     });
-// }
+            $("#success-icon").attr("class", "fas fa-thumbs-up");
+            $("#success-text").html(response.message);
+        },
+    });
+}
 function remove_image(src_image,id,service_id,e){
     if(window.confirm("Are you sure you want to delete this service ?")){
         $('#'+id).remove();

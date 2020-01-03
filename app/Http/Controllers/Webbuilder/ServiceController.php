@@ -12,6 +12,7 @@ use App\Models\PosPlace;
 use App\Helpers\ImagesHelper;
 use Validator;
 use Session;
+use App\Models\PosMenu;
 
 class ServiceController extends Controller
 {
@@ -87,14 +88,14 @@ class ServiceController extends Controller
                 if($row->enable_status == 1){
                     $checked= "checked";
                 }
-                return "<input type='checkbox' name='service_enable_status' value='".$row->service_id."' class='status js-switch'" .$checked. "/> <input type='hidden' name='service_id' value='".$row->service_id."'>";
+                return "<input type='checkbox' name='service_enable_status' value='".$row->service_id."' status='".$row->enable_status."' class='js-switch'" .$checked. "/>";
             })
             ->addColumn('action2', function($row){
                 $checked1="";
                 if($row->booking_online_status==1){
                     $checked1= "checked";
                 }
-                return "<input type='checkbox' name='booking_online_status' value='".$row->service_id."' class='online_booking js-switch switchery switchery-small'" .$checked1. "/><input type='hidden' name='service_id' value='".$row->service_id."'>";
+                return "<input type='checkbox' name='booking_online_status' value='".$row->service_id."' status='".$row->booking_online_status."' class='online_booking js-switch'" .$checked1. "/>";
             })
             ->editColumn('updated_at', function ($row) 
             {
@@ -108,22 +109,16 @@ class ServiceController extends Controller
             ->make(true);
     }
     //DELETE SERVICE
-    public function deleteService(Request $request)
+    public function delete(Request $request)
     {
-        if(is_array($request->id))
-        {
-            foreach($request->id as $id)
-            {
-                $service = PosService::where('service_place_id',Session::get('place_id'))
-                              ->where('service_id',$id)
-                              ->update(['service_status' => 0]);
-            }
-          
-        }else{
-            $service = PosService::where('service_place_id',Session::get('place_id'))
-                              ->where('service_id',$request->id)
-                              ->update(['service_status' => 0]);
-        }
+        $service_update = PosService::where('service_place_id',Session::get('place_id'))
+                      ->whereIn('service_id',$request->param_id)
+                      ->update(['service_status' => 0]);
+
+        if(!isset($service_update))
+            return response(['status'=>'error','message'=>'Failed! Delete Service Failed!']);
+
+        return response(['status'=>'success','message'=>'Successfully! Delete Service Successfully!']);
     }
 
     public function edit($place_id,$id = 0) {
@@ -276,14 +271,35 @@ class ServiceController extends Controller
 
     public function changeStatus(Request $request)
     {
-        $service_id = $request->id;        
-        $status = $request->status;        
-        
-        PosService::where('service_place_id',Session::get('place_id'))
-                    ->where('service_id',$service_id)
-                    ->update(['enable_status'=>$status]);
+        $param_id = $request->param_id;        
+        $status = $request->status;
+        $type = $request->type;
 
-        return "Change Service Status Succsess!";
+        $status == 1 ? $status_update = 0 : $status_update = 1;
+
+        if($type == 'service_enable_status')   
+        
+            $update = PosService::where('service_place_id',Session::get('place_id'))
+                    ->where('service_id',$param_id)
+                    ->update(['enable_status'=>$status_update]);
+
+        elseif($type == 'booking_online_status')
+            $update = PosService::where([
+                        ['service_place_id',Session::get('place_id')],
+                        ['service_id',$param_id]
+                    ])
+                    ->update(['booking_online_status'=>$status_update]);
+        else
+            $update = PosMenu::where([
+                    ['menu_place_id',Session::get('place_id')],
+                    ['menu_id',$param_id]
+                ])
+                ->update(['enable_status'=>$status_update]);
+                
+        if(!isset($update))
+            return response(['status'=>'error','message'=>'Failed! Change Status Failed!']);
+
+        return response(['status'=>'success','message'=>'Successfully! Change Status Successfully!']);
     }
 
     public function import() {

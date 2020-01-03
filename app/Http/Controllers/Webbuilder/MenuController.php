@@ -51,14 +51,14 @@ class MenuController extends Controller
                     return $parent_item->menu_name ;
                 }else { return ""; }
             })
-            ->addColumn('menu_type',function($menu_item){
+            ->addColumn('enable_status',function($menu_item){
                      $checked = "";
-                if ($menu_item->menu_type == 1) {
+                if ($menu_item->enable_status == 1) {
                     $checked = 'checked';
                 }else {
                     // $checked = 'checked';
                 }
-                    return "<input type='checkbox' value='".$menu_item->menu_id."' id='".$menu_item->menu_id."' class='js-switch show_id' data=".$menu_item->menu_type." ".$checked."/>";
+                    return "<input type='checkbox' value='".$menu_item->menu_id."' name='menu_status' status='".$menu_item->enable_status."' id='".$menu_item->menu_id."' class='js-switch show_id' data=".$menu_item->enable_status." ".$checked."/>";
                 
                 })
             ->editColumn('updated_at',function($row){
@@ -68,11 +68,11 @@ class MenuController extends Controller
                 return '<a href="'.route('places.menus.edit',[Session::get('place_id'),$row->menu_id]).'"  class="btn btn-sm btn-secondary" ><i class="fa fa-edit"></i></a>
                         <a href="#" class="delete-menu btn btn-sm btn-secondary" id="'.$row->menu_id.'"><i class="fa fa-trash"></i></a>';
             })
-            ->rawColumns(['menu_name','menu_type','action'])
+            ->rawColumns(['menu_name','enable_status','action'])
             ->make(true);
     }
     
-    public function edit(Request $request,$id = 0) {
+    public function edit(Request $request,$place_id,$id = 0) {
         $list_menu = PosMenu::where('menu_place_id',Session::get('place_id'))->where('menu_status',1)->get();
         if($id>0){
             $menu_item = PosMenu::where('menu_place_id',Session::get('place_id'))
@@ -218,16 +218,15 @@ class MenuController extends Controller
             }
     }
     
-    public function deleteMenu(Request $request){
+    public function delete(Request $request){
+
        $menu = PosMenu::where('menu_place_id',Session::get('place_id'))
-                    ->where('menu_id',$request->id)
+                    ->where('menu_id',$request->param_id)
                     ->update(['menu_status'=> 0]);
-        //dd($menu);
-        if($menu){
-            return "Delete Menu success";
-        } else {
-            return "Delete Menu Error";
-        }
+
+        if(!isset($menu))
+            return response(['status'=>'error','message'=>'Failed! Delete Failed!']);
+        return response(['status'=>'success','message'=>'Successfully! Delete Successfully!']);
     }
      
 

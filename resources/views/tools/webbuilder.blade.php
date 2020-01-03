@@ -18,10 +18,10 @@
 				      <a class="nav-link active" data-toggle="tab" href="#service_categories">Service Categories</a>
 				    </li>
 				    <li class="nav-item">
-				      <a class="nav-link" data-toggle="tab" href="#services">Servivce</a>
+				      <a class="nav-link service-nav" data-toggle="tab" href="#services">Servivce</a>
 				    </li>
 				    <li class="nav-item">
-				      <a class="nav-link" data-toggle="tab" href="#menus">Menus</a>
+				      <a class="nav-link menu-nav" data-toggle="tab" href="#menus">Menus</a>
 				    </li>
 				    <li class="nav-item">
 				      <a class="nav-link" data-toggle="tab" href="#banners">Banners</a>
@@ -90,8 +90,8 @@
         { data: 'cateservice_id', name: 'cateservice_id' },
         { data: 'cateservice_name', name: 'cateservice_name' },
         { data: 'cateservice_description', name: 'cateservice_description' },
-        { data: 'cateservice_index', name: 'cateservice_index' },
-        { data: 'cateservice_image', name: 'cateservice_image' },
+        { data: 'cateservice_index', name: 'cateservice_index',class:'text-right' },
+        { data: 'cateservice_image', name: 'cateservice_image',class:'text-center' },
         { data: 'updated_at', name:'updated_at'},
         { data: 'action' , name: 'action',  orderable: false, searchable: false }
         ]
@@ -104,7 +104,7 @@
           buttons: [
                 {
                     text: '<i class="fa fa-trash"></i> Delete More',                    
-                    className: "btn-sm delete_button",
+                    className: "btn-sm delete_service_more",
                     
                 },
                 {
@@ -153,27 +153,22 @@
                           { data: 'updated_at', name: 'updated_at',class:'text-center'},
                           { data: 'action' , name: 'action',  orderable: false, searchable: false, class:'text-center' }
                 ],
-                fnDrawCallback:function (oSettings) {                   
-                  var elemsStatus = Array.prototype.slice.call(document.querySelectorAll('.status'));
-                  elemsStatus.forEach(function (html) {
-                      var switcheryStatus = new Switchery(html, {
-                          color: '#0874e8',
-                          className : 'switchery switchery-small',                        
-                      });
-                  });
-
-                var elemsOnlineBooking = Array.prototype.slice.call(document.querySelectorAll('.online_booking'));
-                elemsOnlineBooking.forEach(function (html) {
-                    var switcheryOnlineBooking= new Switchery(html, {
-                        color: '#0874e8',
-                        className : 'switchery switchery-small',                        
-                    });                   
-                    // switcheryOnlineBooking.bindClick = change_online_booking;
-                });
-
+                fnDrawCallback:function (oSettings) {
+                    var elems = Array.prototype.slice.call(document.querySelectorAll('.js-switch'));
+                    elems.forEach(function (html) {
+                        var switchery = new Switchery(html, {
+                            color: '#0874e8',
+                            className : 'switchery switchery-small'
+                        });
+                    });
                 }
                                        
         });
+
+      $(".service-nav").click(function(){
+        servicesTable.ajax.reload(null,false);
+      });
+
  		menuTable = $('#menus_datatable').DataTable({
       // dom: "lBfrtip",
       serverSide: true,
@@ -206,8 +201,8 @@
           { data: 'menu_name', name: 'menu_name' },
           { data: 'parent_name', name: 'parent_name' },
           { data: 'menu_url', name: 'menu_url' },
-          { data: 'menu_index', name: 'menu_index' },
-          { data: 'menu_type', name:'menu_type' },
+          { data: 'menu_index', name: 'menu_index',class:'text-right' },
+          { data: 'enable_status', name:'enable_status',class:'text-center' },
           { data: 'updated_at', name:'updated_at',class:'text-center'},
           { data: 'action' , name: 'action',  orderable: false, searchable: false,class:'text-center' }
       ],
@@ -222,7 +217,10 @@
       }
                                        
         });
- 		bannersTable = $('#banners_datatable').DataTable({
+ 		$(".menu-nav").click(function(){
+      menuTable.ajax.reload(null,false);
+    })
+    bannersTable = $('#banners_datatable').DataTable({
       // dom: "lBfrtip",
       processing: true, //important
       serverSide: true, //important
@@ -403,6 +401,149 @@
       $(".social-cancel").click(function(){
         clearModalSocial();
       });
+      //WEB SEO
+      $(".webseo-submit").click(function(){
+
+        let formData = new FormData($(this).parents('form')[0]);
+        formData.append('_token','{{ csrf_token() }}');
+
+        $.ajax({
+          url: '{{ route('places.web_seo.save') }}',
+          type: 'POST',
+          dataType: 'html',
+          data: formData,
+          contentType: false,
+          processData: false,
+        })
+        .done(function(data) {
+          data = JSON.parse(data);
+          if(data.status === 'error')
+            toastr.error(data.message);
+          else
+            toastr.success(data.message);
+        })
+        .fail(function() {
+          toastr.error("Failed! Save Failed!");
+        });
+      });
+      //BANNER
+      $(document).on('click','.delete-banner',function(){
+
+        var param_id = $(this).attr('id');
+        var url_delete = '{{ route('places.banners.delete') }}';
+        var table_list = bannersTable;
+
+        deleteItem(param_id,url_delete,table_list);
+      });
+      //MENU
+      $(document).on('click','.delete-menu',function(){
+
+        var param_id = $(this).attr('id');
+        var url_delete = '{{ route('places.menus.delete') }}';
+        var table_list = menuTable;
+
+        deleteItem(param_id,url_delete,table_list);
+      });
+      //SERVICE
+      var service_id_array = [];
+      $(document).on('click','.delete-service',function(){
+
+        var service_id = $(this).attr('id');
+        service_id_array.push(service_id);
+        var param_id = [];
+        param_id = service_id_array;
+        var url_delete = '{{ route('places.service.delete') }}';
+        var table_list = servicesTable;
+
+        deleteItem(param_id,url_delete,table_list);
+        service_id_array = [];
+      });
+      //delete service multi
+      $(document).on('click','.delete_service_more',function(){
+
+        service_id_array = [];
+        $('.delete:checkbox:checked').each(function(i){
+          service_id_array.push($(this).val());
+        });
+
+        if(service_id_array.length === 0){
+          toastr.error('Choose Service first!');
+          return false;
+        }else{
+          var param_id = service_id_array;
+          var url_delete = '{{ route('places.service.delete') }}';
+          table_list = servicesTable;
+
+          deleteItem(param_id,url_delete,table_list);
+          service_id_array = [];
+        }
+      });
+      
+      function deleteItem(param_id,url_delete,table_list){
+
+          if(window.confirm("Do you want to delete this item?")){
+            $.ajax({
+              url: url_delete,
+              type: 'POST',
+              dataType: 'html',
+              data: {
+                param_id: param_id,
+                _token: '{{ csrf_token() }}'
+              },
+            })
+            .done(function(data) {
+               data = JSON.parse(data);
+               if(data.status === 'error')
+                toastr.error(data.message);
+              else if(data.status === 'success'){
+                toastr.success(data.message);
+                table_list.draw();
+              }else {
+                toastr.error('Failed!');
+              }
+            })
+            .fail(function() {
+              toastr.error('Failed!');
+            });
+          }else{
+            return false;
+          }
+      }
+      $(document).on('click','.switchery',function(){
+
+        var type = $(this).siblings('input').attr('name');
+        let status = $(this).siblings('input').attr('status');
+        let param_id = $(this).siblings('input').val();
+        
+        $.ajax({
+          url: '{{ route('places.service.change_status') }}',
+          type: 'POST',
+          dataType: 'html',
+          data: {
+            type: type,
+            status: status,
+            param_id: param_id,
+            _token: '{{ csrf_token() }}'
+          },
+        })
+        .done(function(data) {
+          data = JSON.parse(data);
+          if(data.status === 'error')
+            toastr.error(data.message);
+          else{
+            toastr.success(data.message);
+            if(type !== 'menu_status')
+              servicesTable.ajax.reload(null,false);
+            else
+              menuTable.ajax.reload(null,false);
+          }
+          console.log(data);
+        })
+        .fail(function() {
+          console.log("error");
+        });
+        
+      })
 	});
 </script>
 @endpush

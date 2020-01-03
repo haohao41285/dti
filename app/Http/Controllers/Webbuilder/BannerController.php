@@ -182,20 +182,16 @@ class BannerController extends Controller
         }
     }
 
-    public function destroyBanner(Request $request)
+    public function delete(Request $request)
     {
         $banner = PosBanner::where('ba_place_id',Session::get('place_id'))
-                            ->where('ba_id',$request->id)
+                            ->where('ba_id',$request->param_id)
                             ->update(['ba_status'=>0]);
-            if ($banner) {
-                return "Delete Banner Success";
-            }else{
-                return "Delete Banner Error";
-            }
+
+        if(!isset($banner))
+            return response(['status'=>'error','message'=>'Failed! Delete Banner Failed!']);
+
+        return response(['status'=>'success','message'=>'Successfully! Delete Banner Successfully!']);
     }
-
-
-
-
 }
 

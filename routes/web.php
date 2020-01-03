@@ -217,6 +217,8 @@ Route::group(['middleware' => ['auth']], function () {
             Route::get('/import','ServiceController@import')->name('places.service.import');
             Route::post('/import','ServiceController@importServices')->name('places.service.post_import');
             Route::post('upload-image-service','ServiceController@uploadImageService')->name('upload-image-service');
+            Route::post('/delete','ServiceController@delete')->name('places.service.delete');
+            Route::post('/change-status','ServiceController@changeStatus')->name('places.service.change_status');
 
 
         });
@@ -229,18 +231,22 @@ Route::group(['middleware' => ['auth']], function () {
             Route::post('save','MenuController@save')->name('places.menus.save');
             Route::post('upload-multi-images','MenuController@uploadMultiImages')->name('upload-multi-images');
             Route::get('remove-image-menu','MenuController@removeMenu')->name('remove-image-menu');
+            Route::post('/delete','MenuController@delete')->name('places.menus.delete');
         });
         Route::group(['prefix' => 'banners'],function(){
             Route::get('/','BannerController@index')->name('places.banners');
             Route::get('/{place_id}/{id?}','BannerController@edit')->where(['place_id'=>'[0-9]+'])->where(['id' => '[0-9]+'])->name('places.banners.edit');
-            Route::post('save','BannerController@save')->name('places.banners.save');
-            Route::get('delete-banner','BannerController@destroyBanner')->name('delete-banner')->middleware('permission:delete-banners');
-            Route::get('change-banner-status','BannerController@changeBannerStatus')->name('change-banner-status')->middleware('permission:update-banners');
+            Route::post('/save','BannerController@save')->name('places.banners.save');
+            Route::post('/delete','BannerController@delete')->name('places.banners.delete');
+            Route::get('change-status','BannerController@changeStatus')->name('places.banners.change_status');
         });
         Route::group(['prefix' => 'socail-network'],function(){
             Route::get('/','SocialController@index')->name('places.socail_network');
             Route::get('/list','SocialController@list')->name('places.social_network.list');
             Route::post('/save','SocialController@save')->name('places.social_network.save');
+        });
+        Route::group(['prefix' => 'web-seo'],function(){
+            Route::post('/','WebSeoController@save')->name('places.web_seo.save');
         });
 
 

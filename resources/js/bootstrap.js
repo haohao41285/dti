@@ -11,6 +11,11 @@ window.toastr = require('toastr')
 
 window._ = require('lodash');
 
+window.Dropzone = require('dropzone');
+
+window.iCheck  = require('icheck');
+
+
 /**
  * We'll load jQuery and the Bootstrap jQuery plugin which provides support
  * for JavaScript based Bootstrap features such as modals and tabs. This
