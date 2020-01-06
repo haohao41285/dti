@@ -37,11 +37,11 @@
                     <div class="catalog-image-upload">
                         <div class="catalog-image-edit">
                             <input type="hidden" name="ba_image_old" value="{{isset($ba_item->ba_image)? $ba_item->ba_image:old('ba_image')}}" hidden>
-                            <input type='file' id="imageUpload1" name="ba_image" value="{{isset($ba_item->ba_image)}}" data-target="#catalogImagePreview1" accept=".png, .jpg, .jpeg" />
-                            <label for="imageUpload1"></label>
+                            <input type='file' id="imageUpload2" name="ba_image" value="{{isset($ba_item->ba_image)}}" data-target="#catalogImagePreview2" accept=".png, .jpg, .jpeg" />
+                           {{--  <label for="imageUpload1"></label> --}}
                         </div>
                         <div class="catalog-image-preview">
-                            <img id="catalogImagePreview1" style='display:{{(isset($ba_item)&&$ba_item->ba_image!="")?"":"none"}}' src="{{config('app.url_file_view')}}{{isset($ba_item->ba_image)? $ba_item->ba_image:old('ba_image')}}" height="100px" />
+                            <img id="catalogImagePreview2" style='display:{{(isset($ba_item)&&$ba_item->ba_image!="")?"":"none"}}' src="{{config('app.url_file_view')}}{{isset($ba_item->ba_image)? $ba_item->ba_image:old('ba_image')}}" height="100px" />
                         </div>
                     </div>
                 </div>
@@ -80,19 +80,33 @@
 @stop
 @push('scripts')
 <script type="text/javascript">
-function readURL(input) {
-    if (input.files && input.files[0]) {
-        $('img').show();
-        var reader = new FileReader();
-        reader.onload = function(e) {
-            $($(input).attr("data-target")).attr('src', e.target.result);
-            $($(input).attr("data-target")).hide();
-            $($(input).attr("data-target")).fadeIn(650);
+
+    function readURL(input) {
+        if (input.files && input.files[0]) {
+            $('img').show();
+            var reader = new FileReader();
+            reader.onload = function(e) {
+                $($(input).attr("data-target")).attr('src', e.target.result);
+                $($(input).attr("data-target")).hide();
+                $($(input).attr("data-target")).fadeIn(650);
+            }
+            reader.readAsDataURL(input.files[0]);
         }
-        reader.readAsDataURL(input.files[0]);
     }
-}
 $(document).ready(function() {
+
+    $(".catalog-image-preview").on('click',function(){
+        $("#imageUpload2").trigger("click",);
+    });
+
+    $('#imageUpload2').change(function(){            
+     try{
+        var name = $(this)[0].files[0].name;            
+     }catch(err){            
+        $("#catalogImagePreview2").hide();          
+     }        
+    });
+
     if ($("input.checkFlat")[0]) {
         $('input.checkFlat').iCheck({
             radioClass: 'iradio_flat-green',
@@ -100,12 +114,21 @@ $(document).ready(function() {
         });
 
     }
-    $('textarea.texteditor').summernote({ height: 150 });
+    $('textarea.texteditor').summernote({
+        toolbar: [
+        // [groupName, [list of button]]
+        ['style', ['bold', 'italic', 'underline', 'clear']],
+        ['font', ['strikethrough', 'superscript', 'subscript']],
+        ['fontsize', ['fontsize']],
+        ['color', ['color']],
+        ['para', ['ul', 'ol', 'paragraph']],
+        ['height', ['height']]
+      ]
+    });
     $("input[type=file]").change(function() {
         readURL(this);
     });
-});
-$(document).ready(function() {
+
     $("#submit").on("click", function(event) {
         // validate form
         var validatorResult = $("#banner_form")[0].checkValidity();
@@ -118,13 +141,6 @@ $(document).ready(function() {
             //form = document.createElement('#customer_form');
             $('#banner_form').submit();
     });
-
-});
-
-</script>
-<script>
-//check validate
-$(document).ready(function() {
 
     var check = 0;
 

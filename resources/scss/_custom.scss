@@ -162,3 +162,68 @@ td.details-control {
 tr.shown td.details-control {
     background: url('../images/details_close.png') no-repeat center center;
 }
+
+    .catalog-image-preview{
+      cursor: pointer;
+    }
+    .catalog-image-upload .catalog-image-edit {
+      position: absolute;
+      right: 12px;
+      z-index: 1;
+      top: 10px;
+    }
+    .catalog-image-upload .catalog-image-edit input {
+      display: none;
+    }
+    .catalog-image-upload .catalog-image-edit input + label {
+      display: inline-block;
+      width: 34px;
+      height: 34px;
+      margin-bottom: 0;
+      border-radius: 100%;
+      background: #FFFFFF;
+      border: 1px solid transparent;
+      box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.12);
+      cursor: pointer;
+      font-weight: normal;
+      transition: all 0.2s ease-in-out;
+      font-size: 16px;
+    }
+    .catalog-image-upload .catalog-image-edit input + label:hover {
+      background: #f1f1f1;
+      border-color: #d6d6d6;
+    }
+    .catalog-image-upload .catalog-image-edit input + label:after {
+      content: "\f040";
+      font-family: 'FontAwesome';
+      color: #d6d6d6;
+      position: absolute;
+      top: 5px;
+      left: 0;
+      right: 0;
+      text-align: center;
+      margin: auto;
+    }
+    .catalog-image-upload .catalog-image-preview {
+      width: 100%;
+      min-height:100px;
+      position: relative;
+      border: 2px dashed #757575;
+      box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.1);
+    }
+
+    .catalog-image-upload .catalog-image-preview >img {
+      width: 200px;
+      height: 100%;
+      position: relative;
+      border: 2px dashed #757575;
+      box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.1);
+    }
+
+    .catalog-image-upload .catalog-image-preview > div {
+      max-width: 100%;
+      min-width: 100%;
+      background-size: cover;
+      background-repeat: no-repeat;
+      background-position: center;
+    }

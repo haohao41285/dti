@@ -169,7 +169,7 @@
                           <div class="catalog-image-edit">
                               <input type='file' id="imageUpload2"  name="service_image" data-target="#catalogImagePreview2" accept=".png, .jpg, .jpeg" />
                               <input type="hidden" value="{{(isset($service_item))?$service_item->service_image:old('service_image')}}" name="service_image_hidden">
-                              <label for="imageUpload2"></label>
+                              {{-- <label for="imageUpload2"></label> --}}
                           </div>
                           <div class="catalog-image-preview">
                               <img id="catalogImagePreview2"  style='display:{{(isset($service_item)&&$service_item->service_image!="")?"":"none"}}' src="{{config('app.url_file_view')}}{{(isset($service_item))?$service_item->service_image:old('service_image')}}" />
@@ -184,15 +184,17 @@
                 <div class="col-sm-10 col-md-10 pt-4 ">
                     @if(isset($service_item) && isset($service_item->service_list_image))
                     @foreach(explode(";",$service_item->service_list_image) as $key => $image)
-                    <span id="{{$key}}">
-                    <image class="img-rounded" style="max-width:100px;max-height:100px" src={{config('app.url_file_view')}}{{$image}}><i class="glyphicon glyphicon-remove fa-lg"  onclick="remove_image('{{$image}}','{{$key}}','{{$id}}',event)"  style="position: relative;z-index:1111;top: -20px;right: 9px"></i></image>
-                    </span>
+                        @if($image)
+                            <span id="{{$key}}">
+                            <image class="img-rounded" style="max-width:100px;max-height:100px" src={{config('app.url_file_view').$image}}><i class="fa fa-times text-danger"  onclick="remove_image('{{$image}}','{{$key}}','{{$id}}',event)"  style="position: relative;z-index:1111;top: -30px;right: 9px"></i></image>
+                            </span>
+                        @endif
                     @endforeach
                     @endif
                 </div>
                 <div class="col-md-2 col-sm-2"></div> 
                  <div class="col-sm-10 col-md-10 ">
-                    <span class="green">Drag multiple files to the box below for multi upload or click to select files. This is for demonstration purposes only, the files are not uploaded to any server.</span>
+                    <span class="text-primary">Drag multiple files to the box below for multi upload or click to select files. This is for demonstration purposes only, the files are not uploaded to any server.</span>
                     <div id="multiUploadImages" required class="dropzone">
                         
                     </div>
@@ -258,7 +260,7 @@ function initializeDropZone() {
         successmultiple: function (file, response) {
             // console.log(file);
             // console.log(response);
-            jQuery.each( response, function( i, val ) {
+            $.each( response, function( i, val ) {
                 var str = val.slice(val.lastIndexOf("/")+1);
                 
             $('.list_image').append('<input type="hidden" name="multi_image_add[]" id="'+str.replace(/[^A-Z0-9]+/ig,'_')+'" value="'+val+'">');
@@ -330,10 +332,18 @@ $(document).ready(function() {
     $("input[type=file]").change(function() {
         readURL(this);
     });
-    $('#message').summernote({height: 150});
-});
-$(document).ready(function() { 
-    $('#message').summernote({height: 150});
+
+    $('#message').summernote({
+        toolbar: [
+        // [groupName, [list of button]]
+        ['style', ['bold', 'italic', 'underline', 'clear']],
+        ['font', ['strikethrough', 'superscript', 'subscript']],
+        ['fontsize', ['fontsize']],
+        ['color', ['color']],
+        ['para', ['ul', 'ol', 'paragraph']],
+        ['height', ['height']]
+      ]
+    });
      if ($("input.checkFlat")[0]) {
         $('input.checkFlat').iCheck({
             radioClass: 'iradio_flat-green',
@@ -344,76 +354,52 @@ $(document).ready(function() {
     $("input[type=file]").change(function() {
         readURL(this);
     });
-});
-</script>      
-<script>
-    $(document).ready(function(){
-        $(".catalog-image-preview").on('click',function(){
-            $("#imageUpload2").trigger("click",);
-        });
 
-        $('#imageUpload2').change(function(){            
-         try{
-            var name = $(this)[0].files[0].name;            
-         }catch(err){            
-            $("#catalogImagePreview2").hide();          
-         }        
-        });
-        
+    $(".catalog-image-preview").on('click',function(){
+        $("#imageUpload2").trigger("click",);
     });
-</script>
 
-<script>
-    //check validate
-    $(document).ready(function(){
+    $('#imageUpload2').change(function(){            
+     try{
+        var name = $(this)[0].files[0].name;            
+     }catch(err){            
+        $("#catalogImagePreview2").hide();          
+     }        
+    });
 
-        var check = 0;
-        $("input[name='service_price'],input[name='service_price_extra'],input[name='service_duration']").on("blur",function(e){
-            var str = parseInt($(this).val());
-            if(isNaN(str)){
-                $(this).addClass('is-invalid');
-                check = 1;
-            }else {
-                $(this).removeClass('is-invalid').addClass('is-valid');
-                check = 0;
-            }
-            checkSubmit(check);
-        });
-
-        // $("input[name='customer_email']").on("blur",function(e){
-        //     var str = $(this).val();       
-        //     console.log(str.search("@"));
-        //     console.log(str.search("\\."));
-        //     if(str.search("\\@") == -1 || str.search("\\.") == -1){
-        //         check = 1;
-        //         $(this).addClass('is-invalid');
-        //     }else {
-        //         check = 0;
-        //         $(this).removeClass('is-invalid').addClass('is-valid');
-        //     }
-        //     checkSubmit(check);
-        // });
-
-        $("input[name='service_name']").on("blur",function(e){
-            var str = $(this).val();
-            if(str.length <=0){
-                $(this).addClass('is-invalid');
-                check = 1;
-            }else {
-                $(this).removeClass('is-invalid').addClass('is-valid');
-                check = 0;
-            }
-            checkSubmit(check);
-        });
-
-
-        function checkSubmit(check){
-            if(check == 1){
-                $("#submit").attr('disabled',true);
-            } else {
-                $("#submit").attr('disabled',false);
-            }
+    var check = 0;
+    $("input[name='service_price'],input[name='service_price_extra'],input[name='service_duration']").on("blur",function(e){
+        var str = parseInt($(this).val());
+        if(isNaN(str)){
+            $(this).addClass('is-invalid');
+            check = 1;
+        }else {
+            $(this).removeClass('is-invalid').addClass('is-valid');
+            check = 0;
         }
+        checkSubmit(check);
+    });
+    
+    $("input[name='service_name']").on("blur",function(e){
+        var str = $(this).val();
+        if(str.length <=0){
+            $(this).addClass('is-invalid');
+            check = 1;
+        }else {
+            $(this).removeClass('is-invalid').addClass('is-valid');
+            check = 0;
+        }
+        checkSubmit(check);
+    });
+
+
+    function checkSubmit(check){
+        if(check == 1){
+            $("#submit").attr('disabled',true);
+        } else {
+            $("#submit").attr('disabled',false);
+        }
+    }
 
     });
 </script> 

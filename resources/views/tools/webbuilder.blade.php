@@ -165,10 +165,10 @@
                                        
         });
 
-      $(".service-nav").click(function(){
+     /* $(".service-nav").click(function(){
         servicesTable.ajax.reload(null,false);
       });
-
+*/
  		menuTable = $('#menus_datatable').DataTable({
       // dom: "lBfrtip",
       serverSide: true,
@@ -217,9 +217,9 @@
       }
                                        
         });
- 		$(".menu-nav").click(function(){
+ 		/*$(".menu-nav").click(function(){
       menuTable.ajax.reload(null,false);
-    })
+    })*/
     bannersTable = $('#banners_datatable').DataTable({
       // dom: "lBfrtip",
       processing: true, //important
@@ -509,11 +509,11 @@
             return false;
           }
       }
-      $(document).on('click','.switchery',function(){
+      $(document).on('click','.custom-control-input',function(){
 
-        var type = $(this).siblings('input').attr('name');
-        let status = $(this).siblings('input').attr('status');
-        let param_id = $(this).siblings('input').val();
+        var type = $(this).attr('name');
+        let status = $(this).attr('status');
+        let param_id = $(this).val();
         
         $.ajax({
           url: '{{ route('places.service.change_status') }}',

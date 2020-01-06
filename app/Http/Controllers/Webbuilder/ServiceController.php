@@ -79,23 +79,25 @@ class ServiceController extends Controller
             {
                 return '<a href="'.route('places.service.edit',[$place_id,$row->service_id]).'" >'.$row->service_name.'</a>';
             })
-            // ->addColumn('delete', function($row)
-            // {
-            //     return "<input type='checkbox' name='delete[]' class='delete' id='a".$row->service_id."' value='".$row->service_id."'/>";
-            // })
             ->addColumn('action1', function($row){
                 $checked="";
                 if($row->enable_status == 1){
                     $checked= "checked";
                 }
-                return "<input type='checkbox' name='service_enable_status' value='".$row->service_id."' status='".$row->enable_status."' class='js-switch'" .$checked. "/>";
+                return '<div class="custom-control custom-switch">
+                          <input type="checkbox" class="custom-control-input" id="enable_status_'.$row->service_id.'"  name="service_enable_status" value="'.$row->service_id.'" status="'.$row->enable_status.'" '.$checked.'>
+                          <label class="custom-control-label" for="enable_status_'.$row->service_id.'"></label>
+                        </div>';
             })
             ->addColumn('action2', function($row){
                 $checked1="";
                 if($row->booking_online_status==1){
                     $checked1= "checked";
                 }
-                return "<input type='checkbox' name='booking_online_status' value='".$row->service_id."' status='".$row->booking_online_status."' class='online_booking js-switch'" .$checked1. "/>";
+                return '<div class="custom-control custom-switch">
+                          <input type="checkbox" class="custom-control-input" id="booking_online_status'.$row->service_id.'"  name="booking_online_status" value="'.$row->service_id.'" status="'.$row->booking_online_status.'" '.$checked1.'>
+                          <label class="custom-control-label" for="booking_online_status'.$row->service_id.'"></label>
+                        </div>';
             })
             ->editColumn('updated_at', function ($row) 
             {
@@ -137,6 +139,7 @@ class ServiceController extends Controller
     //END GET EDIT SERVICE
     public function save(Request $request)
     {
+        // return $request->all();
         $place_id = Session::get('place_id');
 
         $list_service_cates = PosCateservice::where('cateservice_place_id',$place_id)->get();
@@ -542,7 +545,7 @@ class ServiceController extends Controller
 
                     if ($fileObject->isValid()) {
 
-                        $image_name[] = ImagesHelper::uploadImageDropZone_get_path($fileObject,'service',$this->getCurrentPlaceIpLicense());
+                        $image_name[] = ImagesHelper::uploadImageDropZone_get_path($fileObject,'service',Session::get('place_ip_license'));
                     }
                 }
                 return $image_name;
@@ -561,7 +564,7 @@ class ServiceController extends Controller
 
                 if ($fileObject->isValid()) {
 
-                    $image_name[] = ImagesHelper::uploadImageDropZone_get_path($fileObject,'service',$this->getCurrentPlaceIpLicense());
+                    $image_name[] = ImagesHelper::uploadImageDropZone_get_path($fileObject,'service',Session::get('place_ip_license'));
                 }
             }
             return $image_name;

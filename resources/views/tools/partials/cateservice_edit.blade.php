@@ -8,9 +8,6 @@
     .glyphicon-remove:hover{
         color: red;
     }
-    .catalog-image-preview{
-      cursor: pointer;
-    }
  </style>
 @endpush
 @section('content')
@@ -42,13 +39,11 @@
                            <div class="catalog-image-edit">
                               <input type="hidden" name="cateservice_image_old" value="{{isset($cateservice_item->cateservice_image)? $cateservice_item->cateservice_image:old('cateservice_image')}}">
                                <input type='file' class="cateservice_image" name="cateservice_image" data-target="#catalogImagePreview1" accept=".png, .jpg, .jpeg" />
-                               <label for="cateservice_image"></label>
+                               {{-- <label for="cateservice_image"></label> --}}
                            </div>
                            <div class="catalog-image-preview">
                                <img id="catalogImagePreview1" style='display:{{(isset($cateservice_item)&&$cateservice_item->cateservice_image!="")?"":"none"}}' src ="{{config('app.url_file_view')}}{{isset($cateservice_item->cateservice_image)? $cateservice_item->cateservice_image:old('cateservice_image')}}" height ="100%" /> 
-                                      
                            </div>
-
                     </div>
                  </div>
                </div>  
@@ -60,7 +55,7 @@
                            <div class="catalog-image-edit">
                               <input type="hidden" name="cateservice_icon_image_old" value="{{isset($cateservice_item->cateservice_icon_image)? $cateservice_item->cateservice_icon_image:old('cateservice_icon_image')}}">
                                <input type='file' class="cateservice_image" name="cateservice_icon_image" data-target="#catalogImagePreview2" accept=".png, .jpg, .jpeg" />
-                               <label for="cateservice_image"></label>
+                               {{-- <label for="cateservice_image"></label> --}}
                            </div>
                            <div class="catalog-image-preview">
                                <img id="catalogImagePreview2" style='display:{{(isset($cateservice_item)&&$cateservice_item->cateservice_icon_image!="")?"":"none"}}' src ="{{config('app.url_file_view')}}{{isset($cateservice_item->cateservice_icon_image)? $cateservice_item->cateservice_icon_image:old('cateservice_icon_image')}}" height ="100%" /> 
@@ -84,7 +79,7 @@
                 <label class="control-label col-md-2 col-sm-2 col-xs-12">&nbsp;</label>
                 <div class="col-sm-6 col-md-6  form-group">
                    <button id="submit" class="btn btn-sm btn-primary" >SUBMIT</button>
-                   <button onclick="window.location='{{route('places.cateservice')}}'" class="btn btn-sm btn-default" type="button">CANCEL</button>
+                   <button onclick="window.location='{{route('place.webbuilder',Session::get('place_id'))}}'" class="btn btn-sm btn-danger" type="button">CANCEL</button>
                 </div>            
             </div>  
         </form>
@@ -126,10 +121,19 @@ $(document).ready(function() {
     $("input[type=file]").change(function() {
         readURL(this);
     });
-    $('textarea.texteditor').summernote({height: 150});
+    $('textarea.texteditor').summernote({
+      toolbar: [
+        // [groupName, [list of button]]
+        ['style', ['bold', 'italic', 'underline', 'clear']],
+        ['font', ['strikethrough', 'superscript', 'subscript']],
+        ['fontsize', ['fontsize']],
+        ['color', ['color']],
+        ['para', ['ul', 'ol', 'paragraph']],
+        ['height', ['height']]
+      ]
+    });
 });
-$(document).ready(function() { 
-    $('textarea.texteditor').summernote({height: 150});
+$(document).ready(function() {
      if ($("input.checkFlat")[0]) {
         $('input.checkFlat').iCheck({
             radioClass: 'iradio_flat-green',

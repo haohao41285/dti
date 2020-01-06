@@ -72,11 +72,11 @@
             <div class="row form-group">
                 <label class="col-sm-3 col-md-2">Menu Image</label>
                 <div class="col-sm-10 col-md-10" style="overflow: hidden;">
-                   <div class="catalog-image-upload ">
+                   <div class="catalog-image-upload">
                           <div class="catalog-image-edit">
                             <input type="hidden" name="menu_image_old" value="{{isset($menu_item->menu_image)? $menu_item->menu_image:old('menu_image')}}" hidden>
                               <input type='file' id="menu_image" value="{{isset($menu_item->menu_image)? $menu_item->menu_image:old('menu_image')}}" name="menu_image" data-target="#catalogImagePreview2" accept=".png, .jpg, .jpeg" />
-                              <label for="menu_image"></label>
+                              {{-- <label for="menu_image"></label> --}}
                           </div>
                           
                           <div class="catalog-image-preview">
@@ -93,9 +93,11 @@
                 <div class="col-sm-10 col-md-10 ">
                     @if(isset($menu_item)  && $menu_item->menu_list_image)
                     @foreach(explode(";",$menu_item->menu_list_image) as $key => $image)
-                    <span id="{{$key}}">
-                    <image class="img-rounded" style="max-width:100px;max-height:100px" src={{config('app.url_file_view')}}{{$image}}><i class="glyphicon glyphicon-remove fa-lg" onclick="remove_image('{{$image}}','{{$key}}','{{$id}}',event)" style="position: relative;z-index:1111;top: -20px;right: 9px"></i></image>
-                    </span>
+                        @if($image)
+                            <span id="{{$key}}">
+                            <image class="img-rounded" style="max-width:100px;max-height:100px" src={{config('app.url_file_view').$image}}><i class="fa fa-times text-danger" onclick="remove_image('{{$image}}','{{$key}}','{{$id}}',event)" style="position: relative;z-index:1111;top: -30px;right: 9px"></i></image>
+                            </span>
+                        @endif
                     @endforeach
                     @endif
                 </div>
@@ -130,7 +132,28 @@
 @push('scripts')
 <script type="text/javascript">
     $(document).ready(function() {
-        $("#description").summernote();
+        $("#description").summernote({
+            toolbar: [
+                // [groupName, [list of button]]
+                ['style', ['bold', 'italic', 'underline', 'clear']],
+                ['font', ['strikethrough', 'superscript', 'subscript']],
+                ['fontsize', ['fontsize']],
+                ['color', ['color']],
+                ['para', ['ul', 'ol', 'paragraph']],
+                ['height', ['height']]
+              ]
+        });
+        $(".catalog-image-preview").on('click',function(){
+            $("#menu_image").trigger("click",);
+        });
+
+        $('#menu_image').change(function(){            
+         try{
+            var name = $(this)[0].files[0].name;            
+         }catch(err){            
+            $("#catalogImagePreview2").hide();          
+         }        
+        });
     });
 Dropzone.autoDiscover = false;    
 function initializeDropZone() {
@@ -171,7 +194,7 @@ function initializeDropZone() {
         },
         successmultiple: function (file, response) {
             console.log(response);
-            jQuery.each( response, function( i, val ) {
+            $.each( response, function( i, val ) {
                 var str = val.slice(val.lastIndexOf("/")+1);
                 
             $('.list_image').append('<input type="hidden" name="multi_image_add[]" id="'+str.replace(/[^A-Z0-9]+/ig,'_')+'" value="'+val+'">');
@@ -218,8 +241,7 @@ function readURL(input) {
         reader.readAsDataURL(input.files[0]);
     }    
 }
-$(document).ready(function() { 
-    $('textarea.texteditor').summernote({height: 150});
+$(document).ready(function() {
      if ($("input.checkFlat")[0]) {
         $('input.checkFlat').iCheck({
             radioClass: 'iradio_flat-green',
@@ -230,64 +252,54 @@ $(document).ready(function() {
     $("input[type=file]").change(function() {
         readURL(this);
     });
-});
- $(document).ready(function(){
-        $("#meu_submit").on( "click", function(event){
-            // validate form
-            var validatorResult = $("#menu_form")[0].checkValidity();
-            $("#menu_form").addClass('was-validated');
-            if(!validatorResult){
-                event.preventDefault();
-                event.stopPropagation();           
-                return;
-            }else
-            //form = document.createElement('#customer_form');
-            $('#menu_form').submit();
-
-        });
+    $("#meu_submit").on( "click", function(event){
+        // validate form
+        var validatorResult = $("#menu_form")[0].checkValidity();
+        $("#menu_form").addClass('was-validated');
+        if(!validatorResult){
+            event.preventDefault();
+            event.stopPropagation();           
+            return;
+        }else
+        //form = document.createElement('#customer_form');
+        $('#menu_form').submit();
 
     });
-</script>      
 
-
-<script>
     //check validate
-    $(document).ready(function(){
-
-        var check = 0;
-        $("input[name='menu_index']").on("blur",function(e){
-            var str = $(this).val();
-            if(str.length <=0){
-                $(this).addClass('is-invalid');
-                check = 1;
-            }else {
-                $(this).removeClass('is-invalid').addClass('is-valid');
-                check = 0;
-            }
-            checkSubmit(check);
-        });
-        
-        $("input[name='menu_name']").on("blur",function(e){
-            var str = $(this).val();
-            if(str.length <=0){
-                $(this).addClass('is-invalid');
-                check = 1;
-            }else {
-                $(this).removeClass('is-invalid').addClass('is-valid');
-                check = 0;
-            }
-            checkSubmit(check);
-        });
-
-
-        function checkSubmit(check){
-            if(check == 1){
-                $("#meu_submit").attr('disabled',true);
-            } else {
-                $("#meu_submit").attr('disabled',false);
-            }
+    var check = 0;
+    $("input[name='menu_index']").on("blur",function(e){
+        var str = $(this).val();
+        if(str.length <=0){
+            $(this).addClass('is-invalid');
+            check = 1;
+        }else {
+            $(this).removeClass('is-invalid').addClass('is-valid');
+            check = 0;
         }
+        checkSubmit(check);
+    });
+    
+    $("input[name='menu_name']").on("blur",function(e){
+        var str = $(this).val();
+        if(str.length <=0){
+            $(this).addClass('is-invalid');
+            check = 1;
+        }else {
+            $(this).removeClass('is-invalid').addClass('is-valid');
+            check = 0;
+        }
+        checkSubmit(check);
+    });
 
+
+    function checkSubmit(check){
+        if(check == 1){
+            $("#meu_submit").attr('disabled',true);
+        } else {
+            $("#meu_submit").attr('disabled',false);
+        }
+    }
     });
 </script> 
 @endpush

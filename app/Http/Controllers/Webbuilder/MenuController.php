@@ -37,11 +37,9 @@ class MenuController extends Controller
           ->select('main_user.user_nickname','pos_menu.*')
           ->get();
 
-          // echo $menu_item; die();
-
         return Datatables::of($menu_item)
             ->editColumn('menu_name',function($row){
-                return "<a href='".route('places.menus',$row->menu_id)."'>".$row->menu_name."</a>";
+                return "<a href='".route('places.menus.edit',[Session::get('place_id'),$row->menu_id])."'>".$row->menu_name."</a>";
             })
             ->addColumn('parent_name',function($row){
                 $parent_item = PosMenu::where('menu_id',$row->menu_parent_id)
@@ -55,10 +53,11 @@ class MenuController extends Controller
                      $checked = "";
                 if ($menu_item->enable_status == 1) {
                     $checked = 'checked';
-                }else {
-                    // $checked = 'checked';
                 }
-                    return "<input type='checkbox' value='".$menu_item->menu_id."' name='menu_status' status='".$menu_item->enable_status."' id='".$menu_item->menu_id."' class='js-switch show_id' data=".$menu_item->enable_status." ".$checked."/>";
+                    return '<div class="custom-control custom-switch">
+                          <input type="checkbox" value="'.$menu_item->menu_id.'" name="menu_status" status="'.$menu_item->enable_status.'" id="menu_status_'.$menu_item->menu_id.'" class="custom-control-input show_id" data='.$menu_item->enable_status.' '.$checked.'/>
+                          <label class="custom-control-label" for="menu_status_'.$menu_item->menu_id.'"></label>
+                        </div>';
                 
                 })
             ->editColumn('updated_at',function($row){
@@ -102,26 +101,17 @@ class MenuController extends Controller
                                     ->where('menu_id','!=',$menu_id)
                                     ->where('menu_name',$menu_name)
                                     ->where('menu_status',1)
-                                    // ->first();
                                     ->count();
-                                    // ->count();
         } else {
                 $check_exist = PosMenu::where('menu_place_id',Session::get('place_id'))
                                             ->where('menu_name',$menu_name)
                                             ->where('menu_status',1)
-                                            // ->first();   
                                             ->count();
-                // if($check_exist>0)
-                // {
-                //     $request->session()->flash('error','This title already exists.Please enter another title');
-                //     return redirect()->back();
-                // }
             }
             $rules = [
                 'menu_name'                 => 'required',
                 'menu_index'                => 'required',
                 'menu_image'                => 'mimes:jpeg,jpg,png,gif|max:1024',
-                // 'menu_descript'             => 'required'    
 
             ];
             $messages = [
@@ -129,16 +119,8 @@ class MenuController extends Controller
                 'menu_index.required'        => 'Please enter index',
                 'menu_image.mimes' => 'Uploaded image is not in image format',
                 'menu_image.max' => 'max size image 1Mb',
-                // 'menu_descript.required'    => 'Please enter Description'
             ];
             $validator = Validator::make($request->all(),$rules,$messages);
-            // if ($check_exist>0) {
-            //         // $validator->after(function($validator){
-            //         //     $validator->error()->add('menu_name.exists','This title already exists.Please enter another title');
-            //         // });
-            //         $request->session()->flash('error','This title already exists.Please enter another title');
-            //         return redirect()->back();
-            // }
             if ($validator->fails()) {
                 return redirect()->back()->withErrors($validator)->withInput();
             }else{
@@ -169,7 +151,6 @@ class MenuController extends Controller
                 if($menu_id>0){// UPDATE MENU
                     $imgs = PosMenu::where('menu_place_id',Session::get('place_id'))
                                 ->where('menu_id',$menu_id)->first()->menu_list_image;
-                                // dd($imgs);
                    
                    $PosMenu = PosMenu::where('menu_place_id',Session::get('place_id'))
                                 ->where('menu_id',$menu_id)
@@ -183,14 +164,9 @@ class MenuController extends Controller
                                     'menu_descript'     => $menu_descript,
                                     'menu_type'         => $request->menu_type,
                                 ]);
-                        // dd($request->all());
-                    // if($PosMenu){
                         $request->session()->flash('message','Edit Menu Success');
-                    // }else{
-                    //     $request->session()->flash('error','Edit Menu Error');
-                    // }
-                    // return view('webbuilder.menus',compact('list_menu'));
-                    return redirect()->route("menus");
+
+                    return redirect()->route("place.webbuilder",Session::get('place_id'));
                 }else{ // ADD NEW
                     $idPosMenu = PosMenu::where('menu_place_id',"=",Session::get('place_id'))->max('menu_id') +1;
 
@@ -212,12 +188,10 @@ class MenuController extends Controller
                         }else{
                             $request->session()->flash('error','Insert Menu Error');
                         }
-                    // return view('webbuilder.menus',compact('list_menu'));
                         return redirect()->route("place.webbuilder",Session::get('place_id'));
                 }
             }
     }
-    
     public function delete(Request $request){
 
        $menu = PosMenu::where('menu_place_id',Session::get('place_id'))
@@ -304,9 +278,6 @@ class MenuController extends Controller
                 $sheet->cell('C1', function($cell) {$cell->setValue('Menu Url');   });
                 $sheet->cell('D1', function($cell) {$cell->setValue('Menu Descript');   });
                 $sheet->cell('E1', function($cell) {$cell->setValue('Menu Enable');   });
-                // $sheet->cell('E1', function($cell) {$cell->setValue('Menu Image');   });
-                // $sheet->cell('F1', function($cell) {$cell->setValue('Menu List Image');   });
-                // $sheet->cell('G1', function($cell) {$cell->setValue('By');   });
             });
         })->download("xlsx");
     }
@@ -325,7 +296,6 @@ class MenuController extends Controller
                         $check_menu_exist=PosMenu::where('menu_place_id',Session::get('place_id'))
                                                 ->where('menu_name',$value['menu_name'])->count();
 
-                                                // print_r($check_menu_exist);
                         if($check_menu_exist==0)                 
                         {
                             $arr = [];
@@ -343,7 +313,6 @@ class MenuController extends Controller
                         }
                         else
                         {
-                            // return 1;
                             $arr = [];
                             $idmenu=PosMenu::where('menu_place_id',Session::get('place_id'))
                                                 ->where('menu_name',$value['menu_name'])->first();
@@ -362,10 +331,6 @@ class MenuController extends Controller
                                                 ->update($arr);
                             $update++;
                         }
-                        // // $arr['menu_image'] = $value['menu_image'];
-                        // // $arr['menu_list_image'] = $value['menu_list_image'];
-                        // // dd($arr);
-                        // $menu_id++;
                     
                 }
             }
