@@ -122,10 +122,6 @@ $(document).ready(function($) {
         var team_type_description = $("#team_type_description").val();
         var team_type_name = $("#team_type_name").val();
 
-        if(team_type_description === ""){
-            toastr.error('Description is required!');
-            return;
-        }
         if (team_type_name !== "") {
             $.ajax({
                     url: '{{route('add-team-type')}}',

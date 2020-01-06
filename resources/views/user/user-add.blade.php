@@ -25,7 +25,7 @@
                                 <input required="" class="form-control form-control-sm" type="text" name="user_nickname" value="{{$user->user_nickname??old('user_nickname')}}" placeholder="Nickname" />
                             </div>
                             <div class="col-lg-3">
-                                <input  class="form-control form-control-sm" type="number" name="user_phone" placeholder="Phone"  value="{{$user->user_phone??old('user_phone')}}"/>
+                                <input  class="form-control form-control-sm" type="text" onkeypress="return isNumberKey(event)" name="user_phone" placeholder="Phone" id="user_phone"  value="{{$user->user_phone??old('user_phone')}}"/>
                             </div>
                         </div>
                         <div class="form-group row">
@@ -53,6 +53,7 @@
                             <label class="col-lg-3 col-form-label form-control-label">New Password</label>
                             <div class="col-lg-9">
                                 <input class="form-control form-control-sm" type="password" id="new_password" value="" name="new_password" />
+                                <span class="text-danger">*Password at least 6 characters</span>
                             </div>
                         </div>
                         <div class="form-group row">
@@ -112,6 +113,12 @@
                     message_error.text("");
                 }else
                     message_error.text("Password not match!");
+            });
+            $("#user_phone").keypress(function(event) {
+                let user_phone = $(this).val();
+                if(user_phone.length > 9){
+                    return false;
+                }
             });
         });
     </script>

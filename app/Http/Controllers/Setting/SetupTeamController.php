@@ -128,16 +128,23 @@ class SetupTeamController  extends Controller
 	}
 	public function deleteTeam(Request $request)
 	{
-		$team_id = $request->team_id;
-		if(!isset($team_id))
-			return response(['status'=>'error','message'=>'Error!']);
+		try{
+			$team_id = $request->team_id;
+			if(!isset($team_id))
+				return response(['status'=>'error','message'=>'Error!']);
+			//CHECK USER INSIDE TEAM
+			$user_list_count = MainUser::active()->where('user_team',$team_id)->count();
+			if($user_list_count > 0)
+				return response(['status'=>'error','message'=>'Error! Remove user inside team before delete team.']);
 
-		$delete_team = MainTeam::where('id',$team_id)->update(['team_status'=>0]);
+			$delete_team = MainTeam::where('id',$team_id)->delete();
 
-		if(!isset($delete_team))
-			return response(['status'=>'error','message'=>'Deleting Error!']);
-		else
 			return response(['status'=>'success','message'=>'Deleting Success!']);
+
+		}catch(\Exception $e){
+			return response(['status'=>'error','message'=>'Deleting Error!']);
+			\Log::info($e);
+		}
 	}
 	public function getMemberList(Request $request)
 	{
@@ -252,9 +259,11 @@ class SetupTeamController  extends Controller
 			$status = 0;
 		else
 			$status = 1;
-		$update_tt = MainTeamType::where('id',$id)->update(['team_type_status'=>$status]);
+		$team_type_info = MainTeamType::find($id);
+		$update_tt = $team_type_info->update(['team_type_status'=>$status]);
+		$update_team =  $team_type_info->getTeams()->update(['team_status'=>$status]);
 
-		if(!isset($update_tt))
+		if(!isset($update_tt) || !isset($update_team))
 			return response(['status'=>'error','message'=>'Error. Check again!']);
 		else
 			return response(['status'=>'success','message'=>'Success!']);
@@ -262,11 +271,9 @@ class SetupTeamController  extends Controller
 	public function addTeamType(Request $request)
 	{
 	    $rule = [
-	        'team_type_description' => 'required',
 	        'team_type_name' => 'required',
         ];
 	    $message = [
-	        'team_type_description.required' => 'Description is required',
             'team_type_name.required' => 'Name is required'
         ];
 	    $validattor = Validator::make($request->all(),$rule,$message);

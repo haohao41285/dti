@@ -108,9 +108,7 @@ Role List
 	    	var gu_descript = $("#gu_descript").val();
 	    	var gu_name = $("#gu_name").val();
 
-	    	if(gu_descript === "")
-	    		toastr.error('Description is required!');
-	    	else if(gu_name === "")
+	    	if(gu_name === "")
 	    		toastr.error('Name is required!');
 	    	else{
 	    		$.ajax({
