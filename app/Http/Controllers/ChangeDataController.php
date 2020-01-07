@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\MainUser;
 use App\Models\MainComboService;
+use App\Models\MainCustomer;
+use App\Models\MainCustomerTemplate;
 use DB;
 
 class ChangeDataController extends Controller
@@ -40,7 +42,7 @@ class ChangeDataController extends Controller
     	MainComboService::truncate();
 
     	$combo_service_old = DB::table('services')->get();
-    	
+
     	$service_arr = [];
 
     	foreach ($combo_service_old as $key => $service) {
@@ -72,5 +74,59 @@ class ChangeDataController extends Controller
     		];
     	}
     	MainComboService::insert($service_arr);
+    }
+    public function transferCustomer(){
+
+    	MainCustomerTemplate::truncate();
+    	// MainCustomer::truncate();
+
+    	// $customer_arr = [];
+
+    	$old_customers = DB::table('customers')->get();
+
+    	foreach ($old_customers->chunk(1000) as $key => $customers) {
+    		
+    	$customer_template_arr = [];
+
+    		foreach ($customers as $key => $customer) {
+    			//ADD ALL CUSTOMER TEAMPLATE ARRAY
+	    		$customer_template_arr[] = [
+	    			'id' => $customer->id,
+	    			'ct_salon_name' => $customer->business==""?'salon':$customer->business,
+	    			'ct_fullname' => $customer->fullname, 
+	    			'ct_firstname' => $customer->fullname,
+					'ct_lastname' => "no",
+					'ct_business_phone' => $customer->business_phone,
+					'ct_cell_phone' => $customer->cell_phone,
+					'ct_email' => $customer->email,
+					'ct_address' => $customer->address,
+					'ct_website' => $customer->website,
+					'ct_note' => $customer->notes,
+					'created_by' => $customer->created_by,
+					'updated_by' => $customer->modified_by,
+					'created_at' => $customer->created_date,
+					'ct_active' => 1
+	    		];
+	    		//ADD CUSTOMER ARRAY
+	    		/*if($customer->status_id == 2)
+
+		    		$customer_arr[] = [
+		    			'customer_id' => $customer->id,
+						'customer_lastname' => 'on',
+						'customer_firstname' => $customer->fullname,
+						'customer_email' => $customer->email,
+						'customer_phone' => $customer->cell_phone,
+						'customer_address' => $customer->address,
+						'customer_city' => $customer->city,
+						'customer_zip' => $customer->zipcode,
+						'customer_state' => $customer->state,
+						'customer_status' => 1,
+						'customer_customer_template_id' => $customer->id,
+						'created_at' => $customer->created_date,
+		    		];*/
+    		}
+    	MainCustomerTemplate::insert($customer_template_arr);
+    	}
+    	// MainCustomer::insert($customer_arr);
     }
 }

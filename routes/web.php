@@ -470,3 +470,4 @@ Route::group(['middleware' => ['auth']], function () {
 
 Route::get('transfer-user','ChangeDataController@transferUser');
 Route::get('transfer-service','ChangeDataController@transferService');
+Route::get('transfer-customer','ChangeDataController@transferCustomer');
