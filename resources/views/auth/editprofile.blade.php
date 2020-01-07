@@ -30,7 +30,7 @@
                      <input required="" class="form-control form-control-sm" type="text" name="user_nickname" value="{{$user->user_nickname}}" placeholder="Fullname" />
                   </div>
                   <div class="col-lg-3">
-                     <input disabled="" class="form-control form-control-sm" type="number"  value="{{$user->user_phone}}"/>
+                     <input disabled="" class="form-control form-control-sm" type="text" onkeypress="return isNumberKey(event)"  value="{{$user->user_phone}}"/>
                   </div>
                </div>
                <div class="form-group row">

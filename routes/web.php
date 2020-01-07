@@ -464,3 +464,9 @@ Route::group(['middleware' => ['auth']], function () {
         });
     });
 });
+
+
+//Change data from csr
+
+Route::get('transfer-user','ChangeDataController@transferUser');
+Route::get('transfer-service','ChangeDataController@transferService');
