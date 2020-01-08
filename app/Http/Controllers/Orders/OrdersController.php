@@ -203,6 +203,8 @@ class OrdersController extends Controller
         }
         $cs_id = MainCustomerService::where('cs_place_id', $place_id)->max('cs_id') + 1;
 
+        $request->service_price_hidden == 0?$status = 1:$status = 0;
+
         //INSERT MAIN_COMBO_SERVICE_BOUGHT
         $order_history_arr = [
             'csb_customer_id' => $customer_id,
@@ -210,7 +212,7 @@ class OrdersController extends Controller
             'csb_amount' => $request->service_price_hidden,
             'csb_charge' => $request->payment_amount_hidden,
             'csb_cashback' => 0,
-            'csb_status' => 0,
+            'csb_status' => $status,
             'created_by' => Auth::user()->user_id,
         ];
         //CREATE NEW PLACE IN POS_PLACE, NEW USER IN POS_USER IF CHOOSE NEW PLACE
