@@ -19,6 +19,9 @@
     height: 25px!important;
     width: 40px!important;
 }
+.note-popover{
+	display: none;
+}
 </style>
 
 @stack('styles')

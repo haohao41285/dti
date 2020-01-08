@@ -49,6 +49,11 @@ class UserController extends Controller
     	],[
 
     	]);
+        //CHECK USER NICKNAME
+        $check_user = MainUser::where([['user_id','!=',$id],['user_nickname',$request->user_nickname]])->count();
+        if($check_user > 0)
+            return back()->with(['error'=>'User Nickname has taken, Choose Another']);
+
     	$user = MainUser::where('user_id',$id)->first();
         $user->user_nickname = $request->user_nickname;
     	$user->user_firstname = $request->user_firstname;

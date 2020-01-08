@@ -2,9 +2,10 @@
 @section('content-title')
     Customers Management
 @endsection
-@section('styles')
-
-@endsection
+@push('style')
+  <style>
+  </style>
+@endpush
 @section('content')
 
     @if(\Illuminate\Support\Facades\Auth::user()->user_group_id != 1)
@@ -161,10 +162,12 @@
  $(document).ready(function() {
     $("#created_at").datepicker({});
     var table = $('#dataTableAllCustomer').DataTable({
-       // dom: "lBfrtip",
-       order:[[7,'desc']],
-        responsive:false,
-       buttons: [
+      // dom: "lifrtp ",
+      order:[[7,'desc']],
+      responsive:false,
+      serverSide: true,
+      processing: true,
+      buttons: [
 
            {
                text: '<i class="fas fa-exchange-alt"></i> Move Customer',
@@ -185,17 +188,18 @@
               }
            }
        ],
-       processing: true,
-       serverSide: true,
        ajax:{ url:"{{ route('customersDatatable') }}",
+        type: 'POST',
        data: function (d) {
           d.start_date = $("#start_date").val();
           d.end_date = $("#end_date").val();
           d.address = $("#address").val();
           d.status_customer = $("#status-customer :selected").val();
           d.team_id = $("#team_id :selected").val();
+          d._token = '{{ csrf_token() }}';
             }
         },
+        columnDefs: [ {'targets': 0, 'searchable': false} ],
        columns: [
 
                 { data: 'id', name: 'id',class:'text-center w-10' },

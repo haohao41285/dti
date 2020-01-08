@@ -1,0 +1,1 @@
+ALTER TABLE `main_team_type` CHANGE `team_type_description` `team_type_description` TEXT CHARACTER SET utf8 COLLATE utf8_unicode_ci NULL; 

@@ -323,7 +323,16 @@ class TaskController extends Controller
         }
     }
     public function saveTask(Request $request){
-
+        // return $request->all();
+        if($request->complete_percent != null){
+            $rule = [
+                'complete_percent' => 'integer|between:0,100',
+            ];
+            $validator = Validator::make($request->all(),$rule);
+            if($validator->fails())
+                return back()->withErrors($validator)->withInput();
+        }
+            
         if(Gate::denies('permission','create-new-task'))
             return doNotPermission();
 
@@ -424,6 +433,39 @@ class TaskController extends Controller
             elseif($input['complete_percent'] > 0 && $input['complete_percent'] < 100)
                 $input['status'] = 2;
             else $input['status'] = 3;
+
+            //CHECK SOMETHING CHANGE AFTER EDIT TASK
+            $content = "";
+            if(isset($request->subject) && $request->subject != $task_info->subject)
+                $content .= "Subject has been change from: ".$task_info." to ".$request->subject."<br>";
+
+            if(isset($request->category) && $request->category != $task_info->category)
+                $content .= "Category has change from: <span class='text-danger'>".getCategory()[$task_info->category]."</span> to <span class='text-danger'>".getCategory()[$request->category]."</span><br>";
+
+            if(isset($request->priority) && $request->priority != $task_info->priority)
+                $content .= "Priority has change from: <span class='text-danger'>".getPriorityTask()[$task_info->priority]."</span> to <span class='text-danger'>".getPriorityTask()[$request->priority]."</span><br>";
+
+            if(isset($request->status) && $request->status != $task_info->status)
+                $content .= "Status has been change from: <span class='text-danger'>".getStatusTask()[$task_info->status]."</span> to <span class='text-danger'>".getStatusTask()[$request->status]."</span><br>";
+
+            if(isset($request->date_start) && format_date_db($request->date_start) != $task_info->date_start)
+                $content .= "Date Start has been change from: <span class='text-danger'>".$task_info->date_start."</span> to <span class='text-danger'>".format_date_db($request->date_start)."</span><br>";
+
+            if(isset($request->date_end) && format_date_db($request->date_end) != $task_info->date_end)
+                $content .= "Date End has been change from: <span class='text-danger'>".$task_info->date_end."</span> to <span class='text-danger'>".format_date_db($request->date_end)."</span><br>";
+
+            if(isset($request->complete_percent) && $request->complete_percent != $task_info->complete_percent)
+                $content .= "Complete Percent has been change from: <span class='text-danger'>".$task_info->complete_percent."</span> to <span class='text-danger'>".$request->complete_percent."</span><br>";
+
+            if(isset($request->assign_to) && $request->assign_to != $task_info->assign_to){
+                $user_list = MainUser::all();
+                $user_list = collect($user_list);
+                $old_assign = $user_list->where('user_id',$task_info->assign_to)->first()->user_nickname;
+                $new_assign =  $user_list->where('user_id',$request->assign_to)->first()->user_nickname;
+                $content .= "Assign has been change from: <span class='text-danger'>".$old_assign."</span> to <span class='text-danger'>".$new_assign."</span><br>";
+            }
+
+
             //UPDATE TASK
             $input['updated_by'] = Auth::user()->user_id;
             $task_save = $task_info->update($input);
@@ -433,7 +475,7 @@ class TaskController extends Controller
                 'order_id' => $task_info->order_id,
                 'task_id' => $request->id,
                 'created_by' => Auth::user()->user_id,
-                'content' => $request->note,
+                'content' => $request->note."<br>".$content,
             ];
             $tracking_history = MainTrackingHistory::create($task_tracking);
 

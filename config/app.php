@@ -240,10 +240,10 @@ return [
     /*
      * File URL to view
      */
-    'url_file_view' => env( 'URL_FILE_VIEW', 'C:/xampp/htdocs/upload'),
+    'url_file_view' => env( 'URL_FILE_VIEW', 'http://localhost/uploads/'),    
     /*
      * URL Path to save file
      */
-    'url_file_write' => env( 'URL_FILE_WRITE', 'C:/xampp/htdocs/upload/'),
+    'url_file_write' => env( 'URL_FILE_WRITE', 'C:/xampp/htdocs/uploads/'),
 
 ];

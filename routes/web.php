@@ -38,7 +38,7 @@ Route::group(['middleware' => ['auth']], function () {
          Route::get('merchants', 'CustomerController@listMerchant')->name('merchants');
          Route::get('add', 'CustomerController@addCustomer')->name('addCustomer');
          Route::get('edit', 'CustomerController@editCustomer')->where(['id'=>'[0-9]+'])->name('editCustomer');
-         Route::get('customers/datatable', 'CustomerController@customersDatatable')->name('customersDatatable');
+         Route::post('customers/datatable', 'CustomerController@customersDatatable')->name('customersDatatable');
          Route::get('get-customer-detail', 'CustomerController@getCustomerDetail')->name('get-customer-detail');
          Route::get('add-customer-to-my', 'CustomerController@addCustomerToMy')->name('add-customer-to-my');
          Route::get('get-my-customer', 'CustomerController@getMyCustomer')->name('get-my-customer');
@@ -182,6 +182,7 @@ Route::group(['middleware' => ['auth']], function () {
             Route::post('/change-place-status', 'PlaceController@changePlaceStatus')->name('change_place_status');
 
             Route::post('save-detail', 'PlaceController@saveDetail')->name('saveDetailPlace');
+            Route::get('/place-webbuilder/{place_id}', 'PlaceController@placeWebbuilder')->name('place.webbuilder');
         });
 
         Route::group(['prefix' => 'auto-template'], function() {
@@ -199,6 +200,58 @@ Route::group(['middleware' => ['auth']], function () {
             Route::post('save-demo-place','DemoPlaceController@save')->name('demo_place.save');
             Route::post('delete','DemoPlaceController@delete')->name('demo_place.delete');
         });
+    });
+    Route::group(['prefix'=>'tools','namespace'=>'Webbuilder'],function(){
+
+        Route::group(['prefix' => 'service-categories'],function(){
+            Route::get('/','CateServiceController@index')->name('places.cateservice');
+            Route::get('edit/{place_id}/{id?}','CateServiceController@edit')->where(['place_id' => '[0-9]+'])->where(['id' => '[0-9]+'])->name('places.cateservice.edit');
+            Route::post('save/{id?}','CateServiceController@save')->name('places.cateservice.save');
+            Route::post('delete','CateServiceController@delete')->name('places.cateservice.delete');
+        });
+        Route::group(['prefix' => 'services'],function(){
+            Route::get('/','ServiceController@index')->name('places.services');
+            Route::get('/edit/{place_id}/{id?}','ServiceController@edit')->where(['place_id' => '[0-9]+'])->where(['id' => '[0-9]+'])->name('places.service.edit');
+            Route::post('/save','ServiceController@save')->name('places.service.save');
+            Route::post('upload-multi-images-service','ServiceController@uploadMultiImages')->name('upload-multi-images-service');
+            Route::get('remove-image-service','ServiceController@removeMultiImage')->name('remove-image-service');
+            Route::get('/export','ServiceController@export')->name('places.service.export');
+            Route::get('/import','ServiceController@import')->name('places.service.import');
+            Route::post('/import','ServiceController@importServices')->name('places.service.post_import');
+            Route::post('upload-image-service','ServiceController@uploadImageService')->name('upload-image-service');
+            Route::post('/delete','ServiceController@delete')->name('places.service.delete');
+            Route::post('/change-status','ServiceController@changeStatus')->name('places.service.change_status');
+
+
+        });
+        Route::group(['prefix' => 'menus'],function(){
+            Route::get('/','MenuController@index')->name('places.menus');
+            Route::get('/import','MenuController@import')->name('places.menus.import');
+            Route::post('/import','MenuController@postImport')->name('places.menus.post_import');
+            Route::get('/export','MenuController@export')->name('places.menus.export');
+            Route::get('/edit/{place_id}/{id?}','MenuController@edit')->where(['place_id'=>'[0-9]+'])->where(['id' => '[0-9]+'])->name('places.menus.edit');
+            Route::post('save','MenuController@save')->name('places.menus.save');
+            Route::post('upload-multi-images','MenuController@uploadMultiImages')->name('upload-multi-images');
+            Route::get('remove-image-menu','MenuController@removeMenu')->name('remove-image-menu');
+            Route::post('/delete','MenuController@delete')->name('places.menus.delete');
+        });
+        Route::group(['prefix' => 'banners'],function(){
+            Route::get('/','BannerController@index')->name('places.banners');
+            Route::get('/{place_id}/{id?}','BannerController@edit')->where(['place_id'=>'[0-9]+'])->where(['id' => '[0-9]+'])->name('places.banners.edit');
+            Route::post('/save','BannerController@save')->name('places.banners.save');
+            Route::post('/delete','BannerController@delete')->name('places.banners.delete');
+            Route::get('change-status','BannerController@changeStatus')->name('places.banners.change_status');
+        });
+        Route::group(['prefix' => 'socail-network'],function(){
+            Route::get('/','SocialController@index')->name('places.socail_network');
+            Route::get('/list','SocialController@list')->name('places.social_network.list');
+            Route::post('/save','SocialController@save')->name('places.social_network.save');
+        });
+        Route::group(['prefix' => 'web-seo'],function(){
+            Route::post('/','WebSeoController@save')->name('places.web_seo.save');
+        });
+
+
     });
 
     Route::group(['prefix' => 'recentlog'], function() {
@@ -413,3 +466,13 @@ Route::group(['middleware' => ['auth']], function () {
         });
     });
 });
+
+
+//Change data from csr
+
+Route::get('transfer-user','ChangeDataController@transferUser');
+Route::get('transfer-service','ChangeDataController@transferService');
+Route::get('transfer-customer','ChangeDataController@transferCustomer');
+Route::get('transfer-customer-status','ChangeDataController@transferCustomerStatus');
+Route::get('transfer-customer-team-type','ChangeDataController@transferCustomerTeamType');
+
