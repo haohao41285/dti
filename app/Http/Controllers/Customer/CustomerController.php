@@ -99,8 +99,8 @@ class CustomerController extends Controller
         $status_customer = $request->status_customer;
 
         $customers = MainCustomerTemplate::leftjoin('main_user',function($join){
-                                            $join->on('main_customer_template.created_by','main_user.user_id');
-                                        });
+            $join->on('main_customer_template.created_by','main_user.user_id');
+        });
 
         if($start_date != "" && $end_date != ""){
 
@@ -113,12 +113,12 @@ class CustomerController extends Controller
         if($address != ""){
             $customers->where('ct_address','LIKE',"%".$address."%");
         }
-            $customers = $customers->orderBy('main_customer_template.created_at','ASC')
-                        ->select('main_user.user_nickname','main_customer_template.*')
+            $list_customers = $customers->orderBy('main_customer_template.created_at','ASC')
+                        ->select('main_user.user_nickname','main_customer_template.ct_salon_name','main_customer_template.ct_fullname','main_customer_template.ct_business_phone','main_customer_template.ct_cell_phone','main_customer_template.ct_note','main_customer_template.created_by','main_customer_template.created_at','main_customer_template.id')
                         ->get();
 
         //GET LIST TEAM CUSTOMER LIST
-        if(isset($request->team_id) && $request->team_id != "")
+        if(is_null($request->team_id))
             $team_id = $request->team_id;
         else
             $team_id = Auth::user()->user_team;
@@ -127,18 +127,47 @@ class CustomerController extends Controller
         $team_customer_status = $team_customer_status->team_customer_status;
 
         $customer_status_arr = json_decode($team_customer_status,TRUE);
+        // return $list_customers;
 
-        foreach ($customers as $key => $customer) {
+        foreach ($list_customers->chunk(1000) as $customers) {
+            foreach ($customers as $key => $customer) {
 
-            if(!isset($customer_status_arr[$customer->id])){
-                $customer_status_arr[$customer->id] = 3;
-                $ct_status = 'New Arrivals';
-            }
-            else
-                $ct_status = GeneralHelper::getCustomerStatus($customer_status_arr[$customer->id]);
-            //ADMIN CAN SEE ALL
-            if(Gate::allows('permission','customer-admin')){
-                if($status_customer != "" && intval($customer_status_arr[$customer->id]) ==  intval($status_customer)){
+                if(!isset($customer_status_arr[$customer->id])){
+                    $customer_status_arr[$customer->id] = 3;
+                    $ct_status = 'New Arrivals';
+                }
+                else
+                    $ct_status = GeneralHelper::getCustomerStatus($customer_status_arr[$customer->id]);
+                //ADMIN CAN SEE ALL
+                if(Gate::allows('permission','customer-admin')){
+                    if($status_customer != "" && intval($customer_status_arr[$customer->id]) ==  intval($status_customer)){
+                        $customer_arr[] = [
+                            'id' => $customer->id,
+                            'ct_salon_name' => $customer->ct_salon_name,
+                            'ct_fullname' => $customer->ct_fullname,
+                            'ct_business_phone' => $customer->ct_business_phone,
+                            'ct_cell_phone' => $customer->ct_cell_phone,
+                            'ct_status' => $ct_status,
+                            'created_at' => $customer->created_at,
+                            'user_nickname' => $customer->user_nickname,
+                            'ct_note' => $customer->ct_note
+                        ];
+                    }
+                    if($status_customer == ""){
+                    $customer_arr[] = [
+                        'id' => $customer->id,
+                        'ct_salon_name' => $customer->ct_salon_name,
+                        'ct_fullname' => $customer->ct_fullname,
+                        'ct_business_phone' => $customer->ct_business_phone,
+                        'ct_cell_phone' => $customer->ct_cell_phone,
+                        'ct_status' => $ct_status,
+                        'created_at' => $customer->created_at,
+                        'user_nickname' => $customer->user_nickname,
+                        'ct_note' => $customer->ct_note
+                    ];
+                    }
+                }
+                elseif(Gate::denies('permission','customer-admin') && $ct_status = 'New Arrivals'){
                     $customer_arr[] = [
                         'id' => $customer->id,
                         'ct_salon_name' => $customer->ct_salon_name,
@@ -151,34 +180,10 @@ class CustomerController extends Controller
                         'ct_note' => $customer->ct_note
                     ];
                 }
-                if($status_customer == ""){
-                $customer_arr[] = [
-                    'id' => $customer->id,
-                    'ct_salon_name' => $customer->ct_salon_name,
-                    'ct_fullname' => $customer->ct_fullname,
-                    'ct_business_phone' => $customer->ct_business_phone,
-                    'ct_cell_phone' => $customer->ct_cell_phone,
-                    'ct_status' => $ct_status,
-                    'created_at' => $customer->created_at,
-                    'user_nickname' => $customer->user_nickname,
-                    'ct_note' => $customer->ct_note
-                ];
-                }
-            }
-            elseif(Gate::denies('permission','customer-admin') && $ct_status = 'New Arrivals'){
-                $customer_arr[] = [
-                    'id' => $customer->id,
-                    'ct_salon_name' => $customer->ct_salon_name,
-                    'ct_fullname' => $customer->ct_fullname,
-                    'ct_business_phone' => $customer->ct_business_phone,
-                    'ct_cell_phone' => $customer->ct_cell_phone,
-                    'ct_status' => $ct_status,
-                    'created_at' => $customer->created_at,
-                    'user_nickname' => $customer->user_nickname,
-                    'ct_note' => $customer->ct_note
-                ];
             }
         }
+        // return json_encode($customer_arr);
+
         return Datatables::of($customer_arr)
             ->editColumn('id',function ($row){
                 if($row['ct_status'] == 'Serviced')

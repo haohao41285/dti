@@ -7,6 +7,8 @@ use App\Models\MainUser;
 use App\Models\MainComboService;
 use App\Models\MainCustomer;
 use App\Models\MainCustomerTemplate;
+use App\Models\MainUserCustomerPlace;
+use App\Models\MainTeamType;
 use DB;
 
 class ChangeDataController extends Controller
@@ -128,5 +130,61 @@ class ChangeDataController extends Controller
     	MainCustomerTemplate::insert($customer_template_arr);
     	}
     	// MainCustomer::insert($customer_arr);
+    }
+    public function transferCustomerStatus(){
+
+    	MainUserCustomerPlace::truncate();
+
+    	$old_customers = DB::table('customers')->get();
+    	$customer_array = [];
+
+    	foreach ($old_customers->chunk(1000) as $key => $customers) {
+
+    		foreach ($customers as $key => $customer) {
+
+    			if(!is_null($customer->assigned_by))
+
+    				$customer_array[] = [
+    					'user_id' => $customer->assigned_by,
+						'team_id' => 1,
+						'customer_id' => $customer->id,
+						'created_at' => $customer->created_date
+    				];
+    		}
+    	}
+    	MainUserCustomerPlace::insert($customer_array);
+    }
+    public function transferCustomerTeamType(){
+
+    	// MainTeamType::truncate();
+
+    	$old_customers = DB::table('customers')->get();
+    	$customer_array = [];
+
+    	foreach ($old_customers->chunk(1000) as $key => $customers) {
+
+    		foreach ($customers as $key => $customer) {
+
+    			if($customer->status_id != 1){
+
+    				switch ($customer->status_id) {
+    					case 2:
+    					    $status = 4;
+    						break;
+    					case 3:
+    					    $status = 1;
+    						break;
+    					default:
+    					    $status = 2;
+    						break;
+    				}
+
+	    			$customer_array[$customer->id] = $status;
+    			}
+    		}
+    	}
+    	$customer_list_status = json_encode($customer_array);
+
+    	DB::table('main_team_type')->update(['team_customer_status' => $customer_list_status]);
     }
 }

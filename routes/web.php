@@ -38,7 +38,7 @@ Route::group(['middleware' => ['auth']], function () {
          Route::get('merchants', 'CustomerController@listMerchant')->name('merchants');
          Route::get('add', 'CustomerController@addCustomer')->name('addCustomer');
          Route::get('edit', 'CustomerController@editCustomer')->where(['id'=>'[0-9]+'])->name('editCustomer');
-         Route::get('customers/datatable', 'CustomerController@customersDatatable')->name('customersDatatable');
+         Route::post('customers/datatable', 'CustomerController@customersDatatable')->name('customersDatatable');
          Route::get('get-customer-detail', 'CustomerController@getCustomerDetail')->name('get-customer-detail');
          Route::get('add-customer-to-my', 'CustomerController@addCustomerToMy')->name('add-customer-to-my');
          Route::get('get-my-customer', 'CustomerController@getMyCustomer')->name('get-my-customer');
@@ -471,3 +471,6 @@ Route::group(['middleware' => ['auth']], function () {
 Route::get('transfer-user','ChangeDataController@transferUser');
 Route::get('transfer-service','ChangeDataController@transferService');
 Route::get('transfer-customer','ChangeDataController@transferCustomer');
+Route::get('transfer-customer-status','ChangeDataController@transferCustomerStatus');
+Route::get('transfer-customer-team-type','ChangeDataController@transferCustomerTeamType');
+
