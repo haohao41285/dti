@@ -11,6 +11,10 @@ use App\Models\MainUserCustomerPlace;
 use App\Models\MainTeamType;
 use DB;
 
+use Illuminate\Support\Facades\Schema;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Database\Migrations\Migration;
+
 class ChangeDataController extends Controller
 {
     public function transferUser(){
@@ -186,5 +190,43 @@ class ChangeDataController extends Controller
     	$customer_list_status = json_encode($customer_array);
 
     	DB::table('main_team_type')->update(['team_customer_status' => $customer_list_status]);
+    }
+    public function addCoumn(){
+        Schema::table('main_customer_template', function($table) {
+            $table->integer('test_column');
+        });
+    }
+    public function removeCoumn(){
+        if (Schema::hasColumn('main_customer_template', 'test_column'))
+        {
+            Schema::table('main_customer_template', function (Blueprint $table) {
+                $table->dropColumn('test_column');
+            });
+        }else{
+            Schema::table('main_customer_template', function($table) {
+                $table->integer('test_column');
+            });
+        }
+    }
+    public function addSlug(){
+        $team_types = DB::table('main_team_type')->get();
+        // $arr = [];
+        foreach ($team_types as $key => $value) {
+
+            $slug = str_replace('-', '_', str_slug($value->team_type_name));
+            DB::table('main_team_type')->where('id',$value->id)->update(['slug'=>$slug]);
+
+            if (Schema::hasColumn('main_customer_template', $slug))
+            {
+                Schema::table('main_customer_template', function (Blueprint $table) use ($slug)  {
+                    $table->dropColumn($slug);
+                });
+            }else{
+                Schema::table('main_customer_template', function($table) use ($slug)  {
+                    $table->integer($slug);
+                });
+            }
+        }
+        // return $arr;
     }
 }

@@ -179,20 +179,24 @@
         </div>
     </div>
     <hr>
-    <table class="table table-sm table-striped table-hover" id="dataTableAllCustomer" width="100%" cellspacing="0">
+
+  <div style="height:700px" style="overflow:auto">
+    <table class="table table-sm table-hover" id="dataTableAllCustomer" width="100%" cellspacing="0">
         <thead>
+          <tr class="sticky-top bg-primary text-white"  style="z-index: 9">
             <th>ID</th>
-            <th>Nail Shop</th>
+            <th>Business</th>
             <th>Contact Name</th>
             <th>Business Phone</th>
             <th>Cell Phone</th>
-            <th>Status</th>
             <th>Note</th>
+            <th>Status</th>
             <th>Created Date</th>
             <th style="width: 15%">Action</th>
-            </tr>
+          </tr>
         </thead>
     </table>
+  </div>
 </div>
 
 <!-- Modal view-->
@@ -286,8 +290,8 @@
                 { data: 'ct_business_phone', name: 'ct_business_phone' ,class:'text-center'},
                 { data: 'ct_cell_phone', name: 'ct_cell_phone',class:'text-center' },
                 { data: 'ct_status', name: 'ct_status',class:'text-center' },
-                { data: 'note', name: 'note' },
-                { data: 'updated_at', name: 'updated_at' ,class:'text-center'},
+                { data: 'ct_note', name: 'ct_note' },
+                { data: 'created_at', name: 'created_at' ,class:'text-center'},
                 { data: 'action' , name:'action' ,orderable: false, searcheble: false ,class:'text-center'}
         ],
     });

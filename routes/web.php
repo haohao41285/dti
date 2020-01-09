@@ -468,9 +468,16 @@ Route::group(['middleware' => ['auth']], function () {
 
 //Change data from csr
 
-Route::get('transfer-user','ChangeDataController@transferUser');
+/*Route::get('transfer-user','ChangeDataController@transferUser');
 Route::get('transfer-service','ChangeDataController@transferService');
 Route::get('transfer-customer','ChangeDataController@transferCustomer');
 Route::get('transfer-customer-status','ChangeDataController@transferCustomerStatus');
-Route::get('transfer-customer-team-type','ChangeDataController@transferCustomerTeamType');
+Route::get('transfer-customer-team-type','ChangeDataController@transferCustomerTeamType');*/
+
+
+
+/*Route::get('add-column','ChangeDataController@addCoumn');
+Route::get('remove-column','ChangeDataController@removeCoumn');
+
+Route::get('add-slug','ChangeDataController@addSlug');*/
 

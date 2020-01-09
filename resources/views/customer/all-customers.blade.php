@@ -58,21 +58,24 @@
     </div>
     </form>
     <hr>
-    <table class="table table-sm table-striped table-hover" id="dataTableAllCustomer" width="100%" cellspacing="0">
+
+  <div style="height:700px" style="overflow:auto">
+    <table class="table table-sm table-hover" id="dataTableAllCustomer" width="100%" cellspacing="0">
         <thead>
-            <tr>
-                <th>ID</th>
-                <th>Business</th>
-                <th>Contact Name</th>
-                <th>Business Phone</th>
-                <th>Cell Phone</th>
-                <th>Note</th>
-                <th>Status</th>
-                <th>Created Date</th>
-                <th style="width: 15%">Action</th>
+            <tr class="sticky-top bg-primary text-white"  style="z-index: 9">
+              <th>ID</th>
+              <th>Business</th>
+              <th>Contact Name</th>
+              <th>Business Phone</th>
+              <th>Cell Phone</th>
+              <th>Note</th>
+              <th>Status</th>
+              <th>Created Date</th>
+              <th style="width: 15%">Action</th>
             </tr>
         </thead>
     </table>
+  </div>
 </div>
 
 <!-- Modal view-->
