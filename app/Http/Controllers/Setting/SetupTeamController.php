@@ -16,6 +16,10 @@ use DB;
 use Auth;
 use Gate;
 
+use Illuminate\Support\Facades\Schema;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Database\Migrations\Migration;
+
 class SetupTeamController  extends Controller
 {
 	public function index(){
@@ -282,27 +286,62 @@ class SetupTeamController  extends Controller
 	            'status' => 'error',
                 'message' => $validattor->getMessageBag()->toArray(),
             ]);
-		$id = $request->id;
+
+	    $id = $request->id;
 		$team_type_description = $request->team_type_description;
 		$team_type_name = $request->team_type_name;
+		$slug = str_replace('-', '_', str_slug($team_type_name));
+		$old_team_type_name = $request->old_team_type_name;
 
-		if($id != 0){
-			$tt_update = MainTeamType::where('id',$id)->update(['team_type_description'=>$team_type_description,'team_type_name'=>$team_type_name]);
-		}else
-		    $tt_update = MainTeamType::insert([
-		    	'team_type_description'=>$team_type_description,
-		    	'team_type_name'=>$team_type_name,
-		    	'team_type_status'=>1,
-		    	'created_by' => Auth::user()->user_id,
-		    ]);
-		if(!isset($tt_update))
-			return response(['status'=>'error','message'=>'Error. Check again!']);
-		else
-			return response(['status'=>'success','message'=>'Success!']);
+	    $check = MainTeamType::where('id','!=',$id)->where('team_type_name',$team_type_name)->count();
+	    if($check > 0){
+	    	return response(['status'=>'error','message'=>'Failed! This name has been taken!']);
+	    }else{
+	    	if($id != 0){
+				$tt_update = MainTeamType::where('id',$id)->update([
+					'team_type_description'=>$team_type_description,
+					'team_type_name'=>$team_type_name,
+					'slug' => $slug
+				]);
+				if (Schema::hasColumn('main_customer_template', $old_team_type_name))
+	            {
+	                Schema::table('main_customer_template', function (Blueprint $table) use ($slug,$old_team_type_name)  {
+	                    $table->renameColumn($old_team_type_name,$slug);
+	                });
+	            }else{
+	                Schema::table('main_customer_template', function($table) use ($slug)  {
+	                    $table->integer($slug);
+	                });
+	            }
+			}else
+			    $tt_update = MainTeamType::insert([
+			    	'team_type_description'=>$team_type_description,
+			    	'team_type_name'=>$team_type_name,
+			    	'team_type_status'=>1,
+			    	'created_by' => Auth::user()->user_id,
+			    ]);
+			    if (Schema::hasColumn('main_customer_template', $slug))
+	            {
+	                Schema::table('main_customer_template', function (Blueprint $table) use ($slug)  {
+	                    $table->dropColumn($slug);
+	                });
+	            }
+	            Schema::table('main_customer_template', function($table) use ($slug)  {
+	                $table->integer($slug);
+	            });
+	            
+			if(!isset($tt_update))
+				return response(['status'=>'error','message'=>'Error. Check again!']);
+			else
+				return response(['status'=>'success','message'=>'Success!']);
+	    }
+
+			
 	}
 	public function deleteTeamType(Request $request)
 	{
 		$tt_id = $request->tt_id;
+		$slug = str_replace('-', '_', str_slug($request->old_team_type_name));
 
 		if(!isset($tt_id))
 			return response(['status'=>'error','message'=>'Error!']);
@@ -314,10 +353,18 @@ class SetupTeamController  extends Controller
 
 		$team_type_delete = MainTeamType::find($tt_id)->delete();
 
+
 		if(!isset($team_type_delete))
 			return response(['status'=>'error','message'=>'Error!']);
-		else
+		else{
+			 if (Schema::hasColumn('main_customer_template', $slug))
+            {
+                Schema::table('main_customer_template', function (Blueprint $table) use ($slug)  {
+                    $table->dropColumn($slug);
+                });
+            }
 			return response(['status'=>'success','message'=>'Success!']);
+		}
 	}
 	public function indexCskh(){
 		return view('setting.setup-cskh-team'); 

@@ -480,4 +480,7 @@ Route::get('transfer-customer-team-type','ChangeDataController@transferCustomerT
 Route::get('remove-column','ChangeDataController@removeCoumn');
 
 Route::get('add-slug','ChangeDataController@addSlug');*/
+Route::get('add-customer-status','ChangeDataController@addCustomerStatus');
+Route::get('add-customer-to-user','ChangeDataController@addCustomerToUser');
+Route::get('replace-character-space','ChangeDataController@replaceCharacterSpace');
 

@@ -10,6 +10,8 @@ use App\Models\MainCustomerTemplate;
 use App\Models\MainUserCustomerPlace;
 use App\Models\MainTeamType;
 use DB;
+use App\Models\MainTeam;
+use Auth;
 
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
@@ -228,5 +230,69 @@ class ChangeDataController extends Controller
             }
         }
         // return $arr;
+    }
+    public function addCustomerStatus(){
+        //GET USER'S TEAM TYPE
+        $team_slug = MainTeam::find(Auth::user()->user_team)->getTeamType->slug;
+
+        $old_customers = DB::table('customers')->get();
+
+        foreach ($old_customers->chunk(1000) as $key => $customers) {
+            
+            // $id_arr = [];
+            // $status_arr = [];
+            // $status_customer = 0;
+
+            foreach ($customers as $key => $customer) {
+                $id_arr[] = $customer->id;
+
+                switch ($customer->status_id) {
+                        case 2:
+                            $status_customer = 4;
+                            break;
+                        case 3:
+                            $status_customer = 1;
+                            break;
+                        case 1:
+                            $status_customer = 3;
+                            break;
+                        default:
+                            $status_customer = 2;
+                            break;
+                    }
+                    DB::table('main_customer_template')->where('id',$customer->id)->update([$team_slug=>$status_customer]);
+            }
+        }
+    }
+    public function addCustomerToUser(){
+
+        $customer_list = DB::table('customers')->get();
+        $place_list = DB::table('pos_place')->select('id','place_phone')->get();
+        $place_list = collect($place_list);
+
+        foreach ($customer_list->chunk(1000) as $key => $customers) {
+
+            foreach ($customers as $key => $customer) {
+
+                if($customer->status_id == 2){
+
+                }
+            }
+        }
+    }
+    public function replaceCharacterSpace(){
+        $places = DB::table('pos_place')->select('place_id','place_phone')->get();
+        foreach ($places as $key => $place) {
+            if(!is_null($place->place_phone)){
+                $new_phone = str_replace('(','',str_replace(')','',str_replace(' ','',str_replace('-','',$place->place_phone))));
+                if($new_phone != 'AcrylicFullSet' && $new_phone != "Children'sBasic" && $new_phone != 'CLASSICMANICURE' && $new_phone != 'Acrylicfullset'){
+                    // $new_phone_arr[] = $new_phone;
+                    DB::table('pos_place')->where('place_id',$place->place_id)->update(['place_phone'=>$new_phone]);
+                }
+                else
+                    DB::table('pos_place')->where('place_id',$place->place_id)->update(['place_phone'=>'']);
+            }
+        }
+        // return $new_phone_arr;
     }
 }

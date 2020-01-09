@@ -159,7 +159,7 @@ class CustomerController extends Controller
                 if($row->$team_slug == 0)
                     return 'New Arrivals';
                 else
-                    return getCustomerStatus($row->$team_slug);
+                    return GeneralHelper::getCustomerStatus($row->$team_slug);
             })
             ->addColumn('action', function ($row){
                 if( Gate::allows('permission','customer-admin'))
@@ -397,7 +397,7 @@ class CustomerController extends Controller
                 if($row->$team_slug == 0)
                     return 'New Arrivals';
                 else
-                    return getCustomerStatus($row->$team_slug);
+                    return GeneralHelper::getCustomerStatus($row->$team_slug);
             })
             ->editColumn('ct_note',function($row) use ($note_customers){
 
