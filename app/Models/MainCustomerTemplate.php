@@ -33,6 +33,9 @@ class MainCustomerTemplate extends Model
     public function getCreatedBy(){
         return $this->belongsTo(MainUser::class,'created_by','user_id')->withDefault();
     }
+    public function getPlace(){
+        return $this->hasOne(PosPlace::class,'place_phone','ct_business_phone');
+    }
 
 
 }

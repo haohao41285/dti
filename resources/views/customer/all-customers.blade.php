@@ -229,12 +229,16 @@
     $(document).on("click",".view",function(){
 
       var customer_id = $(this).attr('customer_id');
+      var team_id = $("#team_id").val();
 
       $.ajax({
         url: '{{route('get-customer-detail')}}',
         type: 'GET',
         dataType: 'html',
-        data: {customer_id: customer_id},
+        data: {
+          customer_id: customer_id,
+          team_id: team_id
+        },
       })
       .done(function(data) {
 
@@ -242,7 +246,6 @@
           toastr.error('Get Detaill Customer Error!');
         }else{
           data = JSON.parse(data);
-            console.log(data);
             var button = ``;
             if(data.count_customer_user == 0)
                 button = `<button type="button" id=`+data.customer_list.id+` class="btn btn-primary btn-sm get-customer">Assign</button>`;
@@ -250,7 +253,7 @@
                 button = '';
             if(data.customer_list.ct_status != 'New Arrivals' && data.customer_list.ct_status != 'Disabled' && data.count_customer_user == 0 ){
                 data.customer_list.ct_salon_name = '<input type="text" name="business_name" id="business_name" class="form-control form-control-sm col-12" required>';
-                data.customer_list.ct_business_phone = '<input type="number" name="business_phone" id="business_phone" class="form-control form-control-sm col-12" required>';
+                data.customer_list.ct_business_phone = '<input type="text" name="business_phone" onkeypress="return isNumberKey(event)" id="business_phone" class="form-control form-control-sm col-12" required>';
             }
           data = data.customer_list;
           if(data.ct_salon_name==null)data.ct_salon_name="";
@@ -428,11 +431,11 @@
               </div>
               <div class="form-group row">
                 <label class="col-md-4" for="ct_business_phone">Business Phone<i class="text-danger">*</i></label>
-                <input type="number" class="col-md-8 form-control form-control-sm" name="ct_business_phone" id="ct_business_phone" value="`+data.ct_business_phone+`" placeholder="">
+                <input type="text" class="col-md-8 form-control form-control-sm" onkeypress="return isNumberKey(event)" name="ct_business_phone" id="ct_business_phone" value="`+data.ct_business_phone+`" placeholder="">
               </div>
               <div class="form-group row">
                 <label class="col-md-4" for="ct_cell_phone">Cell Phone<i class="text-danger">*</i></label>
-                <input type="number" class="col-md-8 form-control form-control-sm" name="ct_cell_phone" id="ct_cell_phone" value="`+data.ct_cell_phone+`" placeholder="">
+                <input type="text" onkeypress="return isNumberKey(event)" class="col-md-8 form-control form-control-sm" name="ct_cell_phone" id="ct_cell_phone" value="`+data.ct_cell_phone+`" placeholder="">
               </div>
               <div class="form-group row">
                 <label class="col-md-4" for="ct_email">Email</label>
@@ -517,24 +520,30 @@
     $(document).on('click','.delete-customer',function(){
 
       var customer_id = $(this).attr('customer_id');
-
-      $.ajax({
-        url: '{{route('delete-customer')}}',
-        type: 'GET',
-        dataType: 'html',
-        data: {customer_id: customer_id},
-      })
-      .done(function(data) {
-        if(data == 1){
-          table.ajax.reload(null, false);
-          toastr.success('Update Success!');
-        }else
+      if(confirm('Do you want to be disabled this customer ?')){
+         $.ajax({
+          url: '{{route('delete-customer')}}',
+          type: 'GET',
+          dataType: 'html',
+          data: {customer_id: customer_id},
+        })
+        .done(function(data) {
+          // console.log(data);
+          // return;
+          if(data == 1){
+            table.ajax.reload(null, false);
+            toastr.success('Update Success!');
+          }else
+            toastr.error('Update Error!');
+        })
+        .fail(function() {
           toastr.error('Update Error!');
-        console.log(data);
-      })
-      .fail(function() {
-        console.log("error");
-      });
+        });
+      }else {
+        return false;
+      }
+
+       
     });
     $(document).on('click','.deleted',function(){
       toastr.error('This Customer Deleted!');
@@ -727,6 +736,12 @@
       var fileName = $(this).val().split("\\").pop();
       $(this).siblings(".custom-file-label").addClass("selected").html(fileName);
     });
+     $(document).on("keypress","#business_phone,#ct_cell_phone,#ct_business_phone",function() {
+       let number_phone = $(this).val();
+
+       if(number_phone.length >9)
+        return false;
+     });
 });
 </script>
 @endpush

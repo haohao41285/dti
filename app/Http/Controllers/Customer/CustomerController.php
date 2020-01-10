@@ -175,7 +175,11 @@ class CustomerController extends Controller
     public function getCustomerDetail(Request $request){
 
         $customer_id = $request->customer_id;
-        $team_id = Auth::user()->user_team;
+
+        if(isset($request->team_id) && is_null($request->team_id))
+            $team_id = $request->team_id;
+        else
+            $team_id = Auth::user()->user_team;
 
         $customer_list = MainCustomerTemplate::leftjoin('main_user',function($join){
                                                 $join->on('main_customer_template.created_by','main_user.user_id');
@@ -187,14 +191,23 @@ class CustomerController extends Controller
             return 0;
         else{
 
-            $team_customer_status = MainTeam::find($team_id)->getTeamType->team_customer_status;
-            $customer_status_arr = json_decode($team_customer_status,TRUE);
-            if(!isset($customer_status_arr[$customer_list->id]))
-                $customer_status = 'New Arrivals';
-            else
-                $customer_status = GeneralHelper::getCustomerStatus($customer_status_arr[$customer_list->id]);
+            // $team_customer_status = MainTeam::find($team_id)->getTeamType->team_customer_status;
+            // $customer_status_arr = json_decode($team_customer_status,TRUE);
+            // if(!isset($customer_status_arr[$customer_list->id]))
+            //     $customer_status = 'New Arrivals';
+            // else
+            //     $customer_status = GeneralHelper::getCustomerStatus($customer_status_arr[$customer_list->id]);
 
-            $customer_list['ct_status'] = $customer_status;
+            //GET CUSTOMER STATUS IN CURRENT TEAM
+            $slug = MainTeam::find($team_id)->getTeamType->slug;
+            $customer_status = MainCustomerTemplate::find($customer_id)->$slug;
+
+            if($customer_status == 0)
+                $status = 'New Arrivals';
+            else
+                $status = GeneralHelper::getCustomerStatus($customer_status);
+
+            $customer_list['ct_status'] = $status;
 
             $place_list = MainCustomerService::join('pos_place',function($join){
                 $join->on('main_customer_service.cs_place_id','pos_place.place_id');
@@ -290,16 +303,16 @@ class CustomerController extends Controller
             'customer_id' => $customer_id
         ];
         $update_user = MainUserCustomerPlace::create($user_customer_arr);
-    //UPDATE CUSTOMER STATUS
-        $team_customer_status = MainTeam::find($team_id)->getTeamType->team_customer_status;
-        $customer_status_arr = json_decode($team_customer_status,TRUE);
-        if(!isset($customer_status_arr[$customer_id])){
-            $customer_status_arr[$customer_id] = 1;
-            $customer_status_list = json_encode($customer_status_arr);
-            $update_customer = MainTeam::find($team_id)->getTeamType->update(['team_customer_status'=>$customer_status_list]);
-        }else{
-            $update_customer = 'ok';
-        }
+        //UPDATE CUSTOMER STATUS FOR USER'S TEAM
+        $slug_team = MainTeam::find($team_id)->getTeamType->slug;
+
+        $customer_info = MainCustomerTemplate::find($customer_id);
+
+        if($customer_info->$slug_team == 0)
+            $update_customer = $customer_info->update([$slug_team=>1]);
+        else
+            $update_customer = "nothing to update";
+
         if(!isset($update_user) || !isset($update_customer)){
             DB::callback();
             return response(['status'=>'error','message'=>'Getting Failed!']);
@@ -383,16 +396,6 @@ class CustomerController extends Controller
             ->editColumn('created_at',function($row){
                 return format_date($row->created_at);
             })
-            /*->editColumn('ct_business_phone',function($row){
-                if($row->ct_business_phone != null && Gate::denies('permission','customer-admin'))
-                    return substr($row->ct_business_phone,0,3)."########";
-                else return $row->ct_business_phone;
-            })*/
-            /*->editColumn('ct_cell_phone',function($row){
-                if($row->ct_cell_phone != null  && Gate::denies('permission','customer-admin'))
-                    return substr($row->ct_cell_phone,0,3)."########";
-                else return $row->ct_cell_phone;
-            })*/
             ->addColumn('ct_status',function($row) use ($team_slug){
                 if($row->$team_slug == 0)
                     return 'New Arrivals';
@@ -409,34 +412,13 @@ class CustomerController extends Controller
                     return $row->ct_note;
             })
             ->addColumn('action', function ($row){
-                if( Gate::allows('permission','customer-admin'))
-                    return '<a class="btn btn-sm btn-secondary view" customer_id="'.$row->id.'" href="javascript:void(0)"><i class="fas fa-eye"></i></a>
-                        <a class="btn btn-sm btn-secondary edit-customer" customer_id="'.$row->id.'" href="javascript:void(0)"><i class="fas fa-edit"></i></a>
-                        <a class="btn btn-sm btn-secondary delete-customer" customer_id="'.$row->id.'" href="javascript:void(0)"><i class="fas fa-trash"></i></a>';
-                else
-                    return '<a class="btn btn-sm btn-secondary view" customer_id="'.$row->id.'" href="javascript:void(0)"><i class="fas fa-eye"></i></a>';
-            })
+                    return '
+                          <a class="btn btn-sm btn-secondary add-note"  contact_name="'.$row->ct_fullname.'" customer_id="'.$row->id.'" href="javascript:void(0)" title="Add Customer Note"><i class="far fa-sticky-note"></i></a>
+                          <a class="btn btn-sm btn-secondary view" customer_id="'.$row->id.'" href="javascript:void(0)" title="View Customer"><i class="fas fa-eye"></i></a>
+                    <a class="btn btn-sm btn-secondary order-service" href="'.route('add-order',$row->id).'" title="Go To Order"><i class="fas fa-shopping-cart"></i></a>';
+                })
             ->rawColumns(['action','id'])
             ->make(true);
-        /*return Datatables::of($customer_arr)
-                ->editColumn('id',function ($row){
-                    if($row['ct_status'] == 'Serviced')
-                        return '<i class="fas fa-plus-circle details-control text-danger" id="'.$row['id'].'" ></i>
-                                <a href="'.route('customer-detail',$row['id']).'">'.$row['id'].'</a>';
-                    else
-                        return '<a href="javascript:void(0)">'.$row['id'].'</a>';
-                })
-                ->editColumn('updated_at',function($row){
-                    return format_date($row['updated_at'])." by ".$row['user_nickname'];
-                })
-                ->addColumn('action', function ($row){
-                    return '
-                          <a class="btn btn-sm btn-secondary add-note"  contact_name="'.$row['ct_fullname'].'" customer_id="'.$row['id'].'" href="javascript:void(0)" title="Add Customer Note"><i class="far fa-sticky-note"></i></a>
-                          <a class="btn btn-sm btn-secondary view" customer_id="'.$row['id'].'" href="javascript:void(0)" title="View Customer"><i class="fas fa-eye"></i></a>
-                    <a class="btn btn-sm btn-secondary order-service" href="'.route('add-order',$row['id']).'" title="Go To Order"><i class="fas fa-shopping-cart"></i></a>';
-                })
-                ->rawColumns(['action','id'])
-                ->make(true);*/
     }
     public function editCustomer(Request $request){
 
@@ -491,11 +473,14 @@ class CustomerController extends Controller
         $customer_id = $request->customer_id;
         $team_id = Auth::user()->user_team;
 
-        $team_customer_status = MainTeam::find($team_id)->getTeamType->team_customer_status;
-        $customer_status_arr = json_decode($team_customer_status,TRUE);
-        $customer_status_arr[$customer_id] = 2;
-        $customer_status_list = json_encode($customer_status_arr);
-        $update_customer = MainTeam::find($team_id)->getTeamType->update(['team_customer_status'=>$customer_status_list]);
+        $team_slug = MainTeam::find($team_id)->getTeamType->slug;
+        $update_customer = MainCustomerTemplate::where('id',$customer_id)->update([$team_slug=>2]);
+
+        // $team_customer_status = MainTeam::find($team_id)->getTeamType->team_customer_status;
+        // $customer_status_arr = json_decode($team_customer_status,TRUE);
+        // $customer_status_arr[$customer_id] = 2;
+        // $customer_status_list = json_encode($customer_status_arr);
+        // $update_customer = MainTeam::find($team_id)->getTeamType->update(['team_customer_status'=>$customer_status_list]);
 
         if(!isset($update_customer))
             return 0;
@@ -749,7 +734,7 @@ class CustomerController extends Controller
             'ct_business_phone' => 'required|unique:main_customer_template,ct_business_phone|numeric|digits_between:10,15',
             'ct_email' => 'required|email',
             'ct_address' => 'required',
-            'ct_cell_phone' => 'required|unique:main_customer_template,cs_cell_phone|digits_between:10,15'
+            'ct_cell_phone' => 'required|unique:main_customer_template,ct_cell_phone|digits_between:10,15'
         ];
         $message = [
             'ct_firstname.required' => 'Enter Firstname',
@@ -770,6 +755,9 @@ class CustomerController extends Controller
         if($validator->fails())
             return back()->withErrors($validator)->withInput();
 
+        //GET COLUMN FOR UPDATE CUSTOMER STATUS
+        $team_slug = MainTeam::find(Auth::user()->user_team)->getTeamType->slug;
+
         $customer_arr = [
             'ct_firstname' => $request->ct_firstname,
             'ct_lastname' => $request->ct_lastname,
@@ -783,29 +771,34 @@ class CustomerController extends Controller
             'ct_note' => $request->ct_note,
             'created_by' => Auth::user()->user_id,
             'updated_by' => Auth::user()->user_id,
-            'ct_active' => 1
+            'ct_active' => 1,
+            $team_slug => 1
         ];
         DB::beginTransaction();
-        $customer_create = MainCustomerTemplate::create($customer_arr);
+        $customer_create = DB::table('main_customer_template')->insert($customer_arr);
+        $customer_id = MainCustomerTemplate::max('id');
 
-        //UPDATE STATUS CUSTOMER IN OWN TEAM
-        $team_customer_status = MainTeam::find(Auth::user()->user_team)->getTeamType->team_customer_status;
-        $customer_status_arr = json_decode($team_customer_status,TRUE);
-        $customer_status_arr[$customer_create->id] = 1;
-        $customer_status_list = json_encode($customer_status_arr);
-        $update_customer = MainTeam::find(Auth::user()->user_team)->getTeamType->update(['team_customer_status'=>$customer_status_list]);
+        //ADD CUSTOMER INFO TO WAITING
+        $customer_user_assign = [
+            'user_id' => Auth::user()->user_id,
+            'business_phone' => $request->ct_business_phone,
+            'business_name' => $request->ct_salon_name,
+            'customer_id' => $customer_id,
+            'email' => $request->ct_email,
+            'address' => $request->ct_address,
+            'website' => $request->ct_website,
+        ];
+        $customer_assign = MainCustomerAssign::create($customer_user_assign);
 
-        //UPDATE CUSTOMER LIST IN MAIN USER
-        $user_customer_list = Auth::user()->user_customer_list;
+        //UPDATE MY CUSTOMER
+        $user_customer_arr = [
+            'user_id' => Auth::user()->user_id,
+            'team_id' => Auth::user()->user_team,
+            'customer_id' => $customer_id,
+        ];
+        $user_customer_update = MainUserCustomerPlace::create($user_customer_arr);
 
-        if($user_customer_list == ""){
-            $user_customer_arr = $customer_create->id;
-        }else{
-            $user_customer_arr = $user_customer_list.";".$customer_create->id;
-        }
-        $user_update = MainUser::where('user_id',Auth::user()->user_id)->update(['user_customer_list'=>$user_customer_arr]);
-
-        if(!isset($customer_create) || !isset($update_customer) || !isset($user_update)){
+        if(!isset($customer_create) || !isset($user_customer_update) || !isset($customer_assign)){
             DB::callback();
             return back()->with(['error'=>'Create Customer Failed!']);
         }

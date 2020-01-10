@@ -9,6 +9,7 @@ use App\Models\MainCustomer;
 use App\Models\MainCustomerTemplate;
 use App\Models\MainUserCustomerPlace;
 use App\Models\MainTeamType;
+use App\Models\PosPlace;
 use DB;
 use App\Models\MainTeam;
 use Auth;
@@ -148,11 +149,11 @@ class ChangeDataController extends Controller
 
     		foreach ($customers as $key => $customer) {
 
-    			if(!is_null($customer->assigned_by))
+    			if(!is_null($customer->seller_id) && $customer->status_id == 2)
 
     				$customer_array[] = [
-    					'user_id' => $customer->assigned_by,
-						'team_id' => 1,
+    					'user_id' => $customer->seller_id,
+						'team_id' => 2,
 						'customer_id' => $customer->id,
 						'created_at' => $customer->created_date
     				];
@@ -266,7 +267,7 @@ class ChangeDataController extends Controller
     }
     public function addCustomerToUser(){
 
-        $customer_list = DB::table('customers')->get();
+        /*$customer_list = DB::table('customers')->get();
         $place_list = DB::table('pos_place')->select('id','place_phone')->get();
         $place_list = collect($place_list);
 
@@ -278,21 +279,35 @@ class ChangeDataController extends Controller
 
                 }
             }
+        }*/
+        $user_places = MainUserCustomerPlace::with('getCustomer')->get();
+
+        foreach ($user_places as $key => $user_place) {
+
+            $customer_phone = $user_place->getCustomer->ct_business_phone;
+
+            $place_info = PosPlace::where('place_phone',$customer_phone)->first();
+            // return $place_info;
+
+            if(isset($place_info)){
+                MainUserCustomerPlace::where('customer_id',$user_place->customer_id)->update(['place_id'=>$place_info->place_id]);
+            }
         }
+        // return $customer_phone;
     }
     public function replaceCharacterSpace(){
         $places = DB::table('pos_place')->select('place_id','place_phone')->get();
         foreach ($places as $key => $place) {
             if(!is_null($place->place_phone)){
                 $new_phone = str_replace('(','',str_replace(')','',str_replace(' ','',str_replace('-','',$place->place_phone))));
-                if($new_phone != 'AcrylicFullSet' && $new_phone != "Children'sBasic" && $new_phone != 'CLASSICMANICURE' && $new_phone != 'Acrylicfullset'){
-                    // $new_phone_arr[] = $new_phone;
-                    DB::table('pos_place')->where('place_id',$place->place_id)->update(['place_phone'=>$new_phone]);
-                }
-                else
-                    DB::table('pos_place')->where('place_id',$place->place_id)->update(['place_phone'=>'']);
+                // if($new_phone != 'AcrylicFullSet' && $new_phone != "Children'sBasic" && $new_phone != 'CLASSICMANICURE' && $new_phone != 'Acrylicfullset'){
+                    $new_phone_arr[] = $new_phone;
+                //     DB::table('pos_place')->where('place_id',$place->place_id)->update(['place_phone'=>$new_phone]);
+                // }
+                // else
+                //     DB::table('pos_place')->where('place_id',$place->place_id)->update(['place_phone'=>'']);
             }
         }
-        // return $new_phone_arr;
+        return $new_phone_arr;
     }
 }
