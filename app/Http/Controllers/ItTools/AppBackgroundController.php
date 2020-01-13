@@ -27,10 +27,22 @@ class AppBackgroundController extends Controller
 	}
 
 	public function save(Request $request){
+		$arr = [
+			'image' => $image;
+		];
 
+		if($request->id){
+			$this->appBackground->updateById($request->id,$arr);
+		} else {
+			$this->appBackground->createByArr($arr);
+		}
+
+		return response()->json(['status'=>1,'data'=>['msg'=>'saved successfully']]);
 	}
 
 	public function delete(Request $request){
 
+
+		return response()->json(['status'=>1,'data'=>['msg'=>'saved successfully']]);
 	}
 }
