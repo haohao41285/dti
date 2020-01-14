@@ -22,6 +22,7 @@ use App\Models\PosTemplateType;
 use DB;
 use Gate;
 use Auth;
+use App\Helpers\ImagesHelper;
 use App\Models\PosCateservice;
 use App\Models\PosService;
 use Session;
@@ -32,6 +33,12 @@ use App\Models\PosWebSeo;
 
 class PlaceController extends Controller
 {
+    private $place;
+
+    public function __construct(){
+        $this->place = new PosPlace;
+    }
+
     public function index(){
 
         if(Gate::allows('permission','place-admin')
@@ -162,7 +169,8 @@ class PlaceController extends Controller
                                     'place_email','place_amount','place_description',
                                     'place_actiondate','place_logo','place_favicon',
                                     'hide_service_price','place_worker_mark_bonus',
-                                    'place_interest','place_website','place_phone'
+                                    'place_interest','place_website','place_phone','place_url_plugin',
+                                    'place_map_direction'
                                 )
                 ->where('place_id',$request->placeId)
                 ->where('place_status',1)
@@ -315,6 +323,93 @@ class PlaceController extends Controller
         Session::put('place_id',$place_id);
         Session::put('place_ip_license',$place_ip_license);
         return view('tools.webbuilder',$data);
+    }
+
+    public function saveDetail(Request $request){
+        //dd($request->all());
+        $placeId = $request->placeId;
+
+        $place = $this->place->getLicenseByPlaceId($placeId);
+
+        $license = $place->place_ip_license;
+
+        $pathUpload = $license.'/logo/photos';
+
+        if($request->hasFile('logo')){
+            $logo = ImagesHelper::uploadImageToAPI($request->logo,$pathUpload);
+        }
+
+        if($request->hasFile('favicon')){
+            $favicon = ImagesHelper::uploadImageToAPI($request->favicon,$pathUpload);
+        }
+
+        $arrActiondate = [
+            'mon' => [
+                'start' => $request->mon_start,
+                'end' => $request->mon_end,
+                'closed' => $request->work_mon == 0 ? true : false,
+            ],
+            'tue' => [
+                'start' => $request->tue_start,
+                'end' => $request->tue_end,
+                'closed' => $request->work_tue == 0 ? true : false,
+            ],
+            'wed' => [
+                'start' => $request->wed_start,
+                'end' => $request->wed_end,
+                'closed' => $request->work_wed == 0 ? true : false,
+            ],
+            'thur' => [
+                'start' => $request->thu_start,
+                'end' => $request->thu_end,
+                'closed' => $request->work_thu == 0 ? true : false,
+            ],
+            'fri' => [
+                'start' => $request->fri_start,
+                'end' => $request->fri_end,
+                'closed' => $request->work_fri == 0 ? true : false,
+            ],
+            'sat' => [
+                'start' => $request->sat_start,
+                'end' => $request->sat_end,
+                'closed' => $request->work_sat == 0 ? true : false,
+            ],
+            'sun' => [
+                'start' => $request->sun_start,
+                'end' => $request->sun_end,
+                'closed' => $request->work_sun == 0 ? true : false,
+            ],
+        ];
+
+        $arr = [
+              'place_name' => $request->business_name,
+              'place_phone' => $request->business_phone,
+              'hide_service_price' => $request->hide_service_price,
+              'place_address' => $request->address,
+              'place_email' => $request->email,
+              'place_website' => $request->website,
+              'place_interest' => $request->interest,
+              'place_description' => $request->description,
+              'place_logo' => $logo ?? null,
+              'place_favicon' => $favicon ?? null,
+              'place_taxcode' => $request->tax_code,
+              'place_worker_mark_bonus' => $request->price_floor,
+              'place_url_plugin' => $request->place_url_plugin,
+              'place_map_direction' => $request->place_map_direction,
+              'place_actiondate' => json_encode($arrActiondate),
+        ];
+
+        if(!isset($logo)){
+            unset($arr['place_logo']);
+        }
+
+        if(!isset($favicon)){
+            unset($arr['place_favicon']);
+        }
+
+        $this->place->updateByPlaceIdAndArr($placeId, $arr);
+
+        return response()->json(['status'=>1,'data'=>['msg'=>'saved successfully']]);
     }
 
 

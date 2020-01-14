@@ -452,4 +452,90 @@ class SetupTeamController  extends Controller
 			})
 			->make(true);
 	}
+	public function indexCskh(){
+		return view('setting.setup-cskh-team'); 
+	}
+	public function cskhDatatable(Request $request){
+
+		$team_type_cskh = MainTeamType::select('id')->where('team_type_name','CSKH')->first();
+
+		$team_cskh = MainTeam::with('getLeader')->active()->where('team_type',$team_type_cskh->id)->get();
+
+		return DataTables::of($team_cskh)
+			->editColumn('team_leader',function($row){
+				return $row->getleader->user_firstname." ".$row->getLeader->user_lastname;
+			})
+			->make(true);
+	}
+	public function otherDatatable(Request $request){
+
+		$team_type_cskh = MainTeamType::select('id')->where('team_type_name','CSKH')->first();
+
+		$team_other = MainTeam::with('getLeader')->with('getCskhTeam')->active()->where('team_type','!=',$team_type_cskh->id)->get();
+
+		return DataTables::of($team_other)
+			->editColumn('team_leader',function($row){
+				return $row->getleader->user_firstname." ".$row->getLeader->user_lastname;
+			})
+			->editColumn('team_cskh_id',function($row){
+				if($row->team_cskh_id != "")
+					return $row->getCskhTeam->team_name;
+				else
+					return "";
+			})
+			->make(true);
+	}
+	public function teamsDatatable(Request $request){
+		$team_id = $request->team_id;
+
+		$teams = MainTeam::active()->where('team_cskh_id',$team_id);
+
+		return DataTables::of($teams)
+			->addColumn('action',function($row){
+				return '<a class="btn btn-sm btn-secondary remove-member" team_id="'.$row->id.'" href="javascript:void(0)"><i class="fas fa-trash"></i></a>';
+			})
+			->rawColumns(['action'])
+			->make(true);
+	}
+	public function addTeamToTeamCskh(Request $request){
+
+		$team_id = $request->team_id;
+		$member_id = $request->member_id;
+
+		//CHECK TEAM WITH CSKH TEAM EXISTED
+		$team_info = MainTeam::find($member_id);
+
+		if( $team_info->team_cskh_id != null || $team_info->team_cskh_id != "")
+			return response(['status'=>'error','message'=>'Remove CSKH Team Before Add New!']);
+
+		$update_team = $team_info->update(['team_cskh_id'=>$team_id]);
+
+		if(!isset($update_team))
+			return response(['status'=>'error','message'=>'Failed! Add Team Failed!']);
+
+		return response(['status'=>'success','message'=>'Successfully! Add Team Successfully!']);
+	}
+	public function removeTeam(Request $request){
+
+		$member_id = $request->member_id;
+
+		$team_update = MainTeam::find($member_id)->update(['team_cskh_id'=>null]);
+
+		if(!isset($team_update))
+			return response(['status'=>'error','message'=>'Failed! Remove Team Failed!']);
+
+		return response(['status'=>'success','message'=>'Successfully! Remove Team Successfully!']);
+	}
+	public function userCskhDatatable(Request $request){
+
+		$team_id = $request->team_id;
+
+		$users = MainUser::where('user_team',$team_id);
+
+		return DataTables::of($users)
+			->addColumn('user_name',function($row){
+				return $row->getFullname();
+			})
+			->make(true);
+	}
 }

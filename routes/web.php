@@ -180,6 +180,8 @@ Route::group(['middleware' => ['auth']], function () {
             Route::get('/get-service-place', 'PlaceController@getServicePlace')->name('get-service-place');
             Route::post('/save-expire-date', 'PlaceController@saveExpireDate')->name('save-expire-date');
             Route::post('/change-place-status', 'PlaceController@changePlaceStatus')->name('change_place_status');
+
+            Route::post('save-detail', 'PlaceController@saveDetail')->name('saveDetailPlace');
             Route::get('/place-webbuilder/{place_id}', 'PlaceController@placeWebbuilder')->name('place.webbuilder');
         });
 
@@ -197,6 +199,13 @@ Route::group(['middleware' => ['auth']], function () {
             Route::get('change-demo-status','DemoPlaceController@changeDemoStatus')->name('demo_place.change_demo_status');
             Route::post('save-demo-place','DemoPlaceController@save')->name('demo_place.save');
             Route::post('delete','DemoPlaceController@delete')->name('demo_place.delete');
+        });
+
+        Route::group(['prefix' => 'app-background'], function() {
+            Route::get('/', "AppBackgroundController@index")->name('appBackground');
+            Route::get('/app-datatable', "AppBackgroundController@datatable")->name('appBackground.datatable');
+            Route::post('/save-app', "AppBackgroundController@save")->name('appBackground.save');
+            Route::post('/delete-app', "AppBackgroundController@delete")->name('appBackground.delete');
         });
     });
     Route::group(['prefix'=>'tools','namespace'=>'Webbuilder'],function(){
@@ -473,8 +482,6 @@ Route::get('transfer-service','ChangeDataController@transferService');
 Route::get('transfer-customer','ChangeDataController@transferCustomer');
 Route::get('transfer-customer-status','ChangeDataController@transferCustomerStatus');
 Route::get('transfer-customer-team-type','ChangeDataController@transferCustomerTeamType');
-
-
 
 /*Route::get('add-column','ChangeDataController@addCoumn');
 Route::get('remove-column','ChangeDataController@removeCoumn');

@@ -58,7 +58,6 @@
     </div>
     </form>
     <hr>
-
   <div style="height:700px" style="overflow:auto">
     <table class="table table-sm table-hover" id="dataTableAllCustomer" width="100%" cellspacing="0">
         <thead>

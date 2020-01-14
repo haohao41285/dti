@@ -148,12 +148,11 @@ class ChangeDataController extends Controller
     	foreach ($old_customers->chunk(1000) as $key => $customers) {
 
     		foreach ($customers as $key => $customer) {
-
-    			if(!is_null($customer->seller_id) && $customer->status_id == 2)
+    			if(!is_null($customer->assigned_by))
 
     				$customer_array[] = [
-    					'user_id' => $customer->seller_id,
-						'team_id' => 2,
+    					'user_id' => $customer->assigned_by,
+						'team_id' => 1,
 						'customer_id' => $customer->id,
 						'created_at' => $customer->created_date
     				];

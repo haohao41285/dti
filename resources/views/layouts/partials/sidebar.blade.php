@@ -2,28 +2,24 @@
 $request_url = request()->segment(1);
 $request_sub_url = request()->segment(2);
 $permission_list_session = Session::get('permission_list_session');
+
 $menu_list_all = Session::get('menu_list_all');
 $menu_list = $menu_list_all->where('parent_id',0);
 $permission_list = Session::get('permission_list');
 
-
 @endphp
 <!-- Sidebar -->
 <ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
-
-  <!-- Sidebar - Brand -->
-  <a class="sidebar-brand d-flex align-items-center justify-content-center" href="{{ asset('/') }}">
-
-      <img style="width: 100px;" src="{{asset("images/logo169x46.png")}}" alt="logo">
-  </a>
-
-{{--    VIEW SLIDE BAR--}}
-@foreach($menu_list as $parent)
-
+    <!-- Sidebar - Brand -->
+    <a class="sidebar-brand d-flex align-items-center justify-content-center" href="{{ asset('/') }}">
+        <img style="width: 100px;" src="{{asset("images/logo169x46.png")}}" alt="logo">
+    </a>
+    {{-- VIEW SLIDE BAR--}}
+    @foreach($menu_list as $parent)
     @php
-        $className = ($request_url == $parent->link)?' active':'';
-        $count = 0;
-        $count_parent = 0;
+    $className = ($request_url == $parent->link)?' active':'';
+    $count = 0;
+    $count_parent = 0;
     @endphp
 
     @if($menu_list_all->where('parent_id',$parent->id)->count() == 0)
@@ -76,12 +72,11 @@ $permission_list = Session::get('permission_list');
             </li>
         @endif
     @endif
-@endforeach
-{{--    END VIEW SLIDE BAR--}}
+    @endforeach
+    {{-- END VIEW SLIDE BAR--}}
     <!-- <hr class="sidebar-divider d-none d-md-block"> -->
     <div class="text-center d-none d-md-inline">
         <button class="rounded-circle border-0" id="sidebarToggle"></button>
-      </div>
-
+    </div>
 </ul>
 <!-- End of Sidebar -->

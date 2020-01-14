@@ -10,6 +10,9 @@
         tbody tr .disabled{
         text-decoration: line-through solid red;
     }
+    .cursor{
+        cursor: pointer;
+    }
 </style>
 @endpush
 @section('content')
@@ -111,304 +114,334 @@
 {{-- detail place --}}
 <div class="modal fade" id="detail" tabindex="-1" role="dialog">
     <div style="max-width: 90%" class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                {{--
-                <h5 class="modal-title">Detail place</h5>
-                --}}
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body row">
-                <div class="col-12 ">
-                    <div class="card shadow mb-4 ">
-                        <div class="card-header py-2">
-                            <h6 class="m-0 font-weight-bold text-primary">Detail place</h6>
-                        </div>
-                        <div class="card-body">
-                            <div class="col-12 row">
-                                <div class="col-6">
-                                    <div class="row col-12 row-detail">
-                                        <label class="col-sm-4">Logo</label>
-                                        <div class="previewImage" id="logo">
-                                            <img id="previewImageAppbanner" src="http://localhost:8000/images/no-image.png">
-                                        </div>
-                                    </div>
-                                    <div class="row col-12 row-detail">
-                                        <label class="col-sm-4">Business name</label>
-                                        <label class="col-sm-8" id="bussiness-name">Business name</label>
-                                    </div>
-                                    <div class="row col-12 row-detail">
-                                        <label class="col-sm-4">Tax code</label>
-                                        <label class="col-sm-8" id="tax-code">Tax code</label>
-                                    </div>
-                                    <div class="row col-12 row-detail">
-                                        <label class="col-sm-4">Business phone</label>
-                                        <label class="col-sm-8" id="business-phone">Business phone</label>
-                                    </div>
-                                    <div class="row col-12 row-detail">
-                                        <label class="col-sm-4">Price floor</label>
-                                        <label class="col-sm-8" id="price-floor">Price floor</label>
-                                    </div>
-                                </div>
-                                <div class="col-6">
-                                    <div class="row col-12 row-detail">
-                                        <label class="col-sm-4">Favicon</label>
-                                        <div class="previewImage" id="favicon">
-                                            <img id="previewImageAppbanner" src="http://localhost:8000/images/no-image.png">
-                                        </div>
-                                    </div>
-                                    <div class="row col-12 row-detail">
-                                        <label class="col-sm-4">Address</label>
-                                        <label class="col-sm-8" id="address">Address</label>
-                                    </div>
-                                    <div class="row col-12 row-detail">
-                                        <label class="col-sm-4">Email</label>
-                                        <label class="col-sm-8" id="email">Email</label>
-                                    </div>
-                                    <div class="row col-12 row-detail">
-                                        <label class="col-sm-4">Website</label>
-                                        <label class="col-sm-8" id="website">Website</label>
-                                    </div>
-                                    <div class="row col-12 row-detail">
-                                        <label class="col-sm-4">Interest($)</label>
-                                        <label class="col-sm-8" id="interest">Interest($)</label>
-                                    </div>
-                                </div>
+        <form id="form-detail-place" method="post" enctype="multipart/form-data">
+            @csrf
+            <div class="modal-content">
+                <div class="modal-header">
+                    {{--
+                    <h5 class="modal-title">Detail place</h5>
+                    --}}
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body row">
+                    <div class="col-12 ">
+                        <div class="card shadow mb-4 ">
+                            <div class="card-header py-2">
+                                <h6 class="m-0 font-weight-bold text-primary">Detail place</h6>
                             </div>
-                            <div class="col-12">
-                                <div class="row col-12 row-detail">
-                                    <label class="col-sm-2">Hide service price</label>
-                                    <label class="col-sm-8 row" id="hide-service-price">Hide service price</label>
-                                </div>
-                                <div class=" form-group">
-                                    <div class="col-md-12 row row-detail">
-                                        <label class="col-sm-2" ">Working Day</label>
-                                        <div class=" col-sm-10 workingtime">
-                                            <div class="col-day">
-                                                <label>Monday</label>
-                                                <div class="btn-group btn-group-toggle working-day" rel="monday">
-                                                    <label class="btn btn-sm btn-day " rel="open">
-                                                        <input disabled value="1" type="radio"> Open
-                                                    </label>
-                                                    <label class="btn btn-sm btn-day " rel="close">
-                                                        <input disabled value="0" type="radio"> Close
-                                                    </label>
-                                                </div>
+                            <div class="card-body">
+                                <div class="col-12 row">
+                                    <div class="col-6">
+                                        <div class="row col-12 row-detail">
+                                            <label class="col-sm-4">Logo</label>
+                                            <div class="previewImage" id="logo">
+                                                <img id="previewImageLogo" src="{{ asset('images/no-image.png') }}">
+                                                <input type="file" accept="image/*" name="logo" class="custom-file-input" previewimageid="previewImageLogo" value="" style="display: none">
                                             </div>
-                                            <div class="col-day">
-                                                <label>Tuesday</label>
-                                                <div class="btn-group btn-group-toggle working-day" rel="tuesday">
-                                                    <label class="btn btn-sm btn-day " rel="open">
-                                                        <input disabled name="work_tue" value="1" type="radio"> Open
-                                                    </label>
-                                                    <label class="btn btn-sm btn-day " rel="close">
-                                                        <input disabled name="work_tue" value="0" type="radio"> Close
-                                                    </label>
-                                                </div>
+                                        </div>
+                                        <div class="row col-12 row-detail">
+                                            <label class="col-sm-4">Business name</label>
+                                            {{-- <label class="col-sm-8" id="bussiness-name">Business name</label> --}}
+                                            <input type="text" name="business_name" class="col-sm-8 form-control-sm form-control" id="business-name">
+                                        </div>
+                                        <div class="row col-12 row-detail">
+                                            <label class="col-sm-4">Tax code</label>
+                                            {{-- <label class="col-sm-8" id="tax-code">Tax code</label> --}}
+                                            <input type="text" name="tax_code" class="col-sm-8 form-control-sm form-control" id="tax-code">
+                                        </div>
+                                        <div class="row col-12 row-detail">
+                                            <label class="col-sm-4">Business phone</label>
+                                            {{-- <label class="col-sm-8" id="business-phone">Business phone</label> --}}
+                                            <input type="text" name="business_phone" class="col-sm-8 form-control-sm form-control" id="business-phone">
+                                        </div>
+                                        <div class="row col-12 row-detail">
+                                            <label class="col-sm-4">Price floor($)</label>
+                                            {{-- <label class="col-sm-8" id="price-floor">Price floor</label> --}}
+                                            <input type="number" name="price_floor" class="col-sm-8 form-control-sm form-control" id="price-floor">
+                                        </div>
+                                    </div>
+                                    <div class="col-6">
+                                        <div class="row col-12 row-detail">
+                                            <label class="col-sm-4">Favicon</label>
+                                            <div class="previewImage" id="favicon">
+                                                <img id="previewImageFavicon" src="{{ asset('images/no-image.png') }}">
+                                                <input type="file" accept="image/*" name="favicon" class="custom-file-input" previewimageid="previewImageFavicon" value="" style="display: none">
                                             </div>
-                                            <div class="col-day">
-                                                <label>Wednesday</label>
-                                                <div class="btn-group btn-group-toggle working-day" rel="wednesday">
-                                                    <label class="btn btn-sm btn-day  " rel="open">
-                                                        <input disabled name="work_wed" value="1" type="radio"> Open
-                                                    </label>
-                                                    <label class="btn btn-sm btn-day " rel="close">
-                                                        <input disabled name="work_wed" value="0" type="radio"> Close
-                                                    </label>
-                                                </div>
-                                            </div>
-                                            <div class="col-day">
-                                                <label>Thursday</label>
-                                                <div class="btn-group btn-group-toggle working-day" rel="thursday">
-                                                    <label class="btn btn-sm btn-day " rel="open">
-                                                        <input disabled name="work_thur" value="1" type="radio"> Open
-                                                    </label>
-                                                    <label class="btn btn-sm btn-day " rel="close">
-                                                        <input disabled name="work_thur" value="0" type="radio"> Close
-                                                    </label>
-                                                </div>
-                                            </div>
-                                            <div class="col-day">
-                                                <label>Friday</label>
-                                                <div class="btn-group btn-group-toggle working-day" rel="friday">
-                                                    <label class="btn btn-sm btn-day " rel="open">
-                                                        <input disabled name="work_fri" value="1" type="radio"> Open
-                                                    </label>
-                                                    <label class="btn btn-sm btn-day" rel="close">
-                                                        <input disabled name="work_fri" value="0" type="radio"> Close
-                                                    </label>
-                                                </div>
-                                            </div>
-                                            <div class="col-day">
-                                                <label>Saturday</label>
-                                                <div class="btn-group btn-group-toggle working-day" rel="saturday">
-                                                    <label class="btn btn-sm btn-day " rel="open">
-                                                        <input disabled name="work_sat" value="1" type="radio"> Open
-                                                    </label>
-                                                    <label class="btn btn-sm btn-day " rel="close">
-                                                        <input disabled name="work_sat" value="0" type="radio"> Close
-                                                    </label>
-                                                </div>
-                                            </div>
-                                            <div class="col-day">
-                                                <label>Sunday</label>
-                                                <div class="btn-group btn-group-toggle working-day" rel="sunday">
-                                                    <label class="btn btn-sm btn-day" rel="open">
-                                                        <input disabled name="work_sun" value="1" type="radio"> Open
-                                                    </label>
-                                                    <label class="btn btn-sm btn-day " rel="close">
-                                                        <input disabled name="work_sun" value="0" type="radio"> Close
-                                                    </label>
-                                                </div>
-                                            </div>
+                                        </div>
+                                        <div class="row col-12 row-detail">
+                                            <label class="col-sm-4">Address</label>
+                                            {{-- <label class="col-sm-8" id="address">Address</label> --}}
+                                            <input type="text" name="address" class="col-sm-8 form-control-sm form-control" id="address">
+                                        </div>
+                                        <div class="row col-12 row-detail">
+                                            <label class="col-sm-4">Email</label>
+                                            {{-- <label class="col-sm-8" id="email">Email</label> --}}
+                                            <input type="text" name="email" class="col-sm-8 form-control-sm form-control" id="email">
+                                        </div>
+                                        <div class="row col-12 row-detail">
+                                            <label class="col-sm-4">Website</label>
+                                            {{-- <label class="col-sm-8" id="website">Website</label> --}}
+                                            <input type="text" name="website" class="col-sm-8 form-control-sm form-control" id="website">
+                                        </div>
+                                        <div class="row col-12 row-detail">
+                                            <label class="col-sm-4">Interest($)</label>
+                                            {{-- <label class="col-sm-8" id="interest">Interest($)</label> --}}
+                                            <input type="number" name="interest" class="col-sm-8 form-control-sm form-control" id="interest">
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                            <div>
-                                <div class=" form-group">
-                                    <div class="col-md-12 row">
-                                        <label class="col-sm-2">Time Start</label>
-                                        <div class="col-sm-10 time-start workingtime">
-                                            <div class="col-day input-group-spaddon day_monday">
-                                                <div class="input-group date">
-                                                    <input disabled type="text" id="mon-start" value="19:00" class="form-control form-control-sm timepicker">
-                                                    <span class="input-group-addon">
-                                                        <span class="glyphicon glyphicon-time"></span>
-                                                    </span>
+                                <div class="col-12">
+                                    <div class="row col-12 row-detail">
+                                        <label class="col-sm-2">Hide service price</label>
+                                        {{-- <label class="col-sm-8 row" id="hide-service-price">Hide service price</label> --}}
+                                        <div class="btn-group btn-group-toggle working-day" rel="hide-service-price">
+                                            <label class="btn btn-sm btn-day cursor" rel="on">
+                                                <input name="hide_service_price" value="1" type="radio"> On
+                                            </label>
+                                            <label class="btn btn-sm btn-day cursor" rel="off">
+                                                <input name="hide_service_price" value="0" type="radio"> Off
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div class=" form-group">
+                                        <div class="col-md-12 row row-detail">
+                                            <label class="col-sm-2">Working Day</label>
+                                            <div class=" col-sm-10 workingtime">
+                                                <div class="col-day">
+                                                    <label>Monday</label>
+                                                    <div class="btn-group btn-group-toggle working-day" rel="monday">
+                                                        <label class="btn btn-sm btn-day cursor" rel="open">
+                                                            <input name="work_mon" value="1" type="radio"> Open
+                                                        </label>
+                                                        <label class="btn btn-sm btn-day cursor" rel="close">
+                                                            <input name="work_mon" value="0" type="radio"> Close
+                                                        </label>
+                                                    </div>
                                                 </div>
-                                            </div>
-                                            <div class="col-day input-group-spaddon day_tuesday">
-                                                <div class="input-group date">
-                                                    <input disabled type="text" id="tue-start" value="21:00" class="form-control form-control-sm timepicker">
-                                                    <span class="input-group-addon">
-                                                        <span class="glyphicon glyphicon-time"></span>
-                                                    </span>
+                                                <div class="col-day">
+                                                    <label>Tuesday</label>
+                                                    <div class="btn-group btn-group-toggle working-day" rel="tuesday">
+                                                        <label class="btn btn-sm btn-day cursor" rel="open">
+                                                            <input name="work_tue" value="1" type="radio"> Open
+                                                        </label>
+                                                        <label class="btn btn-sm btn-day cursor" rel="close">
+                                                            <input name="work_tue" value="0" type="radio"> Close
+                                                        </label>
+                                                    </div>
                                                 </div>
-                                            </div>
-                                            <div class="col-day input-group-spaddon day_wednesday">
-                                                <div class="input-group date">
-                                                    <input disabled type="text" id="wed-start" value="21:00" class="form-control form-control-sm timepicker">
-                                                    <span class="input-group-addon">
-                                                        <span class="glyphicon glyphicon-time"></span>
-                                                    </span>
+                                                <div class="col-day">
+                                                    <label>Wednesday</label>
+                                                    <div class="btn-group btn-group-toggle working-day" rel="wednesday">
+                                                        <label class="btn btn-sm btn-day  cursor" rel="open">
+                                                            <input name="work_wed" value="1" type="radio"> Open
+                                                        </label>
+                                                        <label class="btn btn-sm btn-day cursor" rel="close">
+                                                            <input name="work_wed" value="0" type="radio"> Close
+                                                        </label>
+                                                    </div>
                                                 </div>
-                                            </div>
-                                            <div class="col-day input-group-spaddon day_thursday">
-                                                <div class="input-group date">
-                                                    <input disabled type="text" id="thustart" value="21:00" class="form-control form-control-sm timepicker">
-                                                    <span class="input-group-addon">
-                                                        <span class="glyphicon glyphicon-time"></span>
-                                                    </span>
+                                                <div class="col-day">
+                                                    <label>Thursday</label>
+                                                    <div class="btn-group btn-group-toggle working-day" rel="thursday">
+                                                        <label class="btn btn-sm btn-day cursor" rel="open">
+                                                            <input name="work_thu" value="1" type="radio"> Open
+                                                        </label>
+                                                        <label class="btn btn-sm btn-day cursor" rel="close">
+                                                            <input name="work_thu" value="0" type="radio"> Close
+                                                        </label>
+                                                    </div>
                                                 </div>
-                                            </div>
-                                            <div class="col-day input-group-spaddon day_friday">
-                                                <div class="input-group date">
-                                                    <input disabled type="text" id="fri-start" value="21:00" class="form-control form-control-sm timepicker">
-                                                    <span class="input-group-addon">
-                                                        <span class="glyphicon glyphicon-time"></span>
-                                                    </span>
+                                                <div class="col-day">
+                                                    <label>Friday</label>
+                                                    <div class="btn-group btn-group-toggle working-day" rel="friday">
+                                                        <label class="btn btn-sm btn-day cursor" rel="open">
+                                                            <input name="work_fri" value="1" type="radio"> Open
+                                                        </label>
+                                                        <label class="btn btn-sm btn-day cursor" rel="close">
+                                                            <input name="work_fri" value="0" type="radio"> Close
+                                                        </label>
+                                                    </div>
                                                 </div>
-                                            </div>
-                                            <div class="col-day input-group-spaddon day_saturday">
-                                                <div class="input-group date">
-                                                    <input disabled type="text" id="sat-start" value="21:00" class="form-control form-control-sm timepicker">
-                                                    <span class="input-group-addon">
-                                                        <span class="glyphicon glyphicon-time"></span>
-                                                    </span>
+                                                <div class="col-day">
+                                                    <label>Saturday</label>
+                                                    <div class="btn-group btn-group-toggle working-day" rel="saturday">
+                                                        <label class="btn btn-sm btn-day cursor" rel="open">
+                                                            <input name="work_sat" value="1" type="radio"> Open
+                                                        </label>
+                                                        <label class="btn btn-sm btn-day cursor" rel="close">
+                                                            <input name="work_sat" value="0" type="radio"> Close
+                                                        </label>
+                                                    </div>
                                                 </div>
-                                            </div>
-                                            <div class="col-day input-group-spaddon day_sunday">
-                                                <div class="input-group date">
-                                                    <input disabled type="text" id="sun-start" value="23:00" class="form-control form-control-sm timepicker">
-                                                    <span class="input-group-addon">
-                                                        <span class="glyphicon glyphicon-time"></span>
-                                                    </span>
+                                                <div class="col-day">
+                                                    <label>Sunday</label>
+                                                    <div class="btn-group btn-group-toggle working-day" rel="sunday">
+                                                        <label class="btn btn-sm btn-day cursor" rel="open">
+                                                            <input name="work_sun" value="1" type="radio"> Open
+                                                        </label>
+                                                        <label class="btn btn-sm btn-day cursor" rel="close">
+                                                            <input name="work_sun" value="0" type="radio"> Close
+                                                        </label>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
-                                </div>
-                                <div class=" form-group">
-                                    <div class="col-md-12 row">
-                                        <label class="col-sm-2">Time End</label>
-                                        <div class="col-sm-10 time-end workingtime">
-                                            <div class="col-day input-group-spaddon day_monday">
-                                                <div class="input-group date">
-                                                    <input disabled type="text" id="mon-end" value="19:00" class="form-control form-control-sm timepicker">
-                                                    <span class="input-group-addon">
-                                                        <span class="glyphicon glyphicon-time"></span>
-                                                    </span>
-                                                </div>
-                                            </div>
-                                            <div class="col-day input-group-spaddon day_tuesday">
-                                                <div class="input-group date">
-                                                    <input disabled type="text" id="tue-end" value="21:00" class="form-control form-control-sm timepicker">
-                                                    <span class="input-group-addon">
-                                                        <span class="glyphicon glyphicon-time"></span>
-                                                    </span>
-                                                </div>
-                                            </div>
-                                            <div class="col-day input-group-spaddon day_wednesday">
-                                                <div class="input-group date">
-                                                    <input disabled type="text" id="wed-end" value="21:00" class="form-control form-control-sm timepicker">
-                                                    <span class="input-group-addon">
-                                                        <span class="glyphicon glyphicon-time"></span>
-                                                    </span>
-                                                </div>
-                                            </div>
-                                            <div class="col-day input-group-spaddon day_thursday">
-                                                <div class="input-group date">
-                                                    <input disabled type="text" id="thu-end" value="21:00" class="form-control form-control-sm timepicker">
-                                                    <span class="input-group-addon">
-                                                        <span class="glyphicon glyphicon-time"></span>
-                                                    </span>
-                                                </div>
-                                            </div>
-                                            <div class="col-day input-group-spaddon day_friday">
-                                                <div class="input-group date">
-                                                    <input disabled type="text" id="fri-end" value="21:00" class="form-control form-control-sm timepicker">
-                                                    <span class="input-group-addon">
-                                                        <span class="glyphicon glyphicon-time"></span>
-                                                    </span>
-                                                </div>
-                                            </div>
-                                            <div class="col-day input-group-spaddon day_saturday">
-                                                <div class="input-group date">
-                                                    <input disabled type="text" id="sat-end" value="21:00" class="form-control form-control-sm timepicker">
-                                                    <span class="input-group-addon">
-                                                        <span class="glyphicon glyphicon-time"></span>
-                                                    </span>
-                                                </div>
-                                            </div>
-                                            <div class="col-day input-group-spaddon day_sunday">
-                                                <div class="input-group date">
-                                                    <input disabled type="text" id="sun-end" value="23:00" class="form-control form-control-sm timepicker">
-                                                    <span class="input-group-addon">
-                                                        <span class="glyphicon glyphicon-time"></span>
-                                                    </span>
+                                    <div>
+                                        <div class=" form-group">
+                                            <div class="col-md-12 row">
+                                                <label class="col-sm-2">Time Start</label>
+                                                <div class="col-sm-10 time-start workingtime">
+                                                    <div class="col-day input-group-spaddon day_monday">
+                                                        <div class="input-group date">
+                                                            <input type="time" id="mon-start" name="mon_start" value="19:00" class="form-control form-control-sm">
+                                                            <span class="input-group-addon">
+                                                                <span class="glyphicon glyphicon-time"></span>
+                                                            </span>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-day input-group-spaddon day_tuesday">
+                                                        <div class="input-group date">
+                                                            <input type="time" id="tue-start" name="tue_start" value="21:00" class="form-control form-control-sm">
+                                                            <span class="input-group-addon">
+                                                                <span class="glyphicon glyphicon-time"></span>
+                                                            </span>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-day input-group-spaddon day_wednesday">
+                                                        <div class="input-group date">
+                                                            <input type="time" id="wed-start" name="wed_start" value="21:00" class="form-control form-control-sm">
+                                                            <span class="input-group-addon">
+                                                                <span class="glyphicon glyphicon-time"></span>
+                                                            </span>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-day input-group-spaddon day_thursday">
+                                                        <div class="input-group date">
+                                                            <input type="time" id="thustart" name="thu_start" value="21:00" class="form-control form-control-sm">
+                                                            <span class="input-group-addon">
+                                                                <span class="glyphicon glyphicon-time"></span>
+                                                            </span>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-day input-group-spaddon day_friday">
+                                                        <div class="input-group date">
+                                                            <input type="time" id="fri-start" name="fri_start" value="21:00" class="form-control form-control-sm">
+                                                            <span class="input-group-addon">
+                                                                <span class="glyphicon glyphicon-time"></span>
+                                                            </span>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-day input-group-spaddon day_saturday">
+                                                        <div class="input-group date">
+                                                            <input type="time" id="sat-start" name="sat_start" value="21:00" class="form-control form-control-sm">
+                                                            <span class="input-group-addon">
+                                                                <span class="glyphicon glyphicon-time"></span>
+                                                            </span>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-day input-group-spaddon day_sunday">
+                                                        <div class="input-group date">
+                                                            <input type="time" id="sun-start" name="sun_start" value="23:00" class="form-control form-control-sm">
+                                                            <span class="input-group-addon">
+                                                                <span class="glyphicon glyphicon-time"></span>
+                                                            </span>
+                                                        </div>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
+                                        <div class=" form-group">
+                                            <div class="col-md-12 row">
+                                                <label class="col-sm-2">Time End</label>
+                                                <div class="col-sm-10 time-end workingtime">
+                                                    <div class="col-day input-group-spaddon day_monday">
+                                                        <div class="input-group date">
+                                                            <input type="time" id="mon-end" name="mon_end" value="19:00" class="form-control form-control-sm ">
+                                                            <span class="input-group-addon">
+                                                                <span class="glyphicon glyphicon-time"></span>
+                                                            </span>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-day input-group-spaddon day_tuesday">
+                                                        <div class="input-group date">
+                                                            <input type="time" id="tue-end" name="tue_end" value="21:00" class="form-control form-control-sm ">
+                                                            <span class="input-group-addon">
+                                                                <span class="glyphicon glyphicon-time"></span>
+                                                            </span>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-day input-group-spaddon day_wednesday">
+                                                        <div class="input-group date">
+                                                            <input type="time" id="wed-end" name="wed_end" value="21:00" class="form-control form-control-sm ">
+                                                            <span class="input-group-addon">
+                                                                <span class="glyphicon glyphicon-time"></span>
+                                                            </span>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-day input-group-spaddon day_thursday">
+                                                        <div class="input-group date">
+                                                            <input type="time" id="thu-end" name="thu_end" value="21:00" class="form-control form-control-sm ">
+                                                            <span class="input-group-addon">
+                                                                <span class="glyphicon glyphicon-time"></span>
+                                                            </span>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-day input-group-spaddon day_friday">
+                                                        <div class="input-group date">
+                                                            <input type="time" id="fri-end" name="fri_end" value="21:00" class="form-control form-control-sm ">
+                                                            <span class="input-group-addon">
+                                                                <span class="glyphicon glyphicon-time"></span>
+                                                            </span>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-day input-group-spaddon day_saturday">
+                                                        <div class="input-group date">
+                                                            <input type="time" id="sat-end" name="sat_end" value="21:00" class="form-control form-control-sm ">
+                                                            <span class="input-group-addon">
+                                                                <span class="glyphicon glyphicon-time"></span>
+                                                            </span>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-day input-group-spaddon day_sunday">
+                                                        <div class="input-group date">
+                                                            <input type="time" id="sun-end" name="sun_end" value="23:00" class="form-control form-control-sm ">
+                                                            <span class="input-group-addon">
+                                                                <span class="glyphicon glyphicon-time"></span>
+                                                            </span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <label class="col-sm-2">Description</label>
+                                            {{-- <label class="col-sm-8" id="description">Description</label> --}}
+                                            {{-- <div class="col-sm-10"> --}}
+                                                <textarea rows="4" class="form-control" id="description" placeholder="description" name="description"></textarea>
+                                                {{-- </div> --}}
+                                        </div>
+                                        <div>
+                                            <label class="col-sm-2">Url plugin</label>
+                                            <textarea rows="4" class="form-control" id="place_url_plugin" name="place_url_plugin"></textarea>
+                                        </div>
+                                        <div>
+                                            <label class="col-sm-2">Map Direction</label>
+                                            <textarea rows="4" class="form-control" id="place_map_direction" name="place_map_direction"></textarea>
+                                        </div>
                                     </div>
-                                </div>
-                                <div>
-                                    <label class="col-sm-2">Description</label>
-                                    <label class="col-sm-8" id="description">Description</label>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
-        </div>
-        {{--
-        <div class="modal-footer">
-            <button type="button" class="btn-sm btn btn-primary">Save changes</button>
-            <button type="button" class="btn-sm btn btn-secondary" data-dismiss="modal">Close</button>
-        </div>
-        --}}
+                <div class="modal-footer">
+                    <button type="submit" class="btn-sm btn btn-primary">Save changes</button>
+                    <button type="button" class="btn-sm btn btn-secondary" data-dismiss="modal">Close</button>
+                </div>
+        </form>
     </div>
 </div>
 </div>
@@ -840,6 +873,11 @@ function multiselectReload() {
 
 $(document).ready(function() {
     perviewImage();
+
+    $('input.timepicker').timepicker({
+        // format: 'LT'
+    });
+
     var type = null;
     var placeId = null;
     var userId = null;
@@ -993,7 +1031,8 @@ $(document).ready(function() {
 
     $(document).on('click', ".detail", function(e) {
         e.preventDefault();
-        var placeId = $(this).attr('data-id');
+        placeId = $(this).attr('data-id');
+        // license = $(this).attr("data-license");
         $.ajax({
             url: "{{ route('getDetailPlace') }}",
             method: "get",
@@ -1001,21 +1040,22 @@ $(document).ready(function() {
             data: { placeId },
             success: function(data) {
                 if (data.status == 1) {
-                    var hide_service_price = data.data.place.hide_service_price == 1 ? "On" : "Off";
+                    var hide_service_price = data.data.place.hide_service_price;
                     $("#detail").modal("show");
 
                     $("#logo img").attr('src', "{{env('URL_FILE_VIEW')}}" + data.data.place.place_logo);
                     $("#Favicon img").attr('src', "{{env('URL_FILE_VIEW')}}" + data.data.place.place_favicon);
-                    $("#business-name").text(data.data.place.place_name);
-                    $("#tax-code").text(data.data.place.place_taxcode);
-                    $("#price-floor").text(data.data.place.place_worker_mark_bonus);
-                    $("#hide-service-price").text(hide_service_price);
-                    $("#address").text(data.data.place.place_address);
-                    $("#email").text(data.data.place.place_email);
-                    $("#interest").text(data.data.place.place_interest);
+                    $("#business-name").val(data.data.place.place_name);
+                    $("#tax-code").val(data.data.place.place_taxcode);
+                    $("#price-floor").val(data.data.place.place_worker_mark_bonus);
+                    // $("#hide-service-price").val(hide_service_price);
+                    $("#address").val(data.data.place.place_address);
+                    $("#email").val(data.data.place.place_email);
+                    $("#interest").val(data.data.place.place_interest);
                     $("#description").text(data.data.place.place_description);
-                    $("#business-phone").text(data.data.place.place_phone);
-                    $("#website").text(data.data.place.place_website);
+                    $("#business-phone").val(data.data.place.place_phone);
+                    $("#website").val(data.data.place.place_website);
+                    $("#place_map_direction").val(data.data.place.place_map_direction);
 
                     var monClosed = data.data.place_actiondate.mon.closed;
                     var tueClosed = data.data.place_actiondate.tue.closed;
@@ -1040,79 +1080,108 @@ $(document).ready(function() {
                     var friEnd = data.data.place_actiondate.fri.end;
                     var satEnd = data.data.place_actiondate.sat.end;
                     var sunEnd = data.data.place_actiondate.sun.end;
+                    // alert(hide_service_price);                    
 
                     $("label").removeClass("active")
                     $(".time-start input").css("visibility", "");
                     $(".time-end input").css("visibility", "");
+                    $(".workingtime div").css("visibility", "");
 
                     if (monClosed == true) {
                         $("div[rel='monday']").find("label[rel='close']").addClass("active");
-                        $("#mon-start").css("visibility", "hidden");
-                        $("#mon-end").css("visibility", "hidden");
+                        // $("#mon-start").css("visibility", "hidden");
+                        // $("#mon-end").css("visibility", "hidden");
+                        $(".day_monday").css("visibility", "hidden");
+                        $("div[rel='monday']").find("input[value='0']").attr('checked', "checked");
                     } else {
                         $("div[rel='monday']").find("label[rel='open']").addClass("active");
                         $("#mon-start").val(monStart);
                         $("#mon-end").val(monEnd);
+                        $("div[rel='monday']").find("input[value='1']").attr('checked', "checked");
                     }
 
                     if (tueClosed == true) {
                         $("div[rel='tuesday']").find("label[rel='close']").addClass("active");
-                        $("#tue-start").css("visibility", "hidden");
-                        $("#tue-end").css("visibility", "hidden");
+                        // $("#tue-start").css("visibility", "hidden");
+                        // $("#tue-end").css("visibility", "hidden");
+                        $(".day_tuesday").css("visibility", "hidden");
+                        $("div[rel='tuesday']").find("input[value='0']").attr('checked', "checked");
                     } else {
                         $("div[rel='tuesday']").find("label[rel='open']").addClass("active");
                         $("#tue-start").val(tueStart);
                         $("#tue-end").val(tueEnd);
+                        $("div[rel='tuesday']").find("input[value='1']").attr('checked', "checked");
                     }
 
                     if (wedClosed == true) {
                         $("div[rel='wednesday']").find("label[rel='close']").addClass("active");
-                        $("#wed-start").css("visibility", "hidden");
-                        $("#wed-end").css("visibility", "hidden");
+                        // $("#wed-start").css("visibility", "hidden");
+                        // $("#wed-end").css("visibility", "hidden");
+                        $(".day_wednesday").css("visibility", "hidden");
+                        $("div[rel='wednesday']").find("input[value='0']").attr('checked', "checked");
                     } else {
                         $("div[rel='wednesday']").find("label[rel='open']").addClass("active");
                         $("#wed-start").val(wedStart);
                         $("#wed-end").val(wedEnd);
+                        $("div[rel='wednesday']").find("input[value='1']").attr('checked', "checked");
                     }
 
                     if (thuClosed == true) {
                         $("div[rel='thursday']").find("label[rel='close']").addClass("active");
-                        $("#thu-start").css("visibility", "hidden");
-                        $("#thu-end").css("visibility", "hidden");
+                        // $("#thu-start").css("visibility", "hidden");
+                        // $("#thu-end").css("visibility", "hidden");
+                        $(".day_thursday").css("visibility", "hidden");
+                        $("div[rel='thursday']").find("input[value='0']").attr('checked', "checked");
                     } else {
                         $("div[rel='thursday']").find("label[rel='open']").addClass("active");
                         $("#thu-start").val(thuStart);
                         $("#thu-end").val(thuEnd);
+                        $("div[rel='thursday']").find("input[value='1']").attr('checked', "checked");
                     }
 
                     if (friClosed == true) {
                         $("div[rel='friday']").find("label[rel='close']").addClass("active");
-                        $("#fri-start").css("visibility", "hidden");
-                        $("#fri-end").css("visibility", "hidden");
+                        // $("#fri-start").css("visibility", "hidden");
+                        // $("#fri-end").css("visibility", "hidden");
+                        $(".day_friday").css("visibility", "hidden");
+                        $("div[rel='friday']").find("input[value='0']").attr('checked', "checked");
                     } else {
                         $("div[rel='friday']").find("label[rel='open']").addClass("active");
                         $("#fri-start").val(friStart);
                         $("#fri-end").val(friEnd);
+                        $("div[rel='friday']").find("input[value='1']").attr('checked', "checked");
                     }
 
                     if (satClosed == true) {
                         $("div[rel='saturday']").find("label[rel='close']").addClass("active");
-                        $("#sat-start").css("visibility", "hidden");
-                        $("#sat-end").css("visibility", "hidden");
+                        // $("#sat-start").css("visibility", "hidden");
+                        // $("#sat-end").css("visibility", "hidden");
+                        $(".day_saturday").css("visibility", "hidden");
+                        $("div[rel='saturday']").find("input[value='0']").attr('checked', "checked");
                     } else {
                         $("div[rel='saturday']").find("label[rel='open']").addClass("active");
                         $("#sat-start").val(satStart);
                         $("#sat-end").val(satEnd);
+                        $("div[rel='saturday']").find("input[value='1']").attr('checked', "checked");
                     }
 
                     if (sunClosed == true) {
                         $("div[rel='sunday']").find("label[rel='close']").addClass("active");
-                        $("#sun-start").css("visibility", "hidden");
-                        $("#sun-end").css("visibility", "hidden");
+                        // $("#sun-start").css("visibility", "hidden");
+                        // $("#sun-end").css("visibility", "hidden");
+                        $(".day_sunday").css("visibility", "hidden");
+                        $("div[rel='sunday']").find("input[value='0']").attr('checked', "checked");
                     } else {
                         $("div[rel='sunday']").find("label[rel='open']").addClass("active");
                         $("#sun-start").val(sunStart);
                         $("#sun-end").val(sunEnd);
+                        $("div[rel='sunday']").find("input[value='1']").attr('checked', "checked");
+                    }
+
+                    if (hide_service_price == 1) {
+                        $("div[rel='hide-service-price']").find("label[rel='on']").addClass("active");
+                    } else {
+                        $("div[rel='hide-service-price']").find("label[rel='off']").addClass("active");
                     }
 
 
@@ -1551,36 +1620,72 @@ $(document).ready(function() {
         $("#extension_service").modal('hide');
     });
 
-    // $('#cateservices-multiselect').multiselect({
-    //     buttonWidth: '100%',
-    // });
-    $(document).on('click','.switchery',function(){
+    $('#cateservices-multiselect').multiselect({
+        buttonWidth: '100%',
+    });
+    $(document).on('click', '.switchery', function() {
 
         let place_id = $(this).siblings('input').attr('place_id');
         let place_status = $(this).siblings('input').attr('place_status');
 
         $.ajax({
-            url: '{{route('change_place_status')}}',
-            type: 'POST',
-            dataType: 'html',
-            data: {
-                place_id: place_id,
-                place_status: place_status,
-                _token: '{{csrf_token()}}'
-            },
-        })
-        .done(function(data) {
-            data = JSON.parse(data);
-            if(data.status === 'error')
-                toastr.error(data.message);
-            else
-                toastr.success(data.message);
+                url: "{{route('change_place_status')}}",
+                type: 'POST',
+                dataType: 'html',
+                data: {
+                    place_id: place_id,
+                    place_status: place_status,
+                    _token: '{{csrf_token()}}'
+                },
+            })
+            .done(function(data) {
+                data = JSON.parse(data);
+                if (data.status === 'error')
+                    toastr.error(data.message);
+                else
+                    toastr.success(data.message);
 
-            placeTable.draw();
+                placeTable.draw();
+            })
+            .fail(function() {
+                console.log('Faield! Change Status Faield');
+            });
+    });
+
+    $('.working-day input').on("change", function(e) {
+        // alert('ff');
+        var day = $(this).parent().parent().attr("rel");
+        // alert(day);
+        $(".day_" + day).css('visibility', $(e.target).val() == 1 ? 'visible' : 'hidden');
+
+        $(this).parent().parent().find(".active").removeClass("active");
+        $(this).parent().addClass("active");
+    });
+
+    $("#form-detail-place").on("submit", function(e) {
+        e.preventDefault();
+        var form = $(this)[0];
+        var form_data = new FormData(form);
+        form_data.append('placeId', placeId);
+
+        $.ajax({
+            url: "{{route('saveDetailPlace')}}",
+            method: "POST",
+            data: form_data,
+            cache: false,
+            contentType: false,
+            processData: false,
+            dataType: "json",
+            success: function(data) {
+                if (data.status) {
+                    toastr.success("Saved successfully");
+                    $("#detail").modal("hide");
+                }
+            },
+            error: function() {
+                toastr.error("Failed to save");
+            }
         })
-        .fail(function() {
-            console.log('Faield! Change Status Faield');
-        });
     });
 });
 
