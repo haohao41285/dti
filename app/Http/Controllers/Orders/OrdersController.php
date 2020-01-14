@@ -211,7 +211,7 @@ class OrdersController extends Controller
             'csb_combo_service_id' => $combo_service_list,
             'csb_amount' => $request->service_price_hidden,
             'csb_charge' => $request->payment_amount_hidden,
-            'csb_cashback' => 0,
+            'csb_cashback' => 0, 
             'csb_status' => $status,
             'created_by' => Auth::user()->user_id,
         ];

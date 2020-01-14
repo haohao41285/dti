@@ -365,6 +365,7 @@ class SetupTeamController  extends Controller
             }
 			return response(['status'=>'success','message'=>'Success!']);
 		}
+<<<<<<< HEAD
 	}
 	public function indexCskh(){
 		return view('setting.setup-cskh-team'); 
@@ -451,6 +452,8 @@ class SetupTeamController  extends Controller
 				return $row->getFullname();
 			})
 			->make(true);
+=======
+>>>>>>> ae13fac67dc011a70acfb21e2f23fff74fc1b5a9
 	}
 	public function indexCskh(){
 		return view('setting.setup-cskh-team'); 

@@ -58,6 +58,10 @@
     </div>
     </form>
     <hr>
+<<<<<<< HEAD
+=======
+
+>>>>>>> ae13fac67dc011a70acfb21e2f23fff74fc1b5a9
   <div style="height:700px" style="overflow:auto">
     <table class="table table-sm table-hover" id="dataTableAllCustomer" width="100%" cellspacing="0">
         <thead>
