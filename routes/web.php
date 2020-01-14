@@ -360,6 +360,7 @@ Route::group(['middleware' => ['auth']], function () {
         Route::get('role-datatable','UserController@roleDatatable')->name('role-datatable');
         Route::get('change-status-role','UserController@changeStatusRole')->name('change-status-role');
         Route::get('add-role','UserController@addRole')->name('add-role');
+        Route::post('delete-role','UserController@deleteRole')->name('delete-role');
 
         Route::get('user-add/{id?}','UserController@userAdd')->where(['id'=>'[0-9]+'])->name('user-add');
         Route::post('user-save','UserController@userSave')->name('user-save');
@@ -490,4 +491,7 @@ Route::get('add-slug','ChangeDataController@addSlug');*/
 Route::get('add-customer-status','ChangeDataController@addCustomerStatus');
 Route::get('add-customer-to-user','ChangeDataController@addCustomerToUser');
 Route::get('replace-character-space','ChangeDataController@replaceCharacterSpace');
+Route::get('transfer-customer-id','ChangeDataController@tranferCustomerId');
+Route::get('check-customer','ChangeDataController@checkCustomer');
+Route::get('merge-customer','ChangeDataController@mergeCustomer');
 

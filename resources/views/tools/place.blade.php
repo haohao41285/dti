@@ -159,7 +159,7 @@
                                         <div class="row col-12 row-detail">
                                             <label class="col-sm-4">Price floor($)</label>
                                             {{-- <label class="col-sm-8" id="price-floor">Price floor</label> --}}
-                                            <input type="number" name="price_floor" class="col-sm-8 form-control-sm form-control" id="price-floor">
+                                            <input type="text" onkeypress="return isNumberKey(event)" name="price_floor" class="col-sm-8 form-control-sm form-control" id="price-floor">
                                         </div>
                                     </div>
                                     <div class="col-6">
@@ -188,7 +188,7 @@
                                         <div class="row col-12 row-detail">
                                             <label class="col-sm-4">Interest($)</label>
                                             {{-- <label class="col-sm-8" id="interest">Interest($)</label> --}}
-                                            <input type="number" name="interest" class="col-sm-8 form-control-sm form-control" id="interest">
+                                            <input type="text" onkeypress="return isNumberKey(event)" name="interest" class="col-sm-8 form-control-sm form-control" id="interest">
                                         </div>
                                     </div>
                                 </div>

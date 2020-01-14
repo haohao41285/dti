@@ -139,10 +139,6 @@ class CustomerController extends Controller
             ->editColumn('id',function ($row) use ($team_slug){
                 if($row->$team_slug == 4)
                     return '<i class="fas fa-plus-circle details-control text-danger" id="'.$row->id.'" ></i><a href="'.route('customer-detail',$row->id).'"> '.$row->id.'</a>';
-<<<<<<< HEAD
-
-=======
->>>>>>> ae13fac67dc011a70acfb21e2f23fff74fc1b5a9
                 else
                     return '<a href="javascript:void(0)">'.$row->id.'</a>';
             })

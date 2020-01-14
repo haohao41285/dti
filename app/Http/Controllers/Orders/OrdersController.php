@@ -110,7 +110,7 @@ class OrdersController extends Controller
 
         $data['customer_info'] = MainCustomerTemplate::find($customer_id);
 
-        if (!is_null($data['customer_info']->getMainCustomer)) {
+        if ( isset($data['customer_info']) && !is_null($data['customer_info']->getMainCustomer)) {
 
             //GET PLACES'S CUSTOMER OF USER
             $places_arr = MainUserCustomerPlace::where([

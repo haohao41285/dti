@@ -310,4 +310,62 @@ class ChangeDataController extends Controller
         }
         return $new_phone_arr;
     }
+    public function tranferCustomerId(){
+        $customer_list = DB::table('main_customer_template')->get();
+
+        foreach ($customer_list->chunk(10000) as $key => $customers) {
+            foreach ($customers as $key => $customer) {
+                MainCustomerTemplate::where('id',$customer->id)->update(['old_customer_id'=>$customer->id]);
+            }
+            sleep(2);
+        }
+    }
+    public function checkCustomer(){
+
+        $old_customer = DB::table('main_customer')->get();
+        $old_cutomer = collect($old_customer);
+        $new_customer = DB::table('main_customer_new')->get();
+        $new_customer = collect($new_customer);
+
+        $customer_arr = [];
+
+        foreach ($new_customer as $key => $customer) {
+            $check_phone = $old_customer->where('customer_phone',$customer->customer_phone)->count();
+
+            if( $check_phone > 0 )
+                $customer_arr[] = [
+                    'id' => $customer->id,
+                    'customer_phone' => $customer->customer_phone
+                ];
+
+        }
+        return $customer_arr;
+
+
+    }
+    public function mergeCustomer(){
+        $max_customer_id = DB::table('main_customer_template')->max('id'); //915 - main__customer //24806 - main_customer_template
+
+        $new_customer = DB::table('main_customer_new')->get();
+        $customer_arr = [];
+
+       /* foreach ($new_customer as $key => $customer) {
+            $customer_arr[] = [
+                'customer_id' => $customer->customer->id,
+                'customer_lastname' => $customer->customer_lastname,
+                'customer_firstname' => $customer->customer_firstname,
+                'customer_email' => $customer->customer_email,
+                'customer_phone' => $customer->customer_phone,
+                'customer_address' => $customer->customer_address,
+                'customer_city' => $customer->customer_city,
+                'customer_zip' => $customer->,
+                'customer_state' => $customer->,
+                'customer_agent' => $customer->,
+                'customer_type' => $customer->,
+                'customer_status' => $customer->,
+                'customer_customer_template_id' => $customer->,
+                'created_at' => $customer->,
+            ];
+        }*/
+    }
 }

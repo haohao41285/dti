@@ -148,7 +148,8 @@ class UserController extends Controller
     				return '<input type="checkbox" gu_id="'.$row->gu_id.'" gu_status="'.$row->gu_status.'" class="js-switch"'.$checked.'/>';
     			})
     			->addColumn('action',function($row){
-    				return '<a class="btn btn-sm btn-secondary role-edit" href="javascript:void(0)"><i class="fas fa-edit"></i></a>';
+    				return '<a class="btn btn-sm btn-secondary role-edit" href="javascript:void(0)"><i class="fas fa-edit"></i></a>
+                            <a class="btn btn-sm btn-secondary role-delete" role-id="'.$row->gu_id.'" href="javascript:void(0)"><i class="fas fa-trash"></i></a>';
     	        })
     	        ->rawColumns(['gu_status','action'])
     	        ->make(true);
@@ -186,6 +187,12 @@ class UserController extends Controller
     	$gu_id = $request->gu_id;
     	$gu_name = $request->gu_name;
     	$gu_descript = $request->gu_descript;
+
+        //CHECK EXISTED ROLE NAME
+        $check_role = MainGroupUser::where([['gu_id','!=',$gu_id],['gu_name',$gu_name]])->count();
+
+        if($check_role > 0)
+            return response(['status'=>'error','message'=>'Failed! Role name has been taken!']);
 
     	if($gu_id > 0){
 
@@ -475,5 +482,16 @@ class UserController extends Controller
             return response(['status'=>'error','message'=>'Set Permission Failed!']);
         else
             return response(['status'=>'success','message'=>'Set Successfully!']);
+    }
+    public function deleteRole(Request $request){
+
+        if(!$request->gu_id)
+            return response(['status'=>'error','message'=>'Not exist role to delete!']);
+        $delete_role = MainGroupUser::where('gu_id',$request->gu_id)->delete();
+
+        if(!$delete_role)
+            return response(['status'=>'error','message'=>'Failed! Delete Role Failed!']);
+
+        return response(['status'=>'success','message'=>'Successfully! Delete Role Successfully!']);
     }
 }
