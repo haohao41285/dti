@@ -52,6 +52,7 @@
                     <button type="submit" class="btn-sm btn btn-primary">Save changes</button>
                     <button type="button" class="btn-sm btn btn-secondary" data-dismiss="modal">Close</button>
                     <input type="hidden" name="action" value="Create">
+                    <input type="hidden" name="id">
                 </div>
             </form>
         </div>
@@ -133,7 +134,7 @@ $(document).ready(function() {
         ajax: {
             url: "{{ route('appBackground.datatable') }}",
             data: function(data) {
-                // data.appId = appId;
+
             },
         },
         columns: [
@@ -155,24 +156,24 @@ $(document).ready(function() {
         $("#save").find('input[name="action"]').val("Create");
     });
 
-    $(document).on('click', '.edit-app', function(e) {
+    $(document).on('click', '.edit-data', function(e) {
         e.preventDefault();
         clear()
         var id = $(this).attr("data-id");
-        var name = $(this).parent().parent().find(".name").text();
-        var desc = $(this).parent().parent().find(".desc").text();
+        var image = $(this).parent().parent().find(".image img").attr('src');
+        // alert(image);
 
-        $("input[name='name']").val(name);
-        $("input[name='desc']").val(desc);
+        $("#save").find('input[name="id"]').val(id);
+        $("#save").find('.previewImage img').attr('src', image);
 
-        $("#app-modal").modal("show");
-        $("#save-app").find('.modal-title').text("Edit App");
-        $("#save-app").find('input[name="action"]').val("Update");
-        $("#save-app").find('input[name="appId"]').val(id);
+        $("#modal-save").modal("show");
+        $("#save").find('.modal-title').text("Edit App");
+        $("#save").find('input[name="action"]').val("Update");
+
     });
 
 
-    $(document).on("click", ".delete-app", function(e) {
+    $(document).on("click", ".delete-data", function(e) {
         e.preventDefault();
         var id = $(this).attr("data-id");
         var url = "{{ route('appBackground.delete') }}";
@@ -192,7 +193,7 @@ $(document).ready(function() {
         var url = "{{ route('appBackground.save') }}";
         save(form_data, url);
         $("#modal-save").modal("hide");
-        table.ajax.reload(null, false);
+        table.draw();
     });
 
 

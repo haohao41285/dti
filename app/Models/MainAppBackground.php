@@ -26,7 +26,10 @@ class MainAppBackground extends Model
                     return '<a class="btn btn-sm btn-secondary edit-data" data-id="'.$data->id.'" href="#"><i class="fas fa-edit"></i></a>
                     <a class="btn btn-sm btn-secondary delete-data" data-id="'.$data->id.'" href="#"><i class="fas fa-trash"></i></a>';
             })
-        ->rawColumns(['action'])
+        ->editColumn('image',function($data){
+            return "<img style='height: 5rem;' src='".env('URL_FILE_VIEW').$data->image."'>";
+        })
+        ->rawColumns(['action','image'])
         ->make(true);
     }
 
@@ -38,7 +41,7 @@ class MainAppBackground extends Model
         return $this->find($id);
     }
 
-    public function saveByArr($arr){
+    public function createByArr($arr){
         return $this->create($arr);
     }
 
@@ -49,6 +52,7 @@ class MainAppBackground extends Model
     public function updateById($id,$arr){
         return $this->find($id)->update($arr);
     }
+
 
         
 }
