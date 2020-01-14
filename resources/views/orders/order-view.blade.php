@@ -125,14 +125,17 @@
                 <th></th>
                 <th>{{$order_info->customer_phone}}</th>
             </tr>
+            @if(\Gate::allows('permission','order-invoice'))
             <tr>
                 <td colspan="2">ORDER NOTES: {{$order_info->csb_note}}</td>
                 <td>
                     <a href="{{route('dowload-invoice',$id)}}"><button class="btn btn-sm btn-info"><i class="fas fa-file-pdf text-danger"></i> PRINT INVOICE</button></a>
                     <button class="btn btn-sm btn-info resend-invoice"><i class="fas fa-envelope text-danger"></i> RESEND INVOICE</button>
                 </td>
-                <td class="align-left"><i class="text-primary">Last sent invoice:</i></td>
+                <td></td>
+                {{-- <td class="align-left"><i class="text-primary">Last sent invoice:</i></td> --}}
             </tr>
+            @endif
         </tbody>
     </table>
     {{--<table class="table mt-4 table table-hover" id="service-datatable" widtd="100%" cellspacing="0">
@@ -146,19 +149,19 @@
         </thead>
 
     </table>--}}
-    <table class="table mt-4 table-hover table-bordered" id="" widtd="100%" cellspacing="0">
+    <table class="table mt-4 table-sm table-hover table-bordered" id="" widtd="100%" cellspacing="0">
         <thead  class="thead-light">
-            <tr>
+            <tr class="text-center">
                 <th>TASK#</th>
                 <th>SERVICE</th>
                 <th>ACTION</th>
-                <th class="text-center">PRIORITY</th>
-                <th class="text-center">STATUS</th>
-                <th class="text-center">DATE START</th>
-                <th class="text-center">DATE END</th>
-                <th class="text-center">%COMPLETE</th>
-                <th class="text-center">ASSIGNE</th>
-                <th class="text-center">LAST UPDATE</th>
+                <th>PRIORITY</th>
+                <th>STATUS</th>
+                <th>DATE START</th>
+                <th>DATE END</th>
+                <th>%COMPLETE</th>
+                <th>ASSIGNE</th>
+                <th>LAST UPDATE</th>
 {{--                <th class="text-center">ACTION</th>--}}
             </tr>
         </thead>
@@ -177,21 +180,10 @@
                 <td>{{$task->complete_percent}}</td>
                 <td>{{$task->getUser->user_nickname}}</td>
                 <td class="text-left">{{format_datetime($task->updated_at)}} by {{$task->user_nickname}}</td>
-{{--                <td class="text-primary add-comment" order_id="{{$id}}" created_by="{{$task->created_by}}" task_id="{{$task->id}}" assign_to="{{$task->assign_to}}" ><a href="javascript:void(0)" title="">Add comment</a></td>--}}
             </tr>
             @endforeach
         </tbody>
     </table>
-{{--    <table class="table mt-4 table-bordered table-hover" id="tracking_history" width="100%" cellspacing="0">--}}
-{{--        <thead  class="thead-light">--}}
-{{--            <tr>--}}
-{{--                <th hidden></th>--}}
-{{--                <th style="width:20%">TRACKING HISTORY</th>--}}
-{{--                <th style="width:10%"></th>--}}
-{{--                <th style="width:70%"></th>--}}
-{{--            </tr>--}}
-{{--        </thead>--}}
-{{--    </table>--}}
 </div>
 
 @endsection
@@ -327,8 +319,6 @@
                 },
             })
                 .done(function(data) {
-                    // console.log(data);
-                    // return;
                     data = JSON.parse(data);
                     if(data.status == 'error')
                         toatr.error(data.mesage);
@@ -341,8 +331,6 @@
                             setDate: new Date(),
                         });
                         $("#modal-input-form").modal('show');
-                        // if(data.content == null)
-                        //     console.log('Ok');
                     }
                 })
                 .fail(function() {
@@ -352,9 +340,8 @@
 
         });
         function getHtmlForm(input_form_type,content){
-            content = JSON.parse(content);
-            console.log(content);
 
+            content = JSON.parse(content);
              var content_html = "";
 
             if(input_form_type == 1){
@@ -393,14 +380,14 @@
                     order_review_html = '<input type="number" class="form-control form-control-sm col-md-6"  id="number_of_reviews" name="order_review" value="">';
 
                 if(content !== null && typeof(content['complete_date']) != "undefined" && content['complete_date'] !== null)
-                    complete_date_html = "<b>"+content['complete_date']+"</b>";
+                    complete_date_html = "<b>"+content['complete_date']+"</b><input type='hidden'  name='complete_date' value='"+content['complete_date']+"' >";
                 else
                     complete_date_html = '<input type="text" class="form-control form-control-sm col-md-6" id="datepicker_form" name="complete_date" >';
 
                 if(content !== null && typeof(content['desription']) != "undefined" && content['desription'] !== null)
                     description_html = "<span class='text-danger'>"+content['desription']+"</span>";
                 else
-                    description_html = '<textarea class="form-control form-control-sm desription" name="desription" rows="3"></textarea>'
+                    description_html = '<textarea class="form-control form-control-sm desription" name="desription" rows="3"></textarea>';
 
                 content_html = `
                 <div class="form-group">

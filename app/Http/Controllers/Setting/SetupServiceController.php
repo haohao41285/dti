@@ -13,6 +13,7 @@ use DataTables;
 use DB;
 use Auth;
 use Gate;
+use App\Models\MainMenuAppINailSo;
 
 class SetupServiceController extends Controller
 {
@@ -29,14 +30,23 @@ class SetupServiceController extends Controller
             return doNotPermission();
 
 		$combo_service_arr = [];
-//		$service_combo_list = MainComboService::leftjoin('main_user',function($join){
-//			$join->on('main_combo_service.cs_assign_to','main_user.user_id');
-//		})
-//			->select('main_combo_service.*','main_user.user_nickname','main_user.user_id')
-//			->get();
-        $service_combo_list = MainComboService::where('cs_status',1)->get();
 
-		foreach ($service_combo_list as $key => $service_combo) {
+        //GET COMBO SERVICE COLLECTION
+        $combo_service_list = DB::table('main_combo_service')->where('cs_status',1)->get();
+        $combo_service_list = collect($combo_service_list);
+
+        //GET USER COLLECTION
+        $user_list = DB::table('main_user')
+        			->where('user_status',1)
+        			->select('user_id','user_nickname','user_lastname','user_firstname')
+        			->get();
+        $user_list = collect($user_list);
+
+        //GET COMBO SERVICE TYPE
+        $combo_service_type = DB::table('main_combo_service_type')->where('status',1)->get();
+        $combo_service_type = collect($combo_service_type);
+
+		foreach ($combo_service_list as $key => $service_combo) {
 
 			$service_name_arr = "";
 
@@ -44,7 +54,7 @@ class SetupServiceController extends Controller
 
 				$service_id = explode(";",$service_combo->cs_service_id);
 
-				$service_name = MainComboService::whereIn('id',$service_id)->get();
+				$service_name = $combo_service_list->whereIn('id',$service_id);
 
 				foreach ($service_name as $key => $value) {
 					$service_name_arr .= "<span>- ".$value->cs_name."</span><br>";
@@ -54,9 +64,10 @@ class SetupServiceController extends Controller
             $cs_assign_id = [];
 			if(!empty($service_combo->cs_assign_to)){
 			    $assign_arr = explode(';',$service_combo->cs_assign_to);
-			    $assign_list = MainUser::whereIn('user_id',$assign_arr)->select('user_id','user_nickname','user_lastname','user_firstname')->get();
+			    $assign_list = $user_list->whereIn('user_id',$assign_arr);
 			    foreach($assign_list as $assign){
-                    $cs_assign_to .= "<span class='text-capitalize'>".$assign->user_nickname."(".$assign->getFullname().")</span><br>";
+                    $cs_assign_to .= "<span class='text-capitalize'>".$assign->user_nickname."(".$assign->user_firstname."
+                    ".$assign->user_lastname.")</span><br>";
                     $cs_assign_id[] = $assign->user_id;
                 }
 
@@ -73,7 +84,7 @@ class SetupServiceController extends Controller
 				'cs_assign_id' => implode(';',$cs_assign_id),
 				'cs_status' => $service_combo->cs_status,
                 'cs_form_type' => $service_combo->cs_form_type,
-                'cs_combo_service_type' => $service_combo->getComboServiceType['name'],
+                'cs_combo_service_type' => $combo_service_type->where('id',$service_combo->cs_combo_service_type)->first()->name,
                 'cs_expiry_period' => $service_combo->cs_expiry_period,
                 'cs_combo_service_type_id' => $service_combo->cs_combo_service_type
 			];
@@ -159,15 +170,15 @@ class SetupServiceController extends Controller
 		}
 		else{//SERVICE
 			$menu_html = "";
-			$menu_list = PosMerchantMenus::orderBy('mer_menu_index','asc')->get();
-			$menu_list = collect($menu_list);
-			$menu_parents = $menu_list->where('mer_menu_parent_id',0);
 
-			//GET MENU ID LIST
 			$cs_info = MainComboService::find($cs_id);
+			//GET MENU WEBSITE ID LIST
 			$cs_menu_id = $cs_info->cs_menu_id;
 			$menu_id_arr = explode(";", $cs_menu_id);
 
+			$menu_list = PosMerchantMenus::orderBy('mer_menu_index','asc')->get();
+			$menu_list = collect($menu_list);
+			$menu_parents = $menu_list->where('mer_menu_parent_id',0);
 
 			foreach ($menu_parents as $key => $menu_parent) {
 				$check = "";
@@ -175,13 +186,29 @@ class SetupServiceController extends Controller
 				if(in_array($menu_parent->mer_menu_id, $menu_id_arr))
 					$check = "checked";
 				$menu_html .= '<div class="checkbox">
-	                    <label><input type="checkbox" '.$check.' parent_id="0" class="service_id " id="'.$id.'"  style="height: 20px;width: 20px" value="'.$menu_parent->mer_menu_id.'">'.$menu_parent->mer_menu_text.'</label>
+	                    <label><input type="checkbox" '.$check.' parent_id="0" class="service_id " id="'.$id.'"  style="height: 20px;width: 20px" name="cs_menu_id[]" value="'.$menu_parent->mer_menu_id.'">'.$menu_parent->mer_menu_text.'</label>
 	                </div>';
-	             $menu_html .= self::getMenuSon($menu_list,$menu_parent->mer_menu_id,$menu_id_arr);
-
+	            $menu_html .= self::getMenuSon($menu_list,$menu_parent->mer_menu_id,$menu_id_arr);
 			}
-			if($menu_html != ""){
-				$data['menu_html'] = $menu_html;
+			$data['menu_website_html'] = $menu_html;
+
+			//GET MENU ID APP iNAILsO
+			$menu_app_html = "";
+			$menus = MainMenuAppINailSo::active()->get();
+			$menu_app_arr = explode(';', $cs_info->cs_menu_inailso_app);
+
+			foreach ($menus as $key => $menu) {
+				$check = "";
+				$id = ''.$menu->id;
+				if(in_array($menu->id, $menu_app_arr))
+					$check = "checked";
+				$menu_app_html .= '<div class="checkbox">
+	                    <label><input type="checkbox" '.$check.'  class="service_id" id="'.$id.'" name="cs_menu_inailso_app[]"  style="height: 20px;width: 20px" value="'.$menu->id.'">'.$menu->name.'</label>
+	                </div>';
+			}
+			$data['menu_app_html'] = $menu_app_html;
+
+			if(isset($data)){
 				return response($data);
 			}
 			else
@@ -211,7 +238,7 @@ class SetupServiceController extends Controller
 
 	public function saveServiceCombo(Request $request)
 	{
-//	    return $request->all();
+		// return $request->all();
         if(Gate::denies('permission','setup-service-update'))
             return doNotPermissionAjax();
 
@@ -262,11 +289,17 @@ class SetupServiceController extends Controller
         else
             $cs_menu_id = '';
 
+        if(isset($request->cs_menu_inailso_app))
+        	$cs_menu_inailso_app = implode(';',$request->cs_menu_inailso_app);
+        else
+        	$cs_menu_inailso_app = "";
+
         if($cs_id == 0)
             $cs_update = MainComboService::insert([
                 'cs_name'=>$cs_name,
                 'cs_service_id'=>$service_id_list,
-                'cs_menu_id'=>$cs_menu_id,
+                'cs_menu_id'=> $cs_type == 1?null:$cs_menu_id,
+                'cs_menu_inailso_app' => $cs_type == 1?null:$cs_menu_inailso_app,
                 'cs_expiry_period' => $request->cs_expiry_period,
                 'cs_price'=>$cs_price,
                 'cs_type'=>$cs_type,
@@ -274,7 +307,7 @@ class SetupServiceController extends Controller
                 'cs_description'=>$cs_description,
                 'cs_assign_to'=>$cs_assign_to,
                 'cs_combo_service_type'=>$cs_combo_service_type,
-                'cs_form_type' => $cs_form_type
+                'cs_form_type' => $cs_form_type??0,
             ]);
         else{
             if($cs_type == 1)
@@ -296,7 +329,8 @@ class SetupServiceController extends Controller
                     'cs_assign_to'=>$cs_assign_to,
                     'cs_combo_service_type' => $cs_combo_service_type,
                     'cs_form_type' => $cs_form_type,
-                    'cs_expiry_period' => $request->cs_expiry_period
+                    'cs_expiry_period' => $request->cs_expiry_period,
+                    'cs_menu_inailso_app' => $cs_menu_inailso_app
                 ]);
         }
 		if(!isset($cs_update))
@@ -319,6 +353,7 @@ class SetupServiceController extends Controller
 		else
 			return response($data);
 		}else{
+			//GET MENU ID WEBSITE
 			$menu_html = "";
 			$menu_list = PosMerchantMenus::orderBy('mer_menu_index','asc')->get();
 			$menu_list = collect($menu_list);
@@ -332,11 +367,23 @@ class SetupServiceController extends Controller
 				if(in_array($menu_parent->mer_menu_id, $menu_id_arr))
 					$check = "checked";
 				$menu_html .= '<div class="checkbox">
-	                    <label><input type="checkbox" name="cs_menu_id[]" '.$check.' parent_id="0" class="service_id " id="'.$id.'"  style="height: 20px;width: 20px" value="'.$menu_parent->mer_menu_id.'">'.$menu_parent->mer_menu_text.'</label>
+	                    <label><input type="checkbox" name="cs_menu_id[]" '.$check.' parent_id="0" class="service_id " id="'.$id.'"  style="height: 20px;width: 20px" value="'.$menu_parent->mer_menu_id.'"> '.$menu_parent->mer_menu_text.'</label>
 	                </div>';
 	             $menu_html .= self::getMenuSon($menu_list,$menu_parent->mer_menu_id,$menu_id_arr);
 			}
-			$data['menu_html'] = $menu_html;
+			$data['menu_website_html'] = $menu_html;
+
+			//GET MENU ID iNailSo APP
+			$menu_app_html = "";
+			$menu_app_arr = [];
+
+			$menu_list_app = MainMenuAppINailSo::active()->get();
+			foreach ($menu_list_app as $key => $menu) {
+				$menu_app_html .= '<div class="checkbox">
+	                    <label><input type="checkbox" name="cs_menu_inailso_app[]" class="service_id " id="'.$menu->id.'"  style="height: 20px;width: 20px" value="'.$menu->id.'"> '.$menu->name.'</label>
+	                </div>';
+			}
+			$data['menu_app_html'] = $menu_app_html;
 
 			return response($data);
 		}
@@ -396,5 +443,42 @@ class SetupServiceController extends Controller
 	        return response(['status'=>'error','message'=>'Save Service Type Failed!']);
 	    else
 	        return response(['status'=>'success','message'=>'Save Service Type Successfully!']);
+    }
+    public function menuApp(Request $request){
+
+    	$type_app = $request->type_app;
+    	$menu_html = "";
+
+    	if($type_app == 1){
+			$menu_list = PosMerchantMenus::orderBy('mer_menu_index','asc')->get();
+			$menu_list = collect($menu_list);
+			$menu_parents = $menu_list->where('mer_menu_parent_id',0);
+
+			$menu_id_arr = [];
+
+			foreach ($menu_parents as $key => $menu_parent) {
+				$check = "";
+				$id = ''.$menu_parent->mer_menu_id;
+				if(in_array($menu_parent->mer_menu_id, $menu_id_arr))
+					$check = "checked";
+				$menu_html .= '<div class="checkbox">
+	                    <label><input type="checkbox" name="cs_menu_id[]" '.$check.' parent_id="0" class="service_id " id="'.$id.'"  style="height: 20px;width: 20px" value="'.$menu_parent->mer_menu_id.'">'.$menu_parent->mer_menu_text.'</label>
+	                </div>';
+	             $menu_html .= self::getMenuSon($menu_list,$menu_parent->mer_menu_id,$menu_id_arr);
+			}
+    	}
+    	elseif($type_app == 2){
+
+    		$menus = MainMenuAppINailSo::active()->get();
+
+    		foreach ($menus as $key => $menu) {
+    			$menu_html .= '<div class="checkbox">
+	                    <label><input type="checkbox" name="cs_menu_id[]" class="service_id " id="'.$menu->id.'"  style="height: 20px;width: 20px" value="'.$menu->id.'">'.$menu->name.'</label>
+	                </div>';
+    		}
+    	}
+		$data['menu_html'] = $menu_html;
+
+		return $data;
     }
 }

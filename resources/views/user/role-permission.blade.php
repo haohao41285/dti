@@ -9,7 +9,7 @@ User Permission
     <div class="card-header py-3">
     	<h5><b>Permission for <i class="text-danger">{{$role_name}}</i> role</b></h5>
     </div>
-      <table class="table table-hover table-bordered">
+      <table class="table table-sm table-hover table-bordered">
           <thead>
                 <th>Permissions</th>
             @foreach($permission_arr as $permission)

@@ -154,7 +154,6 @@
                     data: {customer_phone: customer_phone},
                 })
                     .done(function(data) {
-
                         data = JSON.parse(data);
 
                         if(data.status == 'error'){

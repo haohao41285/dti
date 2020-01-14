@@ -36,6 +36,11 @@
 // SB Admin 2
 @import "../../node_modules/startbootstrap-sb-admin-2/css/sb-admin-2";
 
-
 // Import toastr
 @import "~toastr/toastr.scss";
+
+//Import Dropzone
+@import "../../node_modules/dropzone/dist/dropzone";
+
+//Import iCheck
+@import "../../node_modules/icheck/skins/flat/_all";

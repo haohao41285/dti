@@ -6,7 +6,7 @@
     <div class="row">
         <div class="col-md-6">
             <h5><b>Role List</b></h5>
-            <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+            <table class="table table-bordered table-sm table-hover" id="dataTable" width="100%" cellspacing="0">
                 <thead>
                 <tr>
                     <th class="text-center">ID</th>

@@ -38,7 +38,7 @@ Route::group(['middleware' => ['auth']], function () {
          Route::get('merchants', 'CustomerController@listMerchant')->name('merchants');
          Route::get('add', 'CustomerController@addCustomer')->name('addCustomer');
          Route::get('edit', 'CustomerController@editCustomer')->where(['id'=>'[0-9]+'])->name('editCustomer');
-         Route::get('customers/datatable', 'CustomerController@customersDatatable')->name('customersDatatable');
+         Route::post('customers/datatable', 'CustomerController@customersDatatable')->name('customersDatatable');
          Route::get('get-customer-detail', 'CustomerController@getCustomerDetail')->name('get-customer-detail');
          Route::get('add-customer-to-my', 'CustomerController@addCustomerToMy')->name('add-customer-to-my');
          Route::get('get-my-customer', 'CustomerController@getMyCustomer')->name('get-my-customer');
@@ -57,7 +57,7 @@ Route::group(['middleware' => ['auth']], function () {
          Route::post('add-customer-note', 'CustomerController@addCustomerNote')->name('add-customer-note');
          Route::post('move-customers', 'CustomerController@moveCustomers')->name('move-customers');
 
-         Route::get('move-customer-all', 'CustomerController@moveCustomerAll')->name('move-customer-all');
+         Route::get('move-customer-all', 'CustomerController@moveCustomerAll');
          Route::get('get-user-team', 'CustomerController@getUserTeam')->name('get-user-team');
          Route::get('get-customer-1', 'CustomerController@getCustomer1')->name('get_customer_1');
          Route::get('get-customer-2', 'CustomerController@getCustomer2')->name('get_customer_2');
@@ -68,7 +68,7 @@ Route::group(['middleware' => ['auth']], function () {
          Route::post('move-place','CustomerController@movePlace')->name('move_place');
          Route::get('get_user_form_team','CustomerController@getUserFromTeam')->name('get_user_form_team');
          Route::post('save-my-business','CustomerController@saveMyBusiness')->name('save_my_business');
-
+         Route::get('get-import-template-customer','CustomerController@getImportTemplateCustomer')->name('get_import_template_customer');
 
 
     });
@@ -179,6 +179,8 @@ Route::group(['middleware' => ['auth']], function () {
 
             Route::get('/get-service-place', 'PlaceController@getServicePlace')->name('get-service-place');
             Route::post('/save-expire-date', 'PlaceController@saveExpireDate')->name('save-expire-date');
+            Route::post('/change-place-status', 'PlaceController@changePlaceStatus')->name('change_place_status');
+            Route::get('/place-webbuilder/{place_id}', 'PlaceController@placeWebbuilder')->name('place.webbuilder');
         });
 
         Route::group(['prefix' => 'auto-template'], function() {
@@ -193,7 +195,61 @@ Route::group(['middleware' => ['auth']], function () {
             Route::get('/','DemoPlaceController@index');
             Route::get('datatable','DemoPlaceController@datatable')->name('demo_place.datatable');
             Route::get('change-demo-status','DemoPlaceController@changeDemoStatus')->name('demo_place.change_demo_status');
+            Route::post('save-demo-place','DemoPlaceController@save')->name('demo_place.save');
+            Route::post('delete','DemoPlaceController@delete')->name('demo_place.delete');
         });
+    });
+    Route::group(['prefix'=>'tools','namespace'=>'Webbuilder'],function(){
+
+        Route::group(['prefix' => 'service-categories'],function(){
+            Route::get('/','CateServiceController@index')->name('places.cateservice');
+            Route::get('edit/{place_id}/{id?}','CateServiceController@edit')->where(['place_id' => '[0-9]+'])->where(['id' => '[0-9]+'])->name('places.cateservice.edit');
+            Route::post('save/{id?}','CateServiceController@save')->name('places.cateservice.save');
+            Route::post('delete','CateServiceController@delete')->name('places.cateservice.delete');
+        });
+        Route::group(['prefix' => 'services'],function(){
+            Route::get('/','ServiceController@index')->name('places.services');
+            Route::get('/edit/{place_id}/{id?}','ServiceController@edit')->where(['place_id' => '[0-9]+'])->where(['id' => '[0-9]+'])->name('places.service.edit');
+            Route::post('/save','ServiceController@save')->name('places.service.save');
+            Route::post('upload-multi-images-service','ServiceController@uploadMultiImages')->name('upload-multi-images-service');
+            Route::get('remove-image-service','ServiceController@removeMultiImage')->name('remove-image-service');
+            Route::get('/export','ServiceController@export')->name('places.service.export');
+            Route::get('/import','ServiceController@import')->name('places.service.import');
+            Route::post('/import','ServiceController@importServices')->name('places.service.post_import');
+            Route::post('upload-image-service','ServiceController@uploadImageService')->name('upload-image-service');
+            Route::post('/delete','ServiceController@delete')->name('places.service.delete');
+            Route::post('/change-status','ServiceController@changeStatus')->name('places.service.change_status');
+
+
+        });
+        Route::group(['prefix' => 'menus'],function(){
+            Route::get('/','MenuController@index')->name('places.menus');
+            Route::get('/import','MenuController@import')->name('places.menus.import');
+            Route::post('/import','MenuController@postImport')->name('places.menus.post_import');
+            Route::get('/export','MenuController@export')->name('places.menus.export');
+            Route::get('/edit/{place_id}/{id?}','MenuController@edit')->where(['place_id'=>'[0-9]+'])->where(['id' => '[0-9]+'])->name('places.menus.edit');
+            Route::post('save','MenuController@save')->name('places.menus.save');
+            Route::post('upload-multi-images','MenuController@uploadMultiImages')->name('upload-multi-images');
+            Route::get('remove-image-menu','MenuController@removeMenu')->name('remove-image-menu');
+            Route::post('/delete','MenuController@delete')->name('places.menus.delete');
+        });
+        Route::group(['prefix' => 'banners'],function(){
+            Route::get('/','BannerController@index')->name('places.banners');
+            Route::get('/{place_id}/{id?}','BannerController@edit')->where(['place_id'=>'[0-9]+'])->where(['id' => '[0-9]+'])->name('places.banners.edit');
+            Route::post('/save','BannerController@save')->name('places.banners.save');
+            Route::post('/delete','BannerController@delete')->name('places.banners.delete');
+            Route::get('change-status','BannerController@changeStatus')->name('places.banners.change_status');
+        });
+        Route::group(['prefix' => 'socail-network'],function(){
+            Route::get('/','SocialController@index')->name('places.socail_network');
+            Route::get('/list','SocialController@list')->name('places.social_network.list');
+            Route::post('/save','SocialController@save')->name('places.social_network.save');
+        });
+        Route::group(['prefix' => 'web-seo'],function(){
+            Route::post('/','WebSeoController@save')->name('places.web_seo.save');
+        });
+
+
     });
 
     Route::group(['prefix' => 'recentlog'], function() {
@@ -271,7 +327,18 @@ Route::group(['middleware' => ['auth']], function () {
             Route::post('save', 'SetupTypeTemplateController@save')->name('saveSetupTypeTemplate');
             Route::post('delete', 'SetupTypeTemplateController@delete')->name('deleteSetupTypeTemplate');
         });
+        Route::group(['prefix' => 'setup-cskh-team'], function() {
+            Route::get('/', 'SetupTeamController@indexCskh');
+            Route::get('datatable-cskh', 'SetupTeamController@cskhDatatable')->name('cskh_datatable');
+            Route::get('datatable-other', 'SetupTeamController@otherDatatable')->name('other_datatable');
+            Route::get('datatable-teams', 'SetupTeamController@teamsDatatable')->name('teams_datatable');
+            Route::get('user-cskh-datatable', 'SetupTeamController@userCskhDatatable')->name('user_cskh_datatable');
+            Route::post('add-team-to-team-cskh', 'SetupTeamController@addTeamToTeamCskh')->name('add_team_to_team_cskh');
+            Route::post('remove-team', 'SetupTeamController@removeTeam')->name('remove_team');
+            Route::post('save', 'SetupTeamController@cskhSave')->name('saveSetupTypeTemplate');
+        });
 
+        Route::get('menu-app','SetupServiceController@menuApp')->name('get_menu_app');
     });
 
     Route::group(['prefix'=>'user'],function(){
@@ -347,6 +414,7 @@ Route::group(['middleware' => ['auth']], function () {
         Route::get('get-status-task-order', 'TaskController@getStatusTaskOrder')->name('get_status_task_order');
         Route::get('get-review', 'TaskController@getReview')->name('get_review');
         Route::post('save-review', 'TaskController@saveReview')->name('save_review');
+        Route::post('update-assign-task', 'TaskController@updateAssignTask')->name('update_assign_task');
 
 
     });
@@ -357,6 +425,8 @@ Route::group(['middleware' => ['auth']], function () {
     Route::get('check-all-notification', 'DashboardController@checkAllNotification')->name('check-all-notification');
     Route::get('get-notification', 'DashboardController@getNotification')->name('get-notification');
     Route::get('customer-service-datatable', 'DashboardController@customerServiceDatatable')->name('customer-service-datatable');
+    Route::get('review-customer-datatable', 'DashboardController@reviewDashboardDatatable')->name('datatable_dashboard_review');
+
 
 
     Route::group(['prefix' => 'notification'], function() {
@@ -390,6 +460,27 @@ Route::group(['middleware' => ['auth']], function () {
             Route::get('/', 'ReportController@reviews')->name('report.reviews');
             Route::get('datatable', 'ReportController@reviewsDataTable')->name('report.reviews.datatable');
             Route::get('export', 'ReportController@reviewsExport')->name('report.reviews.export');
+            Route::get('review-today', 'ReportController@reviewsToday')->name('report.reviews.review_today');
         });
     });
 });
+
+
+//Change data from csr
+
+Route::get('transfer-user','ChangeDataController@transferUser');
+Route::get('transfer-service','ChangeDataController@transferService');
+Route::get('transfer-customer','ChangeDataController@transferCustomer');
+Route::get('transfer-customer-status','ChangeDataController@transferCustomerStatus');
+Route::get('transfer-customer-team-type','ChangeDataController@transferCustomerTeamType');
+
+
+
+/*Route::get('add-column','ChangeDataController@addCoumn');
+Route::get('remove-column','ChangeDataController@removeCoumn');
+
+Route::get('add-slug','ChangeDataController@addSlug');*/
+Route::get('add-customer-status','ChangeDataController@addCustomerStatus');
+Route::get('add-customer-to-user','ChangeDataController@addCustomerToUser');
+Route::get('replace-character-space','ChangeDataController@replaceCharacterSpace');
+

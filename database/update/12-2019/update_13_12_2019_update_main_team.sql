@@ -1,0 +1,1 @@
+ALTER TABLE `main_team` ADD `team_cskh_id` INT(11) NULL AFTER `team_status`;

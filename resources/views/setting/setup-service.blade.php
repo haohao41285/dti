@@ -13,9 +13,9 @@ Combo/Service List
 @section('content')
 <div class="col-12">
 <h5><b>Combo/Service List</b></h5>
-<table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+<table class="table table-sm table-bordered table-hover" id="dataTable" width="100%" cellspacing="0">
   <thead>
-    <tr>
+    <tr class="thead-light">
       <th class="text-center">ID</th>
       <th>Name</th>
       <th class="text-center">Type</th>
@@ -59,7 +59,7 @@ Combo/Service List
              ],
           ajax:{ url:"{{route('service-datatable')}}"},
                 columns:[
-                  {data:'id', name:'id'},
+                  {data:'id', name:'id',class:'text-center'},
                   {data:'cs_name', name:'cs_name'},
                   {data:'cs_combo_service_type', name:'cs_combo_service_type',class: 'text-center'},
                   {data:'cs_price', name:'cs_price',class: 'text-right'},
@@ -277,9 +277,23 @@ Combo/Service List
                     </div>
                     <div class="col-md-6">
                     <h6><b>Menu List</b></h6>
-                    <div style="max-height:33em;overflow-y: auto;" class="scroll">
-                      `+data.menu_html+`
+                    <ul class="nav nav-tabs app-website-box" role="tablist">
+                      <li class="nav-item">
+                        <a class="nav-link active" data-toggle="tab" href="#home">Website</a>
+                      </li>
+                      <li class="nav-item">
+                        <a class="nav-link" data-toggle="tab" href="#menu1">iNailSo App</a>
+                      </li>
+                    </ul>
+                    <div class="tab-content" style="max-height: 33em;overflow-y: auto" id="cs-box">
+                      <div id="home" class="container tab-pane active"><br>
+                        `+data.menu_website_html+`
+                      </div>
+                      <div id="menu1" class="container tab-pane fade"><br>
+                        `+data.menu_app_html+`
+                      </div>
                     </div>
+
                     <div class="form-group row float-right">
                       <button type="button" class="btn btn-danger btn-sm cancel-add-edit">Cancel</button>
                       <button type="button" class="btn btn-primary btn-sm ml-2 submit-add-edit">Submit</button>
@@ -310,9 +324,6 @@ Combo/Service List
           processData: false,
       })
       .done(function(data) {
-          // console.log(data);
-          // return;
-
         data = JSON.parse(data);
 
         if(data.status == 'error'){
@@ -442,9 +453,23 @@ Combo/Service List
         </div>
         <div class="col-md-6">
             <h6><b> List</b></h6>
-            <div style="max-height: 33em;overflow-y: auto" id="cs-box">
-`+data.menu_html+`
-                </div>
+            <ul class="nav nav-tabs app-website-box" role="tablist">
+              <li class="nav-item">
+                <a class="nav-link active" data-toggle="tab" href="#home">Website</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" data-toggle="tab" href="#menu1">iNailSo App</a>
+              </li>
+            </ul>
+          <div class="tab-content" style="max-height: 33em;overflow-y: auto" id="cs-box">
+            <div id="home" class="container tab-pane active"><br>
+              `+data.menu_website_html+`
+            </div>
+            <div id="menu1" class="container tab-pane fade"><br>
+              `+data.menu_app_html+`
+            </div>
+          </div>
+           
                 <div class="form-group row float-right">
                   <button type="button" class="btn btn-danger btn-sm cancel-add-edit">Cancel</button>
                   <button type="button" class="btn btn-primary btn-sm ml-2 submit-add-edit">Submit</button>
@@ -489,16 +514,20 @@ Combo/Service List
                 user_html += `<option `+selected+` value="`+val.user_id+`">`+val.user_nickname+`</option>`;
             });
 
-          if(cs_type == 1){
+          if(cs_type == 1){//COMBO
+            $(".app-website-box").css('display', 'none');
+
             $.each(cs_list, function(index, val)
             {
               service_list_html += `<div class="checkbox">
-                    <label><input type="checkbox" name="cs_service_id[]" class="service_id"  style="height: 20px;width: 20px" value="`+val['id']+`">`+val['cs_name']+`</label>
+                    <label><input type="checkbox" name="cs_service_id[]" class="service_id"  style="height: 20px;width: 20px" value="`+val['id']+`"> `+val['cs_name']+`</label>
                 </div>`;
             });
             $(".service-content-son").html('');
 
-          }else{
+          }else{//SERVICE
+              $(".app-website-box").css('display', '');
+
               $(".service-content").after(`
 
               <div class="form-group service-content-son">
@@ -521,7 +550,16 @@ Combo/Service List
               </div>
 
               `);
-              service_list_html = data.menu_html;
+              service_list_html = `
+              <div id="home" class="container tab-pane active"><br>
+                `+data.menu_website_html+`
+              </div>
+              <div id="menu1" class="container tab-pane fade"><br>
+                `+data.menu_app_html+`
+              </div>
+              `;
+
+
           }
           $("#cs-box").html(service_list_html);
         }
@@ -529,6 +567,34 @@ Combo/Service List
       .fail(function() {
         console.log("error");
       });
+    });
+    $(document).on('click','.type-app',function(){
+
+      $(".type-app").removeClass('btn-primary').removeClass('btn-default').addClass('btn-default');
+      $(this).addClass('btn-primary').removeClass('btn-default').removeClass('btn-default');
+
+      let type_app = $(this).attr('type-app');
+      cs_app_website_type = type_app;
+      $("#type-app-website").val(type_app);
+
+      $.ajax({
+        url: '{{route('get_menu_app')}}',
+        type: 'GET',
+        dataType: 'html',
+        data: {type_app: type_app },
+      })
+      .done(function(data) {
+        data = JSON.parse(data);
+        $("#cs-box").html(data.menu_html);
+        console.log(data.menu_html);
+      })
+      .fail(function() {
+        console.log("error");
+      })
+      .always(function() {
+        console.log("complete");
+      });
+      
     })
   });
 </script>

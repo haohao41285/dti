@@ -30,18 +30,19 @@ Setup Team
     <div class="card shadow mb-4 ">
       <div class="card-header py-2">
         <h6 class="m-0 font-weight-bold text-primary">Team List <button type="button" class="float-right btn btn-primary btn-sm add-team">Add Team</button></h6>
-        
       </div>
       <div class="card-body">
-          <table class="table table-bordered table-hover" id="team-table" width="100%" height="50%" cellspacing="0">
+          <table class="table table-sm table-bordered table-hover" id="team-table" width="100%"  cellspacing="0">
             <thead>
-               <th>ID</th>
-               <th>Team name</th>
-               <th>Leader</th>
-               <th>Team type</th>
-               <th>Action</th>
+                <tr class="thead-light">
+                   <th>ID</th>
+                   <th>Team name</th>
+                   <th>Leader</th>
+                   <th>Team type</th>
+                   <th>Action</th>
+                </tr>
             </thead>
-         </table>   
+         </table>
       </div>
     </div>
 
@@ -50,13 +51,15 @@ Setup Team
         <h6 class="m-0 font-weight-bold text-primary">User List</h6>
       </div>
       <div class="card-body"  >
-          <table class="table table-bordered table-hover"  id="user-table" width="100%"  cellspacing="0">
+          <table class="table table-sm table-bordered table-hover"  id="user-table" width="100%"  cellspacing="0">
             <thead>
-               <th>ID</th>
-               <th>Member</th>
-               <th>Team</th>
+              <tr class="thead-light">
+                <th>ID</th>
+                <th>Member</th>
+                 <th>Team</th>
+              </tr>
             </thead>
-          </table>   
+          </table>
       </div>
     </div>
 
@@ -67,11 +70,12 @@ Setup Team
         <h6 class="m-0 font-weight-bold text-primary">Members of <b class="team-name-list"></b> Team</h6>
       </div>
       <div class="card-body">
-        <table class="table table-bordered table-hover" id="member-table" width="100%" cellspacing="0">
+        <table class="table table-sm table-bordered table-hover" id="member-table" width="100%" cellspacing="0">
             <thead>
-               <th>Member</th>
+              <tr class="thead-light">
+                <th>Member</th>
                 <th>Action</th>
-               </tr>
+              </tr>
             </thead>
          </table>
       </div>
@@ -81,7 +85,7 @@ Setup Team
 </div>
 
 <div class="row">
-  
+
 </div>
 
 </div>
@@ -120,20 +124,20 @@ Setup Team
          info: false,
          scrollY: "200px",
          buttons: [
-             ],  
+             ],
          processing: true,
          serverSide: true,
          ajax:{ url:"{{ route('get-team-list') }}",
          data: function (d) {
-              } 
+              }
           },
          columns: [
                   { data: 'id', name: 'id' },
                   { data: 'team_name', name: 'team_name' },
                   { data: 'team_leader', name: 'team_leader',class: 'text-capitalize' },
-                  { data: 'team_type_name', name: 'team_type_name'},    
+                  { data: 'team_type_name', name: 'team_type_name'},
                   { data: 'action' , name:'action' ,class:'text-center'}
-          ],       
+          ],
     });
       //GET MEMBER LIST
       var memberTable = $('#member-table').DataTable({
@@ -143,18 +147,18 @@ Setup Team
          info: false,
          scrollY: true,
          buttons: [
-         ],  
+         ],
          processing: true,
          serverSide: true,
          ajax:{ url:"{{ route('get-member-list') }}",
          data: function (d) {
             d.team_id = team_id
-              } 
+              }
           },
          columns: [
             { data: 'user_fullname', name: 'user_fullname',class: 'text-capitalize' },
             { data: 'action' , name:'action' ,orderable: false, searcheble: false ,class:'text-center'}
-          ],       
+          ],
         });
       //GET USER LIST
       var userTable = $('#user-table').DataTable({
@@ -164,18 +168,18 @@ Setup Team
          scrollY: "300px",
          info: false,
          buttons: [
-         ],  
+         ],
          processing: true,
          serverSide: true,
          ajax:{ url:"{{ route('get-user-list') }}",
          data: function (d) {
-              } 
+              }
           },
          columns: [
             { data: 'user_id', name: 'user_id'},
             { data: 'user_fullname', name: 'user_fullname', class: 'text-capitalize' },
             { data: 'team_name', name: 'team_name' }
-          ],       
+          ],
         });
 
       $(document).on('click','.edit-team',function(e){
@@ -228,7 +232,7 @@ Setup Team
                 </select>
               </div>
           `);
-        
+
         $("#editModal").modal("show");
         })
         .fail(function() {
@@ -264,6 +268,7 @@ Setup Team
             $("#editModal").modal('hide');
             table.draw();
             memberTable.draw();
+            userTable.draw();
             toastr.success(data.message);
           }
         })
@@ -407,7 +412,7 @@ Setup Team
                 </select>
               </div>
           `);
-        
+
         $("#editModal").modal("show");
         })
         .fail(function() {

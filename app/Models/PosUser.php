@@ -32,7 +32,8 @@ class PosUser extends Authenticatable
         'remember_token',
         'user_login_time',
         'created_by',
-        'updated_by'
+        'updated_by',
+        'user_demo'
     ];
 
     /**

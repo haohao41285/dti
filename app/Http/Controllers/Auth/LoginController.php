@@ -14,6 +14,7 @@ use App\Helpers\MenuHelper;
 use Validator;
 use Session;
 use DB;
+use App\Models\MainMenuDti;
 
 class LoginController extends Controller
 {
@@ -61,22 +62,31 @@ class LoginController extends Controller
 
         }
         //CHECK USER STATUS ENABLE
-        $user_info = MainUser::where('user_phone',$request->user_phone)->first();
+        $user_info = MainUser::where('user_nickname',$request->user_nickname)->first();
         if($user_info['user_status'] == 0){
             return back()->with(['error'=>'You Do Not ave Permission!']);
         }
 
-         $credentials = ($request->only('user_phone', 'user_password'));
+         $credentials = ($request->only('user_nickname', 'user_password'));
         if (Auth::attempt($credentials)){
 
             //GET PERMISSION
             $user_list = DB::table('main_user')->leftjoin('main_group_user',function($join){
                 $join->on('main_user.user_group_id','main_group_user.gu_id');
             })
-                ->where('user_phone',$request->user_phone)
+                ->where('user_nickname',$request->user_nickname)
                 ->get();
             if($user_list[0]->user_group_id == 1) $role = 1;
             else $role = 0;
+
+            //SET PERMISSION LIST TO SESSION
+            $permission_list = MainPermissionDti::all();
+            $permission_list = collect($permission_list);
+            Session::put('permission_list',$permission_list);
+            //SET MENU LIST ALL FOR SESSION
+            $menu_list_all = MainMenuDti::active()->get();
+            $menu_list_all = collect($menu_list_all);
+            Session::put('menu_list_all',$menu_list_all);
 
             //CHECK PERMISSION EXIST IN GU_ROLE_NEW
             if($user_list[0]->gu_role_new == null || $role == 1){
@@ -119,7 +129,7 @@ class LoginController extends Controller
 
     public function username()
     {
-        return 'user_phone';
+        return 'user_nickname';
     }
 
     protected function credentials(Request $request)

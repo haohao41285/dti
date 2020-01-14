@@ -54,7 +54,7 @@
     </ul>
     <div class="tab-content" id="myTabContent">
         <div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">
-            <table class="table table-hover table-bordered" id="task-datatable" widtd="100%" cellspacing="0">
+            <table class="table table-hover table-sm table-bordered" id="task-datatable" widtd="100%" cellspacing="0">
         <thead  class="thead-light">
             <tr class="text-center">
                 <th>ORDER ID</th>
@@ -108,7 +108,7 @@
     </table>
         </div>
         <div class="tab-pane fade" id="profile" role="tabpanel" aria-labelledby="profile-tab">
-            <table class="table table-hover table-bordered" id="place-order-datatable" widtd="100%" cellspacing="0">
+            <table class="table table-hover table-sm table-bordered" id="place-order-datatable" widtd="100%" cellspacing="0">
                 <thead  class="thead-light">
                 <tr class="text-center">
                     <th>Place Name</th>
@@ -157,20 +157,22 @@
     </table>
 </div>
 <h4 class="border border-info border-top-0 border-right-0 border-left-0 text-info mt-5">ADD NEW COMMENT</h4>
-<form  enctype="multipart/form-data" accept-charset="utf-8">
+<form  enctype="multipart/form-data" accept-charset="utf-8" id="comment-form">
     @csrf()
     <textarea  id="summernote2" class="form-control form-control-sm"  name="note" placeholder="Text Content..."></textarea>
-    <input type="button" class="btn btn-sm btn-secondary mt-2" name="" value="Upload attchment's file" onclick="getFile2()" placeholder="">
+    <input type="button" class="btn btn-sm btn-secondary mt-2" name="" value="Upload attchment's file" onclick="getFile2()" placeholder=""><br>
+    <span id="file_names"></span>
+    <span id="total_file_size"></span>
     <input type="file" hidden id="file_image_list_2" multiple name="file_image_list[]">
     <input type="hidden" id="email_seller" name="email_seller" value="">
-    <p>(The maximum upload file size: 100M)</p>
+    <p class="text-danger">- The maximum upload file size: 50M<br>- The maximum amount of files: 20 files</p>
     <div style="height: 10px" class="bg-info">
     </div>
     <input type="hidden" value="" id="receiver_id">
     <hr style="border-top: 1px dotted grey;">
+            Send this comment as notification to email:
     <div class="input-group mb-2 mr-sm-2">
         <div class="input-group-prepend">
-            Send this comment as notification to email:
             <div class="input-group-text">Add CC:</div>
         </div>
         <input type="text" class="form-control" name="email_list" id="email_list_2" placeholder="">
@@ -185,17 +187,10 @@
             $("#file_image_list_2").click();
         }
         $(document).ready(function () {
-            // $('#summernote2').summernote({
-            //     toolbar: [
-            //         // [groupName, [list of button]]
-            //         ['style', ['bold', 'italic', 'underline', 'clear']],
-            //         ['font', ['strikethrough', 'superscript', 'subscript']],
-            //         ['fontsize', ['fontsize']],
-            //         ['color', ['color']],
-            //         ['para', ['ul', 'ol', 'paragraph']],
-            //         ['height', ['height']]
-            //     ]
-            // });
+
+            var file_size_total = 0;
+            var file_image_list = [];
+
             var table = $('#tracking-datatable').DataTable({
                 // dom: "lBfrtip",
                 order:[[0,'desc']],
@@ -220,6 +215,16 @@
                 var formData = new FormData($(this).parents('form')[0]);
                 formData.append('customer_id',{{$id}});
                 formData.append('_token','{{csrf_token()}}');
+                amount_files = file_image_list.length;
+
+                if(amount_files > 20){
+                    toastr.error("Amount of files maximum is 20 files");
+                    return;
+                }
+                if(file_size_total > 50){
+                    toastr.error('Total Files Size maximum is 50 MB!');
+                    return;
+                }
 
                 $.ajax({
                     url: '{{route('post-comment-customer')}}',
@@ -234,9 +239,6 @@
                         return myXhr;
                     },
                     success: function (data) {
-                        // console.log(data);
-                        // return;
-
                         let message = "";
                         if(data.status == 'success'){
                             toastr.success(data.message);
@@ -260,8 +262,12 @@
                 return false;
             });
             function clearView(){
-                $("#email_list_2").val("");
-                // $("#summernote2").summernote('reset');
+                 $("#email_list_2").val("");
+                $('#summernote2').val("");
+                $("#file_names").text("");
+                file_image_list = [];
+                $('#comment-form')[0].reset();
+                $("#total_file_size").text("");
             }
             $(document).on("click",".file-comment",function(){
                 $(this).parent('form').submit();
@@ -290,6 +296,26 @@
                 .fail(function() {
                     toastr.error('Saving Error!');
                 });
+            $(document).on('change','#file_image_list_2',function(e){
+                file_size_total = 0;
+                file_image_list = Array.from(e.target.files);
+                console.log(file_image_list);
+
+                var names = [];
+                var name_html = "";
+                var stt = 0;
+
+                for (var i = 0; i < $(this).get(0).files.length; ++i) {
+                    stt = i +1;
+                    names.push($(this).get(0).files[i].name);
+                    file_size_total += parseFloat($(this).get(0).files[i].size/1048576);
+                    name_html += "<span>"+"<span class='text-danger '>"+stt+"-</span>"+$(this).get(0).files[i].name+ "</span><br>";
+                }
+                $("#file_names").html(name_html);
+                file_size_total = file_size_total.toFixed(2); 
+                $("#total_file_size").html("<b>TOTAL FILES SIZE: "+file_size_total+" MB<br>TOTAL FILES: "+stt+" files</b>");
+                console.log(file_size_total);
+            });
         });
     </script>
 @endpush

@@ -6,7 +6,7 @@
     <div class="col-12 row">
         <div class="col-md-6">
             <h4 class="border border-info border-top-0 mb-3 border-right-0 border-left-0 text-info">EVENT LIST</h4>
-            <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+            <table class="table table-sm table-hover table-bordered" id="dataTable" width="100%" cellspacing="0">
                 <thead>
                 <tr>
                     <th class="text-center">ID</th>

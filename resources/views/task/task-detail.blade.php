@@ -14,6 +14,17 @@
 </style>
 @endpush
 @section('content')
+
+@if(isset($button))
+<div class="text-center">
+    <form method="POST" action="{{route('update_assign_task')}}">
+        @csrf()
+        <h4>This Task for multi-staff, click Accept to view and work this Task</h4>
+        <input type="hidden" value="{{$id}}" name="task_id">
+        <button class="btn btn-primary" type="">Accept</button>
+    </form>
+</div>
+@else
 {{-- MODAL SEND MAIL --}}
 <div class="modal fade" id="form-notification" role="dialog">
     <div class="modal-dialog modal-lg">
@@ -122,8 +133,8 @@
             </tr>
             <tr>
                 <th>{{$task_info->date_start!=""?format_date($task_info->date_start):""}}</th>
-                <th>{{$task_info->date_start!=""?format_date($task_info->date_end):""}}</th>
-                <th class="percent_complete">{{$task_info->complete_percent}}%</th>
+                <th>{{$task_info->date_end!=""?format_date($task_info->date_end):""}}</th>
+                <th class="percent_complete text-right">{{$task_info->complete_percent}}%</th>
                 <th>{{format_datetime($task_info->updated_at)}}</th>
                 <th class="text-capitalize">{{$task_info->getUpdatedBy->user_firstname}} {{$task_info->getUpdatedBy->user_lastname}}</th>
                 <th colspan="2"><a href="{{route('edit-task',$id)}}"><i class=" fas fa-edit"></i><span class="text-info">Edit Task</span></a> <a href="javascript:void(0)" id="send-notification"><i class="fas fa-bell"></i><span class="text-info ">Send Email & Notification to CSR</span></a></th>
@@ -160,45 +171,45 @@
                             @endphp
                             {{-- Google --}}
                             @if($task_info->getService->cs_form_type == 1)
-                                <span>Google Link: <b>{{$content_arr['google_link']}}</b></span><br>
-                                <span>Tên thợ nails: {{$content_arr['worker_name']}}</span><br>
+                                <span>Google Link: <b>{{$content_arr['google_link']??""}}</b></span><br>
+                                <span>Tên thợ nails: {{$content_arr['worker_name']??""}}</span><br>
                                 <div class="row">
-                                    <span class="col-md-6">Number of starts: <b>{{$content_arr['star']}}</b></span>
-                                    <span class="col-md-6">Số review hiện tại: <b>{{$content_arr['current_review']}}</b></span>
-                                    <span class="col-md-6">Conplete date: <b>{{$content_arr['complete_date']}}</b></span>
-                                    <span class="col-md-6">Số review yêu cầu: <b>{{$content_arr['order_review']}}</b></span>
+                                    <span class="col-md-6">Number of starts: <b>{{$content_arr['star']??""}}</b></span>
+                                    <span class="col-md-6">Số review hiện tại: <b>{{$content_arr['current_review']??""}}</b></span>
+                                    <span class="col-md-6">Conplete date: <b>{{$content_arr['complete_date']??""}}</b></span>
+                                    <span class="col-md-6">Số review yêu cầu: <b>{{$content_arr['order_review']??""}}</b></span>
                                 </div>
                             @endif
                             {{-- Website --}}
                             @if($task_info->getService->cs_form_type == 2)
-                                <span>Tên sản phẩm: <b>{{$content_arr['product_name']}}</b></span><br>
-                                <span>Màu chủ đạo: <b>{{$content_arr['main_color']}}</b></span><br>
-                                <span>Thể loại hoặc phong cách khách hàng: <b>{{$content_arr['style_customer']}}</b></span><br>
-                                <span>Facebook Link: <b>{{$content_arr['link']}}</b></span><br>
-                                <span>Website: <b>{{$content_arr['website']}}</b></span><br>
+                                <span>Tên sản phẩm: <b>{{$content_arr['product_name']??""}}</b></span><br>
+                                <span>Màu chủ đạo: <b>{{$content_arr['main_color']??""}}</b></span><br>
+                                <span>Thể loại hoặc phong cách khách hàng: <b>{{$content_arr['style_customer']??""}}</b></span><br>
+                                <span>Facebook Link: <b>{{$content_arr['link']??""}}</b></span><br>
+                                <span>Website: <b>{{$content_arr['website']??""}}</b></span><br>
                             @endif
                             {{-- Facebook --}}
                             @if($task_info->getService->cs_form_type == 3)
-                                <span>Facebook Link: <b>{{$content_arr['link']}}</b></span><br>
-                                <span>Promotion: <b>{{$content_arr['promotion']}}</b></span><br>
-                                <span>Số lượng bài viết: <b>{{$content_arr['number']}}</b></span><br>
+                                <span>Facebook Link: <b>{{$content_arr['link']??""}}</b></span><br>
+                                <span>Promotion: <b>{{$content_arr['promotion']??""}}</b></span><br>
+                                <span>Số lượng bài viết: <b>{{$content_arr['number']??""}}</b></span><br>
                                 <div class="row">
                                     <span class="col-md-6">Đã có admin chưa: <b>{{isset($admin)?"YES":"NO"}}</b></span>
-                                    <span class="col-md-6">Username: <b>{{$content_arr['user']}}</b></span>
+                                    <span class="col-md-6">Username: <b>{{$content_arr['user']??""}}</b></span>
                                     <span class="col-md-6">Có lấy được hình ảnh: <b>{{isset($image)?"YES":"NO"}}</b></span>
-                                    <span class="col-md-6">Password: <b>{{$content_arr['password']}}</b></span>
+                                    <span class="col-md-6">Password: <b>{{$content_arr['password']??""}}</b></span>
                                 </div>
                             @endif
                             {{-- Domain --}}
                             @if($task_info->getService->cs_form_type == 4)
-                                <span>Domain:<b>{{$content_arr['domain']}}</b></span>
+                                <span>Domain:<b>{{$content_arr['domain']??""}}</b></span>
                                 <div class="row">
                                     <span class="col-md-6">Is Show Service Price: <b>Yes</b></span>
-                                    <span class="col-md-6">Themes: <b>{{$content_arr['theme']}}</b></span>
-                                    <span class="col-md-6">Business Name: <b>{{$content_arr['business_name']}}</b></span>
-                                    <span class="col-md-6">Business Phone: <b>{{$content_arr['business_phone']}}</b></span>
-                                    <span class="col-md-6">Business Email: <b>{{$content_arr['email']}}</b></span>
-                                    <span class="col-md-6">Business Phone: <b>{{$content_arr['address']}}</b></span>
+                                    <span class="col-md-6">Themes: <b>{{$content_arr['theme']??""}}</b></span>
+                                    <span class="col-md-6">Business Name: <b>{{$content_arr['business_name']??""}}</b></span>
+                                    <span class="col-md-6">Business Phone: <b>{{$content_arr['business_phone']??""}}</b></span>
+                                    <span class="col-md-6">Business Email: <b>{{$content_arr['email']??""}}</b></span>
+                                    <span class="col-md-6">Business Phone: <b>{{$content_arr['address']??""}}</b></span>
                                 </div>
                             @endif
                         @endif
@@ -241,36 +252,23 @@
 
         </tbody>
     </table>
-
-{{--    <div class="row">--}}
-        @if((isset($content_arr['order_review']) && $content_arr['order_review'] > 0)
-            || (isset($content_arr['number']) && $content_arr['number'] > 0)
-            )
-            <form>
-                {{--@for ($i = 1; $i <= $content_arr['order_review']; $i++)
-                    <div class="col-md-4">
-                        <div class="form-group">
-                            <label for=""><b>Review {{$i}}</b></label>
-                            <label for="fail_{{$i}}" class="float-right text-danger"><input type="checkbox" id="fail_{{$i}}"> Fail</label>
-                            <label for="done_{{$i}}" class="float-right text-primary"><input type="checkbox" id="done_{{$i}}"> Done</label>
-
-                        </div>
-                    </div>
-                @endfor--}}
-                <h4 class="text-info">Review  List</h4>
-                <table class="table table-hover table-striped" id="table_review">
-                    <thead>
-                        <tr>
-                            <th style="width: 20%">Name Review</th>
-                            <th>Note</th>
-                            <th style="width: 20%">Status</th>
-                            <th style="width: 10%" class="text-center"></th>
-                        </tr>
-                    </thead>
-                </table>
-            </form>
+    @if((isset($content_arr['order_review']) && $content_arr['order_review'] > 0)
+        || (isset($content_arr['number']) && $content_arr['number'] > 0)
+        )
+        <form>
+            <h4 class="text-info">Review  List</h4>
+            <table class="table table-sm table-hover" id="table_review">
+                <thead>
+                    <tr class="thead-light">
+                        <th style="width: 20%">Name Review</th>
+                        <th>Note</th>
+                        <th style="width: 20%">Status</th>
+                        <th style="width: 10%" class="text-center"></th>
+                    </tr>
+                </thead>
+            </table>
+        </form>
     @endif
-{{--    </div>--}}
     @if(count($task_info->getSubTask))
     <div class="border border-info mb-4">
     	<table class="table table-bordered table-hover mb-0" id="subtask-datatable" width="100%" cellspacing="0">
@@ -301,18 +299,19 @@
     </table>
 </div>
 <h4 class="border border-info border-top-0 border-right-0 border-left-0 text-info mt-5">ADD NEW COMMENT</h4>
-<form  enctype="multipart/form-data" accept-charset="utf-8">
+<form  enctype="multipart/form-data" accept-charset="utf-8" id="comment-form">
     @csrf()
     <input type="hidden" name="receiver_id" value="{{$task_info->assign_to==\Illuminate\Support\Facades\Auth::user()->user_id?$task_info->created_by:$task_info->assign_to}}">
-    <textarea  id="summernote2" class="form-control form-control-sm"  name="note" placeholder="Text Content..."></textarea>
+    <textarea  id="summernote2" class="form-control form-control-sm"  name="note" placeholder="Text Comment..."></textarea>
     <input type="button" class="btn btn-sm btn-secondary mt-2" name="" value="Upload attchment's file" onclick="getFile2()" placeholder=""><br>
     <span id="file_names"></span>
+    <span id="total_file_size"></span>
     <input type="file" hidden id="file_image_list_2" multiple name="file_image_list[]">
-    <p>(The maximum upload file size: 100M)</p>
+    <p class="text-danger">- The maximum upload file size: 50 MB<br>- The maximum amount of files: 20 files</p>
     <div style="height: 10px" class="bg-info">
     </div>
     <hr style="border-top: 1px dotted grey;">
-    <p class="text-primary">An email notification will send to {{\Auth::user()->user_email}}</p>
+    <p class="text-primary">An email notification will also send to {{\Auth::user()->user_email}}</p>
      <div class="input-group mb-2 mr-sm-2">
         <div class="input-group-prepend">
           <div class="input-group-text">Add CC:</div>
@@ -334,6 +333,7 @@
     @endif
     <button type="button" class="btn btn-sm btn-primary submit-comment">Submit Comment</button>
 </form>
+@endif
 @endsection
 @push('scripts')
 <script>
@@ -341,6 +341,10 @@
         $("#file_image_list_2").click();
     }
 	$(document).ready(function() {
+
+        var file_size_total = 0;
+        var file_image_list = [];
+
         var table = $('#subtask-datatable').DataTable({
             // dom: "lBfrtip",
             paging: false,
@@ -396,6 +400,15 @@
             formData.append('order_id',{{$task_info->order_id}});
             formData.append('task_id',{{$id}});
             formData.append('_token','{{csrf_token()}}');
+            amount_files = file_image_list.length;
+
+            if(amount_files > 20){
+                toastr.error("Amount of files maximum is 20 files");
+                return;
+            }
+            if(file_size_total > 50){
+                toastr.error("Total Files Size maximum is 50 MB!");
+            }
 
             $.ajax({
                 url: '{{route('post-comment')}}',
@@ -410,9 +423,6 @@
                     return myXhr;
                 },
                 success: function (data) {
-                    // console.log(data);
-                    // return;
-                    // data = JSON.parse(data);
                     if(data.status == 'error'){
                         if(typeof(data.message) == "string")
                             toastr.error(data.message);
@@ -440,9 +450,10 @@
         });
         function clearView(){
             $("#email_list_2").val("");
-            // $('#summernote2').summernote('reset');
             $('#summernote2').val("");
             $("#file_names").text("");
+            $("#comment-form")[0].reset();
+            $("#total_file_size").text("");
         }
         $("#send-notification").click(function(){
             $("#form-notification").modal('show');
@@ -506,18 +517,23 @@
         });
         //  GET NAME FILES
         $(document).on('change','#file_image_list_2',function(e){
+            file_size_total = 0;
             file_image_list = Array.from(e.target.files);
-            console.log(file_image_list);
-
             var names = [];
             var name_html = "";
+            var stt = 0;
 
             for (var i = 0; i < $(this).get(0).files.length; ++i) {
+                stt = i +1;
                 names.push($(this).get(0).files[i].name);
-                name_html += "<span>"+$(this).get(0).files[i].name+ "</span><br>";
+                file_size_total += parseFloat($(this).get(0).files[i].size/1048576);
+                name_html += "<span>"+"<span class='text-danger '>"+stt+"-</span>"+$(this).get(0).files[i].name+ "</span><br>";
 
             }
             $("#file_names").html(name_html);
+            file_size_total = file_size_total.toFixed(2); 
+            $("#total_file_size").html("<b>TOTAL FILES SIZE: "+file_size_total+" MB<br>TOTAL FILES: "+stt+" files</b>");
+            // console.log(file_size_total);
         });
        /* $(document).on("click",".remove-file",function(){
             var index = $(this).attr('index');

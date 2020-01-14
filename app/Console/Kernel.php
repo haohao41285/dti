@@ -16,6 +16,8 @@ class Kernel extends ConsoleKernel
 //        Commands\SendNotificationCron::class,
         Commands\ServiceNotificationCron::class,
         Commands\TaskNotificationCron::class,
+        Commands\SendEventCskhCron::class,
+        Commands\ReviewNotificationCron::class,
     ];
 
     /**
@@ -34,6 +36,12 @@ class Kernel extends ConsoleKernel
 //            ->dailyAt('07:00')->withoutOverlapping();
         $schedule->command('command:taskNotification')
             ->dailyAt('07:30')->withoutOverlapping();
+            //SEND NOTIFICATION FOR CSKH TEAM
+        $schedule->command('command:SendEventCskhCron')
+        ->dailyAt('07:00')->withoutOverlapping();
+            //SEND REVIEW NOTIFICATION FOR EVERY MONTH
+        $schedule->command('command:reviewNotification')
+        ->dailyAt('08:00')->withoutOverlapping();
     }
 
     /**

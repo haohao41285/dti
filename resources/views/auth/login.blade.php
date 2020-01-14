@@ -21,7 +21,7 @@
                   <form method="POST" action="{{ route('login') }}">
                        {{ csrf_field() }}
                     <div class="form-group">
-                     <input id="user_phone" type="username" class="form-control{{ $errors->has('user_phone') ? ' is-invalid' : '' }}" name="user_phone" value="{{ old('user_phone') }}" required autofocus placeholder="Enter Phone">
+                     <input id="user_phone" type="username" class="form-control{{ $errors->has('user_nickname') ? ' is-invalid' : '' }}" name="user_nickname" value="{{ old('user_nickname') }}" required autofocus placeholder="Enter User Nickname">
                     </div>
                     <div class="form-group">
                       <input id="user_password" type="password" class="form-control{{ $errors->has('user_password') ? ' is-invalid' : '' }}" name="user_password" required placeholder="Password">

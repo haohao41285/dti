@@ -1,0 +1,1 @@
+ALTER TABLE `main_combo_service` ADD `cs_app_website_type` TINYINT(3) NULL COMMENT '1 website 2:inailso app' AFTER `cs_combo_service_type`; 

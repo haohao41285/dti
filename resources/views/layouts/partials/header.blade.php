@@ -65,7 +65,7 @@
     </li>
 
     <!-- Nav Item - Messages -->
-    <li class="nav-item dropdown no-arrow mx-1">
+    {{-- <li class="nav-item dropdown no-arrow mx-1">
       <a class="nav-link dropdown-toggle" href="#" id="messagesDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
         <i class="fas fa-envelope fa-fw"></i>
         <!-- Counter - Messages -->
@@ -119,7 +119,7 @@
         <a class="dropdown-item text-center small text-gray-500" href="#">Read More Messages</a>
       </div>
     </li>
-
+ --}}
     <div class="topbar-divider d-none d-sm-block"></div>
 
     <!-- Nav Item - User Information -->
@@ -131,7 +131,7 @@
         <img class="img-profile rounded-circle" src="{{isset(Auth::user()->user_avatar) ? env('PATH_VIEW_IMAGE').Auth::user()->user_avatar : ''}}">
       </a>
       <!-- Dropdown - User Information -->
-      <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in" aria-labelledby="userDropdown">
+      <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in" style="z-index: 2000" aria-labelledby="userDropdown">
         <a class="dropdown-item" href="{{ route('editProfile') }}">
           <i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>
           Profile

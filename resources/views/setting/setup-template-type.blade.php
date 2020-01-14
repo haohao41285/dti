@@ -17,9 +17,9 @@ Template Type
             </div>
             <div class="card-body">
                 <div class="table-responsive dataTables_scrollBody dataTables_scroll">
-                    <table class="table table-bordered table-hover dataTable" id="coupon-type-datatable" width="100%" cellspacing="0">
+                    <table class="table table-sm table-bordered table-hover dataTable" id="coupon-type-datatable" width="100%" cellspacing="0">
                         <thead>
-                            <tr>
+                            <tr class="thead-light">
                                 <th>ID</th>
                                 <th>Name</th>
                                 <th>Action</th>

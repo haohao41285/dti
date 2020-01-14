@@ -9,13 +9,21 @@ use App\Models\MainEventHoliday;
 use App\Helpers\ImagesHelper;
 use Validator;
 use DataTables;
+use Gate;
 
 class EventHolidayController extends Controller
 {
     public function index(){
+
+        if(Gate::denies('permission','setup-event-holiday'))
+            return doNotPermission();
+
         return view('event.event');
     }
     public function eventDatatable(Request $request){
+
+        if(Gate::denies('permission','setup-event-holiday'))
+            return doNotPermission();
 
         $event_list = MainEventHoliday::all();
 
@@ -42,6 +50,11 @@ class EventHolidayController extends Controller
             ->make(true);
     }
     public function addEvent(Request $request){
+
+
+        if(Gate::denies('permission','setup-event-holiday'))
+            return doNotPermission();
+
         $rule = [
             'date' => 'date_format:m/d/Y',
         ];
@@ -88,6 +101,10 @@ class EventHolidayController extends Controller
             return response(['status'=>'success','message'=>'Save event Successfully!']);
     }
     public function deleteEvent(Request $request){
+
+        if(Gate::denies('permission','setup-event-holiday'))
+            return doNotPermission();
+
         $id = $request->id;
         $delete_event = MainEventHoliday::find($id);
         $delete_event = $delete_event->delete();
@@ -97,6 +114,9 @@ class EventHolidayController extends Controller
             return response(['status'=>'success','message'=>'Delete Successfully!']);
     }
     public function changeStatusEvent(Request $request){
+
+        if(Gate::denies('permission','setup-event-holiday'))
+            return doNotPermission();
 
         $id = $request->id;
         $status = $request->status;

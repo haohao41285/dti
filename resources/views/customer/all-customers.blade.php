@@ -2,9 +2,10 @@
 @section('content-title')
     Customers Management
 @endsection
-@section('styles')
-
-@endsection
+@push('style')
+  <style>
+  </style>
+@endpush
 @section('content')
 
     @if(\Illuminate\Support\Facades\Auth::user()->user_group_id != 1)
@@ -57,21 +58,24 @@
     </div>
     </form>
     <hr>
-    <table class="table table-striped table-hover" id="dataTableAllCustomer" width="100%" cellspacing="0">
+
+  <div style="height:700px" style="overflow:auto">
+    <table class="table table-sm table-hover" id="dataTableAllCustomer" width="100%" cellspacing="0">
         <thead>
-            <tr>
-                <th>ID</th>
-                <th>Business</th>
-                <th>Contact Name</th>
-                <th>Business Phone</th>
-                <th>Cell Phone</th>
-                <th>Note</th>
-                <th>Status</th>
-                <th>Created Date</th>
-                <th style="width: 15%">Action</th>
+            <tr class="sticky-top bg-primary text-white"  style="z-index: 9">
+              <th>ID</th>
+              <th>Business</th>
+              <th>Contact Name</th>
+              <th>Business Phone</th>
+              <th>Cell Phone</th>
+              <th>Note</th>
+              <th>Status</th>
+              <th>Created Date</th>
+              <th style="width: 15%">Action</th>
             </tr>
         </thead>
     </table>
+  </div>
 </div>
 
 <!-- Modal view-->
@@ -89,22 +93,25 @@
           <form  method="post" id="customer-import-form" enctype="multipart/form-data" name="customer-import-form">
             <div class="col-md-12">
                 <div class="row col-md-12">
-                  <a href="" class="blue">Download an import template spreadsheet</a>
+                  <a href="{{ route('get_import_template_customer') }}" class="blue">Download an import template spreadsheet</a>
                 </div>
                 <div class="row col-md-12">
-                  <input type="file" class="btn btn-sm" id="file" name="file">
-                </div>
+                  <div class="custom-file">
+                    <input type="file" class="custom-file-input form-control form-control-sm" id="file" name="file">
+                    <label class="custom-file-label" for="file">Choose file</label>
+                  </div>
+                </div><br>
                 <div class="row col-md-12">
                   <label class="col-md-6">Begin Row Index</label>
-                  <input type='number' name="begin_row" id="begin_row" class="form-control form-control-sm col-md-6" value="0"/>
+                  <input type='text' onkeypress="return isNumberKey(event)" name="begin_row" id="begin_row" class="form-control form-control-sm col-md-6" value="0"/>
                 </div>
                 <div class="row col-md-12">
                   <label class="col-md-6">End Row Index</label>
-                  <input type='number' name="end_row" id="end_row" class="form-control form-control-sm col-md-6" value="1000"/>
+                  <input type='text' onkeypress="return isNumberKey(event)" name="end_row" id="end_row" class="form-control form-control-sm col-md-6" value="1000"/>
                 </div>
-                <div class="row col-md-12 ">
+                <div class="col-md-12 mt-1 float-right text-right">
+                     <button type="button" class="btn ml-1 btn-primary btn-sm ml-2 float-right submit-form" >Submit</button>
                      <button type="button" class="btn btn-danger btn-sm float-right cancle-import" >Cancle</button>
-                     <button type="button" class="btn btn-primary btn-sm ml-2 float-right submit-form" >Submit</button>
                 </div>
             </div>
         </form>
@@ -158,10 +165,12 @@
  $(document).ready(function() {
     $("#created_at").datepicker({});
     var table = $('#dataTableAllCustomer').DataTable({
-       // dom: "lBfrtip",
-       order:[[7,'desc']],
-        responsive:false,
-       buttons: [
+      // dom: "lifrtp ",
+      order:[[7,'desc']],
+      responsive:false,
+      serverSide: true,
+      processing: true,
+      buttons: [
 
            {
                text: '<i class="fas fa-exchange-alt"></i> Move Customer',
@@ -182,17 +191,18 @@
               }
            }
        ],
-       processing: true,
-       serverSide: true,
        ajax:{ url:"{{ route('customersDatatable') }}",
+        type: 'POST',
        data: function (d) {
           d.start_date = $("#start_date").val();
           d.end_date = $("#end_date").val();
           d.address = $("#address").val();
           d.status_customer = $("#status-customer :selected").val();
           d.team_id = $("#team_id :selected").val();
+          d._token = '{{ csrf_token() }}';
             }
         },
+        columnDefs: [ {'targets': 0, 'searchable': false} ],
        columns: [
 
                 { data: 'id', name: 'id',class:'text-center w-10' },
@@ -219,12 +229,16 @@
     $(document).on("click",".view",function(){
 
       var customer_id = $(this).attr('customer_id');
+      var team_id = $("#team_id").val();
 
       $.ajax({
         url: '{{route('get-customer-detail')}}',
         type: 'GET',
         dataType: 'html',
-        data: {customer_id: customer_id},
+        data: {
+          customer_id: customer_id,
+          team_id: team_id
+        },
       })
       .done(function(data) {
 
@@ -232,7 +246,6 @@
           toastr.error('Get Detaill Customer Error!');
         }else{
           data = JSON.parse(data);
-            console.log(data);
             var button = ``;
             if(data.count_customer_user == 0)
                 button = `<button type="button" id=`+data.customer_list.id+` class="btn btn-primary btn-sm get-customer">Assign</button>`;
@@ -240,7 +253,7 @@
                 button = '';
             if(data.customer_list.ct_status != 'New Arrivals' && data.customer_list.ct_status != 'Disabled' && data.count_customer_user == 0 ){
                 data.customer_list.ct_salon_name = '<input type="text" name="business_name" id="business_name" class="form-control form-control-sm col-12" required>';
-                data.customer_list.ct_business_phone = '<input type="number" name="business_phone" id="business_phone" class="form-control form-control-sm col-12" required>';
+                data.customer_list.ct_business_phone = '<input type="text" name="business_phone" onkeypress="return isNumberKey(event)" id="business_phone" class="form-control form-control-sm col-12" required>';
             }
           data = data.customer_list;
           if(data.ct_salon_name==null)data.ct_salon_name="";
@@ -418,11 +431,11 @@
               </div>
               <div class="form-group row">
                 <label class="col-md-4" for="ct_business_phone">Business Phone<i class="text-danger">*</i></label>
-                <input type="number" class="col-md-8 form-control form-control-sm" name="ct_business_phone" id="ct_business_phone" value="`+data.ct_business_phone+`" placeholder="">
+                <input type="text" class="col-md-8 form-control form-control-sm" onkeypress="return isNumberKey(event)" name="ct_business_phone" id="ct_business_phone" value="`+data.ct_business_phone+`" placeholder="">
               </div>
               <div class="form-group row">
                 <label class="col-md-4" for="ct_cell_phone">Cell Phone<i class="text-danger">*</i></label>
-                <input type="number" class="col-md-8 form-control form-control-sm" name="ct_cell_phone" id="ct_cell_phone" value="`+data.ct_cell_phone+`" placeholder="">
+                <input type="text" onkeypress="return isNumberKey(event)" class="col-md-8 form-control form-control-sm" name="ct_cell_phone" id="ct_cell_phone" value="`+data.ct_cell_phone+`" placeholder="">
               </div>
               <div class="form-group row">
                 <label class="col-md-4" for="ct_email">Email</label>
@@ -507,24 +520,30 @@
     $(document).on('click','.delete-customer',function(){
 
       var customer_id = $(this).attr('customer_id');
-
-      $.ajax({
-        url: '{{route('delete-customer')}}',
-        type: 'GET',
-        dataType: 'html',
-        data: {customer_id: customer_id},
-      })
-      .done(function(data) {
-        if(data == 1){
-          table.ajax.reload(null, false);
-          toastr.success('Update Success!');
-        }else
+      if(confirm('Do you want to be disabled this customer ?')){
+         $.ajax({
+          url: '{{route('delete-customer')}}',
+          type: 'GET',
+          dataType: 'html',
+          data: {customer_id: customer_id},
+        })
+        .done(function(data) {
+          // console.log(data);
+          // return;
+          if(data == 1){
+            table.ajax.reload(null, false);
+            toastr.success('Update Success!');
+          }else
+            toastr.error('Update Error!');
+        })
+        .fail(function() {
           toastr.error('Update Error!');
-        console.log(data);
-      })
-      .fail(function() {
-        console.log("error");
-      });
+        });
+      }else {
+        return false;
+      }
+
+       
     });
     $(document).on('click','.deleted',function(){
       toastr.error('This Customer Deleted!');
@@ -554,6 +573,8 @@
       })
       .done(function(data) {
         data = JSON.parse(data);
+        // console.log(data);
+        // return;
         if(data.status == 'success'){
           $("#import-modal").modal('hide');
           table.draw();
@@ -561,7 +582,7 @@
         }
         else
           toastr.error(data.message);
-        console.log(data);
+        // console.log(data);
       })
       .fail(function() {
         console.log("error");
@@ -710,6 +731,16 @@
      }
      $(".cancel-move").click(function () {
          cleanModalPlace();
+     });
+     $(".custom-file-input").on("change", function() {
+      var fileName = $(this).val().split("\\").pop();
+      $(this).siblings(".custom-file-label").addClass("selected").html(fileName);
+    });
+     $(document).on("keypress","#business_phone,#ct_cell_phone,#ct_business_phone",function() {
+       let number_phone = $(this).val();
+
+       if(number_phone.length >9)
+        return false;
      });
 });
 </script>

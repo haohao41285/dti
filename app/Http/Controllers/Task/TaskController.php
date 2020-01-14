@@ -117,7 +117,10 @@ class TaskController extends Controller
     		->make(true);
     }
     public function postComment(Request $request){
-//        return $request->all();
+       // return $request->all();
+       if(count($request->file_image_list) > 20){
+        return response(['status'=>'error','message'=>'Amount of files maximum is 20 files']);
+       }
     	$rule = [
     		'order_id' => 'required',
             'note' => 'required'
@@ -176,12 +179,17 @@ class TaskController extends Controller
         if($file_list != ""){
             //CHECK SIZE IMAGE
             $size_total = 0;
+            $files_total = 1;
             foreach ($file_list as $key => $file){
                 $size_total += $file->getSize();
+                $files_total += 1;
             }
+            if($files_total >20)
+                return response(['status'=>'error','message'=>'Amount of files maximum is 20 files']);
+
             $size_total = number_format($size_total / 1048576, 2); //Convert KB to MB
-            if($size_total > 100){
-                return response(['status'=>'error','message'=>'Total Size Image maximum 100M!']);
+            if($size_total > 50){
+                return response(['status'=>'error','message'=>'Total Size Image maximum is 50M!']);
             }
             //Upload Image
             foreach ($file_list as $key => $file) {
@@ -235,6 +243,10 @@ class TaskController extends Controller
         $data['assign_to'] = MainUser::whereIn('user_id',$assign_to_arr)->get();
         $data['team'] = MainTeam::all();
 
+        if(in_array(Auth::user()->user_id, $assign_to_arr) && $data['assign_to']->count() > 2){
+            $data['button'] = 'button';
+        }
+
         return view('task.task-detail',$data);
     }
 
@@ -287,6 +299,7 @@ class TaskController extends Controller
         $data['user_list'] = MainUser::all();
         $data['task_parent_id'] = $id;
          $data['task_name'] = "";
+         $data['assign_to_team'] = MainTeam::active()->get();
 
         if($id>0){
             $data['task_name'] = MainTask::find($id)->subject;
@@ -310,7 +323,16 @@ class TaskController extends Controller
         }
     }
     public function saveTask(Request $request){
-//        return $request->all();
+        // return $request->all();
+        if($request->complete_percent != null){
+            $rule = [
+                'complete_percent' => 'integer|between:0,100',
+            ];
+            $validator = Validator::make($request->all(),$rule);
+            if($validator->fails())
+                return back()->withErrors($validator)->withInput();
+        }
+            
         if(Gate::denies('permission','create-new-task'))
             return doNotPermission();
 
@@ -321,22 +343,37 @@ class TaskController extends Controller
         }
 
         $input =  $request->all();
+
         if($request->date_start != "")
             $input['date_start'] = format_date_db($request->date_start);
         if($request->date_end != "")
             $input['date_end'] = format_date_db($request->date_end);
 
+        if(isset($request->cskh_task)){
+            $assign_arr = [];
+
+            $assign_list = MainUser::active()->where('user_team',$request->assign_to)->where('user_id','!=',Auth::user()->user_id)->select('user_id')->get();
+            if($assign_list->count() == 0)
+                return back()->with(['error'=>'Team empty for assign!']);
+
+            foreach ($assign_list as $key => $value) {
+                $assign_arr[] = $value->user_id;
+            }
+            $assign_list = implode(';', $assign_arr);
+            $input['assign_to'] = $assign_list; 
+        }
+
         if(!isset($request->id)){
 
             $input['created_by'] = Auth::user()->user_id;
-            $input['updated_by'] = Auth::user()->user_id;
+            $input['updated_by'] = Auth::user()->user_id ;
             $task_save = MainTask::create($input);
             //SAVE NOTIFICATION
             $content = Auth::user()->user_nickname. "created a task #".$task_save->id;
             $notification_arr = [
                 'content' => $content,
                 'href_to' => route('task-detail',$task_save->id),
-                'receiver_id' => $request->assign_to,
+                'receiver_id' => $input['assign_to'],
                 'read_not' => 0,
                 'created_by' => Auth::user()->user_id,
             ];
@@ -396,6 +433,39 @@ class TaskController extends Controller
             elseif($input['complete_percent'] > 0 && $input['complete_percent'] < 100)
                 $input['status'] = 2;
             else $input['status'] = 3;
+
+            //CHECK SOMETHING CHANGE AFTER EDIT TASK
+            $content = "";
+            if(isset($request->subject) && $request->subject != $task_info->subject)
+                $content .= "Subject has been change from: ".$task_info." to ".$request->subject."<br>";
+
+            if(isset($request->category) && $request->category != $task_info->category)
+                $content .= "Category has change from: <span class='text-danger'>".getCategory()[$task_info->category]."</span> to <span class='text-danger'>".getCategory()[$request->category]."</span><br>";
+
+            if(isset($request->priority) && $request->priority != $task_info->priority)
+                $content .= "Priority has change from: <span class='text-danger'>".getPriorityTask()[$task_info->priority]."</span> to <span class='text-danger'>".getPriorityTask()[$request->priority]."</span><br>";
+
+            if(isset($request->status) && $request->status != $task_info->status)
+                $content .= "Status has been change from: <span class='text-danger'>".getStatusTask()[$task_info->status]."</span> to <span class='text-danger'>".getStatusTask()[$request->status]."</span><br>";
+
+            if(isset($request->date_start) && format_date_db($request->date_start) != $task_info->date_start)
+                $content .= "Date Start has been change from: <span class='text-danger'>".$task_info->date_start."</span> to <span class='text-danger'>".format_date_db($request->date_start)."</span><br>";
+
+            if(isset($request->date_end) && format_date_db($request->date_end) != $task_info->date_end)
+                $content .= "Date End has been change from: <span class='text-danger'>".$task_info->date_end."</span> to <span class='text-danger'>".format_date_db($request->date_end)."</span><br>";
+
+            if(isset($request->complete_percent) && $request->complete_percent != $task_info->complete_percent)
+                $content .= "Complete Percent has been change from: <span class='text-danger'>".$task_info->complete_percent."</span> to <span class='text-danger'>".$request->complete_percent."</span><br>";
+
+            if(isset($request->assign_to) && $request->assign_to != $task_info->assign_to){
+                $user_list = MainUser::all();
+                $user_list = collect($user_list);
+                $old_assign = $user_list->where('user_id',$task_info->assign_to)->first()->user_nickname;
+                $new_assign =  $user_list->where('user_id',$request->assign_to)->first()->user_nickname;
+                $content .= "Assign has been change from: <span class='text-danger'>".$old_assign."</span> to <span class='text-danger'>".$new_assign."</span><br>";
+            }
+
+
             //UPDATE TASK
             $input['updated_by'] = Auth::user()->user_id;
             $task_save = $task_info->update($input);
@@ -405,21 +475,38 @@ class TaskController extends Controller
                 'order_id' => $task_info->order_id,
                 'task_id' => $request->id,
                 'created_by' => Auth::user()->user_id,
-                'content' => $request->note,
+                'content' => $request->note."<br>".$content,
             ];
             $tracking_history = MainTrackingHistory::create($task_tracking);
 
             //SAVE NOTIFICATION
             $content = Auth::user()->user_nickname. " updated a task #".$request->id;
-            $notification_arr = [
-                'content' => $content,
-                'href_to' => route('task-detail',$request->id),
-                'receiver_id' => $request->assign_to,
-                'read_not' => 0,
-                'created_by' => Auth::user()->user_id,
-            ];
-            $notification_create = MainNotification::create($notification_arr);
 
+            if(isset($request->cskh_task)){
+
+                $assign_list = MainUser::active()->where('user_team',$request->assign_to)->where('user_id','!=',Auth::user()->user_id)->select('user_id')->get();
+
+                foreach ($assign_list as $key => $value) {
+                    $notification_arr = [
+                        'content' => $content,
+                        'href_to' => route('task-detail',$request->id),
+                        'receiver_id' => $value->user_id,
+                        'read_not' => 0,
+                        'created_by' => Auth::user()->user_id,
+                    ];
+                    $notification_create = MainNotification::create($notification_arr);
+                }
+            }else{
+
+                $notification_arr[] = [
+                    'content' => $content,
+                    'href_to' => route('task-detail',$request->id),
+                    'receiver_id' => $request->assign_to,
+                    'read_not' => 0,
+                    'created_by' => Auth::user()->user_id,
+                ];
+                $notification_create = MainNotification::create($notification_arr);
+            }
             if(!isset($task_save) || !isset($tracking_history) || !isset($notification_create))
                 return back()->with(['error'=>'Save Error. Check Again, Please!']);
             else
@@ -653,6 +740,7 @@ class TaskController extends Controller
         if($id>0){
             $data['task_name'] = MainTask::find($id)->subject;
         }
+        $data['assign_to_team'] = MainTeam::active()->get();
         return view('task.cskh-task',$data);
     }
     public function getStatusTaskOrder(Request $request){
@@ -746,5 +834,17 @@ class TaskController extends Controller
                 return response(['status'=>'success','message'=>'Successfully! Change Successfully!','percent_complete'=>$percent_complete,'status'=>$status]);
             }
         }
+    }
+    public function updateAssignTask(Request $request){
+
+        $task_info = MainTask::find($request->task_id);
+        if (strpos($task_info->assign_to, ';') !== false) {
+            $update_task = $task_info->update(['assign_to'=>Auth::user()->user_id]);
+            if(!$update_task)
+                return back()->with(['error'=>'Accept Failed!']);
+            else
+                return redirect()->route('task-detail',$request->task_id);
+        }else
+            return redirect()->route('my-task')->with(['success'=>'This Task had accpeted by other!Thanks']);
     }
 }
