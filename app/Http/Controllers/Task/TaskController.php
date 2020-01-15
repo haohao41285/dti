@@ -43,10 +43,7 @@ class TaskController extends Controller
     }
     public function myTaskDatatable(Request $request){
 
-//        if(Gate::denies('permission','my-task-read'))
-//            return doNotPermission();
-
-        $task_list = MainTask::where('updated_by',Auth::user()->user_id)->whereNull('task_parent_id');
+        $task_list = MainTask::where([['updated_by',Auth::user()->user_id],['status','!=',3]])->whereNull('task_parent_id');
         if($request->category != "")
             $task_list->where('category',$request->category);
         if($request->service_id != "")

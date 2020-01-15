@@ -207,6 +207,7 @@ class OrdersController extends Controller
 
         //INSERT MAIN_COMBO_SERVICE_BOUGHT
         $order_history_arr = [
+            'id' => MainComboServiceBought::max('id')+1,
             'csb_customer_id' => $customer_id,
             'csb_combo_service_id' => $combo_service_list,
             'csb_amount' => $request->service_price_hidden,
@@ -1146,6 +1147,16 @@ class OrdersController extends Controller
         }
         //END UPDATE MAIN_CUSTOMER_SERVICE
 
+        //CHANGE CUSTOMER STATUS IN MAIN_CUSTOMER_TEMPLATE
+        $customer_teamplate_id = MainCustomer::where('customer_id',$customer_id)->first()->customer_customer_template_id;
+        $team_info = MainTeam::find(Auth::user()->user_team)->getTeamType;
+        $team_slug = $team_info->slug;
+
+        //CHECK CUSTOMER TEMPLATE
+        $check_customer = DB::table('main_customer_template')->where('id',$customer_teamplate_id);
+        if($check_customer->first()->$team_slug != 4)
+            $check_customer->update([$team_slug=>4]);
+
         //ADD TASK FOR SATFF
         $service_arr = array_unique($service_arr);
 
@@ -1153,6 +1164,8 @@ class OrdersController extends Controller
             $service_info = MainComboService::find($service);
             //ADD EXPIRED FOR REVIEW
             $content = "";
+            $date_end = "";
+
             if($service_info->cs_form_type == 1 || $service_info->cs_form_type == 3){
                 $complete_date = today()->addMonths($service_info->cs_expiry_period)->format('m/d/Y');
                 $content = json_encode(['complete_date'=>$complete_date]);
@@ -1161,6 +1174,7 @@ class OrdersController extends Controller
             $date_start = today()->format('Y-m-d');
 
             $task_arr = [
+                'id' => MainTask::max('id')+1,
                 'subject' => $service_info->cs_name,
                 'priority' => 2,
                 'status' => 1,

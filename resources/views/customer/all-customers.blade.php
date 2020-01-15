@@ -58,22 +58,57 @@
     </div>
     </form>
     <hr>
-  <div style="height:700px" style="overflow:auto">
-    <table class="table table-sm table-hover" id="dataTableAllCustomer" width="100%" cellspacing="0">
-        <thead>
-            <tr class="sticky-top bg-primary text-white"  style="z-index: 9">
-              <th>ID</th>
-              <th>Business</th>
-              <th>Contact Name</th>
-              <th>Business Phone</th>
-              <th>Cell Phone</th>
-              <th>Note</th>
-              <th>Status</th>
-              <th>Created Date</th>
-              <th style="width: 15%">Action</th>
-            </tr>
-        </thead>
-    </table>
+    
+  <!-- Nav tabs -->
+  <ul class="nav nav-tabs" role="tablist">
+    <li class="nav-item">
+      <a class="nav-link active" data-toggle="tab" href="#home">ALL CUSTOMERS</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" data-toggle="tab" href="#menu1">SERVICED CUSTOMERS</a>
+    </li>
+  </ul>
+
+  <!-- Tab panes -->
+  <div class="tab-content">
+    <div id="home" class="tab-pane active"><br>
+      <div style="height:700px" style="overflow:auto">
+        <table class="table table-sm table-hover" id="dataTableAllCustomer" width="100%" cellspacing="0">
+            <thead>
+                <tr class="sticky-top bg-primary text-white"  style="z-index: 9">
+                  <th>ID</th>
+                  <th>Business</th>
+                  <th>Contact Name</th>
+                  <th>Business Phone</th>
+                  <th>Cell Phone</th>
+                  <th>Note</th>
+                  <th>Status</th>
+                  <th>Created Date</th>
+                  <th style="width: 15%">Action</th>
+                </tr>
+            </thead>
+        </table>
+      </div>
+    </div>
+    <div id="menu1" class="tab-pane fade"><br>
+      <div style="height:700px" style="overflow:auto">
+        <table class="table table-sm table-hover" id="servicedCustomer" width="100%" cellspacing="0">
+            <thead>
+                <tr class="sticky-top bg-primary text-white"  style="z-index: 9">
+                  <th>ID</th>
+                  <th>Business</th>
+                  <th>Contact Name</th>
+                  <th>Business Phone</th>
+                  <th>Cell Phone</th>
+                  <th>Note</th>
+                  <th>Status</th>
+                  <th>Created Date</th>
+                  <th style="width: 15%">Action</th>
+                </tr>
+            </thead>
+        </table>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -215,6 +250,39 @@
                 { data: 'action' , name:'action' ,orderable: false, searcheble: false ,class:'text-center'}
         ],
     });
+    var tableServiceCustomer = $('#servicedCustomer').DataTable({
+      // dom: "lifrtp ",
+      order:[[7,'desc']],
+      responsive:false,
+      serverSide: true,
+      processing: true,
+      buttons: [
+       ],
+       ajax:{ url:"{{ route('serviceCustomerDatatable') }}",
+        type: 'POST',
+       data: function (d) {
+          d.start_date = $("#start_date").val();
+          d.end_date = $("#end_date").val();
+          d.address = $("#address").val();
+          d.status_customer = $("#status-customer :selected").val();
+          d.team_id = $("#team_id :selected").val();
+          d._token = '{{ csrf_token() }}';
+            }
+        },
+        columnDefs: [ {'targets': 0, 'searchable': false} ],
+       columns: [
+
+                { data: 'id', name: 'id',class:'text-center w-10' },
+                { data: 'ct_salon_name', name: 'ct_salon_name' },
+                { data: 'ct_fullname', name: 'ct_fullname'},
+                { data: 'ct_business_phone', name: 'ct_business_phone' ,class:'text-center'},
+                { data: 'ct_cell_phone', name: 'ct_cell_phone',class:'text-center' },
+                { data: 'ct_note', name: 'ct_note',class:'text-center' },
+                { data: 'ct_status', name: 'ct_status',class:'text-center' },
+                { data: 'created_at', name: 'created_at' ,class:'text-center'},
+                { data: 'action' , name:'action' ,orderable: false, searcheble: false ,class:'text-center'}
+        ],
+    });
 
     // $("#formReset").on('click',function(e){
     //    $(this).parents('form')[0].reset();
@@ -223,6 +291,7 @@
      $("#formReset").click(function () {
          $(this).parents('form')[0].reset();
          table.draw();
+         tableServiceCustomer.draw();
      });
 
     $(document).on("click",".view",function(){
@@ -515,6 +584,7 @@
     });
     $("#search-button").click(function(){
       table.draw();
+      tableServiceCustomer.draw();
     });
     $(document).on('click','.delete-customer',function(){
 
@@ -577,6 +647,7 @@
         if(data.status == 'success'){
           $("#import-modal").modal('hide');
           table.draw();
+          tableServiceCustomer.draw();
           toastr.success(data.message);
         }
         else
