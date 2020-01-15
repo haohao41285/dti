@@ -345,7 +345,7 @@ Route::group(['middleware' => ['auth']], function () {
             Route::get('user-cskh-datatable', 'SetupTeamController@userCskhDatatable')->name('user_cskh_datatable');
             Route::post('add-team-to-team-cskh', 'SetupTeamController@addTeamToTeamCskh')->name('add_team_to_team_cskh');
             Route::post('remove-team', 'SetupTeamController@removeTeam')->name('remove_team');
-            Route::post('save', 'SetupTeamController@cskhSave')->name('saveSetupTypeTemplate');
+            Route::post('save', 'SetupTeamController@cskhSave');
         });
 
         Route::get('menu-app','SetupServiceController@menuApp')->name('get_menu_app');
