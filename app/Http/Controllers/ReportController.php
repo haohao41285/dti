@@ -23,7 +23,7 @@ class ReportController extends Controller
     public function customers(){
 
         if(Gate::denies('permission','customer-report'))
-            return doNotPermission;
+            return doNotPermission();
 
         $data['status'] = GeneralHelper::getCustomerStatusList();
         if(Gate::allows('permission','customer-report-admin'))
@@ -260,7 +260,6 @@ class ReportController extends Controller
 
         if(Gate::allows('permission','seller-report-admin'))
             $data['sellers'] = MainUser::all();
-//        elseif(Gate::allows('permission','seller-report-leader'))
         else
             $data['sellers'] = MainUser::where('user_team',Auth::user()->user_team)->get();
         return view('reports.sellers',$data);
@@ -269,7 +268,6 @@ class ReportController extends Controller
 
         if(Gate::allows('permission','seller-report-admin'))
             $user_list = MainUser::select('*');
-//        elseif(Gate::allows('permission','seller-report-leader'))
         else
             $user_list = MainUser::where('user_team',Auth::user()->user_team);
 
@@ -365,32 +363,32 @@ class ReportController extends Controller
 
             $customer_list = $customer_list->get();
 
-
             $team_info = MainTeam::find($team_id)->getTeamType;
             $team_slug = $team_info->slug;
 
             foreach ($customer_list as $key => $customer) {
-                // return $customer;
-                if($customer->team_slug == 3){
-                    //New Arrivals
-                    $arrivals_total++;
-                }
-                else{
-                    switch ($customer->$team_slug) {
-                        case 1:
-                            //Assigned
-                            $assigned_total++;
-                            break;
-                        case 4:
-                            //Serviced
-                            $serviced_total++;
-                            break;
-
-                        case 2:
-                            //Disabled
-                            $disabled_total++;
-                            break;
-                    }
+                
+                switch ($customer->$team_slug) {
+                    case 1:
+                        //Assigned
+                        $assigned_total++;
+                        break;
+                    case 4:
+                        //Serviced
+                        $serviced_total++;
+                        break;
+                    case 3:
+                        //New Arrivals
+                        $arrivals_total++;
+                        break;
+                    case 0:
+                        //New Arrivals
+                        $arrivals_total++;
+                        break;
+                    case 2:
+                        //Disabled
+                        $disabled_total++;
+                        break;
                 }
             }
             $customers = self::getCustomerList($request);
