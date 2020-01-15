@@ -22,7 +22,6 @@ $permission_list = Session::get('permission_list');
     $count_parent = 0;
     @endphp
 
-
     @if($menu_list_all->where('parent_id',$parent->id)->count() == 0)
         @foreach($permission_list->where('menu_id',$parent->id) as $permission)
             @if( in_array($permission->id,$permission_list_session))

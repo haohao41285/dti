@@ -20,7 +20,7 @@
                         <div class="col-md-7 form-inline">
                             <label class="col-sm-4 required">Cell Phone</label>
                             <div class="col-sm-8">
-                                <input required class="form-control form-control-sm maskphone cell_phone" placeholder="" value="{{old('ct_cell_phone')}}" name="ct_cell_phone"  type="number" data-inputmask="'mask' : '(999) 999-9999'" >
+                                <input required class="form-control form-control-sm maskphone cell_phone" placeholder="" value="{{old('ct_cell_phone')}}" name="ct_cell_phone"  type="text" id="ct_cell_phone" onkeypress="return isNumberKey(event)" data-inputmask="'mask' : '(999) 999-9999'" >
                             </div>
                         </div>
                     </div>
@@ -52,7 +52,7 @@
                         <div class="col-md-7 form-inline">
                             <label class="col-sm-4 required">Business Phone</label>
                             <div class="col-sm-8">
-                                <input class="form-control form-control-sm maskphone" placeholder="" value="{{old('ct_business_phone')}}" name="ct_business_phone"  type="number" data-inputmask="'mask' : '(999) 999-9999'" >
+                                <input class="form-control form-control-sm maskphone" placeholder="" value="{{old('ct_business_phone')}}" name="ct_business_phone"  type="text" id="ct_business_phone" onkeypress="return isNumberKey(event)" data-inputmask="'mask' : '(999) 999-9999'" >
                             </div>
                         </div>
                     </div>
@@ -126,7 +126,7 @@
                         <div class="col-md-7 form-inline">
                             <label class="col-sm-4 required">Business Phone</label>
                             <div class="col-sm-8">
-                                <input class="form-control form-control-sm maskphone" placeholder="" value="{{old('business_phone')}}" name="business_phone"  type="number" data-inputmask="'mask' : '(999) 999-9999'" >
+                                <input class="form-control form-control-sm maskphone" placeholder="" value="{{old('business_phone')}}" name="business_phone" id="business_phone" type="text" onkeypress="return isNumberKey(event)" data-inputmask="'mask' : '(999) 999-9999'" >
                             </div>
                         </div>
                     </div>
@@ -173,6 +173,12 @@
  $(document).ready(function() {
      $(".reset-btn").click(function(){
          $(this).parents('form')[0].reset();
+     });
+     $(document).on("keypress","#business_phone,#ct_cell_phone,#ct_business_phone",function() {
+       let number_phone = $(this).val();
+
+       if(number_phone.length >9)
+        return false;
      });
 });
 </script>

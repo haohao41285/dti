@@ -57,7 +57,7 @@ Route::group(['middleware' => ['auth']], function () {
          Route::post('add-customer-note', 'CustomerController@addCustomerNote')->name('add-customer-note');
          Route::post('move-customers', 'CustomerController@moveCustomers')->name('move-customers');
 
-         Route::get('move-customer-all', 'CustomerController@moveCustomerAll')->name('move-customer-all');
+         Route::get('move-customer-all', 'CustomerController@moveCustomerAll');
          Route::get('get-user-team', 'CustomerController@getUserTeam')->name('get-user-team');
          Route::get('get-customer-1', 'CustomerController@getCustomer1')->name('get_customer_1');
          Route::get('get-customer-2', 'CustomerController@getCustomer2')->name('get_customer_2');
@@ -361,6 +361,7 @@ Route::group(['middleware' => ['auth']], function () {
         Route::get('role-datatable','UserController@roleDatatable')->name('role-datatable');
         Route::get('change-status-role','UserController@changeStatusRole')->name('change-status-role');
         Route::get('add-role','UserController@addRole')->name('add-role');
+        Route::post('delete-role','UserController@deleteRole')->name('delete-role');
 
         Route::get('user-add/{id?}','UserController@userAdd')->where(['id'=>'[0-9]+'])->name('user-add');
         Route::post('user-save','UserController@userSave')->name('user-save');
@@ -483,4 +484,15 @@ Route::get('transfer-service','ChangeDataController@transferService');
 Route::get('transfer-customer','ChangeDataController@transferCustomer');
 Route::get('transfer-customer-status','ChangeDataController@transferCustomerStatus');
 Route::get('transfer-customer-team-type','ChangeDataController@transferCustomerTeamType');
+
+/*Route::get('add-column','ChangeDataController@addCoumn');
+Route::get('remove-column','ChangeDataController@removeCoumn');
+
+Route::get('add-slug','ChangeDataController@addSlug');*/
+Route::get('add-customer-status','ChangeDataController@addCustomerStatus');
+Route::get('add-customer-to-user','ChangeDataController@addCustomerToUser');
+Route::get('replace-character-space','ChangeDataController@replaceCharacterSpace');
+Route::get('transfer-customer-id','ChangeDataController@tranferCustomerId');
+Route::get('check-customer','ChangeDataController@checkCustomer');
+Route::get('merge-customer','ChangeDataController@mergeCustomer');
 

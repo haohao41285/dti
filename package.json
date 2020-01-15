@@ -50,7 +50,10 @@
         "dropzone": "^5.5.1",
         "eonasdan-bootstrap-datetimepicker": "^4.17.47",
         "gulp": "^4.0.2",
+<<<<<<< HEAD
+=======
 
+>>>>>>> 5a641d6ab9ab0dc6a5d2d83ec32ddb1607c79fe8
         "icheck": "^1.0.2",
         "knockout": "^3.5.1",
 
