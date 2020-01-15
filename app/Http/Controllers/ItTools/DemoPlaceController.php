@@ -12,12 +12,15 @@ use App\Models\PosUser;
 use App\Models\PosUserGroup;
 use App\Models\PosMerchantPerUserGroup;
 use DB;
-use Hash; 
+use Hash;
+use App\Models\MainTheme;
+use App\Models\MainCustomer;
 
 class DemoPlaceController extends Controller
 {
     public function index(){
-        return view('tools.demo-place');
+        $data['theme_list'] = MainTheme::where('theme_status',1)->get();
+        return view('tools.demo-place',$data);
     }
     public function datatable(Request $request){
         $demo_places = PosPlace::where('place_status',1)->where('place_demo',1);
@@ -50,6 +53,7 @@ class DemoPlaceController extends Controller
             return response(['status'=>'success','message'=>'Successfully! Change Demo Status Successfully!']);
     }
     public function save(Request $request){
+        // return $request->all();
 
         $rule = [
             'customer_phone' => 'required|unique:pos_user,user_phone|digits:10',
@@ -100,6 +104,21 @@ class DemoPlaceController extends Controller
             }else
                 $place_ip_license = "DEG-".$place_max;
 
+            //CREATE CUSTOMER
+            $customer_id_max = MainCustomer::max('customer_id')+1;
+            $customer_arr = [
+                'customer_id' => $customer_id_max,
+                'customer_lastname' => 'lastname_'.$customer_id_max,
+                'customer_firstname' => 'firstname_'.$customer_id_max,
+                'customer_phone' => $request->customer_phone,
+                'customer_address' => 'address',
+                'customer_city' => 'city',
+                'customer_zip' => 'zip',
+                'customer_state' => 'state',
+                'customer_status' => 1,
+            ];
+            $customer_insert = MainCustomer::create($customer_arr);
+
             //CREATE PLACE
             $place_arr = [
                 'place_id' => $place_max,
@@ -114,10 +133,13 @@ class DemoPlaceController extends Controller
                 'place_ip_license' => $place_ip_license,
                 'place_status' => 1,
                 'place_phone' => $request->customer_phone,
-                'place_demo'  => 1,
-                'place_actiondate' => '{"mon": {"start": "09:00", "end": "21:00", "closed": false}, "tue": {"start": "09:00", "end": "21:00", "closed": false}, "wed": {"start": "09:00", "end": "21:00", "closed": false}, "thur": {"start": "09:00", "end": "21:00", "closed": false}, "fri": {"start": "09:00", "end": "21:00", "closed": false}, "sat": {"start": "09:00", "end": "21:00", "closed": false},"sun": {"start": "09:00", "end": "21:00", "closed": false} }'
+                'place_demo'  => isset($request->place_demo)?1:0,
+                'place_actiondate' => '{"mon": {"start": "09:00", "end": "21:00", "closed": false}, "tue": {"start": "09:00", "end": "21:00", "closed": false}, "wed": {"start": "09:00", "end": "21:00", "closed": false}, "thur": {"start": "09:00", "end": "21:00", "closed": false}, "fri": {"start": "09:00", "end": "21:00", "closed": false}, "sat": {"start": "09:00", "end": "21:00", "closed": false},"sun": {"start": "09:00", "end": "21:00", "closed": false} }',
+                'place_theme_code' => $request->theme_website,
+                'place_customer_id' => $customer_id_max
             ];
             $create_place = PosPlace::insert($place_arr);
+
 
             //CREATE USER
             $user_arr = [
@@ -154,7 +176,7 @@ class DemoPlaceController extends Controller
             ];
             $create_permission = PosMerchantPerUserGroup::create($permission_admin);
 
-            if(!isset($create_place) || !isset($create_user) || !isset($create_role) || !isset($create_permission)){
+            if( !isset($create_place) || !isset($create_user) || !isset($create_role) || !isset($create_permission) || !isset($customer_insert) ){
                 DB::callback();
                 return response(['status' => 'error' ,'message' => 'Failed! Create Place Failed!']);
             }
