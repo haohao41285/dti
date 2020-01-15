@@ -36,43 +36,6 @@
 
     </div>
   </div>
-{{-- END MODAL --}}
-{{-- MODAL FOR COMMENT --}}
-{{--<div class="modal fade" id="add-comment-modal" role="dialog">--}}
-{{--    <div class="modal-dialog modal-lg">--}}
-{{--      <!-- Modal content-->--}}
-{{--      <div class="modal-content">--}}
-{{--        <div class="modal-header">--}}
-{{--          <h6 class="modal-title"><b>Add Comment</b></h6>--}}
-{{--          <button type="button" class="close" data-dismiss="modal">&times;</button>--}}
-{{--        </div>--}}
-{{--        <div class="modal-body">--}}
-{{--            <form  enctype="multipart/form-data" accept-charset="utf-8">--}}
-{{--                @csrf()--}}
-{{--                <textarea hidden id="summernote" class="form-control form-control-sm" name="note"></textarea>--}}
-{{--                <input type="hidden" name="receiver_id" id="receiver_id">--}}
-{{--                <input type="button" class="btn btn-sm btn-secondary mt-2" name="" value="Upload attchment's file" onclick="getFile()" placeholder="">--}}
-{{--                <input type="file" hidden id="file_image_list" multiple name="file_image_list[]">--}}
-{{--                <p>(The maximum upload file size: 100M)</p>--}}
-{{--                <div style="height: 10px" class="bg-info">--}}
-{{--                </div>--}}
-{{--                <hr style="border-top: 1px dotted grey;">--}}
-{{--                <p class="text-primary">An email notification will send to web@dataaeglobal.com</p>--}}
-{{--                 <div class="input-group mb-2 mr-sm-2">--}}
-{{--                    <div class="input-group-prepend">--}}
-{{--                      <div class="input-group-text">Add CC:</div>--}}
-{{--                    </div>--}}
-{{--                    <input type="text" class="form-control" name="email_list" id="email_list" placeholder="">--}}
-{{--                  </div>--}}
-{{--                <p>CC Multiple Email for example:<i> email_1@gmail.com;email_2@gmail.com</i></p>--}}
-{{--                <button type="botton" class="btn btn-sm btn-primary submit-comment">Submit Comment</button>--}}
-{{--            </form>--}}
-{{--        </div>--}}
-{{--      </div>--}}
-
-{{--    </div>--}}
-{{--  </div>--}}
-{{-- END MODAL COMMENT --}}
 <div class="table-responsive">
 	<h4 class="border border-info border-top-0 border-right-0 border-left-0 text-info">ORDER INFORMATON #{{$id}}</h4>
     <table class="table table-striped mt-4 table-bordered" id="dataTableAllCustomer" widtd="100%" cellspacing="0">
@@ -214,51 +177,6 @@
             ]
         });
 
-        {{--var table = $('#tracking_history').DataTable({--}}
-        {{--    // dom: "lBfrtip",--}}
-        {{--    order:[[0,'desc']],--}}
-        {{--    info: false,--}}
-        {{--    buttons: [--}}
-        {{--    ],--}}
-        {{--    // processing: true,--}}
-        {{--    serverSide: true,--}}
-        {{--    ajax:{ url:"{{ route('order-tracking') }}",--}}
-        {{--    data: function (d) {--}}
-        {{--        d.order_id = '{{$id}}'--}}
-        {{--    }--}}
-        {{--},--}}
-        {{--   columns: [--}}
-        {{--            { data: 'created_at', name: 'created_at',class:'d-none' },--}}
-        {{--            { data: 'user_info', name: 'user_info' },--}}
-        {{--            { data: 'task', name: 'task',class: 'text-center' },--}}
-        {{--            { data: 'content', name: 'content'},--}}
-        {{--        ],--}}
-        {{--});--}}
-        /*var service_table = $('#service-datatable').DataTable({
-            // dom: "lBfrtip",
-            // order:[[0,'desc']],
-            responsive: false,
-            searching: false,
-            paging: false,
-            info: false,
-
-            buttons: [
-            ],
-            processing: true,
-            serverSide: true,
-            ajax:{ url:"{{ route('order-service') }}",
-            data: function (d) {
-                d.order_id = '{{$id}}'
-            }
-        },
-           columns: [
-                    { data: 'cs_name', name: 'cs_name'},
-                    { data: 'cs_price', name: 'cs_price', class:'text-right' },
-                    { data: 'action', name: 'action',class: 'text-center' },
-                    { data: 'infor', name: 'infor'},
-                ],
-        });
-*/
         $('body').on('click', '.submit-comment', function(e){
             e.preventDefault();
             var formData = new FormData($(this).parents('form')[0]);
@@ -341,7 +259,9 @@
         });
         function getHtmlForm(input_form_type,content){
 
-            content = JSON.parse(content);
+            if(content !== "")
+                content = JSON.parse(content);
+
              var content_html = "";
 
             if(input_form_type == 1){
@@ -354,37 +274,37 @@
                 var complete_date_html = "";
                 var description_html = "";
 
-                 if( content !== null && typeof(content['google_link']) != "undefined" && content['google_link'] !== null)
+                 if( content !== "" && typeof(content['google_link']) != "undefined" && content['google_link'] !== null)
                      google_link_html = '<b>'+content['google_link']+'</b>';
                  else
                      google_link_html = `<input type="text" class="form-control form-control-sm" id="google-link" name="google_link" value="">`;
 
-                if(content !== null && typeof(content['worker_name']) != "undefined" && content['worker_name'] !== null)
+                if(content !== "" && typeof(content['worker_name']) != "undefined" && content['worker_name'] !== null)
                     worker_name_html = '<b>'+content['worker_name']+'</b>';
                 else
                     worker_name_html = '<input type="text" class="form-control form-control-sm" id="worker-name" name="worker_name" value="">';
 
-                if(content !== null && typeof(content['star']) != "undefined" && content['star'] !== null)
+                if(content !== "" && typeof(content['star']) != "undefined" && content['star'] !== null)
                     star_html = "<b>"+content['star']+"</b>";
                 else
                     star_html = '<input type="number" class="form-control form-control-sm col-md-6" id="number_of_stars" name="star" value="">';
 
-                if(content !== null && typeof(content['current_review']) != "undefined" && content['current_review'] !== null)
+                if(content !== "" && typeof(content['current_review']) != "undefined" && content['current_review'] !== null)
                     current_review_html = "<b>"+content['current_review']+"</b>";
                 else
                     current_review_html = '<input type="number" class="form-control form-control-sm col-md-6"  id="number_of_reviews" name="current_review" value="">';
 
-                if(content !== null && typeof(content['order_review']) != "undefined" && content['order_review'] !== null)
+                if(content !== "" && typeof(content['order_review']) != "undefined" && content['order_review'] !== null)
                     order_review_html = "<b>"+content['order_review']+"</b>";
                 else
                     order_review_html = '<input type="number" class="form-control form-control-sm col-md-6"  id="number_of_reviews" name="order_review" value="">';
 
-                if(content !== null && typeof(content['complete_date']) != "undefined" && content['complete_date'] !== null)
+                if(content !== "" && typeof(content['complete_date']) != "undefined" && content['complete_date'] !== null)
                     complete_date_html = "<b>"+content['complete_date']+"</b><input type='hidden'  name='complete_date' value='"+content['complete_date']+"' >";
                 else
                     complete_date_html = '<input type="text" class="form-control form-control-sm col-md-6" id="datepicker_form" name="complete_date" >';
 
-                if(content !== null && typeof(content['desription']) != "undefined" && content['desription'] !== null)
+                if(content !== "" && typeof(content['desription']) != "undefined" && content['desription'] !== null)
                     description_html = "<span class='text-danger'>"+content['desription']+"</span>";
                 else
                     description_html = '<textarea class="form-control form-control-sm desription" name="desription" rows="3"></textarea>';
@@ -441,27 +361,27 @@
                 let website_html = "";
                 let main_color_html ="";
 
-                if(content !== null && typeof(content['product_name']) != "undefined" && content['product_name'] !== null)
+                if(content !== "" && typeof(content['product_name']) != "undefined" && content['product_name'] !== null)
                     product_name_html = '<b>'+content['product_name']+'</b>';
                 else
                     product_name_html = `<input type="text" class="form-control form-control-sm" id="product_name" name="product_name" value="" placeholder="">`;
 
-                if(content !== null && typeof(content['style_customer']) != "undefined" && content['style_customer'] !== null)
+                if(content !== "" && typeof(content['style_customer']) != "undefined" && content['style_customer'] !== null)
                     style_customer_html = '<b>'+content['style_customer']+'</b>';
                 else
                     style_customer_html = `<input type="text" class="form-control form-control-sm" id="kind_of" name="style_customer" value="" placeholder="">`;
 
-                if(content !== null && typeof(content['link']) != "undefined" && content['link'] !== null)
+                if(content !== "" && typeof(content['link']) != "undefined" && content['link'] !== null)
                     link_html = '<b>'+content['link']+'</b>';
                 else
                     link_html = `<input type="text" class="form-control form-control-sm" id="facebook_link" name="link" value="" placeholder="">`;
 
-                if(content !== null && typeof(content['website']) != "undefined" && content['website'] !== null)
+                if(content !== "" && typeof(content['website']) != "undefined" && content['website'] !== null)
                     website_html = '<b>'+content['website']+'</b>';
                 else
                     website_html = `<input type="text" class="form-control form-control-sm" id="website" name="website" value="" placeholder="">`;
 
-                if(content !== null && typeof(content['main_color']) != "undefined" && content['main_color'] !== null)
+                if(content !== "" && typeof(content['main_color']) != "undefined" && content['main_color'] !== null)
                     main_color_html = '<b>'+content['main_color']+'</b>';
                 else
                     main_color_html = `<input type="text" class="form-control form-control-sm" id="main_color" name="main_color" value="" placeholder="">`;
@@ -478,12 +398,7 @@
                 `+link_html+`<br>
                 <label for="website">Website</label>
                  `+website_html+`<br>
-                <!--<div class="border border-secondary p-2 rounded">
-                    <p>Upload Logo images or file</p>
-                    <input type="button" class="btn btn-sm btn-secondary" onclick="uploadFile()" value="Upload attachment files" name="">
-                    <input type="file" id="upload_file" hidden class="" value="" name="list_file[]" multiple><br>
-                        <span id="file_names"></span>
-                </div>-->
+                
                 <div class="form-group">
                     <label for="desription">Description</label>
                     <textarea class="form-control form-control-sm desription" name="desription" rows="3"></textarea>
@@ -500,37 +415,37 @@
                 let password_html = "";
                 let image_html ="";
 
-                if(content !== null && typeof(content['link']) != "undefined" && content['link'] !== null)
+                if(content !== "" && typeof(content['link']) != "undefined" && content['link'] !== null)
                     link_html = '<b>'+content['link']+'</b>';
                 else
                     link_html = `<input type="text" class="form-control form-control-sm"  id="facebook-link" name="link" value="">`;
 
-                if(content !== null && typeof(content['promotion']) != "undefined" && content['promotion'] !== null)
+                if(content !== "" && typeof(content['promotion']) != "undefined" && content['promotion'] !== null)
                     promotion_html = '<b>'+content['promotion']+'</b>';
                 else
                     promotion_html = `<input type="text" class="form-control form-control-sm"  id="promotion" name="promotion" value="">`;
 
-                if(content !== null && typeof(content['number']) != "undefined" && content['number'] !== null)
+                if(content !== "" && typeof(content['number']) != "undefined" && content['number'] !== null)
                     number_html = '<b>'+content['number']+'</b>';
                 else
                     number_html = `<input type="text" class="form-control form-control-sm col-md-6"  id="number_of_stars" name="number" value="">`;
 
-                if(content !== null && typeof(content['admin']) != "undefined" && content['admin'] !== null)
+                if(content !== "" && typeof(content['admin']) != "undefined" && content['admin'] !== null)
                     admin_html = '<b>Yes</b>';
                 else
                     admin_html = `<input type="checkbox" class="col-md-6"  id="add_admin" name="admin" value="1">`;
 
-                if(content !== null && typeof(content['user']) != "undefined" && content['user'] !== null)
+                if(content !== "" && typeof(content['user']) != "undefined" && content['user'] !== null)
                     user_html = '<b>'+content['user']+'</b>';
                 else
                     user_html = `<input type="text" class="form-control form-control-sm col-md-6"  id="facebook_username" name="user" value="">`;
 
-                if(content !== null && typeof(content['password']) != "undefined" && content['password'] !== null)
+                if(content !== "" && typeof(content['password']) != "undefined" && content['password'] !== null)
                     password_html = '<b>'+content['password']+'</b>';
                 else
                     password_html = `<input type="text" class="form-control form-control-sm col-md-6" id="facebook_password" name="password" value="">`;
 
-                if(content !== null && typeof(content['image']) != "undefined" && content['image_html'] !== null && content['image'] == 1)
+                if(content !== "" && typeof(content['image']) != "undefined" && content['image_html'] !== null && content['image'] == 1)
                     image_html = '<b>Yes</b>';
                 else
                     image_html = `<input type="checkbox" class="col-md-6"  id="image" name="image" value="1">`;
@@ -592,37 +507,37 @@
                 let email = "";
                 let address = "";
 
-                if(content !== null && typeof(content['domain']) != "undefined" && content['domain'] !== null)
+                if(content !== "" && typeof(content['domain']) != "undefined" && content['domain'] !== null)
                     domain = '<b>'+content['domain']+'</b>';
                 else
                     domain = `<input type="text" id="domain" class="form-control form-control-sm" name="domain">`;
 
-                if(content !== null && typeof(content['theme']) != "undefined" && content['theme'] !== null)
+                if(content !== "" && typeof(content['theme']) != "undefined" && content['theme'] !== null)
                     theme = '<b>'+content['theme']+'</b>';
                 else
                     theme = `<input type="text" id="theme" class="form-control form-control-sm col-md-10" name="theme">`;
 
-                if(content !== null && typeof(content['show_price']) != "undefined" && content['show_price'] !== null && content['show_price'] == 1)
+                if(content !== "" && typeof(content['show_price']) != "undefined" && content['show_price'] !== null && content['show_price'] == 1)
                     show_price = '<b>Yes</b>';
                 else
                     show_price = `<input type="checkbox" class="col-md-2 mt-1" id="show_price" name="show_price" value="1">`;
 
-                if(content !== null && typeof(content['business_name']) != "undefined" && content['business_name'] !== null)
+                if(content !== "" && typeof(content['business_name']) != "undefined" && content['business_name'] !== null)
                     business_name = '<b>'+content['business_name']+'</b>';
                 else
                     business_name = `<input type="text" class="col-md-3 form-control form-control-sm" id="business_name" name="business_name">`;
 
-                if(content !== null && typeof(content['business_phone']) != "undefined" && content['business_phone'] !== null)
+                if(content !== "" && typeof(content['business_phone']) != "undefined" && content['business_phone'] !== null)
                     business_phone = '<b>'+content['business_phone']+'</b>';
                 else
                     business_phone = `<input type="number" class="col-md-3 form-control form-control-sm" id="business_phone" name="business_phone">`;
 
-                if(content !== null && typeof(content['email']) != "undefined" && content['email'] !== null)
+                if(content !== "" && typeof(content['email']) != "undefined" && content['email'] !== null)
                     email = '<b>'+content['email']+'</b>';
                 else
                     email = `<input type="email" id="email" class="col-md-3 form-control form-control-sm" name="email">`;
 
-                if(content !== null && typeof(content['address']) != "undefined" && content['address'] !== null)
+                if(content !== "" && typeof(content['address']) != "undefined" && content['address'] !== null)
                     address = '<b>'+content['address']+'</b>';
                 else
                     address = `<input type="text" id="address" class="col-md-3 form-control form-control-sm" name="address">`;

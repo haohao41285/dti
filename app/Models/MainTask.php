@@ -12,7 +12,6 @@ class MainTask extends BaseModel
     protected $table = "main_task";
 
     protected $fillable = [
-        'id',
     	'subject',
     	'priority',
     	'status',

@@ -1372,7 +1372,6 @@ class OrdersController extends Controller
         //     $cs_expiry_period = $task_info->getService->cs_expiry_period;
         //     $task_expire = today()->addMonths($cs_expiry_period)->format('m/d/Y');
         // }
-
         if(!isset($task_info))
             return response(['status'=>'error','message'=>'Failed!']);
 
