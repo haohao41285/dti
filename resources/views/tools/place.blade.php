@@ -917,11 +917,8 @@ $(document).ready(function() {
             elems.forEach(function (html) {
                 var switchery = new Switchery(html, {
                     color: '#0874e8',
-<<<<<<< HEAD
-                    className : 'switchery switchery-small'
-=======
+
                     className: 'switchery switchery-small switchery-place'
->>>>>>> origin/hieu
                 });
             });
         }
