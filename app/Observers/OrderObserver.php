@@ -51,6 +51,7 @@ class OrderObserver
                 $content = $mainComboServiceBought->getCreatedBy->user_nickname." created a order #".$mainComboServiceBought->id;
                 //ADD NOTIFICATION TO DATABASE
                 $notification_arr = [
+                    'id' => MainNotification::max('id')+1,
                     'content' => $content,
                     'href_to' => route('payment-order',$mainComboServiceBought->id),
                     'receiver_id' => $user->user_id,

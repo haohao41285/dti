@@ -23,6 +23,7 @@ class MainComboServiceBought extends Model
 
     protected $table = "main_combo_service_bought";
     protected $fillable = [
+        'id',
     	'csb_customer_id',
         'csb_place_id',
     	'csb_combo_service_id',

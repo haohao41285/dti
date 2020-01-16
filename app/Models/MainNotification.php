@@ -8,6 +8,7 @@ class MainNotification extends Model
 {
     protected $table = 'main_notification';
     protected $fillable = [
+        'id',
         'content',
         'href_to',
         'receiver_id',

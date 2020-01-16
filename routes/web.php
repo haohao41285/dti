@@ -47,6 +47,7 @@ Route::group(['middleware' => ['auth']], function () {
          Route::post('import-customer', 'CustomerController@importCustomer')->name('import-customer');
          Route::get('export-customer', 'CustomerController@exportCustomer')->name('export-customer');
          Route::get('export-my-customer', 'CustomerController@exportMyCustomer')->name('export-my-customer');
+        Route::post('serviced-customer-datatable', 'CustomerController@serviceCustomerDatatable')->name('serviceCustomerDatatable');
 
          Route::post('save-my-customer', 'CustomerController@saveMyCustomer')->name('save-my-customer');
          Route::get('customer-detail/{id?}', 'CustomerController@customerDetail')->where(['id'=>'[0-9]+'])->name('customer-detail');
@@ -345,7 +346,7 @@ Route::group(['middleware' => ['auth']], function () {
             Route::get('user-cskh-datatable', 'SetupTeamController@userCskhDatatable')->name('user_cskh_datatable');
             Route::post('add-team-to-team-cskh', 'SetupTeamController@addTeamToTeamCskh')->name('add_team_to_team_cskh');
             Route::post('remove-team', 'SetupTeamController@removeTeam')->name('remove_team');
-            Route::post('save', 'SetupTeamController@cskhSave')->name('saveSetupTypeTemplate');
+            Route::post('save', 'SetupTeamController@cskhSave');
         });
 
         Route::get('menu-app','SetupServiceController@menuApp')->name('get_menu_app');
@@ -385,11 +386,11 @@ Route::group(['middleware' => ['auth']], function () {
         Route::post('authorize','OrdersController@authorizeCreditCard')->name('authorize');
         Route::get('get-customer-infor', 'OrdersController@getCustomerInfor')->name('get-customer-infor');
         Route::get('my-order-datatable', 'OrdersController@myOrderDatatable')->name('my-order-datatable');
-        Route::get('seller-orderpost-comment-datatable', 'OrdersController@sellerOrderDatatable')->name('seller-order-datatable');
+        Route::get('seller-order-datatable', 'OrdersController@sellerOrderDatatable')->name('seller-order-datatable');
         Route::get('view/{id?}', 'OrdersController@orderView')->where(['id'=>'[0-9]+'])->name('order-view');
         Route::get('order-tracking', 'OrdersController@orderTracking')->name('order-tracking');
         Route::get('order-service', 'OrdersController@orderService')->name('order-service');
-        Route::post('submit-info-taspost-commentk', 'OrdersController@submitInfoTask')->name('submit-info-task');
+        Route::post('submit-info-task', 'OrdersController@submitInfoTask')->name('submit-info-task');
         Route::post('change-status-order', 'OrdersController@changeStatusOrder')->name('change-status-order');
         Route::post('resend-invoice', 'OrdersController@resendInvoice')->name('resend-invoice');
         Route::get('dowload-invoice/{id}', 'OrdersController@dowloadInvoice')->name('dowload-invoice');

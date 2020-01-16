@@ -92,7 +92,6 @@ class CustomerController extends Controller
         if(Gate::denies('permission','all-customers-read'))
             return doNotPermission();
 
-        $customer_arr = [];
         $start_date = $request->start_date;
         $end_date = $request->end_date;
         $address = $request->address;
@@ -270,6 +269,7 @@ class CustomerController extends Controller
                     'message'=> $validator->getMessageBag()->toArray()
                 ]);
             $customer_assign = [
+                'id' => MainCustomerAssign::max('id')+1,
                 'user_id' => Auth::user()->user_id,
                 'customer_id' => $customer_id,
                 'business_name' => $request->business_name,
@@ -298,6 +298,7 @@ class CustomerController extends Controller
         }
         //ADD CUSTOMER TO USER LIST
         $user_customer_arr = [
+            'id' => MainUserCustomerPlace::max('id')+1,
             'user_id' => $user_id,
             'team_id' => $team_id,
             'customer_id' => $customer_id
@@ -1226,5 +1227,82 @@ class CustomerController extends Controller
                     );
             return response()->download($file, 'template_import.xlsx', $headers);
         }
+    }
+     public function serviceCustomerDatatable(Request $request){
+
+        if(Gate::denies('permission','all-customers-read'))
+            return doNotPermission();
+
+        $start_date = $request->start_date;
+        $end_date = $request->end_date;
+        $address = $request->address;
+
+        //GET LIST NAME OF TEAM TYPE'S COLUMN
+        if(!is_null($request->team_id))
+            $team_id = $request->team_id;
+        else
+            $team_id = Auth::user()->user_team;
+
+        $team_customer_status = MainTeam::find($team_id)->getTeamType;
+        $team_slug = $team_customer_status->slug;
+
+        $customers = MainCustomerTemplate::leftjoin('main_user',function($join){
+            $join->on('main_customer_template.created_by','main_user.user_id');
+        });
+
+        if($start_date != "" && $end_date != ""){
+
+            $start_date = Carbon::parse($request->start_date)->subDay(1)->format('Y-m-d');
+            $end_date = Carbon::parse($request->end_date)->addDay(1)->format('Y-m-d');
+
+            $customers->whereDate('main_customer_template.created_at','>=',$start_date)
+                    ->whereDate('main_customer_template.created_at','<=',$end_date);
+        }
+        if($address != ""){
+            $customers->where('ct_address','LIKE',"%".$address."%");
+        }
+        //GET ONLY SERVICED CUSTOMER
+        $customers->where($team_slug,4);
+        
+
+        $list_customers = $customers->orderBy('main_customer_template.created_at','ASC')
+            ->select('main_user.user_nickname','main_customer_template.ct_salon_name','main_customer_template.ct_fullname','main_customer_template.ct_business_phone','main_customer_template.ct_cell_phone','main_customer_template.ct_note','main_customer_template.created_by','main_customer_template.created_at','main_customer_template.id','main_customer_template.'.$team_slug);
+                       
+        return Datatables::of($list_customers)
+            ->editColumn('id',function ($row) use ($team_slug){
+                if($row->$team_slug == 4)
+                    return '<i class="fas fa-plus-circle details-control text-danger" id="'.$row->id.'" ></i><a href="'.route('customer-detail',$row->id).'"> '.$row->id.'</a>';
+                else
+                    return '<a href="javascript:void(0)">'.$row->id.'</a>';
+            })
+            ->editColumn('created_at',function($row){
+                return format_date($row->created_at)." by ".$row->user_nickname;
+            })
+            ->editColumn('ct_business_phone',function($row){
+                if($row->ct_business_phone != null && Gate::denies('permission','customer-admin'))
+                    return substr($row->ct_business_phone,0,3)."########";
+                else return $row->ct_business_phone;
+            })
+            ->editColumn('ct_cell_phone',function($row){
+                if($row->ct_cell_phone != null  && Gate::denies('permission','customer-admin'))
+                    return substr($row->ct_cell_phone,0,3)."########";
+                else return $row->ct_cell_phone;
+            })
+            ->addColumn('ct_status',function($row) use ($team_slug){
+                if($row->$team_slug == 0)
+                    return 'New Arrivals';
+                else
+                    return GeneralHelper::getCustomerStatus($row->$team_slug);
+            })
+            ->addColumn('action', function ($row){
+                if( Gate::allows('permission','customer-admin'))
+                    return '<a class="btn btn-sm btn-secondary view" customer_id="'.$row->id.'" href="javascript:void(0)"><i class="fas fa-eye"></i></a>
+                        <a class="btn btn-sm btn-secondary edit-customer" customer_id="'.$row->id.'" href="javascript:void(0)"><i class="fas fa-edit"></i></a>
+                        <a class="btn btn-sm btn-secondary delete-customer" customer_id="'.$row->id.'" href="javascript:void(0)"><i class="fas fa-trash"></i></a>';
+                else
+                    return '<a class="btn btn-sm btn-secondary view" customer_id="'.$row->id.'" href="javascript:void(0)"><i class="fas fa-eye"></i></a>';
+            })
+            ->rawColumns(['action','id'])
+            ->make(true);
     }
 }
