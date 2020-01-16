@@ -28,6 +28,7 @@ class SetupTypeTemplateController  extends Controller
 		$arr = [
 			'template_type_name' => $request->name,
 			'template_type_table_type' => $request->type,
+			'template_type_form' => $request->form,
 		];
 
 		if($request->action == "Create"){

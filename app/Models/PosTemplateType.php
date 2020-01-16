@@ -18,6 +18,7 @@ class PosTemplateType extends Model
         'template_type_name',
         'template_type_status',
         'template_type_table_type',
+        'template_type_form'
     ];
 
     protected $guarded = [];
@@ -43,7 +44,11 @@ class PosTemplateType extends Model
                     return '<a class="btn btn-sm btn-secondary edit-coupon-type" data="'.$coupon->template_type_id.'" href="#" data-toggle="tooltip" title="Edit"><i   class="fas fa-edit"></i></a>
                     <a class="btn btn-sm btn-secondary delete-coupon-type" data="'.$coupon->template_type_id.'" href="#" data-toggle="tooltip" ><i  title="Delete" class="fas fa-trash"></i></a>';
             })
-        ->rawColumns(['theme_image','theme_status','action'])
+        ->editColumn('template_type_form',function($coupon){
+            $val = $coupon->template_type_form == 1 ? 'Default' : 'Form';
+            return "<span data='$coupon->template_type_form'>$val</span>";
+        })
+        ->rawColumns(['template_type_form','theme_image','theme_status','action'])
         ->make(true);
     }
 

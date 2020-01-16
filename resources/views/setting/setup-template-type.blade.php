@@ -21,6 +21,7 @@ Template Type
                         <thead>
                             <tr class="thead-light">
                                 <th>ID</th>
+                                <th>Form</th>
                                 <th>Name</th>
                                 <th>Action</th>
                             </tr>
@@ -44,6 +45,16 @@ Template Type
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group row col-12">
+                        <label class="col-2 ">Form</label>
+                        {{-- <input class="form-control-sm form-control col-10" type="text" name="name"> --}}
+                        <select class="form-control-sm form-control col-10" name="form">
+                            <option value="1">Default</option>
+                            <option value="2">From</option>
+                        </select>
+                    </div>
                 </div>
                 <div class="modal-body">
                     <div class="form-group row col-12">
@@ -105,12 +116,14 @@ function save(form_data, url) {
         method: "post",
         dataType: "json",
         data: form_data,
+        async: false,
         cache: false,
         contentType: false,
         processData: false,
         success: function(data) {
             if (data.status == 1) {
                 toastr.success("Saved successfully!");
+                return;
             } else {
                 toastr.error(data.msg);
             }
@@ -135,6 +148,7 @@ $(document).ready(function() {
         },
         columns: [
             { data: 'template_type_id', name: 'template_type_id', class: "id" },
+            { data: 'template_type_form', name: 'template_type_form', class: "form" },
             { data: 'template_type_name', name: 'template_type_name', class: "name" },
             { data: 'action', name: 'action', orderable: false, searcheble: false, class: "text-center" },
         ],
@@ -156,10 +170,13 @@ $(document).ready(function() {
     $(document).on('click', '.edit-coupon-type', function(e) {
         e.preventDefault();
         clear()
+        $("select[name='form']").find("option:selected").attr("selected", false);
         var id = $(this).attr("data");
         var name = $(this).parent().parent().find(".name").text();
-
+        var form = $(this).parent().parent().find(".form span").attr('data');
+        // alert(form);
         $("input[name='name']").val(name);
+        $("select[name='form']").find("option[value=" + form + "]").attr("selected", true);
 
         $("#coupon-type-modal").modal("show");
         $("#save-coupon-type").find('.modal-title').text("Edit Type");

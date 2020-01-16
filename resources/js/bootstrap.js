@@ -1,3 +1,5 @@
+ //window.maskPhone = require('jquery-input-mask-phone-number/dist/jquery-input-mask-phone-number.min.js')
+
  window.bootstrapMulty = require('bootstrap-multiselect/dist/js/bootstrap-multiselect.js');
 
  window.CanvasJS = require('canvasjs/dist/canvasjs.min.js');
@@ -18,10 +20,9 @@
   * code may be modified to fit the specific needs of your application.
   */
 
-window.Dropzone = require('dropzone');
+ window.Dropzone = require('dropzone');
 
-window.iCheck  = require('icheck');
-
+ window.iCheck = require('icheck');
 
 window.Dropzone = require('dropzone');
 
