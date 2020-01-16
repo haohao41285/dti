@@ -165,6 +165,9 @@ Route::group(['middleware' => ['auth']], function () {
             Route::get('/', 'PlaceController@index')->name('getPlaces');
             Route::get('/places-datatable', 'PlaceController@getPlacesDatatable')->name('getPlacesDatatable');
             Route::get('/users-datatable', 'PlaceController@getUsersDatatable')->name('getUsersDatatable');
+            Route::post('lock-user', 'PlaceController@lockUser')->name('lockUser');
+
+
             Route::post('/change-password', 'PlaceController@changeNewPassword')->name('changeNewPassword');
             Route::get('/get-detail', 'PlaceController@getDetailPlace')->name('getDetailPlace');
             Route::get('/get-themes-datatable', 'PlaceController@getThemeDatatable')->name('getThemeDatatable');
@@ -486,6 +489,7 @@ Route::get('transfer-customer','ChangeDataController@transferCustomer');
 Route::get('transfer-customer-status','ChangeDataController@transferCustomerStatus');
 Route::get('transfer-customer-team-type','ChangeDataController@transferCustomerTeamType');
 
+
 /*Route::get('add-column','ChangeDataController@addCoumn');
 Route::get('remove-column','ChangeDataController@removeCoumn');
 
@@ -496,4 +500,5 @@ Route::get('replace-character-space','ChangeDataController@replaceCharacterSpace
 Route::get('transfer-customer-id','ChangeDataController@tranferCustomerId');
 Route::get('check-customer','ChangeDataController@checkCustomer');
 Route::get('merge-customer','ChangeDataController@mergeCustomer');
+
 

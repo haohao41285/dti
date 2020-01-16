@@ -1,0 +1,1 @@
+ALTER TABLE `pos_template_type` ADD `template_type_sub` INT NOT NULL DEFAULT '1' COMMENT '1:default, 2: sub ' AFTER `template_type_table_type`;
