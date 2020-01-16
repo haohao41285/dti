@@ -10,6 +10,7 @@ use App\Models\MainAppBackground;
 use App\Helpers\ImagesHelper;
 use Gate;
 
+
 class AppBackgroundController extends Controller
 {
 	private $appBackground;
@@ -26,11 +27,30 @@ class AppBackgroundController extends Controller
 		return $this->appBackground->datatable();
 	}
 
-	public function save(Request $request){
+	public function save(Request $request){		
+		if($request->image){
+			$image = ImagesHelper::uploadImageToAPI($request->image,'app/background');
+		}
 
+		$arr = [
+			'image' => $image ?? null,
+		];
+
+		if($request->id){
+			if(isset($image)){
+				$this->appBackground->updateById($request->id,$arr);
+			}
+		} else {			
+			$this->appBackground->createByArr($arr);			
+		}
+
+		return response()->json(['status'=>1,'data'=>['msg'=>'Saved successfully']]);
 	}
 
 	public function delete(Request $request){
 
+		$this->appBackground->deleteById($request->id);
+
+		return response()->json(['status'=>1,'data'=>['msg'=>'Deleted successfully']]);
 	}
 }

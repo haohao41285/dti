@@ -204,9 +204,10 @@ Route::group(['middleware' => ['auth']], function () {
 
         Route::group(['prefix' => 'app-background'], function() {
             Route::get('/', "AppBackgroundController@index")->name('appBackground');
-            Route::get('/app-datatable', "AppBackgroundController@datatable")->name('appBackground.datatable');
-            Route::post('/save-app', "AppBackgroundController@save")->name('appBackground.save');
-            Route::post('/delete-app', "AppBackgroundController@delete")->name('appBackground.delete');
+            Route::get('/datatable', "AppBackgroundController@datatable")->name('appBackground.datatable');
+            Route::post('/save', "AppBackgroundController@save")->name('appBackground.save');
+            Route::post('/delete', "AppBackgroundController@delete")->name('appBackground.delete');
+
         });
     });
     Route::group(['prefix'=>'tools','namespace'=>'Webbuilder'],function(){

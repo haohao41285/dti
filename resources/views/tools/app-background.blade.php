@@ -28,7 +28,7 @@
         </div>
     </div>
 </div>
-<div class="modal fade" id="modal-add" tabindex="-1" role="dialog">
+<div class="modal fade" id="modal-save" tabindex="-1" role="dialog">
     <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
             <form method="post" id="save" enctype='multipart/form-data'>
@@ -52,6 +52,7 @@
                     <button type="submit" class="btn-sm btn btn-primary">Save changes</button>
                     <button type="button" class="btn-sm btn btn-secondary" data-dismiss="modal">Close</button>
                     <input type="hidden" name="action" value="Create">
+                    <input type="hidden" name="id">
                 </div>
             </form>
         </div>
@@ -61,11 +62,12 @@
 @push('scripts')
 <script type="text/javascript">
 function clear() {
-    $("#save-app-banner")[0].reset();
-    $("input[name='name']").val('');
-    $("input[name='desc']").val('');
-    $("input[name='link']").val('');
-    $("input[name='file']").val('');
+    $("#save")[0].reset();
+    // $("input[name='name']").val('');
+    // $("input[name='desc']").val('');
+    // $("input[name='link']").val('');
+    // $("input[name='file']").val('');
+
     // $("input[name='appId']").val('');
     $(".previewImage img").attr('src', '{{asset("images/no-image.png")}}');
 }
@@ -132,7 +134,7 @@ $(document).ready(function() {
         ajax: {
             url: "{{ route('appBackground.datatable') }}",
             data: function(data) {
-                // data.appId = appId;
+
             },
         },
         columns: [
@@ -149,101 +151,49 @@ $(document).ready(function() {
 
     $(document).on('click', '.add', function(e) {
         clear()
-        $("#app-modal").modal("show");
-        $("#save-app").find('.modal-title').text("Add App");
-        $("#save-app").find('input[name="action"]').val("Create");
+        $("#modal-save").modal("show");
+        $("#save").find('.modal-title').text("Add");
+        $("#save").find('input[name="action"]').val("Create");
     });
 
-    $(document).on('click', '.edit-app', function(e) {
+    $(document).on('click', '.edit-data', function(e) {
         e.preventDefault();
         clear()
         var id = $(this).attr("data-id");
-        var name = $(this).parent().parent().find(".name").text();
-        var desc = $(this).parent().parent().find(".desc").text();
+        var image = $(this).parent().parent().find(".image img").attr('src');
+        // alert(image);
 
-        $("input[name='name']").val(name);
-        $("input[name='desc']").val(desc);
+        $("#save").find('input[name="id"]').val(id);
+        $("#save").find('.previewImage img').attr('src', image);
 
-        $("#app-modal").modal("show");
-        $("#save-app").find('.modal-title').text("Edit App");
-        $("#save-app").find('input[name="action"]').val("Update");
-        $("#save-app").find('input[name="appId"]').val(id);
+        $("#modal-save").modal("show");
+        $("#save").find('.modal-title').text("Edit App");
+        $("#save").find('input[name="action"]').val("Update");
+
     });
 
-    $(document).on('click', '.edit-app-banner', function(e) {
-        e.preventDefault();
-        clear()
-        var id = $(this).attr("data-id");
-        var link = $(this).parent().parent().find(".link").text();
-        var img = $(this).parent().parent().find(".image img").attr("src");
 
-        $("input[name='link']").val(link);
-        $("#previewImageAppbanner").attr("src", img);
-
-        $("#app-banner-modal").modal("show");
-        $("#save-app-banner").find('.modal-title').text("Edit App");
-        $("#save-app-banner").find('input[name="action"]').val("Update");
-        $("#save-app-banner").find('input[name="appBannerId"]').val(id);
-    });
-
-    $(document).on("click", ".delete-app", function(e) {
+    $(document).on("click", ".delete-data", function(e) {
         e.preventDefault();
         var id = $(this).attr("data-id");
-        var url = "{{ route('deleteApp') }}";
+        var url = "{{ route('appBackground.delete') }}";
         if (deleteById(id, url)) {
-            appTable.ajax.reload(null, false);
+            table.ajax.reload(null, false);
         }
     });
 
-    $(document).on("click", ".delete-app-banner", function(e) {
-        e.preventDefault();
 
-        var id = $(this).attr("data-id");
-        var url = "{{ route('deleteAppBanner') }}";
-        if (deleteById(id, url)) {
-            appBannerTable.ajax.reload(null, false);
-        }
-    });
 
-    $(document).on('click', '.add-app-banner', function(e) {
-        var checkSelected = $('#app-datatable tbody tr.selected');
-        if (checkSelected.length == 0) {
-            toastr.warning("Please select the app list");
-            return false;
-        }
-        clear()
-        $("#app-banner-modal").modal("show");
-        $("#save-app-banner").find('.modal-title').text("Add App Banner");
-        $("#save-app-banner").find('input[name="action"]').val("Create");
-    });
 
-    $("#save-app").on('submit', function(e) {
+
+    $("#save").on('submit', function(e) {
         e.preventDefault();
         var form = $(this)[0];
         var form_data = new FormData(form);
-        var url = "{{ route('saveApp') }}";
+        var url = "{{ route('appBackground.save') }}";
         save(form_data, url);
-        $("#app-modal").modal("hide");
-        appTable.ajax.reload(null, false);
-    });
-
-    $("#save-app-banner").on('submit', function(e) {
-        e.preventDefault();
-        var form = $(this)[0];
-        var form_data = new FormData(form);
-        var url = "{{ route('saveAppBanner') }}";
-        save(form_data, url);
-        appBannerTable.ajax.reload(null, false);
-        // appBannerTable.ajax.reload(null,false);
-        $("#app-banner-modal").modal("hide");
-    });
-    //load app banner list by app id
-    $("#app-datatable tbody").on('click', "tr", function() {
-        $('#app-datatable tbody tr.selected').removeClass('selected');
-        $(this).addClass('selected');
-        appId = $(this).find("td a.edit-app").attr('data-id');
-        $("#save-app-banner").find("input[name='appId']").val(appId);
-        appBannerTable.draw();
+        $("#modal-save").modal("hide");
+        table.draw();
     });
 
 
