@@ -917,11 +917,7 @@ $(document).ready(function() {
             elems.forEach(function (html) {
                 var switchery = new Switchery(html, {
                     color: '#0874e8',
-<<<<<<< HEAD
-                    className : 'switchery switchery-small'
-=======
                     className: 'switchery switchery-small switchery-place'
->>>>>>> origin/hieu
                 });
             });
         }
@@ -1642,18 +1638,10 @@ $(document).ready(function() {
         $("#extension_service").modal('hide');
     });
 
-<<<<<<< HEAD
     $('#cateservices-multiselect').multiselect({
         buttonWidth: '100%',
     });
-    $(document).on('click', '.switchery', function() {
-=======
-    // $('#cateservices-multiselect').multiselect({
-    //     buttonWidth: '100%',
-    // });
     $(document).on('click', '.switchery-place', function() {
->>>>>>> origin/hieu
-
         let place_id = $(this).siblings('input').attr('place_id');
         let place_status = $(this).siblings('input').attr('place_status');
 
@@ -1717,8 +1705,6 @@ $(document).ready(function() {
             }
         })
     });
-<<<<<<< HEAD
-=======
 
     $(document).on('keyup', "#business-phone", function() {
         var phone = $(this).val();
@@ -1764,7 +1750,6 @@ $(document).ready(function() {
             });
     });
 
->>>>>>> origin/hieu
 });
 
 </script>
