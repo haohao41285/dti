@@ -159,8 +159,11 @@
                                         </div>
                                         <div class="row col-12 row-detail">
                                             <label class="col-sm-4">Price floor($)</label>
-                                            {{-- <label class="col-sm-8" id="price-floor">Price floor</label> --}}
                                             <input type="number" name="price_floor" class="col-sm-8 form-control-sm form-control" id="price-floor">
+                                        </div>
+                                        <div class="row col-12 row-detail">
+                                            <label class="col-sm-4">Latlng</label>
+                                            <input type="text" name="latlng" class="col-sm-8 form-control-sm form-control" id="latlng">
                                         </div>
                                     </div>
                                     <div class="col-6">
@@ -1063,7 +1066,7 @@ $(document).ready(function() {
                     $("#business-name").val(data.data.place.place_name);
                     $("#tax-code").val(data.data.place.place_taxcode);
                     $("#price-floor").val(data.data.place.place_worker_mark_bonus);
-                    // $("#hide-service-price").val(hide_service_price);
+                    $("#latlng").val(data.data.place.place_latlng);
                     $("#address").val(data.data.place.place_address);
                     $("#email").val(data.data.place.place_email);
                     $("#interest").val(data.data.place.place_interest);

@@ -176,7 +176,8 @@ class PlaceController extends Controller
                                     'place_actiondate','place_logo','place_favicon',
                                     'hide_service_price','place_worker_mark_bonus',
                                     'place_interest','place_website','place_phone','place_url_plugin',
-                                    'place_map_direction'
+                                    'place_map_direction',
+                                    'place_latlng'
                                 )
                 ->where('place_id',$request->placeId)
                 ->where('place_status',1)
@@ -403,6 +404,7 @@ class PlaceController extends Controller
               'place_url_plugin' => $request->place_url_plugin,
               'place_map_direction' => $request->place_map_direction,
               'place_actiondate' => json_encode($arrActiondate),
+              'place_latlng' => $request->latlng,
         ];
 
         if(!isset($logo)){
