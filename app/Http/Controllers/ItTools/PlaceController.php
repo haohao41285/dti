@@ -116,7 +116,7 @@ class PlaceController extends Controller
      * @return
      */
     public function getUsersDatatable(Request $request){
-        $customers = PosUser::select('user_id','user_nickname','user_phone','user_email','created_at')
+        $customers = PosUser::select('user_id','user_nickname','user_phone','user_email','created_at','user_lock_status')
                         ->where('user_status',1)
                         ->where('enable_status',1)
                         ->where('user_place_id',$request->placeId)
@@ -126,6 +126,12 @@ class PlaceController extends Controller
         ->editColumn('created_at',function($customers){
             return format_datetime($customers->created_at);
         })
+        ->editColumn('user_lock_status',function($row){
+            if($row->user_lock_status == 1) $checked='checked';
+            else $checked="";
+                return '<input type="checkbox" user_id="'.$row->user_id.'" user_lock_status="'.$row->user_lock_status.'" class="js-switch-user"'.$checked.'/>';
+        })
+        ->rawColumns(['user_lock_status'])
         ->make(true);
     }
     /**
@@ -412,6 +418,27 @@ class PlaceController extends Controller
         return response()->json(['status'=>1,'data'=>['msg'=>'saved successfully']]);
     }
 
+
+    public function lockUser(Request $request){
+
+        $user_id = $request->user_id;
+        $user_status = $request->user_status;
+
+        if($user_status == 1)
+            $status = 0;
+        else
+            $status = 1;
+
+        $update = PosUser::where('user_id',$user_id)->where('user_place_id',$request->placeId)->update([
+            'user_lock_status' => $status,
+            'user_wrong_password_number' => 0
+        ]);
+
+        if(!isset($update))
+            return response(['status'=>'error','message'=>'Failed! Change Status Failed!']);
+
+        return response(['status'=>'success','message'=>'Successfully! Change Status Successfully!']);
+    }
 
 }
 

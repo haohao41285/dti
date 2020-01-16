@@ -70,6 +70,7 @@
                                             <th>Phone</th>
                                             <th>Email</th>
                                             <th>Created Date</th>
+                                            <th>Lock</th>
                                         </tr>
                                     </thead>
                                 </table>
@@ -871,6 +872,8 @@ function multiselectReload() {
     $("#cateservices-multiselect").multiselect();
 }
 
+
+
 $(document).ready(function() {
     perviewImage();
 
@@ -911,7 +914,7 @@ $(document).ready(function() {
             elems.forEach(function(html) {
                 var switchery = new Switchery(html, {
                     color: '#0874e8',
-                    className: 'switchery switchery-small'
+                    className: 'switchery switchery-small switchery-place'
                 });
             });
         }
@@ -934,11 +937,21 @@ $(document).ready(function() {
             { data: 'user_phone', name: 'user_phone', class: 'text-center' },
             { data: 'user_email', name: 'user_email' },
             { data: 'created_at', name: 'created_at', class: 'text-center' },
+            { data: 'user_lock_status', name: 'user_lock_status', class: 'text-center' },
             // { data: 'action' , name:'action' ,orderable: false, searcheble: false ,class:'text-center'}
         ],
         buttons: [
 
         ],
+        fnDrawCallback: function(oSettings) {
+            var elems = Array.prototype.slice.call(document.querySelectorAll('.js-switch-user'));
+            elems.forEach(function(html) {
+                var switchery = new Switchery(html, {
+                    color: '#0874e8',
+                    className: 'switchery switchery-small switchery-user'
+                });
+            });
+        }
     });
 
 
@@ -1625,7 +1638,7 @@ $(document).ready(function() {
     // $('#cateservices-multiselect').multiselect({
     //     buttonWidth: '100%',
     // });
-    $(document).on('click', '.switchery', function() {
+    $(document).on('click', '.switchery-place', function() {
 
         let place_id = $(this).siblings('input').attr('place_id');
         let place_status = $(this).siblings('input').attr('place_status');
@@ -1682,12 +1695,57 @@ $(document).ready(function() {
                 if (data.status) {
                     toastr.success("Saved successfully");
                     $("#detail").modal("hide");
+                    placeTable.draw();
                 }
             },
             error: function() {
                 toastr.error("Failed to save");
             }
         })
+    });
+
+    $(document).on('keyup', "#business-phone", function() {
+        var phone = $(this).val();
+
+        if (!phone) return;
+        phone = phone.replace(/\(|\)|-| /g, '');
+
+        var num1 = phone.slice(0, 3);
+        var num2 = phone.slice(3, 6);
+        var num3 = phone.slice(6, 10);
+
+        var maskPhone = '(' + num1 + ') ' + num2 + ' - ' + num3;
+        $(this).val(maskPhone);
+    });
+
+    $(document).on('click', '.switchery-user', function() {
+
+        let user_id = $(this).siblings('input').attr('user_id');
+        let user_status = $(this).siblings('input').attr('user_lock_status');
+
+        $.ajax({
+                url: "{{route('lockUser')}}",
+                type: 'POST',
+                dataType: 'html',
+                data: {
+                    user_id,
+                    user_status,
+                    placeId,
+                    _token: '{{csrf_token()}}'
+                },
+            })
+            .done(function(data) {
+                data = JSON.parse(data);
+                if (data.status === 'error')
+                    toastr.error(data.message);
+                else
+                    toastr.success(data.message);
+
+                customerTable.draw();
+            })
+            .fail(function() {
+                console.log('Faield! Change Status Faield');
+            });
     });
 
 });
