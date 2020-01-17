@@ -1639,17 +1639,11 @@ $(document).ready(function() {
         $("#extension_service").modal('hide');
     });
 
-<<<<<<< HEAD
-    $('#cateservices-multiselect').multiselect({
-        buttonWidth: '100%',
-    });
-    $(document).on('click', '.switchery', function() {
-=======
+
     // $('#cateservices-multiselect').multiselect({
     //     buttonWidth: '100%',
     // });
     $(document).on('click', '.switchery-place', function() {
->>>>>>> origin/hieu
 
         let place_id = $(this).siblings('input').attr('place_id');
         let place_status = $(this).siblings('input').attr('place_status');
