@@ -82,4 +82,11 @@ function getReviewStatus(){
         1 => 'SUCCESSFULLY'
     ];
 }
+// if(!function_exists('getTimeType'))
+    function getTimeType(){
+        return [
+            1 => 'Month',
+            2 => 'Day'
+        ];
+    }
 ?>

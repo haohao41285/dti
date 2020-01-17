@@ -86,7 +86,8 @@ class SetupServiceController extends Controller
                 'cs_form_type' => $service_combo->cs_form_type,
                 'cs_combo_service_type' => $combo_service_type->where('id',$service_combo->cs_combo_service_type)->first()->name,
                 'cs_expiry_period' => $service_combo->cs_expiry_period,
-                'cs_combo_service_type_id' => $service_combo->cs_combo_service_type
+                'cs_combo_service_type_id' => $service_combo->cs_combo_service_type,
+                'cs_type_time' => $service_combo->cs_type_time
 			];
 		}
 
@@ -104,6 +105,9 @@ class SetupServiceController extends Controller
 	       		else $checked="";
 				return '<input type="checkbox" cs_id="'.$row['id'].'" cs_status="'.$row['cs_status'].'" class="js-switch"'.$checked.'/>';
 			})
+			->editColumn('cs_expiry_period',function($row){
+				return $row['cs_expiry_period']." ".getTimeType()[$row['cs_type_time']];
+			})
 			->addColumn('action',function($row){
 				return '<a class="btn btn-sm btn-secondary edit-cs"
 				 cs_expiry_period="'.$row['cs_expiry_period'].'"
@@ -114,9 +118,11 @@ class SetupServiceController extends Controller
 				 cs_name="'.$row['cs_name'].'" 
 				 cs_id="'.$row['id'].'"  
 				 cs_assign_id="'.$row['cs_assign_id'].'"
-				 title="Edit" href="javascript:void(0)"><i class="fas fa-edit"></i></a>';
+				 cs_type_time = "'.$row['cs_type_time'].'"
+				 title="Edit" href="javascript:void(0)"><i class="fas fa-edit"></i></a>
+				 <a class="btn btn-sm btn-secondary delete-cs" cs_id="'.$row['id'].'" href="javascript:void(0)"><i class="fas fa-trash"></i></a>';
 			})
-			->rawColumns(['cs_status','action','cs_service_id','cs_assign_to'])
+			->rawColumns(['cs_status','action','cs_service_id','cs_assign_to','cs_expiry_period'])
 		    ->make(true);
 	}
 	public function changeStatusCs(Request $request){
@@ -308,6 +314,7 @@ class SetupServiceController extends Controller
                 'cs_assign_to'=>$cs_assign_to,
                 'cs_combo_service_type'=>$cs_combo_service_type,
                 'cs_form_type' => $cs_form_type??0,
+                'cs_type_time' => $request->cs_type_time
             ]);
         else{
             if($cs_type == 1)
@@ -318,7 +325,8 @@ class SetupServiceController extends Controller
                     'cs_description'=>$cs_description,
                     'cs_assign_to'=>$cs_assign_to,
                     'cs_combo_service_type' => $cs_combo_service_type,
-                    'cs_form_type' => $cs_form_type
+                    'cs_form_type' => $cs_form_type,
+                	'cs_type_time' => $request->cs_type_time
                 ]);
             else
                 $cs_update = MainComboService::where('id',$cs_id)->update([
@@ -330,7 +338,8 @@ class SetupServiceController extends Controller
                     'cs_combo_service_type' => $cs_combo_service_type,
                     'cs_form_type' => $cs_form_type,
                     'cs_expiry_period' => $request->cs_expiry_period,
-                    'cs_menu_inailso_app' => $cs_menu_inailso_app
+                    'cs_menu_inailso_app' => $cs_menu_inailso_app,
+                	'cs_type_time' => $request->cs_type_time
                 ]);
         }
 		if(!isset($cs_update))
@@ -480,5 +489,18 @@ class SetupServiceController extends Controller
 		$data['menu_html'] = $menu_html;
 
 		return $data;
+    }
+    public function deleteService(Request $request){
+    	$cs_id = $request->cs_id;
+
+    	if(!$cs_id)
+    		return response(['status'=>'error','message'=>'Failed!']);
+
+    	$delete_service = MainComboService::find($cs_id)->delete();
+
+    	if(!isset($delete_service))
+    		return response(['status'=>'error','message'=>'Failed! Delete Service Failed!']);
+
+    	return response(['status'=>'success','message'=>'Successfully! Delete Service Successfully!']);
     }
 }

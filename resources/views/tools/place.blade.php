@@ -444,7 +444,7 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="submit" class="btn-sm btn btn-primary">Save changes</button>
+                    <button type="button" id="submit-changes" class="btn-sm btn btn-primary">Save changes</button>
                     <button type="button" class="btn-sm btn btn-secondary" data-dismiss="modal">Close</button>
                 </div>
         </form>
@@ -872,10 +872,10 @@ function getServicesByPlaceId(placeId) {
     return result;
 }
 
-function multiselectReload() {
+/*function multiselectReload() {
     $("#cateservices-multiselect").multiselect('destroy');
     $("#cateservices-multiselect").multiselect();
-}
+}*/
 
 
 
@@ -1638,9 +1638,9 @@ $(document).ready(function() {
         $("#extension_service").modal('hide');
     });
 
-    $('#cateservices-multiselect').multiselect({
+   /* $('#cateservices-multiselect').multiselect({
         buttonWidth: '100%',
-    });
+    });*/
     $(document).on('click', '.switchery-place', function() {
         let place_id = $(this).siblings('input').attr('place_id');
         let place_status = $(this).siblings('input').attr('place_status');
@@ -1679,9 +1679,10 @@ $(document).ready(function() {
         $(this).parent().addClass("active");
     });
 
-    $("#form-detail-place").on("submit", function(e) {
+    $("#submit-changes").on("click", function(e) {
+        // alert('ok');return;
         e.preventDefault();
-        var form = $(this)[0];
+        var form = $(this).parents('form')[0];
         var form_data = new FormData(form);
         form_data.append('placeId', placeId);
 

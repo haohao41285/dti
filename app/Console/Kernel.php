@@ -13,7 +13,7 @@ class Kernel extends ConsoleKernel
      * @var array
      */
     protected $commands = [
-//        Commands\SendNotificationCron::class,
+       Commands\SendNotificationCron::class,
         Commands\ServiceNotificationCron::class,
         Commands\TaskNotificationCron::class,
         Commands\SendEventCskhCron::class,
@@ -29,9 +29,10 @@ class Kernel extends ConsoleKernel
     protected function schedule(Schedule $schedule)
     {
         // $schedule->command('inspire')
-        //          ->hourly();
-//        $schedule->command('cron:sendnotification')
-//            ->dailyAt('18:00')->withoutOverlapping();
+                 ->hourly();
+        //SEND NOTIFICATION FOR CUSTOMER
+       $schedule->command('cron:sendnotification')
+           ->dailyAt('18:00')->withoutOverlapping();
 //        $schedule->command('command:servicenotification')
 //            ->dailyAt('07:00')->withoutOverlapping();
         $schedule->command('command:taskNotification')

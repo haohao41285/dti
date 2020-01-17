@@ -49,9 +49,9 @@
             <tr>
                 <th>#{{$id}}</th>
                 <th class="status">
-                    {{($order_info->csb_status==0?"NOTPAYMENT":"PAID")}}
-                    @if($order_info->csb_status == 0)
-                    <a href="javascript:void(0)" id="change-status"> <i class="fas fa-edit"></i><span>Change Status</span></a>
+                    @if($order_info->csb_status==0) NOTPAYMENT @elseif($order_info->csb_status==1) PAID @else DELIVERED @endif
+                    @if($order_info->csb_status != 2)
+                    <a href="javascript:void(0)" id="change-status" order-status="{{ $order_info->csb_status }}"> <i class="fas fa-edit"></i><span>Change Status</span></a>
                     @endif
                 </th>
                 <th>{{format_datetime($order_info->created_at)}}</th>
@@ -84,9 +84,9 @@
             </tr>
             <tr>
                 <th>{{$order_info->customer_firstname}} {{$order_info->customer_lastname}}</th>
-                <th></th>
-                <th></th>
                 <th>{{$order_info->customer_phone}}</th>
+                <th>{{ $order_info->getPlace->place_name }}</th>
+                <th>{{ $order_info->getPlace->place_phone }}</th>
             </tr>
             @if(\Gate::allows('permission','order-invoice'))
             <tr>
@@ -650,13 +650,15 @@
             });
         });
         $("#change-status").click(function(){
+            let order_status = $(this).attr('order-status');
             $.ajax({
                 url: '{{route('change-status-order')}}',
                 type: 'POST',
                 dataType: 'html',
                 data: {
                     order_id: '{{$id}}',
-                    _token: '{{csrf_token()}}'
+                    _token: '{{csrf_token()}}',
+                    order_status: order_status
                 },
             })
             .done(function(data) {
@@ -667,7 +669,7 @@
                     toatr.error(data.mesage);
                 else{
                     toastr.success(data.message);
-                    $(".status").text("PAID");
+                    $(".status").text(data.status_text);
                 }
             })
             .fail(function() {

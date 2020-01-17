@@ -27,7 +27,7 @@
             <span class="col-md-4"><b>Business Name:</b></span>
             <span class="col-md-8">
                 @foreach($main_customer_info->getPlaces as $key => $place)
-                    <span class="text-uppercase text-info">{{$place->place_name}}{{$key>0?",":""}}</span>
+                    {{ $key+1 }} - <span class="text-uppercase text-info">{{$place->place_name}}</span>
                 @endforeach
             </span><br>
         </div>
@@ -58,6 +58,7 @@
         <thead  class="thead-light">
             <tr class="text-center">
                 <th>ORDER ID</th>
+                <th>PLACE NAME</th>
                 <th>ORDER DATE</th>
                 <th>Services</th>
                 <th>Subtotal($)</th>
@@ -89,11 +90,14 @@
              $seller_id = $order->created_by;
              if($count != 0)
                 $order_status= $status/$count;
+            //GET PLACE OF ORDER
+            $place_name = App\Models\PosPlace::where('place_id',$order->csb_place_id)->first();
 
             @endphp
             @if($order_status == 1 ||$order_status == 2)
             <tr>
                 <td class="text-center"><a href="{{route('order-view',$order->id)}}">#{{$order->id}}</a></td>
+                <td class="text-info">{{ isset($place_name)?$place_name->place_name:""}}</td>
                 <td class="text-center">{{format_datetime($order->created_at)}}</td>
                 <td>{!! $cs_list !!}</td>
                 <td class="text-right">${{$order->csb_amount?$order->csb_amount:0}}</td>
@@ -175,9 +179,14 @@
         <div class="input-group-prepend">
             <div class="input-group-text">Add CC:</div>
         </div>
-        <input type="text" class="form-control" name="email_list" id="email_list_2" placeholder="">
+        {{-- <input type="text" class="form-control" name="email_list" id="email_list_2" placeholder=""> --}}
+        <select name="user_list" class="form-control form-control-sm" multiple >
+            @foreach ($user_list as $user)
+                <option value="">{{ $user->user_nickname }}--{{ $user->getTeam->team_name }}--{{ $user->user_email }}</option>
+            @endforeach
+        </select>
     </div>
-    <p>CC Multiple Email for example:<i> email_1@gmail.com;email_2@gmail.com</i></p>
+    {{-- <p>CC Multiple Email for example:<i> email_1@gmail.com;email_2@gmail.com</i></p> --}}
     <button type="botton" class="btn btn-sm btn-primary submit-comment">Submit Comment</button>
 </form>
 @endsection

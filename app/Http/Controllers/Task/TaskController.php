@@ -43,7 +43,7 @@ class TaskController extends Controller
     }
     public function myTaskDatatable(Request $request){
 
-        $task_list = MainTask::where([['updated_by',Auth::user()->user_id],['status','!=',3]])->whereNull('task_parent_id');
+        $task_list = MainTask::where([['status','!=',3]])->whereNull('task_parent_id');
         if($request->category != "")
             $task_list->where('category',$request->category);
         if($request->service_id != "")
@@ -843,5 +843,85 @@ class TaskController extends Controller
                 return redirect()->route('task-detail',$request->task_id);
         }else
             return redirect()->route('my-task')->with(['success'=>'This Task had accpeted by other!Thanks']);
+    }
+     public function receiverTaskDatatable(Request $request){
+
+        $user_id = Auth::user()->user_id;
+
+        $task_list = MainTask::where([['status','!=',3]])->whereNull('task_parent_id')
+        ->where(function($query) use ($user_id) {
+            $query->where('assign_to',$user_id)
+                    ->orWhere('assign_to','like','%;'.$user_id)
+                    ->orWhere('assign_to','like','%;'.$user_id.';%')
+                    ->orWhere('assign_to','like',$user_id.';%');
+        });
+        if($request->category != "")
+            $task_list->where('category',$request->category);
+        if($request->service_id != "")
+            $task_list->where('service_id',$request->service_id);
+        if($request->assign_to && $request->assign_to != ""){
+            $assign_to = $request->assign_to;
+            $task_list->where(function($query) use($assign_to){
+                $query->where('assign_to',$assign_to)
+                    ->orWhere('assign_to','like','%;'.$assign_to)
+                    ->orWhere('assign_to','like','%;'.$assign_to.';%')
+                    ->orWhere('assign_to','like',$assign_to.';%');
+            });
+        }
+        if($request->priority != "")
+            $task_list->where('priority',$request->priority);
+        if($request->status != "")
+            $task_list->where('status',$request->status);
+        if(isset($request->task_dashboard)){
+            $task_list->where('status','!=',3);
+            $task_list = $task_list->skip(0)->take(5)->get();
+        }
+
+        return DataTables::of($task_list)
+            ->editColumn('priority',function($row){
+                return getPriorityTask()[$row->priority];
+            })
+            ->editColumn('status',function($row){
+                return getStatusTask()[$row->status];
+            })
+            ->addColumn('task',function($row){
+                if(count($row->getSubTask) >0){
+                    $detail_button = "<i class=\"fas fa-plus-circle details-control text-danger\" id='".$row->id."'></i>";
+                }else $detail_button = "";
+
+                return $detail_button.'&nbsp&nbsp<a href="'.route('task-detail',$row->id).'"> #'.$row->id.'</a>';
+            })
+            ->editColumn('order_id',function($row){
+                if($row->order_id != null)
+                    return '<a href="'.route('order-view',$row->order_id).'">#'.$row->order_id.'</a>';
+            })
+            ->editColumn('date_start',function($row){
+                if($row->date_start != "")
+                    $date_start = Carbon::parse($row->date_start)->format('m/d/Y');
+                else
+                    $date_start = "";
+
+                return $date_start;
+            })
+            ->editColumn('category',function($row){
+                return getCategory()[$row->category];
+            })
+            ->editColumn('date_end',function($row){
+                if($row->date_end != "")
+                    $date_end = Carbon::parse($row->date_end)->format('m/d/Y');
+                else
+                    $date_end = "";
+
+                return $date_end;
+            })
+            ->editColumn('updated_at',function($row){
+                return Carbon::parse($row->updated_at)->format('m/d/Y h:i A');
+            })
+            ->editColumn('complete_percent',function($row){
+                if(!empty($row->complete_percent))
+                    return $row->complete_percent."%";
+            })
+            ->rawColumns(['order_id','task'])
+            ->make(true);
     }
 }

@@ -291,6 +291,7 @@ Route::group(['middleware' => ['auth']], function () {
         Route::get('get-service-combo', 'SetupServiceController@getServiceCombo')->name('get-service-combo');
         Route::post('save-service-combo', 'SetupServiceController@saveServiceCombo')->name('save-service-combo');
         Route::get('get-cs', 'SetupServiceController@getCs')->name('get-cs');
+        Route::post('delete-cs', 'SetupServiceController@deleteService')->name('delete_service');
 
         Route::get('team-type-datatable', 'SetupTeamController@teamTypeDatatable')->name('team-type-datatable');
         Route::get('change-status-team-type', 'SetupTeamController@changeStatusTeamtype')->name('change-status-team-type');
@@ -404,6 +405,9 @@ Route::group(['middleware' => ['auth']], function () {
         Route::get('payment-orders/{id}','OrdersController@paymentOrder')->name('payment-order');
         Route::post('add-order','OrdersController@addOrder')->name('post-add-order');
         Route::get('payment-order-datatable', 'OrdersController@paymentOrderDatatable')->name('payment-order-datatable');
+        Route::get('delivered-order-datatable', 'OrdersController@deliveredOrderDatatable')->name('delivered-order-datatable');
+        Route::post('order-calling','OrdersController@orderCalling')->name('order.calling');
+        Route::get('finish-call','OrdersController@finishCall')->name('order.finish_call');
 
     });
     Route::group(['prefix' => 'task','namespace' => 'Task'], function() {
@@ -421,6 +425,7 @@ Route::group(['middleware' => ['auth']], function () {
         Route::post('send-mail-notification', 'TaskControall-task-datatableller@sendMailNotification')->name('send-mail-notification');
         Route::get('theme-mail', 'TaskController@themeMail')->name('theme-mail');
         Route::get('get-subtask', 'TaskController@getSubTask')->name('get-subtask');
+        Route::get('receiver-task-datatable', 'TaskController@receiverTaskDatatable')->name('receiver-task-datatable');
 
         Route::get('all-task', 'TaskController@allTask')->name('all-task');
         Route::get('all-task-datatable', 'TaskController@allTaskDatatable')->name('all-task-datatable');
