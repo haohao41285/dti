@@ -1708,8 +1708,6 @@ $(document).ready(function() {
             }
         })
     });
-<<<<<<< HEAD
-=======
 
     $(document).on('keyup', "#business-phone", function() {
         var phone = $(this).val();
