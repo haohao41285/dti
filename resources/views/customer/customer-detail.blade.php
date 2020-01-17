@@ -179,14 +179,9 @@
         <div class="input-group-prepend">
             <div class="input-group-text">Add CC:</div>
         </div>
-        {{-- <input type="text" class="form-control" name="email_list" id="email_list_2" placeholder=""> --}}
-        <select name="user_list" class="form-control form-control-sm" multiple >
-            @foreach ($user_list as $user)
-                <option value="">{{ $user->user_nickname }}--{{ $user->getTeam->team_name }}--{{ $user->user_email }}</option>
-            @endforeach
-        </select>
+       
     </div>
-    {{-- <p>CC Multiple Email for example:<i> email_1@gmail.com;email_2@gmail.com</i></p> --}}
+    
     <button type="botton" class="btn btn-sm btn-primary submit-comment">Submit Comment</button>
 </form>
 @endsection
