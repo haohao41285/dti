@@ -19,7 +19,8 @@ class MainComboService extends Model
     	'cs_assign_to',
         'cs_form_type',
         'cs_combo_service_type', //main_combo_service_type
-        'cs_menu_inailso_app' // menu_id for use app 
+        'cs_menu_inailso_app', // menu_id for use app
+        'cs_type_time', // 1-month 2-day
     ];
 
     public function getComboServiceType(){

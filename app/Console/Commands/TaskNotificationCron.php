@@ -40,7 +40,7 @@ class TaskNotificationCron extends Command
      */
     public function handle()
     {
-        $date_expired = today()->addDays(3);
+        $date_expired = today()->addDays(1);
 
         $task_list = MainTask::where([
             ['date_end','!=',null],

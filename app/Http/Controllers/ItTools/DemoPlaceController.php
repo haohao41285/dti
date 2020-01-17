@@ -108,14 +108,15 @@ class DemoPlaceController extends Controller
             $customer_id_max = MainCustomer::max('customer_id')+1;
             $customer_arr = [
                 'customer_id' => $customer_id_max,
-                'customer_lastname' => 'lastname_'.$customer_id_max,
-                'customer_firstname' => 'firstname_'.$customer_id_max,
+                'customer_lastname' => $request->customer_lastname,
+                'customer_firstname' => $request->customer_firstname,
                 'customer_phone' => $request->customer_phone,
-                'customer_address' => 'address',
+                'customer_address' => $request->customer_address,
                 'customer_city' => 'city',
                 'customer_zip' => 'zip',
                 'customer_state' => 'state',
                 'customer_status' => 1,
+                'customer_email' => $request->customer_email
             ];
             $customer_insert = MainCustomer::create($customer_arr);
 
@@ -136,7 +137,8 @@ class DemoPlaceController extends Controller
                 'place_demo'  => isset($request->place_demo)?1:0,
                 'place_actiondate' => '{"mon": {"start": "09:00", "end": "21:00", "closed": false}, "tue": {"start": "09:00", "end": "21:00", "closed": false}, "wed": {"start": "09:00", "end": "21:00", "closed": false}, "thur": {"start": "09:00", "end": "21:00", "closed": false}, "fri": {"start": "09:00", "end": "21:00", "closed": false}, "sat": {"start": "09:00", "end": "21:00", "closed": false},"sun": {"start": "09:00", "end": "21:00", "closed": false} }',
                 'place_theme_code' => $request->theme_website,
-                'place_customer_id' => $customer_id_max
+                'place_customer_id' => $customer_id_max,
+                'hide_service_price' => 0
             ];
             $create_place = PosPlace::insert($place_arr);
 

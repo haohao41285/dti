@@ -20,7 +20,7 @@ Combo/Service List
       <th>Name</th>
       <th class="text-center">Type</th>
       <th class="text-left">Price</th>
-      <th>Expiry(month)</th>
+      <th>Expiry</th>
       <th>Service Name</th>
       <th>Description</th>
       <th>Assign To</th>
@@ -135,6 +135,7 @@ Combo/Service List
       var cs_form_type = $(this).attr('cs_form_type');
       var cs_combo_service_type = $(this).attr('cs_combo_service_type');
       var cs_expiry_period = $(this).attr('cs_expiry_period');
+      var cs_type_time = $(this).attr('cs_type_time');
       cs_assign_id = $(this).attr('cs_assign_id').split(';');
 
       $.ajax({
@@ -166,8 +167,16 @@ Combo/Service List
             user_html += `<option `+selected+` value="`+val.user_id+`">`+val.user_nickname+`</option>`;
           });
 
+          //TIME TYPE ARRAY
+          let time_type_html = "";
+          let time_type_arr = <?php echo json_encode(getTimeType()); ?>;
+          $.each(time_type_arr, function(index, val) {
+            var checked_time = "";
+            if(index == cs_type_time) var checked_time = "selected";
+            time_type_html += `<option `+checked_time+`  value="`+index+`">`+val+`</option>`;
+          });
+          
           //GET FORM SERVICE LIST
-
           $.each(data.service_form,function (ind,value) {
             if(cs_form_type == parseInt(ind)+1) var selected_form = 'selected';
             else var selected_form = '';
@@ -208,7 +217,7 @@ Combo/Service List
                         </div>
                         <div class="form-group">
                           <h6><b class="required">Price</b></h6>
-                          <input type="number" name="cs_price"  class="form-control form-control-sm cs_price" value="`+cs_price+`" placeholder="">
+                          <input type="text" onkeypress="return isNumberKey(event)" name="cs_price"  class="form-control form-control-sm cs_price" value="`+cs_price+`" placeholder="">
                         </div>
                         <div class="form-group">
                         <h6><b>Combo Service type</b></h6>
@@ -246,11 +255,18 @@ Combo/Service List
                         </div>
                         <div class="form-group">
                           <h6><b class="required">Price</b></h6>
-                          <input type="number" name="cs_price"  class="form-control form-control-sm cs_price" value="`+cs_price+`" placeholder="">
+                          <input type="text" onkeypress="return isNumberKey(event)" name="cs_price"  class="form-control form-control-sm cs_price" value="`+cs_price+`" placeholder="">
                         </div>
                         <div class="form-group">
                           <h6><b class="required">Expire Period</b></h6>
-                         <input type="number" name="cs_expiry_period"  class="form-control form-control-sm" value="`+cs_expiry_period+`" placeholder="">
+                         <div class="input-group">
+                         <input type="text" onkeypress="return isNumberKey(event)" name="cs_expiry_period"  class="form-control form-control-sm" value="`+cs_expiry_period+`" placeholder="">
+                          <div class="input-group-append">
+                             <select name="cs_type_time" class="form-control form-control-sm">
+                             `+time_type_html+`
+                            </select>
+                          </div>
+                    </div>
                         </div>
                         <div class="form-group">
                             <h6><b>Combo Service type</b></h6>
@@ -426,12 +442,23 @@ Combo/Service List
                 </div>
                 <div class="form-group service-content">
                   <h6><b class="required">Price</b></h6>
-                  <input type="number" name="cs_price" required class="form-control form-control-sm cs_price" value="" placeholder="">
+                  <input type="text" onkeypress="return isNumberKey(event)" name="cs_price" required class="form-control form-control-sm cs_price" value="" placeholder="">
                 </div>
                 <div class="form-group service-content-son">
-                    <h6><b class="required">Expire Period(month)</b></h6>
-                  <input type="number" name="cs_expiry_period" required class="form-control form-control-sm" value="" placeholder="">
-              </div>
+                    <h6><b class="required">Expire Period</b></h6>
+
+                    <div class="input-group">
+                      <input type="text" onkeypress="return isNumberKey(event)" name="cs_expiry_period" required class="form-control form-control-sm" value="" placeholder="">
+                      <div class="input-group-append">
+                         <select name="cs_type_time" class="form-control form-control-sm">
+                          @foreach(getTimeType() as $key => $type)
+                            <option value="{{ $key }}">{{ $type }}</option>
+                          @endforeach
+                        </select>
+                      </div>
+                    </div>
+                </div>
+               
                <div class="form-group service-content-son" >
                 <h6><b>Service Form</b></h6>
                 <select name="cs_form_type" id="cs_form_type" class="form-control form-control-sm">
@@ -532,7 +559,16 @@ Combo/Service List
 
               <div class="form-group service-content-son">
                     <h6><b class="required">Expire Period(month)</b></h6>
-                  <input type="number" name="cs_expiry_period" required class="form-control form-control-sm" value="" placeholder="">
+                  <div class="input-group">
+                      <input type="text" onkeypress="return isNumberKey(event)" name="cs_expiry_period" required class="form-control form-control-sm" value="" placeholder="">
+                      <div class="input-group-append">
+                         <select name="cs_type_time" class="form-control form-control-sm">
+                          @foreach(getTimeType() as $key => $type)
+                            <option value="{{ $key }}">{{ $type }}</option>
+                          @endforeach
+                        </select>
+                      </div>
+                    </div>
               </div>
                <div class="form-group service-content-son" >
                 <h6><b>Service Form</b></h6>
@@ -595,7 +631,37 @@ Combo/Service List
         console.log("complete");
       });
       
-    })
+    });
+    $(document).on('click','.delete-cs',function(){
+
+      let cs_id = $(this).attr('cs_id');
+
+      if(confirm('Do you want to delete this combo/service?')){
+        $.ajax({
+          url: '{{ route('delete_service') }}',
+          type: 'POST',
+          dataType: 'html',
+          data: {
+            cs_id: cs_id,
+            _token: '{{ csrf_token() }}'
+          },
+        })
+        .done(function(data) {
+          data = JSON.parse(data);
+          if(data.status === 'error')
+            toastr.error(data.message);
+          else{
+            toastr.success(data.message);
+            dataTable.ajax.reload(null,false);
+          }
+        })
+        .fail(function() {
+          toastr.error('Failed!');
+        });
+
+      }else
+        return false;
+    });
   });
 </script>
 @endpush

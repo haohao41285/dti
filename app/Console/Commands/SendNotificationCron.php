@@ -6,7 +6,7 @@ use App\Jobs\SendNotification;
 use Carbon\Carbon;
 use GuzzleHttp\Client;
 use Illuminate\Console\Command;
-use App\Models\PosCustomer;
+use App\Models\MainCustomer;
 
 class SendNotificationCron extends Command
 {
@@ -41,7 +41,7 @@ class SendNotificationCron extends Command
      */
     public function handle()
     {
-        $customers = PosCustomer::where('customer_status',1)->whereMonth('customer_birthdate',date('m'))->whereDay('customer_birthdate',date('d'))->get();
+        $customers = MainCustomer::where('customer_status',1)->whereMonth('customer_birthday',date('m'))->whereDay('customer_birthday',date('d'))->get();
 
         foreach($customers as $customer){
 
@@ -96,7 +96,7 @@ class SendNotificationCron extends Command
 
             $file_url = storage_path('exports/'.$file_name.".xlsx");
 
-            $sms_content_template = "Happy birthday to {name}";
+            $sms_content_template = "Dear {name}! DEG would like to thank you for being an integral part of our success story. We really regard you as a treasure and appreciate you. Happy Birthday!";
 
             $url_event = 'pushsms';
 

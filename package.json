@@ -42,7 +42,7 @@
         "vue-template-compiler": "^2.6.10"
     },
     "dependencies": {
-        "bootstrap-multiselect": "^0.9.13",
+        "bootstrap-multiselect": "^0.9.15",
         "bootstrap-timepicker": "^0.5.2",
         "bootstrap-toggle": "^2.2.2",
         "canvasjs": "^1.8.1",
@@ -54,6 +54,7 @@
         "knockout": "^3.5.1",
         "node-sass": "^4.12.0",
         "popper": "^1.0.1",
+        "select2": "^4.0.12",
         "summernote": "^0.8.12",
         "toastr": "^2.1.4"
     }

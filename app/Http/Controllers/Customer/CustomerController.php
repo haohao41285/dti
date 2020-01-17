@@ -307,9 +307,9 @@ class CustomerController extends Controller
         //UPDATE CUSTOMER STATUS FOR USER'S TEAM
         $slug_team = MainTeam::find($team_id)->getTeamType->slug;
 
-        $customer_info = MainCustomerTemplate::find($customer_id);
+        $customer_info = DB::table('main_customer_template')->where('id',$customer_id);
 
-        if($customer_info->$slug_team == 0)
+        if($customer_info->first()->$slug_team == 0 || $customer_info->first()->$slug_team == 3)
             $update_customer = $customer_info->update([$slug_team=>1]);
         else
             $update_customer = "nothing to update";
@@ -814,7 +814,6 @@ class CustomerController extends Controller
             return back()->with(['error'=>'Get CustomerDetail Failed!']);
 
         $data['template_customer_info'] = MainCustomerTemplate::find($customer_id);
-//        return $data['template_customer_info'];
         try{
             $customer_id = $data['template_customer_info']->getMainCustomer->customer_id;
         }catch(\Exception $e){
@@ -822,10 +821,11 @@ class CustomerController extends Controller
             return redirect()->route('customers')->with(['error'=>'Failed! Get information failed!']);
         }
         $data['place_service'] = MainCustomerService::where('cs_customer_id',$customer_id)->get()->groupBy('cs_place_id');
-//        $data['place_service'] = $data['place_service'];
 
         $data['main_customer_info'] = MainCustomer::where('customer_id',$customer_id)->first();
         $data['id'] = $customer_id;
+
+        $data['user_list'] = MainUser::where('user_id','!=',Auth::user()->user_id)->with('getTeam')->get();
         return view('customer.customer-detail',$data);
     }
     public function customerTracking(Request $request){
