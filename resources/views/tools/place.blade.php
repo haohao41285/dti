@@ -1753,7 +1753,6 @@ $(document).ready(function() {
             });
     });
 
->>>>>>> origin/hieu
 });
 
 </script>
