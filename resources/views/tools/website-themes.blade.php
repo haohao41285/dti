@@ -102,6 +102,22 @@ Theme Management
                     </div>
                     <div class="form-group">
                         <div class="col-md-7 form-inline">
+                            <label class="col-sm-4">Booking CSS</label>
+                            <div class="col-sm-8">
+                                <textarea name="booking_css" class="form-control form-control-sm"></textarea> 
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-md-7 form-inline">
+                            <label class="col-sm-4">Booking JS</label>
+                            <div class="col-sm-8">
+                                <textarea name="booking_js" class="form-control form-control-sm"></textarea> 
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-md-7 form-inline">
                             <label class="col-sm-4 align-self-baseline">Image</label>
                             <div class="col-sm-8">
                                 {{-- 
