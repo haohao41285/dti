@@ -89,6 +89,7 @@ Class WebsiteThemeController extends Controller
 
         } else {
             //update
+            $mainTheme = MainTheme::where('theme_id',$request->theme_id)->first(); 
             $arr = [
                 'theme_name' => $request->name,
                 'theme_name_temp' => $request->code,
@@ -99,10 +100,10 @@ Class WebsiteThemeController extends Controller
                 'theme_descript' => $request->description,
                 'theme_license' => $request->license,
                 'theme_status' => $request->status ?? 0,
-                'theme_image' => $image ?? '',
+                'theme_image' => $image ?? $mainTheme->theme_image,
             ];
 
-            $mainTheme = MainTheme::where('theme_id',$request->theme_id)->first(); 
+            //$mainTheme = MainTheme::where('theme_id',$request->theme_id)->first(); 
             $mainTheme->update($arr);
         }
         
