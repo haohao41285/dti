@@ -19,6 +19,8 @@ class MainTheme extends BaseModel
         'theme_image',
         'theme_url',
         'theme_price',
+        'theme_booking_css',
+        'theme_booking_js',
         'theme_descript',
         'theme_name_temp',
         'created_at',
