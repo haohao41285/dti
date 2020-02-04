@@ -18,6 +18,7 @@
 @endif
 {{--end check--}}
 <div id="wrapper">
+    <div class="loader"></div>
     <span id="page-top"></span>
     @include('layouts.partials.sidebar')
     <!-- Content Wrapper. Contains page content -->

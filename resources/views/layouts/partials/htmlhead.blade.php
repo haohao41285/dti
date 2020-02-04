@@ -22,6 +22,9 @@
 .note-popover{
 	display: none;
 }
+.table-responsive{
+    overflow-x: hidden;
+}
 </style>
 
 @stack('styles')

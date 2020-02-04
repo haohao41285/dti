@@ -11,6 +11,33 @@
         .note-popover.popover {
             display: none;
         }
+        .loader {
+          border: 16px solid #f3f3f3;
+          border-radius: 50%;
+          border-top: 16px solid blue;
+          border-right: 16px solid green;
+          border-bottom: 16px solid red;
+          border-left: 16px solid pink;
+          width: 120px;
+          height: 120px;
+          -webkit-animation: spin 2s linear infinite; /* Safari */
+          animation: spin 2s linear infinite;
+          position: fixed;
+          top: 50%;
+          left: 50%;
+          z-index: 100000;
+          display: none; 
+        }
+        /* Safari */
+        @-webkit-keyframes spin {
+          0% { -webkit-transform: rotate(0deg); }
+          100% { -webkit-transform: rotate(360deg); }
+        }
+
+        @keyframes spin {
+          0% { transform: rotate(0deg); }
+          100% { transform: rotate(360deg); }
+        }
     </style>
 @endpush
 @section('content')
@@ -229,6 +256,7 @@
                     toastr.error('Total Files Size maximum is 50 MB!');
                     return;
                 }
+                ableProcessingLoader();
 
                 $.ajax({
                     url: '{{route('post-comment-customer')}}',
@@ -258,9 +286,11 @@
                                 toastr.error(message);
                             }
                         }
+                        unableProcessingLoader();
                     },
                     fail: function() {
                         console.log("error");
+                        unableProcessingLoader();
                     }
                 });
                 return false;
@@ -320,6 +350,15 @@
                 $("#total_file_size").html("<b>TOTAL FILES SIZE: "+file_size_total+" MB<br>TOTAL FILES: "+stt+" files</b>");
                 console.log(file_size_total);
             });
+
+        function ableProcessingLoader(){
+            $('.loader').css('display','inline');
+            $("#content").css('opacity',.5);
+        }
+        function unableProcessingLoader(){
+            $('.loader').css('display','none');
+            $("#content").css('opacity',1);
+        }
         });
     </script>
 @endpush
