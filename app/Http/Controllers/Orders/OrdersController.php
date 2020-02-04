@@ -418,28 +418,43 @@ class OrdersController extends Controller
         $user_id = Auth::user()->user_id;
         $team_id = Auth::user()->user_team;
 
-        $customer_list = MainUserCustomerPlace::where('user_id',$user_id);
-
-        if ($customer_list->count() ==  0)
-            return response(['status' => 'error', 'message' => 'You dont have any customer']);
         //GET CUSTOMER
-        $customer_info  = MainCustomer::where('customer_phone',$customer_phone)->first();
-        $customer_list = $customer_list->where('place_id','!=',null)->select('place_id')->get()->toArray();
-        $customer_arr = array_values($customer_list);
+        $customer_info = MainCustomerTemplate::where('ct_cell_phone',$customer_phone)->first();
 
-        $place_list = PosPlace::where('place_customer_id',$customer_info->customer_id)
-            ->whereIn('place_id',$customer_arr)
-            ->where('place_status',1)->get();
+         if ($customer_info->count() ==  0)
+            return response(['status' => 'error', 'message' => 'You dont have any customer']);
+        $customer_id = $customer_info->id;
 
-        if (!isset($customer_info) || !isset($place_list))
-            return response(['status' => 'error', 'message' => 'Get Customer Error']);
-        else {
-            if ($customer_info == "")
-                return response(['status' => 'error', 'message' => 'Get Customer Error']);
-            else
-                return response(['customer_info' => $customer_info, 'place_list' => $place_list]);
+        //GET CUSTOMER ASSIGN
+        $place_list_assign = MainCustomerAssign::where([
+            ['user_id',Auth::user()->user_id],
+            ['customer_id',$customer_id],
+        ])->get();
+
+        $place_list = '';
+        
+        if ( isset($customer_info) && !is_null($customer_info->getMainCustomer)) {
+
+            //GET PLACES'S CUSTOMER OF USER
+            $places_arr = MainUserCustomerPlace::where([
+                ['user_id',$user_id],
+                ['customer_id',$customer_id],
+                ['place_id','!=',null]
+            ])->select('place_id')->get()->toArray();
+
+            $places_arr = array_values($places_arr);
+
+            $place_list = PosPlace::where('place_customer_id',$customer_info->getMainCustomer->customer_id)
+                ->whereIn('place_id',$places_arr)
+                ->where('place_status',1)
+                ->get();
         }
-    }
+
+        if ($customer_info == "")
+            return response(['status' => 'error', 'message' => 'Get Customer Error']);
+        else
+            return response(['customer_info' => $customer_info, 'place_list' => $place_list,'place_list_assign'=>$place_list_assign]);
+        }
 
     public function myOrderDatatable(Request $request)
     {

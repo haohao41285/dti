@@ -5,16 +5,43 @@
 @push('styles')
 <style type="text/css" media="screen">
 	.file-comment{
-    max-width: 100px;
-    max-height: 100px;
-   }
+        max-width: 100px;
+        max-height: 100px;
+    }
    .note-popover.popover {
-    display: none;
+        display: none;
    }
+   .loader {
+      border: 16px solid #f3f3f3;
+      border-radius: 50%;
+      border-top: 16px solid blue;
+      border-right: 16px solid green;
+      border-bottom: 16px solid red;
+      border-left: 16px solid pink;
+      width: 120px;
+      height: 120px;
+      -webkit-animation: spin 2s linear infinite; /* Safari */
+      animation: spin 2s linear infinite;
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      z-index: 100000;
+      display: none; 
+    }
+
+    /* Safari */
+    @-webkit-keyframes spin {
+      0% { -webkit-transform: rotate(0deg); }
+      100% { -webkit-transform: rotate(360deg); }
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
 </style>
 @endpush
 @section('content')
-
 @if(isset($button))
 <div class="text-center">
     <form method="POST" action="{{route('update_assign_task')}}">
@@ -409,7 +436,7 @@
             if(file_size_total > 50){
                 toastr.error("Total Files Size maximum is 50 MB!");
             }
-
+            ableProcessingLoader();
             $.ajax({
                 url: '{{route('post-comment')}}',
                 type: 'POST',
@@ -441,9 +468,11 @@
                         if($("#status").val() === 3)
                             $(".status-task").text("DONE");
                     }
+                    unableProcessingLoader();
                 },
                 fail: function() {
                     console.log("error");
+                    unableProcessingLoader();
                 }
             });
             return false;
@@ -699,6 +728,14 @@
             $("#detail_review").modal('hide');
         }
         @endif
+        function ableProcessingLoader(){
+            $('.loader').css('display','inline');
+            $("#content").css('opacity',.5);
+        }
+        function unableProcessingLoader(){
+            $('.loader').css('display','none');
+            $("#content").css('opacity',1);
+        }
 	});
 </script>
 @endpush

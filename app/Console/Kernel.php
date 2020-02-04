@@ -29,7 +29,7 @@ class Kernel extends ConsoleKernel
     protected function schedule(Schedule $schedule)
     {
         // $schedule->command('inspire')
-                 ->hourly();
+                 // ->hourly();
         //SEND NOTIFICATION FOR CUSTOMER
        $schedule->command('cron:sendnotification')
            ->dailyAt('18:00')->withoutOverlapping();

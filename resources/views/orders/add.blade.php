@@ -4,7 +4,10 @@
 @push('styles')
 <style>
     .form-group {
-    margin-bottom: .5rem;
+        margin-bottom: .5rem;
+    }
+    .card-header{
+        padding: 0.5rem 0.75rem;
     }
 </style>
 @endpush
@@ -235,6 +238,7 @@
         })
         .done(function(data) {
             console.log(data);
+            // return;
             data = JSON.parse(data);
             if(data.status == 'error'){
                 $("#customer_bussiness").val("");
@@ -245,16 +249,35 @@
             }
             else{
                 // $("#customer_bussiness").val(data.customer_info.ct_salon_name);
-                $("#customer_fullname").val(data.customer_info.customer_firstname+" "+data.customer_info.customer_lastname);
-                $("#customer_id").val(data.customer_info.customer_customer_template_id);
+                $("#customer_fullname").val(data.customer_info.ct_firstname+" "+data.customer_info.ct_lastname);
+                $("#customer_id").val(data.customer_info.id);
+
+                var salon_html ="";
+
                 if(data.place_list != ""){
 
-                    var salon_html ="";
                     $.each(data.place_list, function(index, val) {
                         salon_html += '<div class="col-md-3"><label class="ml-3 text-uppercase text-dark"><input style="width:20px;height: 20px" type="radio" class="place_id"  name="place_id" value="'+val.place_id+'"><b>'+val.place_name+'</b></label></div>';
                     });
-                    $("#salon_list").html(salon_html);
                 }
+                if(data.place_list_assign != ""){
+                    $.each(data.place_list_assign, function(index, val) {
+                        salon_html += `<div class="col-md-3">
+                                        <label class="ml-3 text-uppercase text-dark">
+                                            <input style="width:20px;height: 20px" type="radio" class="place_id"
+                                                   business_name="`+val.business_name+`"
+                                                   business_phone="`+val.business_phone+`"
+                                                   customer_id_assign="`+val.id+`"
+                                                   email_assign="`+val.email+`"
+                                                   website_assign="`+val.website+`"
+                                                   address_assign="`+val.address+`"
+                                                   name="place_id" value="0">
+                                            <b>`+val.business_name+`</b>
+                                        </label>`;
+                    });
+                }
+                
+                    $("#salon_list").html(salon_html);
             }
         })
         .fail(function() {

@@ -215,7 +215,7 @@ class MenuController extends Controller
         }
         PosMenu::where('menu_place_id',Session::get('place_id'))
                     ->where('menu_id',$menu_id)
-                    ->update(['menu_type'=>$menu_type]);
+                    ->update(['enable_status'=>$menu_type]);
 
         return "Update Status Success!";
     }

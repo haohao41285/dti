@@ -106,7 +106,7 @@
            ],
            processing: true,
            serverSide: true,
-           ajax:{ url:"{{route('my-task-datatable')}}",
+           ajax:{ url:"{{route('my_created_task_datatable')}}",
            data: function (d) {
                d.category = $("#category :selected").val();
                d.service_id = $("#service_id :selected").val();

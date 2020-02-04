@@ -426,6 +426,7 @@ Route::group(['middleware' => ['auth']], function () {
         Route::get('theme-mail', 'TaskController@themeMail')->name('theme-mail');
         Route::get('get-subtask', 'TaskController@getSubTask')->name('get-subtask');
         Route::get('receiver-task-datatable', 'TaskController@receiverTaskDatatable')->name('receiver-task-datatable');
+        Route::get('my-created-task-datatable', 'TaskController@myCreatedTaskDatatable')->name('my_created_task_datatable');
 
         Route::get('all-task', 'TaskController@allTask')->name('all-task');
         Route::get('all-task-datatable', 'TaskController@allTaskDatatable')->name('all-task-datatable');
