@@ -412,6 +412,8 @@ Theme Management
     						}
     						
     						$("input[name='description']").text(data.data.theme_descript);
+                            $("input[name='booking_css']").text(data.data.theme_booking_css);
+                            $("input[name='booking_js']").text(data.data.theme_booking_js);
     						$(".previewImage img").attr('src',"{{env('URL_FILE_VIEW')}}"+data.data.theme_image);
     						$("#themeModal").modal("show");
     					}
