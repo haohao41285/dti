@@ -1,6 +1,12 @@
  //window.maskPhone = require('jquery-input-mask-phone-number/dist/jquery-input-mask-phone-number.min.js')
 
+
+ //window.bootstrapMulty = require('bootstrap-multiselect/dist/js/bootstrap-multiselect.js');
+
+ window.gijgo = require('gijgo/js/gijgo.min.js');
+
  // window.bootstrapMulty = require('bootstrap-multiselect/dist/js/bootstrap-multiselect.js');
+
 
  window.CanvasJS = require('canvasjs/dist/canvasjs.min.js');
  window.CanvasJSJ = require('canvasjs/dist/jquery.canvasjs.min.js');
@@ -24,18 +30,18 @@
 
  window.iCheck = require('icheck');
 
-window.Dropzone = require('dropzone');
+ window.Dropzone = require('dropzone');
 
-window.iCheck  = require('icheck');
+ window.iCheck = require('icheck');
 
-window.select2 = require('select2');
+ window.select2 = require('select2');
 
 
-/**
- * We'll load jQuery and the Bootstrap jQuery plugin which provides support
- * for JavaScript based Bootstrap features such as modals and tabs. This
- * code may be modified to fit the specific needs of your application.
- */
+ /**
+  * We'll load jQuery and the Bootstrap jQuery plugin which provides support
+  * for JavaScript based Bootstrap features such as modals and tabs. This
+  * code may be modified to fit the specific needs of your application.
+  */
 
  try {
      window.Popper = require('popper.js').default;

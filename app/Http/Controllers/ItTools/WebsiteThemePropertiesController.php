@@ -14,7 +14,7 @@ Class WebsiteThemePropertiesController extends Controller
      * @param  $request->theme_id
      * @return json
      */
-    public function listThemePropertiesByThemeId(Request $request){
+    public function listThemePropertiesByThemeId(Request $request){ //dd('dd');
         $properties = MainThemeProperties::getThemePropertiesByThemeId($request->theme_id);
 
         return response()->json(['status'=>1,'data'=>$properties]);
