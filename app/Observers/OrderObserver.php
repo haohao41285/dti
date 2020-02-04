@@ -51,6 +51,7 @@ class OrderObserver
                 $content = $mainComboServiceBought->getCreatedBy->user_nickname." created a order #".$mainComboServiceBought->id;
                 //ADD NOTIFICATION TO DATABASE
                 $notification_arr = [
+                    'id' => MainNotification::max('id')+1,
                     'content' => $content,
                     'href_to' => route('payment-order',$mainComboServiceBought->id),
                     'receiver_id' => $user->user_id,
@@ -77,20 +78,26 @@ class OrderObserver
     {
         //SEND MAIL FOR CUSTOMER
         if($mainComboServiceBought->getCustomer->customer_email != "" && $mainComboServiceBought->updated_by != ""){
-            $service_list = $mainComboServiceBought->csb_combo_service_id;
-            $service_array = explode(";",$service_list);
-            $mainComboServiceBought['combo_service_list'] = MainComboService::whereIn('id',$service_array)->get();
+            if($mainComboServiceBought->csb_status == 1){
+                $service_list = $mainComboServiceBought->csb_combo_service_id;
+                $service_array = explode(";",$service_list);
+                $mainComboServiceBought['combo_service_list'] = MainComboService::whereIn('id',$service_array)->get();
 
-            $content = $mainComboServiceBought->present()->getThemeMail;
+                $content = $mainComboServiceBought->present()->getThemeMail;
 
-            $input['subject'] = 'INVOICE';
-            $input['email'] = $mainComboServiceBought->getCustomer->customer_email;
-            $input['name'] = $mainComboServiceBought->getCustomer->customer_firstname. " ".$mainComboServiceBought->getCustomer->customer_lastname;
-            $input['message'] = $content;
-            $input['mail_username_invoice'] = env('MAIL_USERNAME_INVOICE');
-            $input['mail_password_invoice'] = env('MAIL_PASSWORD_INVOICE');
+                $input['subject'] = 'INVOICE';
+                $input['email'] = $mainComboServiceBought->getCustomer->customer_email;
+                $input['name'] = $mainComboServiceBought->getCustomer->customer_firstname. " ".$mainComboServiceBought->getCustomer->customer_lastname;
+                $input['message'] = $content;
+                $input['mail_username_invoice'] = env('MAIL_USERNAME_INVOICE');
+                $input['mail_password_invoice'] = env('MAIL_PASSWORD_INVOICE');
 
-            dispatch(new SendNotification($input))->delay(now()->addSecond(5));
+                dispatch(new SendNotification($input))->delay(now()->addSecond(5));
+            }
+            elseif($mainComboServiceBought->csb_status == 2)
+            {
+             //SEND SMS   
+            }
         }
     }
 

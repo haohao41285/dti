@@ -1,0 +1,1 @@
+ALTER TABLE `main_customer` ADD `customer_birthday` DATE NULL AFTER `customer_phone`; 

@@ -2,6 +2,20 @@
 @section('content-title')
     Create new Customer
 @endsection
+@push('styles')
+    <style type="text/css" media="screen">
+        .select2-container .select2-selection--single{
+            height:34px !important;
+        }
+        .select2-container--default .select2-selection--single{
+                 border: 1px solid #ccc !important; 
+             border-radius: 0px !important; 
+        }
+        .select2-container {
+            width: 100%!important;
+        }
+</style>
+@endpush
 @section('content')
     <div class="table-responsive mt-5">
         <ul class="nav nav-tabs" id="myTab" role="tablist">
@@ -20,7 +34,7 @@
                         <div class="col-md-7 form-inline">
                             <label class="col-sm-4 required">Cell Phone</label>
                             <div class="col-sm-8">
-                                <input required class="form-control form-control-sm maskphone cell_phone" placeholder="" value="{{old('ct_cell_phone')}}" name="ct_cell_phone"  type="number" data-inputmask="'mask' : '(999) 999-9999'" >
+                                <input required class="form-control form-control-sm maskphone cell_phone" placeholder="" value="{{old('ct_cell_phone')}}" name="ct_cell_phone"  type="text" id="ct_cell_phone" onkeypress="return isNumberKey(event)" data-inputmask="'mask' : '(999) 999-9999'" >
                             </div>
                         </div>
                     </div>
@@ -52,7 +66,7 @@
                         <div class="col-md-7 form-inline">
                             <label class="col-sm-4 required">Business Phone</label>
                             <div class="col-sm-8">
-                                <input class="form-control form-control-sm maskphone" placeholder="" value="{{old('ct_business_phone')}}" name="ct_business_phone"  type="number" data-inputmask="'mask' : '(999) 999-9999'" >
+                                <input class="form-control form-control-sm maskphone" placeholder="" value="{{old('ct_business_phone')}}" name="ct_business_phone"  type="text" id="ct_business_phone" onkeypress="return isNumberKey(event)" data-inputmask="'mask' : '(999) 999-9999'" >
                             </div>
                         </div>
                     </div>
@@ -106,9 +120,9 @@
                         <div class="col-md-7 form-inline">
                             <label class="col-sm-4">Customer Name</label>
                             <div class="col-sm-8">
-                                <select name="customer_id" class="form-control form-control-sm text-capitalize" id="">
+                                <select name="customer_id" class="form-control form-control-sm text-capitalize select2" id="customer-list">
                                     @foreach($customer_list as $customer)
-                                        <option class="text-capitalize" value="{{$customer->id}}">{{$customer->getFullname()}}</option>
+                                        <option class="text-capitalize" value="{{$customer->id}}">{{$customer->getFullname()." - ".$customer->ct_cell_phone}}</option>
                                     @endforeach
                                 </select>
                             </div>
@@ -126,7 +140,7 @@
                         <div class="col-md-7 form-inline">
                             <label class="col-sm-4 required">Business Phone</label>
                             <div class="col-sm-8">
-                                <input class="form-control form-control-sm maskphone" placeholder="" value="{{old('business_phone')}}" name="business_phone"  type="number" data-inputmask="'mask' : '(999) 999-9999'" >
+                                <input class="form-control form-control-sm maskphone" placeholder="" value="{{old('business_phone')}}" name="business_phone" id="business_phone" type="text" onkeypress="return isNumberKey(event)" data-inputmask="'mask' : '(999) 999-9999'" >
                             </div>
                         </div>
                     </div>
@@ -167,13 +181,29 @@
             </div>
         </div>
     </div>
+</div>
 @endsection
 @push('scripts')
 <script type="text/javascript">
+
  $(document).ready(function() {
-     $(".reset-btn").click(function(){
+
+    $(".reset-btn").click(function(){
          $(this).parents('form')[0].reset();
      });
+
+    $(document).on("keypress","#business_phone,#ct_cell_phone,#ct_business_phone",function() {
+       let number_phone = $(this).val();
+
+       if(number_phone.length >9)
+        return false;
+    });
+
+    $('.select2').select2();
+
+    $('#customer-list').select2().on('select2:open', function(e){
+        $('.select2-search__field').attr('placeholder', 'Search...');
+    })
 });
 </script>
 @endpush

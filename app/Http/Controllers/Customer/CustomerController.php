@@ -92,11 +92,19 @@ class CustomerController extends Controller
         if(Gate::denies('permission','all-customers-read'))
             return doNotPermission();
 
-        $customer_arr = [];
         $start_date = $request->start_date;
         $end_date = $request->end_date;
         $address = $request->address;
         $status_customer = $request->status_customer;
+
+        //GET LIST NAME OF TEAM TYPE'S COLUMN
+        if(!is_null($request->team_id))
+            $team_id = $request->team_id;
+        else
+            $team_id = Auth::user()->user_team;
+
+        $team_customer_status = MainTeam::find($team_id)->getTeamType;
+        $team_slug = $team_customer_status->slug;
 
         $customers = MainCustomerTemplate::leftjoin('main_user',function($join){
             $join->on('main_customer_template.created_by','main_user.user_id');
@@ -113,104 +121,52 @@ class CustomerController extends Controller
         if($address != ""){
             $customers->where('ct_address','LIKE',"%".$address."%");
         }
-            $list_customers = $customers->orderBy('main_customer_template.created_at','ASC')
-                        ->select('main_user.user_nickname','main_customer_template.ct_salon_name','main_customer_template.ct_fullname','main_customer_template.ct_business_phone','main_customer_template.ct_cell_phone','main_customer_template.ct_note','main_customer_template.created_by','main_customer_template.created_at','main_customer_template.id')
-                        ->get();
-
-        //GET LIST TEAM CUSTOMER LIST
-        if(is_null($request->team_id))
-            $team_id = $request->team_id;
-        else
-            $team_id = Auth::user()->user_team;
-
-        $team_customer_status = MainTeam::find($team_id)->getTeamType;
-        $team_customer_status = $team_customer_status->team_customer_status;
-
-        $customer_status_arr = json_decode($team_customer_status,TRUE);
-        // return $list_customers;
-
-        foreach ($list_customers->chunk(1000) as $customers) {
-            foreach ($customers as $key => $customer) {
-
-                if(!isset($customer_status_arr[$customer->id])){
-                    $customer_status_arr[$customer->id] = 3;
-                    $ct_status = 'New Arrivals';
-                }
-                else
-                    $ct_status = GeneralHelper::getCustomerStatus($customer_status_arr[$customer->id]);
-                //ADMIN CAN SEE ALL
-                if(Gate::allows('permission','customer-admin')){
-                    if($status_customer != "" && intval($customer_status_arr[$customer->id]) ==  intval($status_customer)){
-                        $customer_arr[] = [
-                            'id' => $customer->id,
-                            'ct_salon_name' => $customer->ct_salon_name,
-                            'ct_fullname' => $customer->ct_fullname,
-                            'ct_business_phone' => $customer->ct_business_phone,
-                            'ct_cell_phone' => $customer->ct_cell_phone,
-                            'ct_status' => $ct_status,
-                            'created_at' => $customer->created_at,
-                            'user_nickname' => $customer->user_nickname,
-                            'ct_note' => $customer->ct_note
-                        ];
-                    }
-                    if($status_customer == ""){
-                    $customer_arr[] = [
-                        'id' => $customer->id,
-                        'ct_salon_name' => $customer->ct_salon_name,
-                        'ct_fullname' => $customer->ct_fullname,
-                        'ct_business_phone' => $customer->ct_business_phone,
-                        'ct_cell_phone' => $customer->ct_cell_phone,
-                        'ct_status' => $ct_status,
-                        'created_at' => $customer->created_at,
-                        'user_nickname' => $customer->user_nickname,
-                        'ct_note' => $customer->ct_note
-                    ];
-                    }
-                }
-                elseif(Gate::denies('permission','customer-admin') && $ct_status = 'New Arrivals'){
-                    $customer_arr[] = [
-                        'id' => $customer->id,
-                        'ct_salon_name' => $customer->ct_salon_name,
-                        'ct_fullname' => $customer->ct_fullname,
-                        'ct_business_phone' => $customer->ct_business_phone,
-                        'ct_cell_phone' => $customer->ct_cell_phone,
-                        'ct_status' => $ct_status,
-                        'created_at' => $customer->created_at,
-                        'user_nickname' => $customer->user_nickname,
-                        'ct_note' => $customer->ct_note
-                    ];
-                }
-            }
+        if(!is_null($status_customer)){
+            if($status_customer == 3)
+                $customers->where(function($query) use ($team_slug,$status_customer){
+                    $query->where($team_slug,$status_customer)
+                    ->orWhere($team_slug,0);
+                });
+            else
+                $customers->where($team_slug,$request->status_customer);
         }
-        // return json_encode($customer_arr);
 
-        return Datatables::of($customer_arr)
-            ->editColumn('id',function ($row){
-                if($row['ct_status'] == 'Serviced')
-                    return '<i class="fas fa-plus-circle details-control text-danger" id="'.$row['id'].'" ></i><a href="'.route('customer-detail',$row['id']).'"> '.$row['id'].'</a>';
+        $list_customers = $customers->orderBy('main_customer_template.created_at','ASC')
+            ->select('main_user.user_nickname','main_customer_template.ct_salon_name','main_customer_template.ct_fullname','main_customer_template.ct_business_phone','main_customer_template.ct_cell_phone','main_customer_template.ct_note','main_customer_template.created_by','main_customer_template.created_at','main_customer_template.id','main_customer_template.'.$team_slug);
+                       
+        return Datatables::of($list_customers)
+            ->editColumn('id',function ($row) use ($team_slug){
+                if($row->$team_slug == 4)
+                    return '<i class="fas fa-plus-circle details-control text-danger" id="'.$row->id.'" ></i><a href="'.route('customer-detail',$row->id).'"> '.$row->id.'</a>';
                 else
-                    return '<a href="javascript:void(0)">'.$row['id'].'</a>';
+                    return '<a href="javascript:void(0)">'.$row->id.'</a>';
             })
             ->editColumn('created_at',function($row){
-                return format_date($row['created_at'])." by ".$row['user_nickname'];
+                return format_date($row->created_at)." by ".$row->user_nickname;
             })
             ->editColumn('ct_business_phone',function($row){
-                if($row['ct_business_phone'] != null && Gate::denies('permission','customer-admin'))
-                    return substr($row['ct_business_phone'],0,3)."########";
-                else return $row['ct_business_phone'];
+                if($row->ct_business_phone != null && Gate::denies('permission','customer-admin'))
+                    return substr($row->ct_business_phone,0,3)."########";
+                else return $row->ct_business_phone;
             })
             ->editColumn('ct_cell_phone',function($row){
-                if($row['ct_cell_phone'] != null  && Gate::denies('permission','customer-admin'))
-                    return substr($row['ct_cell_phone'],0,3)."########";
-                else return $row['ct_cell_phone'];
+                if($row->ct_cell_phone != null  && Gate::denies('permission','customer-admin'))
+                    return substr($row->ct_cell_phone,0,3)."########";
+                else return $row->ct_cell_phone;
+            })
+            ->addColumn('ct_status',function($row) use ($team_slug){
+                if($row->$team_slug == 0)
+                    return 'New Arrivals';
+                else
+                    return GeneralHelper::getCustomerStatus($row->$team_slug);
             })
             ->addColumn('action', function ($row){
                 if( Gate::allows('permission','customer-admin'))
-                    return '<a class="btn btn-sm btn-secondary view" customer_id="'.$row['id'].'" href="javascript:void(0)"><i class="fas fa-eye"></i></a>
-                        <a class="btn btn-sm btn-secondary edit-customer" customer_id="'.$row['id'].'" href="javascript:void(0)"><i class="fas fa-edit"></i></a>
-                        <a class="btn btn-sm btn-secondary delete-customer" customer_id="'.$row['id'].'" href="javascript:void(0)"><i class="fas fa-trash"></i></a>';
+                    return '<a class="btn btn-sm btn-secondary view" customer_id="'.$row->id.'" href="javascript:void(0)"><i class="fas fa-eye"></i></a>
+                        <a class="btn btn-sm btn-secondary edit-customer" customer_id="'.$row->id.'" href="javascript:void(0)"><i class="fas fa-edit"></i></a>
+                        <a class="btn btn-sm btn-secondary delete-customer" customer_id="'.$row->id.'" href="javascript:void(0)"><i class="fas fa-trash"></i></a>';
                 else
-                    return '<a class="btn btn-sm btn-secondary view" customer_id="'.$row['id'].'" href="javascript:void(0)"><i class="fas fa-eye"></i></a>';
+                    return '<a class="btn btn-sm btn-secondary view" customer_id="'.$row->id.'" href="javascript:void(0)"><i class="fas fa-eye"></i></a>';
             })
             ->rawColumns(['action','id'])
             ->make(true);
@@ -218,7 +174,11 @@ class CustomerController extends Controller
     public function getCustomerDetail(Request $request){
 
         $customer_id = $request->customer_id;
-        $team_id = Auth::user()->user_team;
+
+        if(isset($request->team_id) && is_null($request->team_id))
+            $team_id = $request->team_id;
+        else
+            $team_id = Auth::user()->user_team;
 
         $customer_list = MainCustomerTemplate::leftjoin('main_user',function($join){
                                                 $join->on('main_customer_template.created_by','main_user.user_id');
@@ -230,14 +190,23 @@ class CustomerController extends Controller
             return 0;
         else{
 
-            $team_customer_status = MainTeam::find($team_id)->getTeamType->team_customer_status;
-            $customer_status_arr = json_decode($team_customer_status,TRUE);
-            if(!isset($customer_status_arr[$customer_list->id]))
-                $customer_status = 'New Arrivals';
-            else
-                $customer_status = GeneralHelper::getCustomerStatus($customer_status_arr[$customer_list->id]);
+            // $team_customer_status = MainTeam::find($team_id)->getTeamType->team_customer_status;
+            // $customer_status_arr = json_decode($team_customer_status,TRUE);
+            // if(!isset($customer_status_arr[$customer_list->id]))
+            //     $customer_status = 'New Arrivals';
+            // else
+            //     $customer_status = GeneralHelper::getCustomerStatus($customer_status_arr[$customer_list->id]);
 
-            $customer_list['ct_status'] = $customer_status;
+            //GET CUSTOMER STATUS IN CURRENT TEAM
+            $slug = MainTeam::find($team_id)->getTeamType->slug;
+            $customer_status = MainCustomerTemplate::find($customer_id)->$slug;
+
+            if($customer_status == 0)
+                $status = 'New Arrivals';
+            else
+                $status = GeneralHelper::getCustomerStatus($customer_status);
+
+            $customer_list['ct_status'] = $status;
 
             $place_list = MainCustomerService::join('pos_place',function($join){
                 $join->on('main_customer_service.cs_place_id','pos_place.place_id');
@@ -300,6 +269,7 @@ class CustomerController extends Controller
                     'message'=> $validator->getMessageBag()->toArray()
                 ]);
             $customer_assign = [
+                'id' => MainCustomerAssign::max('id')+1,
                 'user_id' => Auth::user()->user_id,
                 'customer_id' => $customer_id,
                 'business_name' => $request->business_name,
@@ -328,21 +298,22 @@ class CustomerController extends Controller
         }
         //ADD CUSTOMER TO USER LIST
         $user_customer_arr = [
+            'id' => MainUserCustomerPlace::max('id')+1,
             'user_id' => $user_id,
             'team_id' => $team_id,
             'customer_id' => $customer_id
         ];
         $update_user = MainUserCustomerPlace::create($user_customer_arr);
-    //UPDATE CUSTOMER STATUS
-        $team_customer_status = MainTeam::find($team_id)->getTeamType->team_customer_status;
-        $customer_status_arr = json_decode($team_customer_status,TRUE);
-        if(!isset($customer_status_arr[$customer_id])){
-            $customer_status_arr[$customer_id] = 1;
-            $customer_status_list = json_encode($customer_status_arr);
-            $update_customer = MainTeam::find($team_id)->getTeamType->update(['team_customer_status'=>$customer_status_list]);
-        }else{
-            $update_customer = 'ok';
-        }
+        //UPDATE CUSTOMER STATUS FOR USER'S TEAM
+        $slug_team = MainTeam::find($team_id)->getTeamType->slug;
+
+        $customer_info = DB::table('main_customer_template')->where('id',$customer_id);
+
+        if($customer_info->first()->$slug_team == 0 || $customer_info->first()->$slug_team == 3)
+            $update_customer = $customer_info->update([$slug_team=>1]);
+        else
+            $update_customer = "nothing to update";
+
         if(!isset($update_user) || !isset($update_customer)){
             DB::callback();
             return response(['status'=>'error','message'=>'Getting Failed!']);
@@ -364,6 +335,23 @@ class CustomerController extends Controller
         $address = $request->address;
         $status_customer = $request->status_customer;
         $customer_arr = [];
+        $list_customers = [];
+
+        //GET LIST NAME OF TEAM TYPE'S COLUMN
+        if(!is_null($request->team_id))
+            $team_id = $request->team_id;
+        else
+            $team_id = Auth::user()->user_team;
+
+        $team_customer_status = MainTeam::find($team_id)->getTeamType;
+        $team_slug = $team_customer_status->slug;
+
+        //GET PRIVATE NOTE'S CUSTOMER
+        $note_customers = MainCustomerNote::where([
+                                    ['user_id',$user_id],
+                                    ['team_id',$team_id]]
+                                )->get();
+        $note_customers = collect($note_customers);
 
         $user_customer_list = MainUserCustomerPlace::where([
             ['user_id',$user_id],
@@ -372,93 +360,66 @@ class CustomerController extends Controller
 
         if($user_customer_list != NULL){
 
-            $user_customer_arr = array_values($user_customer_list);
+                $user_customer_arr = array_values($user_customer_list);
 
-            $customer_list = MainCustomerTemplate::with('getCreatedBy')->whereIn('main_customer_template.id',$user_customer_arr);
+                $customers = MainCustomerTemplate::with('getCreatedBy')->whereIn('main_customer_template.id',$user_customer_arr);
 
-        if($start_date != "" && $end_date != ""){
+            if($start_date != "" && $end_date != ""){
 
-            $start_date = Carbon::parse($start_date)->subDay(1)->format('Y-m-d');
-            $end_date = Carbon::parse($end_date)->addDay(1)->format('Y-m-d');
+                $start_date = Carbon::parse($start_date)->subDay(1)->format('Y-m-d');
+                $end_date = Carbon::parse($end_date)->addDay(1)->format('Y-m-d');
 
-            $customer_list->whereDate('main_customer_template.created_at','>=',$start_date)
-                    ->whereDate('main_customer_template.created_at','<=',$end_date);
-        }
-        if($address != ""){
-            $customer_list->where('ct_address','LIKE',"%".$address."%");
-        }
-
-            $customer_list = $customer_list->get();
-
-            //GET LIST TEAM CUSTOMER LIST
-            $team_customer_status = MainTeam::find($team_id)->getTeamType->team_customer_status;
-
-            $customer_status_arr = json_decode($team_customer_status,TRUE);
-
-            foreach ($customer_list as $key => $customer) {
-                //GET CUSTOMER NOTE
-                $customer_note_info = MainCustomerNote::where([
-                                    ['customer_id',$customer->id],
-                                    ['user_id',$user_id],
-                                    ['team_id',$team_id]]
-                                )->first();
-                if(isset($customer_note_info)) $customer_note = $customer_note_info->content;
-                else $customer_note = "";
-
-                if(!isset($customer_status_arr[$customer->id])){
-                    $customer_status_arr[$customer->id] = 1;
-                    $ct_status = 'New Arrivals';
-                }
-                else
-                    $ct_status = GeneralHelper::getCustomerStatus($customer_status_arr[$customer->id]);
-
-                if($status_customer != "" && intval($customer_status_arr[$customer->id]) ==  intval($status_customer)){
-                    $customer_arr[] = [
-                        'id' => $customer->id,
-                        'ct_salon_name' => $customer->ct_salon_name,
-                        'ct_fullname' => $customer->ct_fullname,
-                        'ct_business_phone' => $customer->ct_business_phone,
-                        'ct_cell_phone' => $customer->ct_cell_phone,
-                        'ct_status' => $ct_status,
-                        'note' => $customer_note,
-                        'updated_at' => $customer->updated_at,
-                        'user_nickname' => $customer->getCreatedBy->user_nickname
-                    ];
-                }
-                if($status_customer == ""){
-                    $customer_arr[] = [
-                        'id' => $customer->id,
-                        'ct_salon_name' => $customer->ct_salon_name,
-                        'ct_fullname' => $customer->ct_fullname,
-                        'ct_business_phone' => $customer->ct_business_phone,
-                        'ct_cell_phone' => $customer->ct_cell_phone,
-                        'ct_status' => $ct_status,
-                        'note' => $customer_note,
-                        'updated_at' => $customer->updated_at,
-                        'user_nickname' => $customer->getCreatedBy->user_nickname
-                    ];
-                }
+                $customers->whereDate('main_customer_template.created_at','>=',$start_date)
+                        ->whereDate('main_customer_template.created_at','<=',$end_date);
             }
+            if($address != ""){
+                $customers->where('ct_address','LIKE',"%".$address."%");
+            }
+            if(!is_null($status_customer)){
+                if($status_customer == 3)
+                    $customers->where(function($query) use ($team_slug,$status_customer){
+                        $query->where($team_slug,$status_customer)
+                        ->orWhere($team_slug,0);
+                    });
+                else
+                    $customers->where($team_slug,$request->status_customer);
+            }
+            $list_customers = $customers->orderBy('main_customer_template.created_at','ASC')
+                ->select('main_customer_template.ct_salon_name','main_customer_template.ct_fullname','main_customer_template.ct_business_phone','main_customer_template.ct_cell_phone','main_customer_template.ct_note','main_customer_template.created_by','main_customer_template.created_at','main_customer_template.id','main_customer_template.'.$team_slug);
         }
-        return Datatables::of($customer_arr)
-                ->editColumn('id',function ($row){
-                    if($row['ct_status'] == 'Serviced')
-                        return '<i class="fas fa-plus-circle details-control text-danger" id="'.$row['id'].'" ></i>
-                                <a href="'.route('customer-detail',$row['id']).'">'.$row['id'].'</a>';
-                    else
-                        return '<a href="javascript:void(0)">'.$row['id'].'</a>';
-                })
-                ->editColumn('updated_at',function($row){
-                    return format_date($row['updated_at'])." by ".$row['user_nickname'];
-                })
-                ->addColumn('action', function ($row){
+        return Datatables::of($list_customers)
+            ->editColumn('id',function ($row) use ($team_slug){
+                if($row->$team_slug == 4)
+                    return '<i class="fas fa-plus-circle details-control text-danger" id="'.$row->id.'" ></i><a href="'.route('customer-detail',$row->id).'"> '.$row->id.'</a>';
+                else
+                    return '<a href="javascript:void(0)">'.$row->id.'</a>';
+            })
+            ->editColumn('created_at',function($row){
+                return format_date($row->created_at);
+            })
+            ->addColumn('ct_status',function($row) use ($team_slug){
+                if($row->$team_slug == 0)
+                    return 'New Arrivals';
+                else
+                    return GeneralHelper::getCustomerStatus($row->$team_slug);
+            })
+            ->editColumn('ct_note',function($row) use ($note_customers){
+
+                $private_note_customer = $note_customers->where('customer_id',$row->id)->first();
+
+                if(isset($private_note_customer) && !is_null($private_note_customer->content))
+                    return $private_note_customer->content;
+                else
+                    return $row->ct_note;
+            })
+            ->addColumn('action', function ($row){
                     return '
-                          <a class="btn btn-sm btn-secondary add-note"  contact_name="'.$row['ct_fullname'].'" customer_id="'.$row['id'].'" href="javascript:void(0)" title="Add Customer Note"><i class="far fa-sticky-note"></i></a>
-                          <a class="btn btn-sm btn-secondary view" customer_id="'.$row['id'].'" href="javascript:void(0)" title="View Customer"><i class="fas fa-eye"></i></a>
-                    <a class="btn btn-sm btn-secondary order-service" href="'.route('add-order',$row['id']).'" title="Go To Order"><i class="fas fa-shopping-cart"></i></a>';
+                          <a class="btn btn-sm btn-secondary add-note"  contact_name="'.$row->ct_fullname.'" customer_id="'.$row->id.'" href="javascript:void(0)" title="Add Customer Note"><i class="far fa-sticky-note"></i></a>
+                          <a class="btn btn-sm btn-secondary view" customer_id="'.$row->id.'" href="javascript:void(0)" title="View Customer"><i class="fas fa-eye"></i></a>
+                    <a class="btn btn-sm btn-secondary order-service" href="'.route('add-order',$row->id).'" title="Go To Order"><i class="fas fa-shopping-cart"></i></a>';
                 })
-                ->rawColumns(['action','id'])
-                ->make(true);
+            ->rawColumns(['action','id'])
+            ->make(true);
     }
     public function editCustomer(Request $request){
 
@@ -513,11 +474,14 @@ class CustomerController extends Controller
         $customer_id = $request->customer_id;
         $team_id = Auth::user()->user_team;
 
-        $team_customer_status = MainTeam::find($team_id)->getTeamType->team_customer_status;
-        $customer_status_arr = json_decode($team_customer_status,TRUE);
-        $customer_status_arr[$customer_id] = 2;
-        $customer_status_list = json_encode($customer_status_arr);
-        $update_customer = MainTeam::find($team_id)->getTeamType->update(['team_customer_status'=>$customer_status_list]);
+        $team_slug = MainTeam::find($team_id)->getTeamType->slug;
+        $update_customer = MainCustomerTemplate::where('id',$customer_id)->update([$team_slug=>2]);
+
+        // $team_customer_status = MainTeam::find($team_id)->getTeamType->team_customer_status;
+        // $customer_status_arr = json_decode($team_customer_status,TRUE);
+        // $customer_status_arr[$customer_id] = 2;
+        // $customer_status_list = json_encode($customer_status_arr);
+        // $update_customer = MainTeam::find($team_id)->getTeamType->update(['team_customer_status'=>$customer_status_list]);
 
         if(!isset($update_customer))
             return 0;
@@ -771,7 +735,7 @@ class CustomerController extends Controller
             'ct_business_phone' => 'required|unique:main_customer_template,ct_business_phone|numeric|digits_between:10,15',
             'ct_email' => 'required|email',
             'ct_address' => 'required',
-            'ct_cell_phone' => 'required|unique:main_customer_template,cs_cell_phone|digits_between:10,15'
+            'ct_cell_phone' => 'required|unique:main_customer_template,ct_cell_phone|digits_between:10,15'
         ];
         $message = [
             'ct_firstname.required' => 'Enter Firstname',
@@ -792,6 +756,9 @@ class CustomerController extends Controller
         if($validator->fails())
             return back()->withErrors($validator)->withInput();
 
+        //GET COLUMN FOR UPDATE CUSTOMER STATUS
+        $team_slug = MainTeam::find(Auth::user()->user_team)->getTeamType->slug;
+
         $customer_arr = [
             'ct_firstname' => $request->ct_firstname,
             'ct_lastname' => $request->ct_lastname,
@@ -805,29 +772,34 @@ class CustomerController extends Controller
             'ct_note' => $request->ct_note,
             'created_by' => Auth::user()->user_id,
             'updated_by' => Auth::user()->user_id,
-            'ct_active' => 1
+            'ct_active' => 1,
+            $team_slug => 1
         ];
         DB::beginTransaction();
-        $customer_create = MainCustomerTemplate::create($customer_arr);
+        $customer_create = DB::table('main_customer_template')->insert($customer_arr);
+        $customer_id = MainCustomerTemplate::max('id');
 
-        //UPDATE STATUS CUSTOMER IN OWN TEAM
-        $team_customer_status = MainTeam::find(Auth::user()->user_team)->getTeamType->team_customer_status;
-        $customer_status_arr = json_decode($team_customer_status,TRUE);
-        $customer_status_arr[$customer_create->id] = 1;
-        $customer_status_list = json_encode($customer_status_arr);
-        $update_customer = MainTeam::find(Auth::user()->user_team)->getTeamType->update(['team_customer_status'=>$customer_status_list]);
+        //ADD CUSTOMER INFO TO WAITING
+        $customer_user_assign = [
+            'user_id' => Auth::user()->user_id,
+            'business_phone' => $request->ct_business_phone,
+            'business_name' => $request->ct_salon_name,
+            'customer_id' => $customer_id,
+            'email' => $request->ct_email,
+            'address' => $request->ct_address,
+            'website' => $request->ct_website,
+        ];
+        $customer_assign = MainCustomerAssign::create($customer_user_assign);
 
-        //UPDATE CUSTOMER LIST IN MAIN USER
-        $user_customer_list = Auth::user()->user_customer_list;
+        //UPDATE MY CUSTOMER
+        $user_customer_arr = [
+            'user_id' => Auth::user()->user_id,
+            'team_id' => Auth::user()->user_team,
+            'customer_id' => $customer_id,
+        ];
+        $user_customer_update = MainUserCustomerPlace::create($user_customer_arr);
 
-        if($user_customer_list == ""){
-            $user_customer_arr = $customer_create->id;
-        }else{
-            $user_customer_arr = $user_customer_list.";".$customer_create->id;
-        }
-        $user_update = MainUser::where('user_id',Auth::user()->user_id)->update(['user_customer_list'=>$user_customer_arr]);
-
-        if(!isset($customer_create) || !isset($update_customer) || !isset($user_update)){
+        if(!isset($customer_create) || !isset($user_customer_update) || !isset($customer_assign)){
             DB::callback();
             return back()->with(['error'=>'Create Customer Failed!']);
         }
@@ -842,7 +814,6 @@ class CustomerController extends Controller
             return back()->with(['error'=>'Get CustomerDetail Failed!']);
 
         $data['template_customer_info'] = MainCustomerTemplate::find($customer_id);
-//        return $data['template_customer_info'];
         try{
             $customer_id = $data['template_customer_info']->getMainCustomer->customer_id;
         }catch(\Exception $e){
@@ -850,10 +821,11 @@ class CustomerController extends Controller
             return redirect()->route('customers')->with(['error'=>'Failed! Get information failed!']);
         }
         $data['place_service'] = MainCustomerService::where('cs_customer_id',$customer_id)->get()->groupBy('cs_place_id');
-//        $data['place_service'] = $data['place_service'];
 
         $data['main_customer_info'] = MainCustomer::where('customer_id',$customer_id)->first();
         $data['id'] = $customer_id;
+
+        $data['user_list'] = MainUser::where('user_id','!=',Auth::user()->user_id)->with('getTeam')->get();
         return view('customer.customer-detail',$data);
     }
     public function customerTracking(Request $request){
@@ -1255,5 +1227,82 @@ class CustomerController extends Controller
                     );
             return response()->download($file, 'template_import.xlsx', $headers);
         }
+    }
+     public function serviceCustomerDatatable(Request $request){
+
+        if(Gate::denies('permission','all-customers-read'))
+            return doNotPermission();
+
+        $start_date = $request->start_date;
+        $end_date = $request->end_date;
+        $address = $request->address;
+
+        //GET LIST NAME OF TEAM TYPE'S COLUMN
+        if(!is_null($request->team_id))
+            $team_id = $request->team_id;
+        else
+            $team_id = Auth::user()->user_team;
+
+        $team_customer_status = MainTeam::find($team_id)->getTeamType;
+        $team_slug = $team_customer_status->slug;
+
+        $customers = MainCustomerTemplate::leftjoin('main_user',function($join){
+            $join->on('main_customer_template.created_by','main_user.user_id');
+        });
+
+        if($start_date != "" && $end_date != ""){
+
+            $start_date = Carbon::parse($request->start_date)->subDay(1)->format('Y-m-d');
+            $end_date = Carbon::parse($request->end_date)->addDay(1)->format('Y-m-d');
+
+            $customers->whereDate('main_customer_template.created_at','>=',$start_date)
+                    ->whereDate('main_customer_template.created_at','<=',$end_date);
+        }
+        if($address != ""){
+            $customers->where('ct_address','LIKE',"%".$address."%");
+        }
+        //GET ONLY SERVICED CUSTOMER
+        $customers->where($team_slug,4);
+        
+
+        $list_customers = $customers->orderBy('main_customer_template.created_at','ASC')
+            ->select('main_user.user_nickname','main_customer_template.ct_salon_name','main_customer_template.ct_fullname','main_customer_template.ct_business_phone','main_customer_template.ct_cell_phone','main_customer_template.ct_note','main_customer_template.created_by','main_customer_template.created_at','main_customer_template.id','main_customer_template.'.$team_slug);
+                       
+        return Datatables::of($list_customers)
+            ->editColumn('id',function ($row) use ($team_slug){
+                if($row->$team_slug == 4)
+                    return '<i class="fas fa-plus-circle details-control text-danger" id="'.$row->id.'" ></i><a href="'.route('customer-detail',$row->id).'"> '.$row->id.'</a>';
+                else
+                    return '<a href="javascript:void(0)">'.$row->id.'</a>';
+            })
+            ->editColumn('created_at',function($row){
+                return format_date($row->created_at)." by ".$row->user_nickname;
+            })
+            ->editColumn('ct_business_phone',function($row){
+                if($row->ct_business_phone != null && Gate::denies('permission','customer-admin'))
+                    return substr($row->ct_business_phone,0,3)."########";
+                else return $row->ct_business_phone;
+            })
+            ->editColumn('ct_cell_phone',function($row){
+                if($row->ct_cell_phone != null  && Gate::denies('permission','customer-admin'))
+                    return substr($row->ct_cell_phone,0,3)."########";
+                else return $row->ct_cell_phone;
+            })
+            ->addColumn('ct_status',function($row) use ($team_slug){
+                if($row->$team_slug == 0)
+                    return 'New Arrivals';
+                else
+                    return GeneralHelper::getCustomerStatus($row->$team_slug);
+            })
+            ->addColumn('action', function ($row){
+                if( Gate::allows('permission','customer-admin'))
+                    return '<a class="btn btn-sm btn-secondary view" customer_id="'.$row->id.'" href="javascript:void(0)"><i class="fas fa-eye"></i></a>
+                        <a class="btn btn-sm btn-secondary edit-customer" customer_id="'.$row->id.'" href="javascript:void(0)"><i class="fas fa-edit"></i></a>
+                        <a class="btn btn-sm btn-secondary delete-customer" customer_id="'.$row->id.'" href="javascript:void(0)"><i class="fas fa-trash"></i></a>';
+                else
+                    return '<a class="btn btn-sm btn-secondary view" customer_id="'.$row->id.'" href="javascript:void(0)"><i class="fas fa-eye"></i></a>';
+            })
+            ->rawColumns(['action','id'])
+            ->make(true);
     }
 }

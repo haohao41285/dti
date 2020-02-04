@@ -75,6 +75,8 @@ Class WebsiteThemeController extends Controller
                 'theme_name_temp' => $request->code,
                 'theme_url' => $request->url,
                 'theme_price' => $request->price,
+                'theme_booking_css' => $request->booking_css,
+                'theme_booking_js' => $request->booking_js,
                 'theme_descript' => $request->description,
                 'theme_license' => $request->license,
                 'theme_status' => $request->status ?? 0,
@@ -87,18 +89,21 @@ Class WebsiteThemeController extends Controller
 
         } else {
             //update
+            $mainTheme = MainTheme::where('theme_id',$request->theme_id)->first(); 
             $arr = [
                 'theme_name' => $request->name,
                 'theme_name_temp' => $request->code,
                 'theme_url' => $request->url,
                 'theme_price' => $request->price,
+                'theme_booking_css' => $request->booking_css,
+                'theme_booking_js' => $request->booking_js,
                 'theme_descript' => $request->description,
                 'theme_license' => $request->license,
                 'theme_status' => $request->status ?? 0,
-                'theme_image' => $image ?? '',
+                'theme_image' => $image ?? $mainTheme->theme_image,
             ];
 
-            $mainTheme = MainTheme::where('theme_id',$request->theme_id)->first(); 
+            //$mainTheme = MainTheme::where('theme_id',$request->theme_id)->first(); 
             $mainTheme->update($arr);
         }
         

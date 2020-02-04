@@ -179,20 +179,24 @@
         </div>
     </div>
     <hr>
-    <table class="table table-sm table-striped table-hover" id="dataTableAllCustomer" width="100%" cellspacing="0">
+
+  <div style="height:700px" style="overflow:auto">
+    <table class="table table-sm table-hover" id="dataTableAllCustomer" width="100%" cellspacing="0">
         <thead>
+          <tr class="sticky-top bg-primary text-white"  style="z-index: 9">
             <th>ID</th>
-            <th>Nail Shop</th>
+            <th>Business</th>
             <th>Contact Name</th>
             <th>Business Phone</th>
             <th>Cell Phone</th>
-            <th>Status</th>
             <th>Note</th>
+            <th>Status</th>
             <th>Created Date</th>
             <th style="width: 15%">Action</th>
-            </tr>
+          </tr>
         </thead>
     </table>
+  </div>
 </div>
 
 <!-- Modal view-->
@@ -250,25 +254,10 @@
     $("#created_at").datepicker({});
     var table = $('#dataTableAllCustomer').DataTable({
        // dom: "lBfrtip",
-       order:[[6,"desc"]],
+       order:[[7,"desc"]],
        processing: true,
        serverSide: true,
        buttons: [
-           // {
-           //     text: '<i class="fas fa-exchange-alt"></i> Move Customers',
-           //     className: "btn-sm move-customers"
-           // },
-           {{--{--}}
-           {{--    text: '<i class="fas fa-download"></i> Import',--}}
-           {{--    className: "btn-sm import-show"--}}
-           {{--},--}}
-           {{--{--}}
-           {{--    text: '<i class="fas fa-upload"></i> Export',--}}
-           {{--    className: "btn-sm export",--}}
-           {{--    action: function ( e, dt, node, config ) {--}}
-           {{--       document.location.href = "{{route('export-my-customer')}}";--}}
-           {{--   }--}}
-           {{--}--}}
        ],
        ajax:{ url:"{{ route('get-my-customer') }}",
        data: function (d) {
@@ -286,8 +275,8 @@
                 { data: 'ct_business_phone', name: 'ct_business_phone' ,class:'text-center'},
                 { data: 'ct_cell_phone', name: 'ct_cell_phone',class:'text-center' },
                 { data: 'ct_status', name: 'ct_status',class:'text-center' },
-                { data: 'note', name: 'note' },
-                { data: 'updated_at', name: 'updated_at' ,class:'text-center'},
+                { data: 'ct_note', name: 'ct_note' },
+                { data: 'created_at', name: 'created_at' ,class:'text-center'},
                 { data: 'action' , name:'action' ,orderable: false, searcheble: false ,class:'text-center'}
         ],
     });

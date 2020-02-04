@@ -159,7 +159,9 @@
                                         </div>
                                         <div class="row col-12 row-detail">
                                             <label class="col-sm-4">Price floor($)</label>
-                                            <input type="number" name="price_floor" class="col-sm-8 form-control-sm form-control" id="price-floor">
+                                            {{-- <label class="col-sm-8" id="price-floor">Price floor</label> --}}
+                                            <input type="text" onkeypress="return isNumberKey(event)" name="price_floor" class="col-sm-8 form-control-sm form-control" id="price-floor">
+
                                         </div>
                                         <div class="row col-12 row-detail">
                                             <label class="col-sm-4">Latlng</label>
@@ -192,7 +194,7 @@
                                         <div class="row col-12 row-detail">
                                             <label class="col-sm-4">Interest($)</label>
                                             {{-- <label class="col-sm-8" id="interest">Interest($)</label> --}}
-                                            <input type="number" name="interest" class="col-sm-8 form-control-sm form-control" id="interest">
+                                            <input type="text" onkeypress="return isNumberKey(event)" name="interest" class="col-sm-8 form-control-sm form-control" id="interest">
                                         </div>
                                     </div>
                                 </div>
@@ -442,7 +444,7 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="submit" class="btn-sm btn btn-primary">Save changes</button>
+                    <button type="button" id="submit-changes" class="btn-sm btn btn-primary">Save changes</button>
                     <button type="button" class="btn-sm btn btn-secondary" data-dismiss="modal">Close</button>
                 </div>
         </form>
@@ -870,10 +872,10 @@ function getServicesByPlaceId(placeId) {
     return result;
 }
 
-function multiselectReload() {
+/*function multiselectReload() {
     $("#cateservices-multiselect").multiselect('destroy');
     $("#cateservices-multiselect").multiselect();
-}
+}*/
 
 
 
@@ -896,9 +898,7 @@ $(document).ready(function() {
         processing: true,
         serverSide: true,
         ajax: { url: "{{ route('getPlacesDatatable') }}" },
-        order: [
-            [0, 'desc']
-        ],
+        order: [[0,'desc']],
         columns: [
 
             { data: 'place_id', name: 'place_id', class: 'text-center' },
@@ -906,17 +906,18 @@ $(document).ready(function() {
             { data: 'place_phone', name: 'place_phone', class: 'text-center' },
             { data: 'place_website', name: 'place_website', },
             { data: 'place_ip_license', name: 'place_ip_license' },
-            { data: 'place_status', name: 'place_status', class: 'text-center' },
+            { data: 'place_status', name: 'place_status', class:'text-center' },
             { data: 'action', name: 'action', orderable: false, searchable: false, class: 'text-center' }
         ],
         buttons: [
 
         ],
-        fnDrawCallback: function(oSettings) {
+        fnDrawCallback:function (oSettings) {
             var elems = Array.prototype.slice.call(document.querySelectorAll('.js-switch'));
-            elems.forEach(function(html) {
+            elems.forEach(function (html) {
                 var switchery = new Switchery(html, {
                     color: '#0874e8',
+
                     className: 'switchery switchery-small switchery-place'
                 });
             });
@@ -1638,9 +1639,10 @@ $(document).ready(function() {
         $("#extension_service").modal('hide');
     });
 
-    // $('#cateservices-multiselect').multiselect({
-    //     buttonWidth: '100%',
-    // });
+
+   /* $('#cateservices-multiselect').multiselect({
+        buttonWidth: '100%',
+    });*/
     $(document).on('click', '.switchery-place', function() {
 
         let place_id = $(this).siblings('input').attr('place_id');
@@ -1680,9 +1682,10 @@ $(document).ready(function() {
         $(this).parent().addClass("active");
     });
 
-    $("#form-detail-place").on("submit", function(e) {
+    $("#submit-changes").on("click", function(e) {
+        // alert('ok');return;
         e.preventDefault();
-        var form = $(this)[0];
+        var form = $(this).parents('form')[0];
         var form_data = new FormData(form);
         form_data.append('placeId', placeId);
 

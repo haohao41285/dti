@@ -1,8 +1,12 @@
  //window.maskPhone = require('jquery-input-mask-phone-number/dist/jquery-input-mask-phone-number.min.js')
 
+
  //window.bootstrapMulty = require('bootstrap-multiselect/dist/js/bootstrap-multiselect.js');
 
  window.gijgo = require('gijgo/js/gijgo.min.js');
+
+ // window.bootstrapMulty = require('bootstrap-multiselect/dist/js/bootstrap-multiselect.js');
+
 
  window.CanvasJS = require('canvasjs/dist/canvasjs.min.js');
  window.CanvasJSJ = require('canvasjs/dist/jquery.canvasjs.min.js');
@@ -25,6 +29,12 @@
  window.Dropzone = require('dropzone');
 
  window.iCheck = require('icheck');
+
+ window.Dropzone = require('dropzone');
+
+ window.iCheck = require('icheck');
+
+ window.select2 = require('select2');
 
 
  /**

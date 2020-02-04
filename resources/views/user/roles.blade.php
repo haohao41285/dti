@@ -146,6 +146,36 @@ Role List
 			$("#gu_name").val("");
 			gu_id = 0;
 	    }
+	    $(document).on('click','.role-delete',function(){
+
+	    	if(confirm('Do you want to delete this role?')){
+	    		$.ajax({
+		    		url: '{{route('delete-role')}}',
+		    		type: 'POST',
+		    		dataType: 'html',
+		    		data: {
+		    			gu_id: gu_id,
+		    			_token: '{{ csrf_token() }}'
+		    		},
+		    	})
+		    	.done(function(data) {
+		    		data = JSON.parse(data);
+		    		if(data.status == 'error')
+		    		    toastr.error(data.message);
+		    		else
+		    		    toastr.success(data.message);
+
+	      				clearView();
+		    			dataTable.draw();
+		    	})
+				.fail(function(data) {
+				    data = JSON.parse(data.responseText);
+				    toastr.error(data.message);
+	         	});
+	    	}
+	    	else
+	    		return;	    		
+	    });
 	});
 </script>
 @endpush

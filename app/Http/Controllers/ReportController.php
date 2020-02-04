@@ -16,14 +16,14 @@ use Illuminate\Http\Request;
 use Yajra\DataTables\DataTables;
 use Auth;
 use Carbon\Carbon;
-use Gate;
+use Gate,DB;
 
 class ReportController extends Controller
 {
     public function customers(){
 
         if(Gate::denies('permission','customer-report'))
-            return doNotPermission;
+            return doNotPermission();
 
         $data['status'] = GeneralHelper::getCustomerStatusList();
         if(Gate::allows('permission','customer-report-admin'))
@@ -45,7 +45,13 @@ class ReportController extends Controller
 
         if(Gate::allows('permission','customer-report-admin')){
             $team_id = $request->team_id;
-            $customer_list = MainCustomerTemplate::select('*');
+
+            $team_info  = MainTeam::find($team_id)->getTeamType;
+            $team_slug = $team_info->slug;
+
+            $customer_list = DB::table('main_customer_template')->leftjoin('main_customer',function($join){
+                $join->on('main_customer_template.id','main_customer.customer_customer_template_id');
+            });
         }
         else{
             $team_id = Auth::user()->user_team;
@@ -62,7 +68,14 @@ class ReportController extends Controller
                 ])->select('customer_id')->get()->toArray();
             }
             $user_customer_arr = array_values($user_customer_list);
-            $customer_list = MainCustomerTemplate::whereIn('id', $user_customer_arr);
+
+            $team_info  = MainTeam::find($team_id)->getTeamType;
+            $team_slug = $team_info->slug;
+
+            $customer_list = DB::table('main_customer_template')->leftjoin('main_customer',function($join){
+                $join->on('main_customer_template.id','main_customer.customer_customer_template_id');
+            })
+            ->whereIn('main_customer_template.id', $user_customer_arr);
         }
 
             if($start_date != "" && $end_date != ""){
@@ -70,69 +83,65 @@ class ReportController extends Controller
                 $start_date = Carbon::parse($start_date)->subDay(1)->format('Y-m-d');
                 $end_date = Carbon::parse($end_date)->addDay(1)->format('Y-m-d');
 
-                $customer_list->whereDate('created_at','>=',$start_date)
-                    ->whereDate('created_at','<=',$end_date);
+                $customer_list->whereDate('main_customer_template.created_at','>=',$start_date)
+                    ->whereDate('main_customer_template.created_at','<=',$end_date);
             }
             if($address != ""){
-                $customer_list->where('ct_address','LIKE',"%".$address."%");
+                $customer_list->where('main_customer_template.ct_address','LIKE',"%".$address."%");
+            }
+            if($status_customer != ""){
+                if($status_customer == 3){
+                    $customer_list->where(function($query) use ($team_slug,$status_customer){
+                        $query->where('main_customer_template.'.$team_slug,0)
+                        ->orWhere('main_customer_template.'.$team_slug,$status_customer);
+                    });
+                }else
+                    $customer_list->where('main_customer_template.'.$team_slug,$status_customer);
             }
 
             $customer_list = $customer_list->get();
 
-            //GET LIST TEAM CUSTOMER LIST
-            $team_customer_status = MainTeam::find($team_id)->getTeamType->team_customer_status;
+            //GET CUSTOMER BY SERVICE
+            // $service_customers = MainComboServiceBought::all();
+            $service_customers = DB::table('main_combo_service_bought')->join('main_user',function($join){
+                $join->on('main_combo_service_bought.created_by','main_user.user_id');
+            });
+            $service_customers = collect($service_customers);
 
-            $customer_status_arr = json_decode($team_customer_status,TRUE);
 
             foreach ($customer_list as $key => $customer) {
 
                 $discount_total = 0;
                 $seller_name = "";
                 $charged_total = 0;
-                if(!isset($customer_status_arr[$customer->id])){
-                    $customer_status_arr[$customer->id] = 1;
+
+                if($customer->$team_slug == 0 || $customer->$team_slug == 1){
                     $ct_status = 'New Arrivals';
                 }
                 else{
-                    $ct_status = GeneralHelper::getCustomerStatus($customer_status_arr[$customer->id]);
-                    if($customer_status_arr[$customer->id] == 4){
-                        $order_info = MainComboServiceBought::where('csb_customer_id',MainCustomer::where('customer_customer_template_id',$customer->id)->first()->customer_id)
-                            ->with('getCreatedBy');
+                    $ct_status = GeneralHelper::getCustomerStatus($customer->$team_slug);
+                    if($customer->$team_slug == 4){
+                        $order_info = $service_customers->where('csb_customer_id',$customer->customer_id);
                         $seller_list  = $order_info->select('created_by')->distinct('created_by')->get();
                         foreach($seller_list as $seller){
-                            $seller_name .= $seller->getCreatedBy->user_nickname.";";
+                            $seller_name .= $seller->user_nickname.";";
                         }
                         $discount_total = $order_info->sum('csb_amount_deal');
                         $charged_total = $order_info->sum('csb_charge');
                     }
                 }
 
-                if($status_customer != "" && intval($customer_status_arr[$customer->id]) ==  intval($status_customer)){
-                    $customer_arr[] = [
-                        'id' => $customer->id,
-                        'ct_salon_name' => $customer->ct_salon_name,
-                        'ct_fullname' => $customer->ct_fullname,
-                        'ct_business_phone' => $customer->ct_business_phone,
-                        'ct_cell_phone' => $customer->ct_cell_phone,
-                        'ct_status' => $ct_status,
-                        'seller' => $seller_name,
-                        'discount_total' => $discount_total,
-                        'charged_total' => $charged_total
-                    ];
-                }
-                if($status_customer == ""){
-                    $customer_arr[] = [
-                        'id' => $customer->id,
-                        'ct_salon_name' => $customer->ct_salon_name,
-                        'ct_fullname' => $customer->ct_fullname,
-                        'ct_business_phone' => $customer->ct_business_phone,
-                        'ct_cell_phone' => $customer->ct_cell_phone,
-                        'ct_status' => $ct_status,
-                        'seller' => $seller_name,
-                        'discount_total' => $discount_total,
-                        'charged_total' => $charged_total
-                    ];
-                }
+                $customer_arr[] = [
+                    'id' => $customer->id,
+                    'ct_salon_name' => $customer->ct_salon_name,
+                    'ct_fullname' => $customer->ct_fullname,
+                    'ct_business_phone' => $customer->ct_business_phone,
+                    'ct_cell_phone' => $customer->ct_cell_phone,
+                    'ct_status' => $ct_status,
+                    'seller' => $seller_name,
+                    'discount_total' => $discount_total,
+                    'charged_total' => $charged_total
+                ];
             }
          return $customer_arr;
 
@@ -140,7 +149,7 @@ class ReportController extends Controller
     public function customersDataTable( Request $request){
 
         if(Gate::denies('permission','customer-report'))
-            return doNotPermission;
+            return doNotPermission();
 
         $customer_list = self::getCustomerList($request);
         return Datatables::of($customer_list)
@@ -251,7 +260,6 @@ class ReportController extends Controller
 
         if(Gate::allows('permission','seller-report-admin'))
             $data['sellers'] = MainUser::all();
-//        elseif(Gate::allows('permission','seller-report-leader'))
         else
             $data['sellers'] = MainUser::where('user_team',Auth::user()->user_team)->get();
         return view('reports.sellers',$data);
@@ -260,7 +268,6 @@ class ReportController extends Controller
 
         if(Gate::allows('permission','seller-report-admin'))
             $user_list = MainUser::select('*');
-//        elseif(Gate::allows('permission','seller-report-leader'))
         else
             $user_list = MainUser::where('user_team',Auth::user()->user_team);
 
@@ -340,7 +347,7 @@ class ReportController extends Controller
                 ])->select('customer_id')->get()->toArray();
             }
                 $user_customer_arr = array_values($user_customer_list);
-                $customer_list = MainCustomerTemplate::with('getCreatedBy')->whereIn('id', $user_customer_arr);
+                $customer_list = MainCustomerTemplate::whereIn('id', $user_customer_arr);
         }
 
             if($request->start_date != "" && $request->end_date != ""){
@@ -356,32 +363,32 @@ class ReportController extends Controller
 
             $customer_list = $customer_list->get();
 
-            //GET LIST TEAM CUSTOMER LIST
-            $team_customer_status = MainTeam::find($team_id)->getTeamType->team_customer_status;
-
-            $customer_status_arr = json_decode($team_customer_status,TRUE);
+            $team_info = MainTeam::find($team_id)->getTeamType;
+            $team_slug = $team_info->slug;
 
             foreach ($customer_list as $key => $customer) {
-                if(!isset($customer_status_arr[$customer->id])){
-                    //New Arrivals
-                    $arrivals_total++;
-                }
-                else{
-                    switch ($customer_status_arr[$customer->id]) {
-                        case 1:
-                            //Assigned
-                            $assigned_total++;
-                            break;
-                        case 4:
-                            //Serviced
-                            $serviced_total++;
-                            break;
-
-                        default:
-                            //Disabled
-                            $disabled_total++;
-                            break;
-                    }
+                
+                switch ($customer->$team_slug) {
+                    case 1:
+                        //Assigned
+                        $assigned_total++;
+                        break;
+                    case 4:
+                        //Serviced
+                        $serviced_total++;
+                        break;
+                    case 3:
+                        //New Arrivals
+                        $arrivals_total++;
+                        break;
+                    case 0:
+                        //New Arrivals
+                        $arrivals_total++;
+                        break;
+                    case 2:
+                        //Disabled
+                        $disabled_total++;
+                        break;
                 }
             }
             $customers = self::getCustomerList($request);

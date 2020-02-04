@@ -60,7 +60,6 @@
                 <th>Discount($)</th>
                 <th>Total Charged($)</th>
                 <th>Serller</th>
-                <th style="width: 160px">Info</th>
             </tr>
         </thead>
     </table>
@@ -96,8 +95,6 @@
             { data: 'discount', name: 'discount',class:'text-right' },
             { data: 'total_charge', name: 'total_charge',class:'text-right' },
             { data: 'seller', name: 'seller' },
-            { data: 'information', name: 'information'},
-                  // { data: 'action' , name:'action' ,orderable: false, searcheble: false ,class:'text-center'}
         ],
     });
     $("#search-button").click(function(){

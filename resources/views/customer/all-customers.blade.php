@@ -58,21 +58,58 @@
     </div>
     </form>
     <hr>
-    <table class="table table-sm table-striped table-hover" id="dataTableAllCustomer" width="100%" cellspacing="0">
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>Business</th>
-                <th>Contact Name</th>
-                <th>Business Phone</th>
-                <th>Cell Phone</th>
-                <th>Note</th>
-                <th>Status</th>
-                <th>Created Date</th>
-                <th style="width: 15%">Action</th>
-            </tr>
-        </thead>
-    </table>
+    
+  <!-- Nav tabs -->
+  <ul class="nav nav-tabs" role="tablist">
+    <li class="nav-item">
+      <a class="nav-link active" data-toggle="tab" href="#home">ALL CUSTOMERS</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" data-toggle="tab" href="#menu1">SERVICED CUSTOMERS</a>
+    </li>
+  </ul>
+
+  <!-- Tab panes -->
+  <div class="tab-content">
+    <div id="home" class="tab-pane active"><br>
+      <div style="height:700px" style="overflow:auto">
+        <table class="table table-sm table-hover" id="dataTableAllCustomer" width="100%" cellspacing="0">
+            <thead>
+                <tr class="sticky-top bg-primary text-white"  style="z-index: 9">
+                  <th>ID</th>
+                  <th>Business</th>
+                  <th>Contact Name</th>
+                  <th>Business Phone</th>
+                  <th>Cell Phone</th>
+                  <th>Note</th>
+                  <th>Status</th>
+                  <th>Created Date</th>
+                  <th style="width: 15%">Action</th>
+                </tr>
+            </thead>
+        </table>
+      </div>
+    </div>
+    <div id="menu1" class="tab-pane fade"><br>
+      <div style="height:700px" style="overflow:auto">
+        <table class="table table-sm table-hover" id="servicedCustomer" width="100%" cellspacing="0">
+            <thead>
+                <tr class="sticky-top bg-primary text-white"  style="z-index: 9">
+                  <th>ID</th>
+                  <th>Business</th>
+                  <th>Contact Name</th>
+                  <th>Business Phone</th>
+                  <th>Cell Phone</th>
+                  <th>Note</th>
+                  <th>Status</th>
+                  <th>Created Date</th>
+                  <th style="width: 15%">Action</th>
+                </tr>
+            </thead>
+        </table>
+      </div>
+    </div>
+  </div>
 </div>
 
 <!-- Modal view-->
@@ -213,6 +250,39 @@
                 { data: 'action' , name:'action' ,orderable: false, searcheble: false ,class:'text-center'}
         ],
     });
+    var tableServiceCustomer = $('#servicedCustomer').DataTable({
+      // dom: "lifrtp ",
+      order:[[7,'desc']],
+      responsive:false,
+      serverSide: true,
+      processing: true,
+      buttons: [
+       ],
+       ajax:{ url:"{{ route('serviceCustomerDatatable') }}",
+        type: 'POST',
+       data: function (d) {
+          d.start_date = $("#start_date").val();
+          d.end_date = $("#end_date").val();
+          d.address = $("#address").val();
+          d.status_customer = $("#status-customer :selected").val();
+          d.team_id = $("#team_id :selected").val();
+          d._token = '{{ csrf_token() }}';
+            }
+        },
+        columnDefs: [ {'targets': 0, 'searchable': false} ],
+       columns: [
+
+                { data: 'id', name: 'id',class:'text-center w-10' },
+                { data: 'ct_salon_name', name: 'ct_salon_name' },
+                { data: 'ct_fullname', name: 'ct_fullname'},
+                { data: 'ct_business_phone', name: 'ct_business_phone' ,class:'text-center'},
+                { data: 'ct_cell_phone', name: 'ct_cell_phone',class:'text-center' },
+                { data: 'ct_note', name: 'ct_note',class:'text-center' },
+                { data: 'ct_status', name: 'ct_status',class:'text-center' },
+                { data: 'created_at', name: 'created_at' ,class:'text-center'},
+                { data: 'action' , name:'action' ,orderable: false, searcheble: false ,class:'text-center'}
+        ],
+    });
 
     // $("#formReset").on('click',function(e){
     //    $(this).parents('form')[0].reset();
@@ -221,17 +291,22 @@
      $("#formReset").click(function () {
          $(this).parents('form')[0].reset();
          table.draw();
+         tableServiceCustomer.draw();
      });
 
     $(document).on("click",".view",function(){
 
       var customer_id = $(this).attr('customer_id');
+      var team_id = $("#team_id").val();
 
       $.ajax({
         url: '{{route('get-customer-detail')}}',
         type: 'GET',
         dataType: 'html',
-        data: {customer_id: customer_id},
+        data: {
+          customer_id: customer_id,
+          team_id: team_id
+        },
       })
       .done(function(data) {
 
@@ -239,7 +314,6 @@
           toastr.error('Get Detaill Customer Error!');
         }else{
           data = JSON.parse(data);
-            console.log(data);
             var button = ``;
             if(data.count_customer_user == 0)
                 button = `<button type="button" id=`+data.customer_list.id+` class="btn btn-primary btn-sm get-customer">Assign</button>`;
@@ -247,7 +321,7 @@
                 button = '';
             if(data.customer_list.ct_status != 'New Arrivals' && data.customer_list.ct_status != 'Disabled' && data.count_customer_user == 0 ){
                 data.customer_list.ct_salon_name = '<input type="text" name="business_name" id="business_name" class="form-control form-control-sm col-12" required>';
-                data.customer_list.ct_business_phone = '<input type="number" name="business_phone" id="business_phone" class="form-control form-control-sm col-12" required>';
+                data.customer_list.ct_business_phone = '<input type="text" name="business_phone" onkeypress="return isNumberKey(event)" id="business_phone" class="form-control form-control-sm col-12" required>';
             }
           data = data.customer_list;
           if(data.ct_salon_name==null)data.ct_salon_name="";
@@ -425,11 +499,11 @@
               </div>
               <div class="form-group row">
                 <label class="col-md-4" for="ct_business_phone">Business Phone<i class="text-danger">*</i></label>
-                <input type="number" class="col-md-8 form-control form-control-sm" name="ct_business_phone" id="ct_business_phone" value="`+data.ct_business_phone+`" placeholder="">
+                <input type="text" class="col-md-8 form-control form-control-sm" onkeypress="return isNumberKey(event)" name="ct_business_phone" id="ct_business_phone" value="`+data.ct_business_phone+`" placeholder="">
               </div>
               <div class="form-group row">
                 <label class="col-md-4" for="ct_cell_phone">Cell Phone<i class="text-danger">*</i></label>
-                <input type="number" class="col-md-8 form-control form-control-sm" name="ct_cell_phone" id="ct_cell_phone" value="`+data.ct_cell_phone+`" placeholder="">
+                <input type="text" onkeypress="return isNumberKey(event)" class="col-md-8 form-control form-control-sm" name="ct_cell_phone" id="ct_cell_phone" value="`+data.ct_cell_phone+`" placeholder="">
               </div>
               <div class="form-group row">
                 <label class="col-md-4" for="ct_email">Email</label>
@@ -510,28 +584,35 @@
     });
     $("#search-button").click(function(){
       table.draw();
+      tableServiceCustomer.draw();
     });
     $(document).on('click','.delete-customer',function(){
 
       var customer_id = $(this).attr('customer_id');
-
-      $.ajax({
-        url: '{{route('delete-customer')}}',
-        type: 'GET',
-        dataType: 'html',
-        data: {customer_id: customer_id},
-      })
-      .done(function(data) {
-        if(data == 1){
-          table.ajax.reload(null, false);
-          toastr.success('Update Success!');
-        }else
+      if(confirm('Do you want to be disabled this customer ?')){
+         $.ajax({
+          url: '{{route('delete-customer')}}',
+          type: 'GET',
+          dataType: 'html',
+          data: {customer_id: customer_id},
+        })
+        .done(function(data) {
+          // console.log(data);
+          // return;
+          if(data == 1){
+            table.ajax.reload(null, false);
+            toastr.success('Update Success!');
+          }else
+            toastr.error('Update Error!');
+        })
+        .fail(function() {
           toastr.error('Update Error!');
-        console.log(data);
-      })
-      .fail(function() {
-        console.log("error");
-      });
+        });
+      }else {
+        return false;
+      }
+
+       
     });
     $(document).on('click','.deleted',function(){
       toastr.error('This Customer Deleted!');
@@ -566,6 +647,7 @@
         if(data.status == 'success'){
           $("#import-modal").modal('hide');
           table.draw();
+          tableServiceCustomer.draw();
           toastr.success(data.message);
         }
         else
@@ -724,6 +806,12 @@
       var fileName = $(this).val().split("\\").pop();
       $(this).siblings(".custom-file-label").addClass("selected").html(fileName);
     });
+     $(document).on("keypress","#business_phone,#ct_cell_phone,#ct_business_phone",function() {
+       let number_phone = $(this).val();
+
+       if(number_phone.length >9)
+        return false;
+     });
 });
 </script>
 @endpush

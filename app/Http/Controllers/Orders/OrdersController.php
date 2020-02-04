@@ -110,7 +110,7 @@ class OrdersController extends Controller
 
         $data['customer_info'] = MainCustomerTemplate::find($customer_id);
 
-        if (!empty($data['customer_info']->getMainCustomer)) {
+        if ( isset($data['customer_info']) && !is_null($data['customer_info']->getMainCustomer)) {
 
             //GET PLACES'S CUSTOMER OF USER
             $places_arr = MainUserCustomerPlace::where([
@@ -134,7 +134,11 @@ class OrdersController extends Controller
         //GET COMBO SERVICE NOT TYPE
         $data['combo_service_orther'] = MainComboService::where('cs_status', 1)->whereIn('id', $service_permission_arr)->whereNull('cs_combo_service_type')->get();
 
-        $data['combo_service_type'] = DB::table('main_combo_service_type')->where('status',1)->get();
+        //GET SERVICE TYPE
+        $service_type = MainComboService::whereIn('id',$service_permission_arr)->select('cs_combo_service_type')->get()->toArray();
+        $service_type_arr = array_values($service_type);
+
+        $data['combo_service_type'] = DB::table('main_combo_service_type')->whereIn('id',$service_type_arr)->where('status',1)->get();
 
         //GET COMBO SERVICE COLLECTION INSIDE TYPE
         $combo_service = MainComboService::whereIn('id',$service_permission_arr)->get();
@@ -203,14 +207,17 @@ class OrdersController extends Controller
         }
         $cs_id = MainCustomerService::where('cs_place_id', $place_id)->max('cs_id') + 1;
 
+        $request->service_price_hidden == 0?$status = 1:$status = 0;
+
         //INSERT MAIN_COMBO_SERVICE_BOUGHT
         $order_history_arr = [
+            'id' => MainComboServiceBought::max('id')+1,
             'csb_customer_id' => $customer_id,
             'csb_combo_service_id' => $combo_service_list,
             'csb_amount' => $request->service_price_hidden,
             'csb_charge' => $request->payment_amount_hidden,
-            'csb_cashback' => 0,
-            'csb_status' => 0,
+            'csb_cashback' => 0, 
+            'csb_status' => $status,
             'created_by' => Auth::user()->user_id,
         ];
         //CREATE NEW PLACE IN POS_PLACE, NEW USER IN POS_USER IF CHOOSE NEW PLACE
@@ -565,8 +572,6 @@ class OrdersController extends Controller
 
         foreach ($order_list as $key => $order) {
 
-            $infor = "<span>ID: " . $order->csb_trans_id . "</span><br><span>Name: " . $order->csb_card_type . "</span><br><span>Number: " . $order->csb_card_number . "</span>";
-
             $services = explode(";", $order->csb_combo_service_id);
 
             $service_list = $combo_service_list->whereIn('id', $services);
@@ -588,7 +593,6 @@ class OrdersController extends Controller
                 'discount' => $order->csb_amount_deal,
                 'total_charge' => $order->csb_charge,
                 'seller' => $order->user_nickname,
-                'information' => $infor,
             ];
         }
         return DataTables::of($order_arr)
@@ -927,13 +931,25 @@ class OrdersController extends Controller
     {
 
         $order_id = $request->order_id;
+        $order_status = $request->order_status;
 
-        $order_update = MainComboServiceBought::find($order_id)->update(['csb_status' => '1']);
+        if($order_status == 0){
+            $status_update = 1;
+            $status_text = "PAID";
+        }
+        else{ 
+            $status_update = 2;
+            $status_text = "DELIVERED";
+        }
+        if($status_update == 2)
+            $order_update = MainComboServiceBought::find($order_id)->update(['csb_status' => $status_update,'csb_last_call'=>now()]);
+        else
+            $order_update = MainComboServiceBought::find($order_id)->update(['csb_status' => $status_update]);
 
         if (!isset($order_update))
             return response(['status' => 'error', 'message' => 'Failed!']);
         else
-            return response(['status' => 'success', 'message' => 'Successfully']);
+            return response(['status' => 'success', 'message' => 'Successfully','status_text'=>$status_text]);
     }
 
     public function resendInvoice(Request $request)
@@ -1144,21 +1160,32 @@ class OrdersController extends Controller
         }
         //END UPDATE MAIN_CUSTOMER_SERVICE
 
+        //CHANGE CUSTOMER STATUS IN MAIN_CUSTOMER_TEMPLATE
+        $customer_teamplate_id = MainCustomer::where('customer_id',$customer_id)->first()->customer_customer_template_id;
+        $team_info = MainTeam::find(Auth::user()->user_team)->getTeamType;
+        $team_slug = $team_info->slug;
+
+        //CHECK CUSTOMER TEMPLATE
+        $check_customer = DB::table('main_customer_template')->where('id',$customer_teamplate_id);
+        if($check_customer->first()->$team_slug != 4)
+            $check_customer->update([$team_slug=>4]);
+
         //ADD TASK FOR SATFF
         $service_arr = array_unique($service_arr);
 
         foreach ($service_arr as $key => $service) {
             $service_info = MainComboService::find($service);
-            //ADD EXPIRED FOR REVIEW
-            $content = "";
-            if($service_info->cs_form_type == 1 || $service_info->cs_form_type == 3){
-                $complete_date = today()->addMonths($service_info->cs_expiry_period)->format('m/d/Y');
-                $content = json_encode(['complete_date'=>$complete_date]);
+
+            //GET DATE END TASK
+            if($service_info->cs_type_time == 1)
                 $date_end = today()->addMonths($service_info->cs_expiry_period)->format('Y-m-d');
-            }
+            else
+                $date_end = today()->addDays($service_info->cs_expiry_period)->format('Y-m-d');
+
             $date_start = today()->format('Y-m-d');
 
             $task_arr = [
+                'id' => MainTask::max('id')+1,
                 'subject' => $service_info->cs_name,
                 'priority' => 2,
                 'status' => 1,
@@ -1169,7 +1196,7 @@ class OrdersController extends Controller
                 'place_id' => $place_id,
                 'category' => 1,
                 'assign_to' => $service_info->cs_assign_to,
-                'content' => $content,
+                'content' => "",
                 'date_start' => $date_start,
                 'date_end' => $date_end
             ];
@@ -1301,12 +1328,6 @@ class OrdersController extends Controller
 
         foreach ($my_order_list as $key => $order) {
 
-            //GET INFORMATION CARD
-            if($order->csb_status==1)
-                $infor = "<span>ID: ".$order->csb_trans_id."</span><br><span>Name: ".$order->csb_card_type."</span><br><span>Number: ".$order->csb_card_number."</span>";
-            else
-                $infor = "<span>Account Number: ".$order->account_number."</span><br><span>Name: ".$order->routing_number."</span><br><span>Bank Name: ".$order->bank_name."</span>";
-
             $services = explode(";",$order->csb_combo_service_id);
 
             $service_list = MainComboService::whereIn('id',$services)->select('cs_name')->get();
@@ -1331,8 +1352,6 @@ class OrdersController extends Controller
                 'subtotal' => $order->csb_amount,
                 'discount' => $order->csb_amount_deal,
                 'total_charge' => $order->csb_charge,
-                'status' => $order->csb_status==0?"NOTPAYMENT":"PAID",
-                'information' => $infor,
             ];
         }
         return  DataTables::of($my_order_arr)
@@ -1347,20 +1366,132 @@ class OrdersController extends Controller
     }
     public function getDataInputForm(Request $request){
 
-        // $task_info = MainTask::find($request->task_id);
         $task_info = MainTask::where('id',$request->task_id)->with('getService')->first();
-
-        //GET EXPIRED OF SERVICE
-        // $task_expire = "";
-        // if($task_info->getService->cs_expiry_period != null && $task_info->getService->cs_expiry_period != "" ){
-        //     $cs_expiry_period = $task_info->getService->cs_expiry_period;
-        //     $task_expire = today()->addMonths($cs_expiry_period)->format('m/d/Y');
-        // }
-
         if(!isset($task_info))
             return response(['status'=>'error','message'=>'Failed!']);
 
         return response(['status'=>'success','content'=>$task_info->content]);
+    }
+    public function deliveredOrderDatatable(Request $request)
+     {
+        $my_order_arr = [];
+
+        $my_order_list = MainComboServiceBought::join('main_customer',function($join){
+                $join->on('main_combo_service_bought.csb_customer_id','main_customer.customer_id');
+            })
+            ->join('main_user',function($join){
+                $join->on('main_combo_service_bought.created_by','main_user.user_id');
+            })
+            ->leftjoin('pos_place',function($join){
+                $join->on('main_combo_service_bought.csb_place_id','pos_place.place_id');
+            })
+            ->where(function ($query){
+                $query->where('pos_place.place_demo','=',null)
+                    ->orWhere('pos_place.place_demo','=',0);
+            })
+            ->where('main_combo_service_bought.csb_status',0);
+
+            if(Gate::allows('permission','admin-payment-orders')){
+
+            }else{
+                //GET USER OF TEAM CSKH
+                $team_id = MainTeam::where('team_cskh_id',Auth::user()->user_team)->first();
+                $user_list = MainUser::where('user_team',$team_id->id)->select('user_id')->get()->toArray();
+                $user_arr = array_values($user_list);
+                $my_order_list = $my_order_list->whereIn('main_combo_service_bought.created_by',$user_arr);
+            }
+
+        if($request->start_date != "" && $request->end_date != ""){
+            $start_date = Carbon::parse($request->start_date)->subDay(1)->format('Y-m-d');
+            $end_date = Carbon::parse($request->end_date)->addDay(1)->format('Y-m-d');
+            $my_order_list = $my_order_list->whereBetween('main_combo_service_bought.created_at',[$start_date,$end_date]);
+        }
+        //GET 2 WEEKS AGO
+        $date_before = today()->subWeeks(2);
+        $my_order_list = $my_order_list->where('main_combo_service_bought.csb_last_call','<=',$date_before)
+                        ->where(function($query){
+                            $query->where('csb_status_call',null)
+                            ->orWhere('csb_status_call','!=',3);
+                        });
+
+        $my_order_list = $my_order_list->select('main_combo_service_bought.*','main_customer.customer_lastname','main_customer.customer_firstname','main_user.user_nickname')
+            ->get();
+
+        foreach ($my_order_list as $key => $order) {
+
+            $services = explode(";",$order->csb_combo_service_id);
+
+            $service_list = MainComboService::whereIn('id',$services)->select('cs_name')->get();
+            $service_name = "";
+            foreach ($service_list as $service) {
+                $service_name .= "-".$service->cs_name."<br>";
+            }
+
+            if(!isset($request->my_order))
+                $order_date = "<span>".format_datetime($order->created_at)."<br>by ".$order->user_nickname."</span>";
+            else
+                $order_date = "<span>".format_datetime($order->created_at)."</span>";
+
+            //GET CUSTOMER INFORMATION
+            $customer = "<span>Customer: <b>".$order->customer_firstname. " " .$order->customer_lastname."</b></span><br><span>Business Phone: <b>".$order->getPlace->place_phone."</b></span><br><span>Email: <b>".$order->getPlace->place_email."</b></span>";
+
+            $my_order_arr[] = [
+                'id' => $order->id,
+                'order_date' => $order_date,
+                'customer' => $customer,
+                'service' => $service_name,
+                'subtotal' => $order->csb_amount,
+                'discount' => $order->csb_amount_deal,
+                'total_charge' => $order->csb_charge,
+                'status_calling' => $order->csb_status_call,
+                'user_call' => $order->csb_user_call
+            ];
+        }
+        return  DataTables::of($my_order_arr)
+            ->editColumn('total_charge',function($row){
+                return '<span class="text-danger"><b>'.$row['total_charge'].'</b></span>';
+            })
+            ->addColumn('action',function ($row){
+                if($row['status_calling'] == 1 || $row['status_calling'] == null)
+                    return '<a class="btn btn-sm call-btn text-danger" id="'.$row['id'].'" title="Payment Order"><i class="fas fa-phone"></i></a>';
+                elseif($row['status_calling'] == 2){
+                    if($row['user_call'] == Auth::user()->user_id)
+                        return '<a class="btn btn-sm check-btn text-danger" id="'.$row['id'].'" title="Payment Order"><i class="fas fa-check"></i></a>';
+                    else
+                        return '<img src="'.asset('images/calling.png').'" style="width:50px;height:50px" alt="">';
+                }
+            })
+            ->rawColumns(['service','information','customer','order_date','action','total_charge'])
+            ->make(true);
+    }
+    public function orderCalling(Request $request){
+        $order_id = $request->order_id;
+
+        if(!$order_id)
+            return response(['status'=>'error','message'=>'Failed...!']);
+        $update_order = MainComboServiceBought::find($order_id)->update(['csb_status_call'=>2,'csb_user_call'=>Auth::user()->user_id]); //Calling
+
+        if(!isset($update_order))
+            return response(['status'=>'error','message'=>'Failed!']);
+
+        return response(['status'=>'success','message'=>'Successfully!']);
+    }
+    public function finishCall(Request $request){
+        $order_id = $request->order_id;
+        if(!$order_id)
+            return response(['status'=>'error','message'=>'Failed!']);
+
+        $update_order = MainComboServiceBought::find($order_id)
+        ->update([
+            'csb_status_call'=>3,
+            'csb_user_call'=>Auth::user()->user_id,
+            'csb_last_call' => now()
+        ]);
+
+        if(!isset($update_order))
+            return response(['status'=>'error','message'=>'Failed!']);
+
+        return response(['status'=>'success','message'=>'Successfully!']); 
     }
 }
 

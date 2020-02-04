@@ -9,7 +9,14 @@ use App\Models\MainCustomer;
 use App\Models\MainCustomerTemplate;
 use App\Models\MainUserCustomerPlace;
 use App\Models\MainTeamType;
+use App\Models\PosPlace;
 use DB;
+use App\Models\MainTeam;
+use Auth;
+
+use Illuminate\Support\Facades\Schema;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Database\Migrations\Migration;
 
 class ChangeDataController extends Controller
 {
@@ -142,11 +149,11 @@ class ChangeDataController extends Controller
 
     		foreach ($customers as $key => $customer) {
 
-    			if(!is_null($customer->assigned_by))
+    			if(!is_null($customer->seller_id) && $customer->status_id == 2)
 
     				$customer_array[] = [
-    					'user_id' => $customer->assigned_by,
-						'team_id' => 1,
+    					'user_id' => $customer->seller_id,
+						'team_id' => 2,
 						'customer_id' => $customer->id,
 						'created_at' => $customer->created_date
     				];
@@ -186,5 +193,179 @@ class ChangeDataController extends Controller
     	$customer_list_status = json_encode($customer_array);
 
     	DB::table('main_team_type')->update(['team_customer_status' => $customer_list_status]);
+    }
+    public function addCoumn(){
+        Schema::table('main_customer_template', function($table) {
+            $table->integer('test_column');
+        });
+    }
+    public function removeCoumn(){
+        if (Schema::hasColumn('main_customer_template', 'test_column'))
+        {
+            Schema::table('main_customer_template', function (Blueprint $table) {
+                $table->dropColumn('test_column');
+            });
+        }else{
+            Schema::table('main_customer_template', function($table) {
+                $table->integer('test_column');
+            });
+        }
+    }
+    public function addSlug(){
+        $team_types = DB::table('main_team_type')->get();
+        // $arr = [];
+        foreach ($team_types as $key => $value) {
+
+            $slug = str_replace('-', '_', str_slug($value->team_type_name));
+            DB::table('main_team_type')->where('id',$value->id)->update(['slug'=>$slug]);
+
+            if (Schema::hasColumn('main_customer_template', $slug))
+            {
+                Schema::table('main_customer_template', function (Blueprint $table) use ($slug)  {
+                    $table->dropColumn($slug);
+                });
+            }else{
+                Schema::table('main_customer_template', function($table) use ($slug)  {
+                    $table->integer($slug);
+                });
+            }
+        }
+        // return $arr;
+    }
+    public function addCustomerStatus(){
+        //GET USER'S TEAM TYPE
+        $team_slug = MainTeam::find(Auth::user()->user_team)->getTeamType->slug;
+
+        $old_customers = DB::table('customers')->get();
+
+        foreach ($old_customers->chunk(1000) as $key => $customers) {
+            
+            // $id_arr = [];
+            // $status_arr = [];
+            // $status_customer = 0;
+
+            foreach ($customers as $key => $customer) {
+                $id_arr[] = $customer->id;
+
+                switch ($customer->status_id) {
+                        case 2:
+                            $status_customer = 4;
+                            break;
+                        case 3:
+                            $status_customer = 1;
+                            break;
+                        case 1:
+                            $status_customer = 3;
+                            break;
+                        default:
+                            $status_customer = 2;
+                            break;
+                    }
+                    DB::table('main_customer_template')->where('id',$customer->id)->update([$team_slug=>$status_customer]);
+            }
+        }
+    }
+    public function addCustomerToUser(){
+
+        /*$customer_list = DB::table('customers')->get();
+        $place_list = DB::table('pos_place')->select('id','place_phone')->get();
+        $place_list = collect($place_list);
+
+        foreach ($customer_list->chunk(1000) as $key => $customers) {
+
+            foreach ($customers as $key => $customer) {
+
+                if($customer->status_id == 2){
+
+                }
+            }
+        }*/
+        $user_places = MainUserCustomerPlace::with('getCustomer')->get();
+
+        foreach ($user_places as $key => $user_place) {
+
+            $customer_phone = $user_place->getCustomer->ct_business_phone;
+
+            $place_info = PosPlace::where('place_phone',$customer_phone)->first();
+            // return $place_info;
+
+            if(isset($place_info)){
+                MainUserCustomerPlace::where('customer_id',$user_place->customer_id)->update(['place_id'=>$place_info->place_id]);
+            }
+        }
+        // return $customer_phone;
+    }
+    public function replaceCharacterSpace(){
+        $places = DB::table('pos_place')->select('place_id','place_phone')->get();
+        foreach ($places as $key => $place) {
+            if(!is_null($place->place_phone)){
+                $new_phone = str_replace('(','',str_replace(')','',str_replace(' ','',str_replace('-','',$place->place_phone))));
+                // if($new_phone != 'AcrylicFullSet' && $new_phone != "Children'sBasic" && $new_phone != 'CLASSICMANICURE' && $new_phone != 'Acrylicfullset'){
+                    $new_phone_arr[] = $new_phone;
+                //     DB::table('pos_place')->where('place_id',$place->place_id)->update(['place_phone'=>$new_phone]);
+                // }
+                // else
+                //     DB::table('pos_place')->where('place_id',$place->place_id)->update(['place_phone'=>'']);
+            }
+        }
+        return $new_phone_arr;
+    }
+    public function tranferCustomerId(){
+        $customer_list = DB::table('main_customer_template')->get();
+
+        foreach ($customer_list->chunk(10000) as $key => $customers) {
+            foreach ($customers as $key => $customer) {
+                MainCustomerTemplate::where('id',$customer->id)->update(['old_customer_id'=>$customer->id]);
+            }
+            sleep(2);
+        }
+    }
+    public function checkCustomer(){
+
+        $old_customer = DB::table('main_customer')->get();
+        $old_cutomer = collect($old_customer);
+        $new_customer = DB::table('main_customer_new')->get();
+        $new_customer = collect($new_customer);
+
+        $customer_arr = [];
+
+        foreach ($new_customer as $key => $customer) {
+            $check_phone = $old_customer->where('customer_phone',$customer->customer_phone)->count();
+
+            if( $check_phone > 0 )
+                $customer_arr[] = [
+                    'id' => $customer->id,
+                    'customer_phone' => $customer->customer_phone
+                ];
+
+        }
+        return $customer_arr;
+
+
+    }
+    public function mergeCustomer(){
+        $max_customer_id = DB::table('main_customer_template')->max('id'); //915 - main__customer //24806 - main_customer_template
+
+        $new_customer = DB::table('main_customer_new')->get();
+        $customer_arr = [];
+
+       /* foreach ($new_customer as $key => $customer) {
+            $customer_arr[] = [
+                'customer_id' => $customer->customer->id,
+                'customer_lastname' => $customer->customer_lastname,
+                'customer_firstname' => $customer->customer_firstname,
+                'customer_email' => $customer->customer_email,
+                'customer_phone' => $customer->customer_phone,
+                'customer_address' => $customer->customer_address,
+                'customer_city' => $customer->customer_city,
+                'customer_zip' => $customer->,
+                'customer_state' => $customer->,
+                'customer_agent' => $customer->,
+                'customer_type' => $customer->,
+                'customer_status' => $customer->,
+                'customer_customer_template_id' => $customer->,
+                'created_at' => $customer->,
+            ];
+        }*/
     }
 }

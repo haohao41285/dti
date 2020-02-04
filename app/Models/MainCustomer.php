@@ -38,6 +38,7 @@ class MainCustomer extends Model
         'customer_status',
         'customer_customer_template_id',
         'created_at',
+        'customer_birthday'
     ];
 
     protected $guarded = [];

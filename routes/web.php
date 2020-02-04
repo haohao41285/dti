@@ -47,6 +47,7 @@ Route::group(['middleware' => ['auth']], function () {
          Route::post('import-customer', 'CustomerController@importCustomer')->name('import-customer');
          Route::get('export-customer', 'CustomerController@exportCustomer')->name('export-customer');
          Route::get('export-my-customer', 'CustomerController@exportMyCustomer')->name('export-my-customer');
+        Route::post('serviced-customer-datatable', 'CustomerController@serviceCustomerDatatable')->name('serviceCustomerDatatable');
 
          Route::post('save-my-customer', 'CustomerController@saveMyCustomer')->name('save-my-customer');
          Route::get('customer-detail/{id?}', 'CustomerController@customerDetail')->where(['id'=>'[0-9]+'])->name('customer-detail');
@@ -57,7 +58,7 @@ Route::group(['middleware' => ['auth']], function () {
          Route::post('add-customer-note', 'CustomerController@addCustomerNote')->name('add-customer-note');
          Route::post('move-customers', 'CustomerController@moveCustomers')->name('move-customers');
 
-         Route::get('move-customer-all', 'CustomerController@moveCustomerAll')->name('move-customer-all');
+         Route::get('move-customer-all', 'CustomerController@moveCustomerAll');
          Route::get('get-user-team', 'CustomerController@getUserTeam')->name('get-user-team');
          Route::get('get-customer-1', 'CustomerController@getCustomer1')->name('get_customer_1');
          Route::get('get-customer-2', 'CustomerController@getCustomer2')->name('get_customer_2');
@@ -290,6 +291,7 @@ Route::group(['middleware' => ['auth']], function () {
         Route::get('get-service-combo', 'SetupServiceController@getServiceCombo')->name('get-service-combo');
         Route::post('save-service-combo', 'SetupServiceController@saveServiceCombo')->name('save-service-combo');
         Route::get('get-cs', 'SetupServiceController@getCs')->name('get-cs');
+        Route::post('delete-cs', 'SetupServiceController@deleteService')->name('delete_service');
 
         Route::get('team-type-datatable', 'SetupTeamController@teamTypeDatatable')->name('team-type-datatable');
         Route::get('change-status-team-type', 'SetupTeamController@changeStatusTeamtype')->name('change-status-team-type');
@@ -364,6 +366,7 @@ Route::group(['middleware' => ['auth']], function () {
         Route::get('role-datatable','UserController@roleDatatable')->name('role-datatable');
         Route::get('change-status-role','UserController@changeStatusRole')->name('change-status-role');
         Route::get('add-role','UserController@addRole')->name('add-role');
+        Route::post('delete-role','UserController@deleteRole')->name('delete-role');
 
         Route::get('user-add/{id?}','UserController@userAdd')->where(['id'=>'[0-9]+'])->name('user-add');
         Route::post('user-save','UserController@userSave')->name('user-save');
@@ -387,11 +390,11 @@ Route::group(['middleware' => ['auth']], function () {
         Route::post('authorize','OrdersController@authorizeCreditCard')->name('authorize');
         Route::get('get-customer-infor', 'OrdersController@getCustomerInfor')->name('get-customer-infor');
         Route::get('my-order-datatable', 'OrdersController@myOrderDatatable')->name('my-order-datatable');
-        Route::get('seller-orderpost-comment-datatable', 'OrdersController@sellerOrderDatatable')->name('seller-order-datatable');
+        Route::get('seller-order-datatable', 'OrdersController@sellerOrderDatatable')->name('seller-order-datatable');
         Route::get('view/{id?}', 'OrdersController@orderView')->where(['id'=>'[0-9]+'])->name('order-view');
         Route::get('order-tracking', 'OrdersController@orderTracking')->name('order-tracking');
         Route::get('order-service', 'OrdersController@orderService')->name('order-service');
-        Route::post('submit-info-taspost-commentk', 'OrdersController@submitInfoTask')->name('submit-info-task');
+        Route::post('submit-info-task', 'OrdersController@submitInfoTask')->name('submit-info-task');
         Route::post('change-status-order', 'OrdersController@changeStatusOrder')->name('change-status-order');
         Route::post('resend-invoice', 'OrdersController@resendInvoice')->name('resend-invoice');
         Route::get('dowload-invoice/{id}', 'OrdersController@dowloadInvoice')->name('dowload-invoice');
@@ -402,6 +405,9 @@ Route::group(['middleware' => ['auth']], function () {
         Route::get('payment-orders/{id}','OrdersController@paymentOrder')->name('payment-order');
         Route::post('add-order','OrdersController@addOrder')->name('post-add-order');
         Route::get('payment-order-datatable', 'OrdersController@paymentOrderDatatable')->name('payment-order-datatable');
+        Route::get('delivered-order-datatable', 'OrdersController@deliveredOrderDatatable')->name('delivered-order-datatable');
+        Route::post('order-calling','OrdersController@orderCalling')->name('order.calling');
+        Route::get('finish-call','OrdersController@finishCall')->name('order.finish_call');
 
     });
     Route::group(['prefix' => 'task','namespace' => 'Task'], function() {
@@ -419,6 +425,7 @@ Route::group(['middleware' => ['auth']], function () {
         Route::post('send-mail-notification', 'TaskControall-task-datatableller@sendMailNotification')->name('send-mail-notification');
         Route::get('theme-mail', 'TaskController@themeMail')->name('theme-mail');
         Route::get('get-subtask', 'TaskController@getSubTask')->name('get-subtask');
+        Route::get('receiver-task-datatable', 'TaskController@receiverTaskDatatable')->name('receiver-task-datatable');
 
         Route::get('all-task', 'TaskController@allTask')->name('all-task');
         Route::get('all-task-datatable', 'TaskController@allTaskDatatable')->name('all-task-datatable');
@@ -487,4 +494,16 @@ Route::get('transfer-customer','ChangeDataController@transferCustomer');
 Route::get('transfer-customer-status','ChangeDataController@transferCustomerStatus');
 Route::get('transfer-customer-team-type','ChangeDataController@transferCustomerTeamType');
 
-//
+
+/*Route::get('add-column','ChangeDataController@addCoumn');
+Route::get('remove-column','ChangeDataController@removeCoumn');
+
+Route::get('add-slug','ChangeDataController@addSlug');*/
+Route::get('add-customer-status','ChangeDataController@addCustomerStatus');
+Route::get('add-customer-to-user','ChangeDataController@addCustomerToUser');
+Route::get('replace-character-space','ChangeDataController@replaceCharacterSpace');
+Route::get('transfer-customer-id','ChangeDataController@tranferCustomerId');
+Route::get('check-customer','ChangeDataController@checkCustomer');
+Route::get('merge-customer','ChangeDataController@mergeCustomer');
+
+

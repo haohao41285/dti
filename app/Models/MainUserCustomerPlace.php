@@ -8,6 +8,7 @@ class MainUserCustomerPlace extends Model
 {
     protected $table = 'main_user_customer_places';
     protected $fillable = [
+        'id',
         'user_id',
         'team_id',
         'customer_id',
