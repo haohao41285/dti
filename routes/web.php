@@ -95,6 +95,8 @@ Route::group(['middleware' => ['auth']], function () {
             Route::get('get-news-by-id', 'NewsController@getNewsbyId')->name('getNewsbyId');
         });
 
+        Route::get('customer-datatable', 'SmsController@dataTableCustomer')->name('marketing.customer.datatable');
+
     });
 
     Route::group(['prefix'=>'statistic', 'namespace'=>'Statistics'],function(){

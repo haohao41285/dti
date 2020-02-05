@@ -57,6 +57,7 @@ class PlaceController extends Controller
         $place = PosPlace::getPlaceIdByLicense($request->get_license);
 
         $place->place_theme_code = $request->get_code;
+        $place->place_theme_property = $request->id_properties ?? NULL;
         $place->save();
 
         $placeId = $place->place_id;
@@ -72,7 +73,7 @@ class PlaceController extends Controller
 
         $user_id = Auth::user()->user_id;
 
-        $places = PosPlace::select('place_website','place_status','place_id','place_name','place_address','place_email','place_phone','place_ip_license','created_at');
+        $places = PosPlace::select('place_website','place_status','place_id','place_name','place_address','place_email','place_phone','place_ip_license','created_at','place_theme_code','place_theme_property');
         if(Gate::allows('permission','place-admin')){}
         elseif(Gate::allows('permission','place-staff')){
             $place_id_arr = MainTask::where(function($query) use ($user_id) {
@@ -93,7 +94,7 @@ class PlaceController extends Controller
         ->editColumn('action',function($places){
             return '<a class="btn btn-sm btn-secondary view" data-id="'.$places->place_id.'" href="#" data-toggle="tooltip" title="View users"><i class="fas fa-user-cog"></i></a>
             <a class="btn btn-sm btn-secondary detail" data-id="'.$places->place_id.'" href="#" data-toggle="tooltip" title="Detail"><i class="fas fa-eye"></i></a>
-            <a class="btn btn-sm btn-secondary setting" data-license="'.$places->place_ip_license.'" href="#" data-toggle="tooltip" title="Setting place theme"><i class="fas fa-cogs"></i></a>
+            <a class="btn btn-sm btn-secondary setting" data-theme-code="'.$places->place_theme_code.'" data-theme-property="'.$places->place_theme_property.'" data-id="'.$places->place_id.'" data-license="'.$places->place_ip_license.'" href="#" data-toggle="tooltip" title="Setting place theme"><i class="fas fa-cogs"></i></a>
             <a class="btn btn-sm btn-secondary btn-custom-properties" data-id="'.$places->place_id.'" href="#" data-toggle="tooltip" title="Custom properties"><i class="fas fa-project-diagram"></i></a>
             <a class="btn btn-sm btn-secondary btn-auto-coupon" data-id="'.$places->place_id.'" href="#" data-toggle="tooltip" title="Auto coupon"><i class="fas fa-images"></i></a>
             <a class="btn btn-sm btn-secondary extension-service" place_id="'.$places->place_id.'" href="javascript:void(0)" title="Extension for Place"><i class="fas fa-shopping-cart"></i></a>

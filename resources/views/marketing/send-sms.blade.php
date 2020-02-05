@@ -2,7 +2,7 @@
 @section('title','Send SMS')
 @push('styles')
 {{--
-<link href="https://unpkg.com/gijgo@1.9.13/css/gijgo.min.css" rel="stylesheet" type="text/css" /> --}}
+<link href="https://gyrocode.github.io/jquery-datatables-checkboxes/1.2.11/css/dataTables.checkboxes.css" rel="stylesheet" type="text/css" /> --}}
 @endpush
 @section('content')
 <div class="row">
@@ -49,11 +49,18 @@
                                     <input id="timepicker" required name="sms_send_event_start_time" value="" />
                                 </div>
                             </div>
+                            <div class="form-group row">
+                                <label class="col-lg-2 col-form-label form-control-label">List Phone</label>
+                                <div class="col-lg-10">
+                                    <textarea class="form-control" readonly="readonly" id="list_phone" name="list_phone" rows="4" cols="50"></textarea>
+                                </div>
+                            </div>
                         </div>
                         <div class="col-md-6">
                             <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
                                 <thead>
                                     <tr>
+                                        <th></th>
                                         <th>ID</th>
                                         <th>Phone</th>
                                         <th>Name</th>
@@ -95,25 +102,53 @@ $(document).ready(function() {
     var table = $('#dataTable').DataTable({
         // dom: "lBfrtip",
         processing: true,
-        serverSide: true,
+        // serverSide: true,
         buttons: [
 
         ],
         ajax: {
-            url: "{{ route('get-my-customer') }}",
+            url: "{{ route('marketing.customer.datatable') }}",
             data: function(d) {}
+        },
+        'columnDefs': [{
+            'targets': 0,
+            'checkboxes': {
+                'selectRow': true
+            }
+        }],
+        'select': {
+            'style': 'multi'
         },
         columns: [
 
-            { data: 'customer_id', name: 'customer_id', class: 'text-center' },
-            { data: 'customer_phone', name: 'customer_phone', class: 'text-center' },
-            { data: 'customer_fullname', name: 'customer_fullname' },
+            { data: 'ct_cell_phone', name: 'ct_cell_phone', class: 'text-center phone' },
+            { data: 'id', name: 'id', class: 'text-center' },
+            { data: 'ct_cell_phone', name: 'ct_cell_phone', class: 'text-center phone' },
+            { data: 'ct_fullname', name: 'ct_fullname' },
             // { data: 'updated_at', name: 'updated_at', class: 'text-center' },
             // { data: 'action' , name:'action' ,orderable: false, searcheble: false ,class:'text-center'}
         ],
     });
-});
 
+    $(document).on('click', '#dataTable tbody tr', function(e) {
+        var check = table.column(0).checkboxes.selected();
+        var phone = '';
+        $.each(check, function(index, value) {
+            phone += value + ',';
+        });
+        $("#list_phone").val(phone);
+    });
+
+    $(document).change('input[type="checkbox"]', function(e) {
+        var check = table.column(0).checkboxes.selected();
+        var phone = '';
+        $.each(check, function(index, value) {
+            phone += value + ',';
+        });
+        $("#list_phone").val(phone);
+    });
+
+});
 </script>
 {{-- <script src="http://code.jquery.com/jquery-1.11.3.min.js"></script> --}}
 {{-- <script src="https://unpkg.com/gijgo@1.9.13/js/gijgo.min.js" type="text/javascript"></script> --}}
@@ -148,6 +183,5 @@ $("#sms_send_event_template_id").change(function() {
         });
 
 });
-
 </script>
 @endpush

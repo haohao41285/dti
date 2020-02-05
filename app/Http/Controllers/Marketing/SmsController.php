@@ -6,6 +6,8 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Models\MainSmsContentTemplate;
 use App\Models\MainSmsSend;
+use App\Models\MainUserCustomerPlace;
+use App\Models\MainCustomerTemplate;
 use GuzzleHttp\Client;
 use Carbon\Carbon;
 use DataTables;
@@ -54,7 +56,7 @@ class SmsController extends Controller
             'sms_send_event_template_id' => 'required',
             'sms_send_event_start_day' => 'required',
             'sms_send_event_start_time' => 'required',
-            'upload_list_receiver' => 'required',
+            'list_phone' => 'required',
         ];
         $messages = [
             'sms_send_event_title.required' => "Please enter Title",
@@ -74,7 +76,7 @@ class SmsController extends Controller
                 return back()->with("error","Template SMS Empty!");
             }
         	$sms_total = 0;
-
+            // dd($request->all());
 
 	        if($request->hasFile('upload_list_receiver')){
 
@@ -119,22 +121,26 @@ class SmsController extends Controller
 	            $upload_list_receiver = "";
 	            $sms_total = 0;
 	        }
-        	$arr = [
-        		'sms_send_event_title' => $request->sms_send_event_title,
-				'sms_send_event_template_id' => $request->sms_send_event_template_id,
-				'sms_send_event_start_day' => Carbon::parse($request->sms_send_event_start_day)->format('Y-m-d'),
-				'sms_send_event_start_time' => $request->sms_send_event_start_time,
-				'sms_send_event_status' => 1,
-				'sms_total'=>$sms_total,
-				'upload_list_receiver' => $upload_list_receiver,
-				'created_by' => Auth::user()->user_id,
-				'updated_by' => Auth::user()->user_id,
-				'sms_send_event_enable' => 1
-        	];
+        	
         	//SmsSend::create($arr);
         	$date = now()->format('Y_m_d_His');
 
             $file_name = "receiver_sms_list_".$date;
+            // dd($arr);
+            // $receiver_total = [];
+            $listId = explode(',',$request->list_phone);
+            $listId = array_values(array_filter($listId));
+            // dd($listId);
+            $receiver_total = MainCustomerTemplate::select(
+                'id',
+                'ct_fullname as name',
+                'ct_cell_phone as phone',
+                'ct_email'
+            )
+            ->whereIn('ct_cell_phone',$listId)
+            ->get();
+            // echo $customer->phone; die;
+
 
             \Excel::create($file_name,function($excel) use ($receiver_total,$request){
 
@@ -149,23 +155,36 @@ class SmsController extends Controller
 
                     if (!empty($receiver_total)) {
                         foreach ($receiver_total as $key => $value) {
-                            $i= $key+2;
+                            $i= $key+2; 
                             if($value['phone'] != ""){
-                                $sheet->cell('A'.$i, $value['phone']);
-                                $sheet->cell('B'.$i, $value['name']);
-                                $sheet->cell('C'.$i, Carbon::parse($value['birthday'])->format('d/m/Y'));
-                                $sheet->cell('D'.$i, $value['code']);
-                                $sheet->cell('E'.$i, $value['time1']);
-                                $sheet->cell('F'.$i, $value['time2']);
+                                $sheet->cell('A'.$i, $value['phone'] ?? NULL);
+                                $sheet->cell('B'.$i, $value['name'] ?? NULL);
+                                $sheet->cell('C'.$i, Carbon::parse($value['birthday'])->format('d/m/Y') ?? NULL);
+                                $sheet->cell('D'.$i, $value['code'] ?? NULL);
+                                $sheet->cell('E'.$i, $value['time1'] ?? NULL);
+                                $sheet->cell('F'.$i, $value['time2'] ?? NULL);
                             }
                         }
                     }
                 });
             })->store('xlsx', false, true);
-
+            // dd('dd');
             $file_url = storage_path('exports/'.$file_name.".xlsx");
 
             $input = $request->all();
+
+            $arr = [
+                'sms_send_event_title' => $request->sms_send_event_title,
+                'sms_send_event_template_id' => $request->sms_send_event_template_id,
+                'sms_send_event_start_day' => Carbon::parse($request->sms_send_event_start_day)->format('Y-m-d'),
+                'sms_send_event_start_time' => $request->sms_send_event_start_time,
+                'sms_send_event_status' => 1,
+                'sms_total'=>$sms_total,
+                'upload_list_receiver' => $file_url,
+                'created_by' => Auth::user()->user_id,
+                'updated_by' => Auth::user()->user_id,
+                'sms_send_event_enable' => 1
+            ];
 
             $sms_content_template = MainSmsContentTemplate::where('id',$request->sms_send_event_template_id)
                                                       ->first()
@@ -176,7 +195,7 @@ class SmsController extends Controller
             $input['id'] = MainSmsSend::max('id')+1;
 
         	$result = $this->PushApiSMS($input,$file_url);
-
+            // dd($file_url);
         	$result = json_decode($result,true);
 
         	if($result['status'] == 1){
@@ -402,5 +421,20 @@ class SmsController extends Controller
             return response(['status'=>'error','message'=>'Error!']);
         else
             return  response(['status'=>'success','calculate'=>$calculate]);
+    }
+
+    public function dataTableCustomer(){
+        $data = MainUserCustomerPlace::select(
+           'main_customer_template.id',
+           'ct_fullname',
+           'ct_cell_phone'
+        )
+        ->where('user_id',Auth::user()->user_id)
+        ->join('main_customer_template','customer_id','main_customer_template.id')
+        ->distinct('main_customer_template.id')
+        ->get();
+
+        return Datatables::of($data)         
+        ->make(true);
     }
 }
