@@ -18,6 +18,7 @@ class MainCustomerTemplate extends Model
     	'ct_email',
     	'ct_address',
     	'ct_website',
+        'ct_birthdate',
     	'ct_note',
     	'created_by',
     	'updated_by',

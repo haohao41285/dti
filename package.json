@@ -53,6 +53,7 @@
         "gijgo": "^1.9.13",
         "gulp": "^4.0.2",
         "icheck": "^1.0.2",
+        "jquery-datatables-checkboxes": "^1.2.11",
         "knockout": "^3.5.1",
         "node-sass": "^4.13.1",
         "popper": "^1.0.1",

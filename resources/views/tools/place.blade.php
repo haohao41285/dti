@@ -161,7 +161,6 @@
                                             <label class="col-sm-4">Price floor($)</label>
                                             {{-- <label class="col-sm-8" id="price-floor">Price floor</label> --}}
                                             <input type="text" onkeypress="return isNumberKey(event)" name="price_floor" class="col-sm-8 form-control-sm form-control" id="price-floor">
-
                                         </div>
                                         <div class="row col-12 row-detail">
                                             <label class="col-sm-4">Latlng</label>
@@ -830,11 +829,12 @@ function listThemePropertiesByThemeId(theme_id) {
         dataType: "json",
         data: { theme_id },
         success: function(data) {
+
             if (data.status == 1) {
                 var html = '';
                 for (var i = 0; i < data.data.length; i++) {
-                    html += '<tr properties-id=' + data.data[i].theme_properties_id + '>' +
-                        '<td>' + data.data[i].theme_properties_id + '</td>' +
+                    html += '<tr class="properties-id" properties-id=' + data.data[i].theme_properties_id + '>' +
+                        '<td >' + data.data[i].theme_properties_id + '</td>' +
                         '<td>' + data.data[i].theme_properties_name + '</td>' +
                         '<td><img style="height: 5rem;" src="' + "{{env('URL_FILE_VIEW')}}" + data.data[i].theme_properties_image + '" /></td>' +
                         '</tr>';
@@ -898,7 +898,9 @@ $(document).ready(function() {
         processing: true,
         serverSide: true,
         ajax: { url: "{{ route('getPlacesDatatable') }}" },
-        order: [[0,'desc']],
+        order: [
+            [0, 'desc']
+        ],
         columns: [
 
             { data: 'place_id', name: 'place_id', class: 'text-center' },
@@ -906,15 +908,15 @@ $(document).ready(function() {
             { data: 'place_phone', name: 'place_phone', class: 'text-center' },
             { data: 'place_website', name: 'place_website', },
             { data: 'place_ip_license', name: 'place_ip_license' },
-            { data: 'place_status', name: 'place_status', class:'text-center' },
+            { data: 'place_status', name: 'place_status', class: 'text-center' },
             { data: 'action', name: 'action', orderable: false, searchable: false, class: 'text-center' }
         ],
         buttons: [
 
         ],
-        fnDrawCallback:function (oSettings) {
+        fnDrawCallback: function(oSettings) {
             var elems = Array.prototype.slice.call(document.querySelectorAll('.js-switch'));
-            elems.forEach(function (html) {
+            elems.forEach(function(html) {
                 var switchery = new Switchery(html, {
                     color: '#0874e8',
 
@@ -1216,9 +1218,50 @@ $(document).ready(function() {
     $(document).on('click', '.setting', function(e) {
         e.preventDefault();
         clear();
+
         $("#setting").modal("show");
+        $("#themeProperties tbody").html('');
+        placeId = $(this).attr('data-id');
         license = $(this).attr("data-license");
+        var themeCode = $(this).attr("data-theme-code");
+        var themeProperty = $(this).attr("data-theme-property");
         $("input#get-license").val(license);
+
+        if (themeCode) {
+            // alert(themeCode);
+            //search
+            themesTable.search(themeCode).draw();
+            //click
+            setTimeout(function() {
+                var themesDataTable = $("#themes-dataTable").find(".code");
+                $.each(themesDataTable, function(index, value) {
+                    if ($(this).text() == themeCode) {
+                        $(this).trigger('click');
+                    }
+                })
+            }, 1000);
+
+            if (themeProperty) {
+                setTimeout(function() {
+                    var themeProperties = $("#themeProperties").find(".properties-id");
+                    console.log(themeProperties);
+                    $.each(themeProperties, function(index, value) {
+                        console.log('dd');
+                        console.log($(this).attr('properties-id'));
+                        if ($(this).attr('properties-id') == themeProperty) {
+                            $(this).trigger('click');
+                        }
+                    })
+                }, 1200);
+            }
+
+        } else {
+            themesTable.search('').draw();
+        }
+
+
+
+
     });
     //Create New Website
     $("#clone-update-form").on('submit', function(e) {
@@ -1244,6 +1287,8 @@ $(document).ready(function() {
             success: function(data) {
                 if (data.status == 1) {
                     toastr.success(data.msg);
+                    placeTable.draw();
+                    $("#setting").modal("hide");
                 } else {
                     toastr.error(data.msg);
                 }
@@ -1260,6 +1305,7 @@ $(document).ready(function() {
         themeId = $(this).find("td.id").text();
         var code = $(this).find("td.code").text();
         $("input#get-code").val(code);
+
         listThemePropertiesByThemeId(themeId);
 
         $("input[name='id_properties']").val('');
@@ -1640,9 +1686,9 @@ $(document).ready(function() {
     });
 
 
-   /* $('#cateservices-multiselect').multiselect({
-        buttonWidth: '100%',
-    });*/
+    /* $('#cateservices-multiselect').multiselect({
+         buttonWidth: '100%',
+     });*/
     $(document).on('click', '.switchery-place', function() {
 
         let place_id = $(this).siblings('input').attr('place_id');
@@ -1755,6 +1801,5 @@ $(document).ready(function() {
     });
 
 });
-
 </script>
 @endpush
