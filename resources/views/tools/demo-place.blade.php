@@ -180,7 +180,7 @@
                                     <div class="input-group-prepend">
                                         <span class="input-group-text">Email</span>
                                     </div>
-                                    <input type="email" class="form-control customer_phone" name="customer_email">
+                                    <input type="email" class="form-control" name="customer_email">
                                 </div>
                                 <div class="input-group mb-3 input-group-sm col-md-6">
                                     <div class="input-group-prepend">
