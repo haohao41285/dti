@@ -17,6 +17,7 @@ use Yajra\DataTables\DataTables;
 use Auth;
 use Carbon\Carbon;
 use Gate,DB;
+use App\Models\MainTeamType;
 
 class ReportController extends Controller
 {
@@ -258,16 +259,27 @@ class ReportController extends Controller
         if(Gate::denies('permission','seller-report'))
             return doNotPermission;
 
-        if(Gate::allows('permission','seller-report-admin'))
-            $data['sellers'] = MainUser::all();
+
+        if(Gate::allows('permission','seller-report-admin')){
+            $team_type_id = MainTeamType::where('team_type_name','Telemarketing')->first()->id;
+            $team_id = MainTeam::select('id')->where('team_type',$team_type_id)->get()->toArray();
+            $team_id_array = array_values($team_id);
+            $data['sellers'] = MainUser::whereIn('user_team',$team_id_array)->get();
+        }
         else
             $data['sellers'] = MainUser::where('user_team',Auth::user()->user_team)->get();
+        
         return view('reports.sellers',$data);
     }
     public function getSellerList($request){
 
-        if(Gate::allows('permission','seller-report-admin'))
-            $user_list = MainUser::select('*');
+        if(Gate::allows('permission','seller-report-admin')){
+
+            $team_type_id = MainTeamType::where('team_type_name','Telemarketing')->first()->id;
+            $team_id = MainTeam::select('id')->where('team_type',$team_type_id)->get()->toArray();
+            $team_id_array = array_values($team_id);
+            $user_list = MainUser::whereIn('user_team',$team_id_array);
+        }
         else
             $user_list = MainUser::where('user_team',Auth::user()->user_team);
 
@@ -514,7 +526,10 @@ class ReportController extends Controller
         if(Gate::denies('permission','review-report'))
             return doNotPermission();
 
-        $data['user_list'] = MainUser::get();
+        $team_type_id = MainTeamType::where('team_type_name','Review')->first()->id;
+        $team_id = MainTeam::select('id')->where('team_type',$team_type_id)->get()->toArray();
+        $team_id_array = array_values($team_id);
+        $data['user_list'] = MainUser::whereIn('user_team',$team_id_array)->get();
         return view('reports.reviews',$data );
     }
     public function reviewsDataTable(Request $request){
@@ -530,7 +545,10 @@ class ReportController extends Controller
         if(isset($request->user_id))
             $user_list = MainUser::where('user_id',$request->user_id)->get();
         else{
-            $user_list = MainUser::active()->get();
+            $team_type_id = MainTeamType::where('team_type_name','Review')->first()->id;
+            $team_id = MainTeam::select('id')->where('team_type',$team_type_id)->get()->toArray();
+            $team_id_array = array_values($team_id);
+            $user_list = MainUser::whereIn('user_team',$team_id_array)->get();
         }
         //GET COMBO SERVICE
         $combo_service_list = MainComboService::select('id')->where('cs_form_type',1)->orWhere('cs_form_type',3)->get()->toArray();

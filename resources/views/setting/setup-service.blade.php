@@ -21,6 +21,7 @@ Combo/Service List
       <th class="text-center">Type</th>
       <th class="text-left">Price</th>
       <th>Expiry</th>
+      <th>Work Term</th>
       <th>Service Name</th>
       <th>Description</th>
       <th>Assign To</th>
@@ -64,6 +65,7 @@ Combo/Service List
                   {data:'cs_combo_service_type', name:'cs_combo_service_type',class: 'text-center'},
                   {data:'cs_price', name:'cs_price',class: 'text-right'},
                   {data:'cs_expiry_period', name:'cs_expiry_period',class: 'text-center'},
+                  {data:'cs_work_term', name:'cs_work_term',class: 'text-center'},
                   {data:'cs_service_id', name:'cs_service_id'},
                   {data:'cs_description', name:'cs_description'},
                   {data:'cs_assign_to', name:'cs_assign_to'},
@@ -136,7 +138,10 @@ Combo/Service List
       var cs_combo_service_type = $(this).attr('cs_combo_service_type');
       var cs_expiry_period = $(this).attr('cs_expiry_period');
       var cs_type_time = $(this).attr('cs_type_time');
-      cs_assign_id = $(this).attr('cs_assign_id').split(';');
+      // cs_assign_id = $(this).attr('cs_assign_id').split(';');
+      cs_assign_id = $(this).attr('cs_assign_id');
+      var cs_type_time_term = $(this).attr('cs_type_time_term');
+      var cs_work_term = $(this).attr('cs_work_term');
 
       $.ajax({
         url: '{{route('get-service-combo')}}',
@@ -156,24 +161,31 @@ Combo/Service List
           var serivece_list_all = data.service_list_all;
           var content_body_html = "";
           var service_list_html = "";
-          var user_html = "";
+          var assign_html = "";
           var selected = "";
           var service_form = "";
           var service_type_htm = "";
 
           //GET ASSIGN LIST
-          $.each(data.user, function(index, val) {
-              if(cs_assign_id.includes(""+val.user_id)) var selected = "selected";
-            user_html += `<option `+selected+` value="`+val.user_id+`">`+val.user_nickname+`</option>`;
+          $.each(data.teams, function(index, val) {
+              if(cs_assign_id === val.id) var selected = "selected";
+            assign_html += `<option `+selected+` value="`+val.id+`">`+val.team_name+`</option>`;
           });
 
           //TIME TYPE ARRAY
           let time_type_html = "";
           let time_type_arr = <?php echo json_encode(getTimeType()); ?>;
           $.each(time_type_arr, function(index, val) {
-            var checked_time = "";
-            if(index == cs_type_time) var checked_time = "selected";
+            let checked_time = "";
+            if(index == cs_type_time) checked_time = "selected";
             time_type_html += `<option `+checked_time+`  value="`+index+`">`+val+`</option>`;
+          });
+           //TIME TYPE TERM ARRAY
+          let time_type_term_html = "";
+          $.each(time_type_arr, function(index, val) {
+            let checked_time = "";
+            if(index == cs_type_time_term) checked_time = "selected";
+            time_type_term_html += `<option `+checked_time+`  value="`+index+`">`+val+`</option>`;
           });
           
           //GET FORM SERVICE LIST
@@ -259,14 +271,25 @@ Combo/Service List
                         </div>
                         <div class="form-group">
                           <h6><b class="required">Expire Period</b></h6>
-                         <div class="input-group">
-                         <input type="text" onkeypress="return isNumberKey(event)" name="cs_expiry_period"  class="form-control form-control-sm" value="`+cs_expiry_period+`" placeholder="">
-                          <div class="input-group-append">
-                             <select name="cs_type_time" class="form-control form-control-sm">
-                             `+time_type_html+`
-                            </select>
+                          <div class="input-group">
+                            <input type="text" onkeypress="return isNumberKey(event)" name="cs_expiry_period"  class="form-control form-control-sm" value="`+cs_expiry_period+`" placeholder="">
+                            <div class="input-group-append">
+                              <select name="cs_type_time" class="form-control form-control-sm">
+                              `+time_type_html+`
+                              </select>
+                            </div>
                           </div>
-                    </div>
+                        </div>
+                        <div class="form-group">
+                          <h6><b class="required">Work Term</b></h6>
+                          <div class="input-group">
+                            <input type="text" onkeypress="return isNumberKey(event)" name="cs_work_term"  class="form-control form-control-sm" value="`+cs_work_term+`" placeholder="">
+                            <div class="input-group-append">
+                              <select name="cs_type_time_term" class="form-control form-control-sm">
+                               `+time_type_term_html+`
+                              </select>
+                            </div>
+                          </div>
                         </div>
                         <div class="form-group">
                             <h6><b>Combo Service type</b></h6>
@@ -281,9 +304,9 @@ Combo/Service List
                           </select>
                         </div>
                         <div class="form-group">
-                          <h6><b>Assign To</b></h6>
-                          <select name="cs_assign_to[]" id="assign_to" class="form-control form-control-sm" multiple>
-                            `+user_html+`
+                          <h6><b>Assign To Team</b></h6>
+                          <select name="cs_assign_to" id="assign_to" class="form-control form-control-sm">
+                            `+assign_html+`
                           </select>
                         </div>
                         <div class="form-group">
@@ -402,9 +425,9 @@ Combo/Service List
           var user_html = "";
           var combo_service_html = "";
 
-          $.each(data.user, function(index, val) {
-            if(cs_assign_id == val.user_id) var selected = "selected";
-            user_html += `<option `+selected+` value="`+val.user_id+`">`+val.user_nickname+`</option>`;
+          $.each(data.teams, function(index, val) {
+            if(cs_assign_id == val.id) var selected = "selected";
+            user_html += `<option `+selected+` value="`+val.id+`">`+val.team_name+`</option>`;
           });
             $.each(data.cs_combo_service_type, function(index, val) {
                 // if(cs_assign_id == val.user_id) var selected = "selected";
@@ -458,6 +481,20 @@ Combo/Service List
                       </div>
                     </div>
                 </div>
+                <div class="form-group service-content-son">
+                    <h6><b class="required">Work Term</b></h6>
+
+                    <div class="input-group">
+                      <input type="text" onkeypress="return isNumberKey(event)" name="cs_work_term" required class="form-control form-control-sm" value="" placeholder="">
+                      <div class="input-group-append">
+                         <select name="cs_type_time_term" class="form-control form-control-sm">
+                          @foreach(getTimeType() as $key => $type)
+                            <option value="{{ $key }}">{{ $type }}</option>
+                          @endforeach
+                        </select>
+                      </div>
+                    </div>
+                </div>
                
                <div class="form-group service-content-son" >
                 <h6><b>Service Form</b></h6>
@@ -468,8 +505,8 @@ Combo/Service List
             </select>
           </div>
           <div class="form-group service-content-son">
-            <h6><b class="required">Assign To</b>(Ctrl+Click for Multiple)</h6>
-            <select name="cs_assign_to[]" id="assign_to" class="form-control form-control-sm" multiple>
+            <h6><b class="required">Assign To Team</b></h6>
+            <select name="cs_assign_to" id="assign_to" class="form-control form-control-sm">
               `+user_html+`
             </select>
           </div>
@@ -535,10 +572,12 @@ Combo/Service List
           var content_body_html = "";
           var service_list_html = "";
           var user_html = "";
+          console.log(data.teams);
 
-            $.each(data.user, function(index, val) {
-                if(cs_assign_id == val.user_id) var selected = "selected";
-                user_html += `<option `+selected+` value="`+val.user_id+`">`+val.user_nickname+`</option>`;
+            $.each(data.teams, function(index, val) {
+                let selected = '';
+                // if(cs_assign_id == val.user_id) selected = "selected";
+                user_html += `<option `+selected+` value="`+val.id+`">`+val.team_name+`</option>`;
             });
 
           if(cs_type == 1){//COMBO
@@ -570,6 +609,20 @@ Combo/Service List
                       </div>
                     </div>
               </div>
+              <div class="form-group service-content-son">
+                    <h6><b class="required">Work Term</b></h6>
+
+                    <div class="input-group">
+                      <input type="text" onkeypress="return isNumberKey(event)" name="cs_work_term" required class="form-control form-control-sm" value="" placeholder="">
+                      <div class="input-group-append">
+                         <select name="cs_type_time_term" class="form-control form-control-sm">
+                          @foreach(getTimeType() as $key => $type)
+                            <option value="{{ $key }}">{{ $type }}</option>
+                          @endforeach
+                        </select>
+                      </div>
+                    </div>
+                </div>
                <div class="form-group service-content-son" >
                 <h6><b>Service Form</b></h6>
                 <select name="cs_form_type" id="cs_form_type" class="form-control form-control-sm">
@@ -579,8 +632,8 @@ Combo/Service List
                 </select>
               </div>
               <div class="form-group service-content-son">
-                <h6><b class="required">Assign To</b></h6>
-                <select name="cs_assign_to[]" id="assign_to" class="form-control form-control-sm" multiple>
+                <h6><b class="required">Assign To Team</b></h6>
+                <select name="cs_assign_to" id="assign_to" class="form-control form-control-sm">
                   `+user_html+`
                 </select>
               </div>

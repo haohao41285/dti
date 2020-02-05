@@ -14,6 +14,7 @@ use DB;
 use Auth;
 use Gate;
 use App\Models\MainMenuAppINailSo;
+use App\Models\MainTeam;
 
 class SetupServiceController extends Controller
 {
@@ -36,11 +37,11 @@ class SetupServiceController extends Controller
         $combo_service_list = collect($combo_service_list);
 
         //GET USER COLLECTION
-        $user_list = DB::table('main_user')
-        			->where('user_status',1)
-        			->select('user_id','user_nickname','user_lastname','user_firstname')
+        $teams = DB::table('main_team')
+        			->where('team_status',1)
+        			->select('id','team_name')
         			->get();
-        $user_list = collect($user_list);
+        $teams = collect($teams);
 
         //GET COMBO SERVICE TYPE
         $combo_service_type = DB::table('main_combo_service_type')->where('status',1)->get();
@@ -61,16 +62,14 @@ class SetupServiceController extends Controller
 				}
 			}
             $cs_assign_to = "";
-            $cs_assign_id = [];
+            $cs_assign_id = "";
+            //GET ASSIGN TEAM
 			if(!empty($service_combo->cs_assign_to)){
-			    $assign_arr = explode(';',$service_combo->cs_assign_to);
-			    $assign_list = $user_list->whereIn('user_id',$assign_arr);
-			    foreach($assign_list as $assign){
-                    $cs_assign_to .= "<span class='text-capitalize'>".$assign->user_nickname."(".$assign->user_firstname."
-                    ".$assign->user_lastname.")</span><br>";
-                    $cs_assign_id[] = $assign->user_id;
+                $assign_list = $teams->where('id',$service_combo->cs_assign_to);
+                foreach($assign_list as $assign){
+                    $cs_assign_to .= "<span class='text-capitalize'>".$assign->team_name."</span><br>";
+                    $cs_assign_id = $assign->id;
                 }
-
             }
 			$combo_service_arr[] = [
 				'id' => $service_combo->id,
@@ -81,25 +80,19 @@ class SetupServiceController extends Controller
 				'cs_description' => $service_combo->cs_description,
 				'cs_type' => $service_combo->cs_type,
 				'cs_assign_to' => $cs_assign_to,
-				'cs_assign_id' => implode(';',$cs_assign_id),
+				'cs_assign_id' => $cs_assign_id,
 				'cs_status' => $service_combo->cs_status,
                 'cs_form_type' => $service_combo->cs_form_type,
                 'cs_combo_service_type' => $combo_service_type->where('id',$service_combo->cs_combo_service_type)->first()->name,
                 'cs_expiry_period' => $service_combo->cs_expiry_period,
                 'cs_combo_service_type_id' => $service_combo->cs_combo_service_type,
-                'cs_type_time' => $service_combo->cs_type_time
+                'cs_type_time' => $service_combo->cs_type_time,
+                'cs_work_term' => $service_combo->cs_work_term,
+                'cs_type_time_term' => $service_combo->cs_type_time_term,
 			];
 		}
 
 		return DataTables::of($combo_service_arr)
-
-//		    ->editColumn('cs_combo_service_type',function($row){
-////		    	return getFormService()[$row['cs_combo_service_type']];
-//		    	foreach(getFormService() as $key => $form_service){
-//		    	    if($key == $row['cs_combo_service_type'])
-//		    	        return $form_service;
-//                }
-//		    })
 		    ->addColumn('cs_status',function($row){
 				if($row['cs_status'] == 1) $checked='checked';
 	       		else $checked="";
@@ -108,6 +101,10 @@ class SetupServiceController extends Controller
 			->editColumn('cs_expiry_period',function($row){
 				return $row['cs_expiry_period']." ".getTimeType()[$row['cs_type_time']];
 			})
+			->editColumn('cs_work_term',function($row){
+				if($row['cs_work_term'] != "")
+					return $row['cs_work_term']." ".getTimeType()[$row['cs_type_time_term']];
+			})
 			->addColumn('action',function($row){
 				return '<a class="btn btn-sm btn-secondary edit-cs"
 				 cs_expiry_period="'.$row['cs_expiry_period'].'"
@@ -115,14 +112,16 @@ class SetupServiceController extends Controller
 				 cs_form_type="'.$row['cs_form_type'].'" cs_price='.$row['cs_price'].'
 				 cs_description="'.$row['cs_description'].'" 
 				 cs_type='.$row['cs_type'].'
-				 cs_name="'.$row['cs_name'].'" 
-				 cs_id="'.$row['id'].'"  
+				 cs_name="'.$row['cs_name'].'"
 				 cs_assign_id="'.$row['cs_assign_id'].'"
+				 cs_id="'.$row['id'].'"
 				 cs_type_time = "'.$row['cs_type_time'].'"
+				 cs_type_time_term= "'.$row['cs_type_time_term'].'"
+				 cs_work_term= "'.$row['cs_work_term'].'"
 				 title="Edit" href="javascript:void(0)"><i class="fas fa-edit"></i></a>
 				 <a class="btn btn-sm btn-secondary delete-cs" cs_id="'.$row['id'].'" href="javascript:void(0)"><i class="fas fa-trash"></i></a>';
 			})
-			->rawColumns(['cs_status','action','cs_service_id','cs_assign_to','cs_expiry_period'])
+			->rawColumns(['cs_status','action','cs_service_id','cs_assign_to','cs_expiry_period','cs_work_term'])
 		    ->make(true);
 	}
 	public function changeStatusCs(Request $request){
@@ -154,8 +153,8 @@ class SetupServiceController extends Controller
 
 		if(!isset($cs_id))
 			return response(['status'=>'error','message'=>'Error!']);
-	    //GET ALL USER
-		$data['user'] = MainUser::where('user_status',1)->get();
+	    //GET TEAM LIST
+		$data['teams'] = MainTeam::active()->get();
 		$data['service_form'] = getFormService();
 		$data['combo_service_type_list'] = MainComboServiceType::all();
 
@@ -253,7 +252,7 @@ class SetupServiceController extends Controller
 		$cs_name = $request->cs_name;
 		$cs_price = $request->cs_price;
 		$cs_description = $request->cs_description;
-		$cs_assign_to = $request->cs_assign_to!=""?implode(';',$request->cs_assign_to):"";
+		$cs_assign_to = $request->cs_assign_to;
 		$cs_form_type = $request->cs_form_type;
 		$cs_combo_service_type = $request->cs_combo_service_type;
 
@@ -273,7 +272,6 @@ class SetupServiceController extends Controller
             return \Response::json(array(
                 'status' => 'error',
                 'message' => $validator->getMessageBag()->toArray()
-
             ));
         }
         //CHECK NAME COMBO SERVICE
@@ -314,7 +312,9 @@ class SetupServiceController extends Controller
                 'cs_assign_to'=>$cs_assign_to,
                 'cs_combo_service_type'=>$cs_combo_service_type,
                 'cs_form_type' => $cs_form_type??0,
-                'cs_type_time' => $request->cs_type_time
+                'cs_type_time' => $request->cs_type_time,
+                'cs_type_time_term' => $request->cs_type_time_term,
+                'cs_work_term' => $request->cs_work_term,
             ]);
         else{
             if($cs_type == 1)
@@ -339,7 +339,9 @@ class SetupServiceController extends Controller
                     'cs_form_type' => $cs_form_type,
                     'cs_expiry_period' => $request->cs_expiry_period,
                     'cs_menu_inailso_app' => $cs_menu_inailso_app,
-                	'cs_type_time' => $request->cs_type_time
+                	'cs_type_time' => $request->cs_type_time,
+                	'cs_type_time_term' => $request->cs_type_time_term,
+                	'cs_work_term' => $request->cs_work_term
                 ]);
         }
 		if(!isset($cs_update))
@@ -351,7 +353,8 @@ class SetupServiceController extends Controller
 	{
 		$cs_type = $request->cs_type;
 
-		$data['user'] = MainUser::where('user_status',1)->get();
+		// $data['user'] = MainUser::where('user_status',1)->get();
+		$data['teams'] = MainTeam::active()->get();
 		$data['cs_combo_service_type'] = MainComboServiceType::active()->get();
 
 		if($cs_type == 1){

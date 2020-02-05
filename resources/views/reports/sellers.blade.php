@@ -15,10 +15,6 @@
                         <input type="text" class="input-sm form-control form-control-sm" id="end_date" name="end" />
                     </div>
                 </div>
-{{--                <div class="col-md-3">--}}
-{{--                    <label for="">Address</label>--}}
-{{--                    <input type="text" id="address" name="address" class="form-control form-control-sm">--}}
-{{--                </div>--}}
                 <div class="col-md-3">
                     <label for="">Seller</label>
                     <select name="seller" id="seller_id" class="form-control form-control-sm">
