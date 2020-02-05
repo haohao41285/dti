@@ -10,7 +10,7 @@
         "production": "cross-env NODE_ENV=production node_modules/webpack/bin/webpack.js --no-progress --hide-modules --config=node_modules/laravel-mix/setup/webpack.config.js"
     },
     "devDependencies": {
-        "@fortawesome/fontawesome-free": "^5.9.0",
+        "@fortawesome/fontawesome-free": "^5.12.1",
         "axios": "^0.19.2",
         "bootstrap": "^4.3.1",
         "bootstrap-datepicker": "^1.9.0",
@@ -43,7 +43,7 @@
         "webpack-cli": "^3.3.10"
     },
     "dependencies": {
-        "bootstrap-multiselect": "^0.9.13",
+        "bootstrap-multiselect": "^0.9.15",
         "bootstrap-timepicker": "^0.5.2",
         "bootstrap-toggle": "^2.2.2",
         "canvasjs": "^1.8.1",
@@ -57,7 +57,7 @@
         "knockout": "^3.5.1",
         "node-sass": "^4.13.1",
         "popper": "^1.0.1",
-        "select2": "^4.0.12",
+        "select2": "^4.0.13",
         "summernote": "^0.8.12",
         "toastr": "^2.1.4"
     }
