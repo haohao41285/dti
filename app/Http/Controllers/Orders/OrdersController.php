@@ -1190,12 +1190,18 @@ class OrdersController extends Controller
 
         foreach ($service_arr as $key => $service) {
             $service_info = MainComboService::find($service);
-
+            //GET ASIGN STAFF OF TEAM
+            $assign_arr = [];
+            $assign_list = MainUser::active()->where('user_team',$service_info->cs_assign_to)->get();
+            foreach ($assign_list as $key => $assign) {
+                $assign_arr[] = $assign->user_id;
+            }
+            $assigns = implode(';', $assign_arr);
             //GET DATE END TASK
-            if($service_info->cs_type_time == 1)
-                $date_end = today()->addMonths($service_info->cs_expiry_period)->format('Y-m-d');
+            if($service_info->cs_type_time_term == 1)
+                $date_end = today()->addMonths($service_info->cs_work_term)->format('Y-m-d');
             else
-                $date_end = today()->addDays($service_info->cs_expiry_period)->format('Y-m-d');
+                $date_end = today()->addDays($service_info->cs_work_term)->format('Y-m-d');
 
             $date_start = today()->format('Y-m-d');
 
@@ -1210,7 +1216,7 @@ class OrdersController extends Controller
                 'service_id' => $service,
                 'place_id' => $place_id,
                 'category' => 1,
-                'assign_to' => $service_info->cs_assign_to,
+                'assign_to' => $assigns,
                 'content' => "",
                 'date_start' => $date_start,
                 'date_end' => $date_end
