@@ -1244,15 +1244,13 @@ $(document).ready(function() {
             if (themeProperty) {
                 setTimeout(function() {
                     var themeProperties = $("#themeProperties").find(".properties-id");
-                    console.log(themeProperties);
+                    // console.log(themeProperties);
                     $.each(themeProperties, function(index, value) {
-                        console.log('dd');
-                        console.log($(this).attr('properties-id'));
                         if ($(this).attr('properties-id') == themeProperty) {
                             $(this).trigger('click');
                         }
                     })
-                }, 1200);
+                }, 1500);
             }
 
         } else {
