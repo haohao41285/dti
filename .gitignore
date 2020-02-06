@@ -3,8 +3,6 @@
 /public/storage
 /public/images
 /public/upload
-/public/fonts
-/public/fontawesome-free
 /storage/*.key
 /vendor
 /nbproject
