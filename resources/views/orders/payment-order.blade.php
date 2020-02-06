@@ -6,13 +6,40 @@
         .form-group {
             margin-bottom: .5rem;
         }
+        .loader {
+          border: 16px solid #f3f3f3;
+          border-radius: 50%;
+          border-top: 16px solid blue;
+          border-right: 16px solid green;
+          border-bottom: 16px solid red;
+          border-left: 16px solid pink;
+          width: 120px;
+          height: 120px;
+          -webkit-animation: spin 2s linear infinite; /* Safari */
+          animation: spin 2s linear infinite;
+          position: fixed;
+          top: 50%;
+          left: 50%;
+          z-index: 100000;
+          display: none; 
+        }
+        /* Safari */
+        @-webkit-keyframes spin {
+          0% { -webkit-transform: rotate(0deg); }
+          100% { -webkit-transform: rotate(360deg); }
+        }
+
+        @keyframes spin {
+          0% { transform: rotate(0deg); }
+          100% { transform: rotate(360deg); }
+        }
     </style>
 @endpush
 @section('content')
     <h4 class="border border-info border-top-0 mb-3 border-right-0 border-left-0 text-info">PAYMENT ORDER #{{$order_id}}</h4>
 
     <div class="">
-        <form action="{{route('authorize')}}" method="post">
+        <form action="{{ route('authorize') }}" method="POST">
             <input type="hidden" name="order_id" value="{{$order_id}}">
             @csrf()
             <div class="col-md-12 form-group row">
@@ -128,8 +155,8 @@
                 <div class="col-md-4"><textarea class="form-control form-control-sm" name="note" value="{{old('note')}}"  rows="5"></textarea></div>
             </div>
             <div class="form-group col-md-12">
-                <div class="col-md-6 float-right">
-                    <button type="submit" class="btn btn-primary">Submit</button>
+                <div class="col-md-6 float-right mb-5">
+                    <button type="submit" id="" class="btn-submit btn btn-primary">Submit</button>
 
                 </div>
             </div>
@@ -237,6 +264,55 @@
                     $(".credit").css('display', '');
                 }
             });
+            /*$("#btn-submit").click(function(){
+                var formData = new FormData($(this).parents('form')[0]);
+                formData.append('_token','{{ csrf_token() }}');
+                ableProcessingLoader();
+                $.ajax({
+                    url: '{{ route('authorize') }}',
+                    type: 'POST',
+                    data: formData,
+                    contentType: false, // NEEDED, DON'T OMIT THIS (requires jQuery 1.6+)
+                    processData: false, // NEEDED, DON'T OMIT THIS
+                })
+                .done(function(data) {
+                    console.log(data);
+                    // data = JSON.parse(data);
+                    if(data.status === 'error'){
+                        if( typeof(data.message) === 'string' )
+                            toastr.error(data.message);
+                        else{
+                            $.each(data.message, function(index, val) {
+                                toastr.error(val);
+                            });
+                        }
+                    }else if(data.status === 'errorAfterCharge'){
+                        toastr.error(data.message);
+                        window.location.href = "{{ route('payment-order-list') }}";
+                    }
+                    else {
+                        toastr.success(data.message);
+                        window.location.href = "{{ route('payment-order-list') }}";
+                    }
+                    unableProcessingLoader();
+                })
+                .fail(function() {
+                    toastr.error('Error!');
+                    unableProcessingLoader();
+                });
+                
+            })*/
+            $(".btn-submit").click(function(){
+                ableProcessingLoader();
+            })
+            function ableProcessingLoader(){
+                $('.loader').css('display','inline');
+                $("#content").css('opacity',.5);
+            }
+            function unableProcessingLoader(){
+                $('.loader').css('display','none');
+                $("#content").css('opacity',1);
+            }
         });
     </script>
 @endpush

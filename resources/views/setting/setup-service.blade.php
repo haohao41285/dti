@@ -377,8 +377,7 @@ Combo/Service List
         else{
           toastr.success(data.message);
           clearView();
-          dataTable.draw();
-        }
+          dataTable.ajax.reload( null, false );        }
       })
       .fail(function(data) {
         toastr.error("Error!");
