@@ -1,0 +1,1 @@
+INSERT INTO `main_menu_dti` (`id`, `name`, `icon`, `link`, `parent_id`, `status`, `created_at`, `updated_at`) VALUES (NULL, 'Seller\'s Customer', NULL, 'customer/sellers-customer', '6', '1', NULL, NULL);

@@ -341,10 +341,15 @@
     <p class="text-primary">An email notification will also send to {{\Auth::user()->user_email}}</p>
      <div class="input-group mb-2 mr-sm-2">
         <div class="input-group-prepend">
-          <div class="input-group-text">Add CC:</div>
+            <div class="input-group-text">Add CC:</div>
         </div>
-        <input type="text" class="form-control" name="email_list" id="email_list_2" placeholder="">
-      </div>
+        <select name="email_list[]" id="email_list" class="form-control form-control-m" multiple>
+            @foreach($user_list as $user)
+                <option value="{{ $user->user_email }}">{{ $user->user_nickname."( ".$user->user_email." )" }}</option>
+            @endforeach
+        </select>
+       
+    </div>
     <p>CC Multiple Email for example:<i> email_1@gmail.com;email_2@gmail.com</i></p>
     @if($task_info->status == 3)
         <div class="form-group change-status-form">
@@ -371,6 +376,8 @@
 
         var file_size_total = 0;
         var file_image_list = [];
+
+        $("#email_list").multiselect();
 
         var table = $('#subtask-datatable').DataTable({
             // dom: "lBfrtip",

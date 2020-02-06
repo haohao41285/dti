@@ -71,6 +71,8 @@ Route::group(['middleware' => ['auth']], function () {
          Route::post('save-my-business','CustomerController@saveMyBusiness')->name('save_my_business');
          Route::get('get-import-template-customer','CustomerController@getImportTemplateCustomer')->name('get_import_template_customer');
 
+         Route::get('/sellers-customer','CustomerController@sellerCustomer')->name('seller_customer');
+         Route::post('/sellers-customer-datatable','CustomerController@sellerCustomerDatatable')->name('seller_customer_datatable');
 
     });
 
@@ -422,11 +424,12 @@ Route::group(['middleware' => ['auth']], function () {
         Route::get('get-task', 'TaskController@getTask')->name('get-task');
         Route::get('get-subtask', 'TaskController@getSubtask')->name('get-subtask');
         Route::get('edit-task/{id?}', 'TaskController@editTask')->where(['id'=>'[0-9]+'])->name('edit-task');
-        Route::post('send-mail-notification', 'TaskControall-task-datatableller@sendMailNotification')->name('send-mail-notification');
+        Route::post('send-mail-notification', 'TaskController@sendMailNotification')->name('send-mail-notification');
         Route::get('theme-mail', 'TaskController@themeMail')->name('theme-mail');
         Route::get('get-subtask', 'TaskController@getSubTask')->name('get-subtask');
         Route::get('receiver-task-datatable', 'TaskController@receiverTaskDatatable')->name('receiver-task-datatable');
         Route::get('my-created-task-datatable', 'TaskController@myCreatedTaskDatatable')->name('my_created_task_datatable');
+        Route::get('task-dashboard-datatable', 'TaskController@taskDashboardDatatable')->name('task_dashboard_datatable');
 
         Route::get('all-task', 'TaskController@allTask')->name('all-task');
         Route::get('all-task-datatable', 'TaskController@allTaskDatatable')->name('all-task-datatable');

@@ -63,7 +63,6 @@ class MainUser extends Model
     }
     public static function getCustomerOfTeam(){
 	    $customer_list = self::whereIn('user_id',self::getMemberTeam())->select('user_customer_list')->get();
-//	    return $customer_list;
 	    $customer_arr = "";
 	    foreach ($customer_list as $key => $customer){
 	        if($customer->user_customer_list != ""){

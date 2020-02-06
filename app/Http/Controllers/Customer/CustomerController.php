@@ -880,7 +880,7 @@ class CustomerController extends Controller
         if($request->email_list == "")
             $email_list = $email_seller;
         else
-            $email_list = $request->email_list.";".$email_seller;
+            $email_list = implode(';',$request->email_list).";".$email_seller;
         $file_arr = [];
 
         $tracking_arr = [
@@ -1304,5 +1304,80 @@ class CustomerController extends Controller
             })
             ->rawColumns(['action','id'])
             ->make(true);
+    }
+    public function sellerCustomer(){
+        if(Gate::denies('permission','seller-customer'))
+            return doNotPermission();
+
+        $team_type_id = MainTeamType::where('team_type_name','Telemarketing')->first()->id;
+        $team_id = MainTeam::select('id')->where('team_type',$team_type_id)->get()->toArray();
+        $team_id_array = array_values($team_id);
+        $data['sellers'] = MainUser::whereIn('user_team',$team_id_array)->get();
+        return view('customer.seller-customer',$data);
+    }
+    public function sellerCustomerDatatable(Request $request){
+
+        if(Gate::denies('permission','seller-customer'))
+            return doNotPermission();
+
+        $seller_id = $request->seller_id;
+        $team_id = $request->team_id;
+
+        //GET SERIVCED CUSTOMER
+        $service_customer = MainUserCustomerPlace::join('main_customer_template',function($join){
+            $join->on('main_user_customer_places.customer_id','main_customer_template.id');
+        })
+        ->where('main_user_customer_places.user_id',$seller_id)
+        ->where('main_user_customer_places.team_id',$team_id)
+        ->whereNotNull('main_user_customer_places.place_id')
+        ->distinct('main_user_customer_places.customer_id')
+        ->select('main_user_customer_places.user_id','main_user_customer_places.customer_id','main_customer_template.*')
+        ->get();
+
+        $customer_list = [];
+        $customer_arr = [];
+
+        foreach ($service_customer as $key => $customer) {
+            $customer_list[] = [
+                'id' => $customer->customer_id,
+                'business' => $customer->ct_salon_name,
+                'contact_name' => $customer->ct_fullname,
+                'business_phone' => $customer->ct_business_phone,
+                'cell_phone' => $customer->ct_cell_phone,
+                'status' => 'Serviced',
+            ];
+            $customer_arr[] = $customer->customer_id;
+        }
+        //GET ASSIGN CUSTOMER
+        $assigned_customer = MainCustomerAssign::join('main_customer_template',function($join){
+            $join->on('main_customer_assigns.customer_id','main_customer_template.id');
+        })
+        ->where('main_customer_assigns.user_id',$seller_id)
+        ->distinct('main_customer_assigns.customer_id')
+        ->whereNotIn('main_customer_assigns.customer_id',$customer_arr)
+        ->select('main_customer_assigns.user_id','main_customer_assigns.customer_id','main_customer_template.*')
+        ->get();
+
+        foreach ($assigned_customer as $key => $customer) {
+            $customer_list[] = [
+                'id' => $customer->customer_id,
+                'business' => $customer->ct_salon_name,
+                'contact_name' => $customer->ct_fullname,
+                'business_phone' => $customer->ct_business_phone,
+                'cell_phone' => $customer->ct_cell_phone,
+                'status' => 'Assigned',
+            ];
+        }
+        return Datatables::of($customer_list)
+            ->editColumn('id',function ($row){
+                if($row['status'] == 'Serviced')
+                    return '<i class="fas fa-plus-circle details-control text-danger" id="'.$row['id'].'" ></i><a href="'.route('customer-detail',$row['id']).'"> '.$row['id'].'</a>';
+                else
+                    return '<a href="javascript:void(0)">'.$row['id'].'</a>';
+            })
+            ->rawColumns(['id'])
+            ->make(true);
+
+        // return $customer_list;
     }
 }

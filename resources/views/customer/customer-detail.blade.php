@@ -206,6 +206,11 @@
         <div class="input-group-prepend">
             <div class="input-group-text">Add CC:</div>
         </div>
+        <select name="email_list[]" id="email_list" class="form-control form-control-m" multiple>
+            @foreach($user_list as $user)
+                <option value="{{ $user->user_email }}">{{ $user->user_nickname."( ".$user->user_email." )" }}</option>
+            @endforeach
+        </select>
        
     </div>
     
@@ -221,6 +226,8 @@
 
             var file_size_total = 0;
             var file_image_list = [];
+
+            $("#email_list").multiselect();
 
             var table = $('#tracking-datatable').DataTable({
                 // dom: "lBfrtip",
@@ -271,6 +278,7 @@
                         return myXhr;
                     },
                     success: function (data) {
+                        // console.log(data);return;
                         let message = "";
                         if(data.status == 'success'){
                             toastr.success(data.message);
