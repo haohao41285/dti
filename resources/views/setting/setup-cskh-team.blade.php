@@ -1,6 +1,6 @@
 @extends('layouts.app')
-@section('title')
-Setup Team
+@section('content-title')
+  SETUP CSKH TEAM
 @endsection
 @push('styles')
 <style>

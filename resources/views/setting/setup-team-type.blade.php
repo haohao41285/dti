@@ -1,6 +1,6 @@
 @extends('layouts.app')
-@section('title')
-Team Type List
+@section('content-title')
+    SETUP TEAM TYPE
 @stop
 @section('content')
 <div class="col-12 row">

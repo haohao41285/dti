@@ -1,6 +1,6 @@
 @extends('layouts.app')
-@section('title')
-    Reviews Report
+@section('content-title')
+    REVIEWS REPORT
 @endsection
 @section('style')
 <style type="text/css" media="screen">
@@ -21,7 +21,6 @@
     $change = 0;
 @endphp
     <div class="table-responsive">
-        <h4 class="border border-info border-top-0 border-right-0 border-left-0 text-info">REVIEWS REPORT</h4>
         <form id="customer_form">
             <div class="form-group col-md-12 row">
                 <div class="col-md-6">

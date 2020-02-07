@@ -1,10 +1,9 @@
 @extends('layouts.app')
-@section('title')
-    Customers Report
+@section('content-title')
+    CUSTOMERS REPORT
 @endsection
 @section('content')
     <div class="table-responsive">
-        <h4 class="border border-info border-top-0 border-right-0 border-left-0 text-info">CUSTOMERS REPORT</h4>
         <form id="customer_form">
             <div class="form-group col-md-12 row">
                 <div class="col-md-4">

@@ -1,6 +1,8 @@
 @extends('layouts.app')
+@section('content-title')
+MY CUSTOMER
+@endsection
 @section('content')
-    <h4 class="border border-info border-top-0 mb-3 border-right-0 border-left-0 text-info">MY CUSTOMER</h4>
     <div class="modal fade" id="move-customers-modal" role="dialog">
         <div class="modal-dialog">
             <!-- Modal content-->

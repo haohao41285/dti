@@ -1,6 +1,6 @@
 @extends('layouts.app')
 @section('content-title')
-    Create new Customer
+    NEW CUSTOMER
 @endsection
 @push('styles')
     <style type="text/css" media="screen">

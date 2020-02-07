@@ -1,6 +1,6 @@
 @extends('layouts.app')
-@section('title')
-    User Permission
+@section('content-title')
+    USER'S PERMISSIONS
 @stop
 @push('styles')
 @endpush

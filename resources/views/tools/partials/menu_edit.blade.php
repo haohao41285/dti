@@ -1,5 +1,11 @@
 @extends('layouts.app')
-@section('title', (isset($id)&&$id>0)?'Website Builder | Menus | Edit Menu':'Website Builder | Menus | Add Menu')
+@section('content-title')
+    @if (isset($id)&&$id>0)
+        Edit Menu #{{$id}}
+    @else
+        Add Menu
+    @endif
+@endsection
 @push('styles')
  <style>
      .dropzone {
@@ -12,16 +18,7 @@
 @endpush
 @section('content')
 <div class='x_panel x_panel_form'>
-    <div class="x_title">
-         <h3>@if (isset($id)&&$id>0)
-                    Edit Menu
-            @else 
-                    Add Menu
-            @endif
-        </h3>
-     </div>
     <div class="x_content">
-         
         <form method="post" action="{{route('places.menus.save')}}" class="form-horizontal form-label-left" id="menu_form" enctype="multipart/form-data" > 
         @csrf
         <input type="hidden" name="menu_id" value="{{$id}}"/>
@@ -57,15 +54,13 @@
             <div class="row form-group">
                 <label class="col-sm-3 col-md-2">Status</label>
                 <div class="col-sm-5 col-md-4 form-inline">
-                   <div class="radio">
-                        <label>
-                          <input type="radio" {{(!isset($menu_item))?"checked":""}} class="flat checkFlat" value="1" @if(isset($menu_item->menu_type)&&$menu_item->menu_type ==1) checked @endif name="menu_type">&nbsp;Enabled
-                        </label>
+                    <div class="custom-control custom-radio">
+                        <input type="radio" {{(!isset($menu_item))?"checked":""}} class="custom-control-input" id="enabled" value="1" @if(isset($menu_item->menu_type)&&$menu_item->menu_type ==1) checked @endif name="menu_type">
+                        <label class="custom-control-label" for="enabled">&nbsp;Enabled</label> 
                     </div>
-                    <div class="radio" style="margin-left:10px;">
-                        <label>
-                          <input type="radio"  class="flat checkFlat" value="0" @if(isset($menu_item->menu_type)&&$menu_item->menu_type ==0) checked @endif name="menu_type">&nbsp;Disabled
-                        </label>
+                    <div class="custom-control custom-radio">
+                        <input type="radio" class="custom-control-input" id="disabled" value="0" @if(isset($menu_item->menu_type)&&$menu_item->menu_type ==0) checked @endif name="menu_type">
+                        <label class="custom-control-label" for="disabled">&nbsp;Disabled</label>
                     </div>
                 </div> 
             </div>

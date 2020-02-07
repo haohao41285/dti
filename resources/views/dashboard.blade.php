@@ -1,7 +1,7 @@
 @extends('layouts.app')
 @section('title','DTI - Dashboard')
 @section('content-title')
-    Dashboard
+    DASHBOARD
 @endsection
 @section('content')
 	<div class="col-12">

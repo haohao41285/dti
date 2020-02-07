@@ -29,7 +29,8 @@
             <!-- Begin Page Content -->
             <div class="px-3">
               <!-- Page Heading -->
-              <h1 class="h3 mb-4 text-gray-800 col-12">@yield('content-title')</h1>
+              {{-- <h1 class="h3 mb-4 text-gray-800 col-12">@yield('content-title')</h1> --}}
+              <h4 class="border border-info border-top-0 mb-3 border-right-0 border-left-0 text-info">@yield('content-title')</h4>
               @yield('content')
             </div>
             <!-- /.container-fluid -->

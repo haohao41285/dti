@@ -1,6 +1,6 @@
 @extends('layouts.app')
 @section('content-title')
-  Seller's Customer
+  SELLER'S CUSTOMER
 @endsection
 @push('style')
   <style>

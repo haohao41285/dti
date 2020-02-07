@@ -1,5 +1,6 @@
 @extends('layouts.app')
 @section('content-title')
+  WEBSITE BUILDER
 @endsection
 @push('styles')
 @endpush
@@ -7,24 +8,21 @@
 @include('tools.partials.modals.social_edit_modal')
 <div class="col-12 ">
     <div class="card shadow mb-4 ">
-        <div class="card-header py-2">
-            <h6 class="m-0 font-weight-bold text-primary">Webbuilder</h6>
-        </div>
         <div class="card-body">
             <div class="table-responsive">
 				  <!-- Nav tabs -->
 				  <ul class="nav nav-tabs" role="tablist">
 				    <li class="nav-item">
-				      <a class="nav-link active" data-toggle="tab" href="#service_categories">Service Categories</a>
+				      <a class="nav-link active service_categories" data-toggle="tab" href="#service_categories">Service Categories</a>
 				    </li>
 				    <li class="nav-item">
-				      <a class="nav-link service-nav" data-toggle="tab" href="#services">Servivce</a>
+				      <a class="nav-link service-nav services" data-toggle="tab" href="#services">Servivce</a>
 				    </li>
 				    <li class="nav-item">
-				      <a class="nav-link menu-nav" data-toggle="tab" href="#menus">Menus</a>
+				      <a class="nav-link menu-nav menus" data-toggle="tab" href="#menus">Menus</a>
 				    </li>
 				    <li class="nav-item">
-				      <a class="nav-link" data-toggle="tab" href="#banners">Banners</a>
+				      <a class="nav-link banners" data-toggle="tab" href="#banners">Banners</a>
 				    </li>
 				    <li class="nav-item">
 				      <a class="nav-link" data-toggle="tab" href="#social_network">Social Network</a>
@@ -62,6 +60,25 @@
 @push('scripts')
 <script>
 	$(document).ready(function($) {
+
+    @if(Session::get('menus'))
+      @php
+        Session::forget('menus');
+      @endphp
+      $(".menus").click();
+    @endif
+    @if(Session::get('services'))
+      @php
+        Session::forget('services');
+      @endphp
+      $(".services").click();
+    @endif
+    @if(Session::get('banners'))
+      @php
+        Session::forget('banners');
+      @endphp
+      $(".banners").click();
+    @endif
 
 		var place_id = '{{ $place_id }}';
 
@@ -202,7 +219,7 @@
           { data: 'parent_name', name: 'parent_name' },
           { data: 'menu_url', name: 'menu_url' },
           { data: 'menu_index', name: 'menu_index',class:'text-right' },
-          { data: 'enable_status', name:'enable_status',class:'text-center' },
+          { data: 'menu_type', name:'menu_type',class:'text-center' },
           { data: 'updated_at', name:'updated_at',class:'text-center'},
           { data: 'action' , name: 'action',  orderable: false, searchable: false,class:'text-center' }
       ],
@@ -509,7 +526,7 @@
             return false;
           }
       }
-      $(document).on('click','.custom-control-input',function(){
+      $(document).on('click','.service-status-booking',function(){
 
         var type = $(this).attr('name');
         let status = $(this).attr('status');

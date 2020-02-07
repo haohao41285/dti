@@ -1,6 +1,6 @@
 @extends('layouts.app')
-@section('title')
-    Service Permission
+@section('content-title')
+    SERVICE PERMISSIONS
 @stop
 @section('content')
 <div style="height:300px">

@@ -150,6 +150,7 @@ class BannerController extends Controller
                                         ]);
 
                 if ($PosBanner) {
+                    Session::put('banners',1);
                     $request->session()->flash('success','Edit Banner Success');
                 }else{
                     $request->session()->flash('error','Edit Banner Error');
@@ -173,6 +174,7 @@ class BannerController extends Controller
                         $PosBanner->save();
                 
                 if ($PosBanner) {
+                    Session::put('banners',1);
                     $request->session()->flash('success','Insert Banner Success');
                 }else{
                     $request->session()->flash('error','Insert Banner Error');

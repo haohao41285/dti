@@ -34,4 +34,7 @@ class MainComboService extends Model
                     ->whereIn('id',$arr)
                     ->get();
     }
+    public function scopeActive(){
+        return $this->where('cs_status',1);
+    }
 }

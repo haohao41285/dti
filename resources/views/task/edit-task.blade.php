@@ -1,6 +1,6 @@
 @extends('layouts.app')
-@section('title')
-    Add Task
+@section('content-title')
+    EDIT TASK #{{$id}} - {{$task_info->subject}}
 @endsection
 @push('styles')
 <style type="text/css" media="screen">
@@ -11,7 +11,6 @@
 @endpush
 @section('content')
 	<div class="table-responsive">
-	<h4 class="border border-info border-top-0 border-right-0 border-left-0 text-info">EDIT TASK #{{$id}} - {{$task_info->subject}}</h4>
     <form action="{{route('save-task')}}" id="form-task" method="post" accept-charset="utf-8">
         @csrf()
         <table class="table table-striped mt-4 table-bordered" id="dataTableAllCustomer" widtd="100%" cellspacing="0">

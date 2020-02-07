@@ -1,6 +1,6 @@
 @extends('layouts.app')
-@section('title')
-    My Tasks
+@section('content-title')
+    DETAIL CUSTOMER
 @endsection
 @push('styles')
     <style type="text/css" media="screen">
@@ -41,8 +41,6 @@
     </style>
 @endpush
 @section('content')
-
-<h4 class="border border-info border-top-0 mb-3 border-right-0 border-left-0 text-info">CUSTOMER INFORMATION</h4>
     <div class="row">
         <div class="col-md-6">
             <span class="col-md-4"><b>FullName:</b></span>

@@ -119,14 +119,14 @@ class TaskController extends Controller
         return response(['status'=>'error','message'=>'Amount of files maximum is 20 files']);
        }
     	$rule = [
-    		'order_id' => 'required',
+    		// 'order_id' => 'required',
             'note' => 'required'
     	];
-    	$message = [
+    	/*$message = [
     		'order_id.required' => 'Order not exist!',
             'note.required' => 'Comment required!'
-    	];
-    	$validator = Validator::make($request->all(),$rule,$message);
+    	];*/
+    	$validator = Validator::make($request->all(),$rule);
     	if($validator->fails())
     		return response([
     			'status'=>'error',
@@ -145,7 +145,7 @@ class TaskController extends Controller
     		'task_id' => $task_id==0?NULL:$task_id,
     		'content' => $content,
     		'created_by' => Auth::user()->user_id,
-            'email_list' => implode(';',$request->email_list),
+            'email_list' => $request->email_list?implode(';',$request->email_list):"",
             'receiver_id' => $request->receiver_id,
     	];
     	DB::beginTransaction();

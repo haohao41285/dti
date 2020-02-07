@@ -1,6 +1,6 @@
 @extends('layouts.app')
-@section('title')
-    My Orders
+@section('content-title')
+    ORDER INFORMATON #{{$id}}
 @endsection
 @push('styles')
 <style type="text/css" media="screen">
@@ -37,7 +37,6 @@
     </div>
   </div>
 <div class="table-responsive">
-	<h4 class="border border-info border-top-0 border-right-0 border-left-0 text-info">ORDER INFORMATON #{{$id}}</h4>
     <table class="table table-striped mt-4 table-bordered" id="dataTableAllCustomer" widtd="100%" cellspacing="0">
         <tbody>
             <tr>

@@ -65,4 +65,7 @@ class MainThemeProperties extends BaseModel
                     ->where("theme_properties_id",$id)
                     ->first();
     }
+    public static function getThemePropertiesByThemeCode($themeId){
+        return self::where('theme_id',$themeId)->get();
+    }
 }

@@ -1,6 +1,6 @@
 @extends('layouts.app')
 @section('content-title')
-{{-- Places --}}
+    COUPON/ PROMOTION TEMPLATE
 @endsection
 @push('styles')
 @endpush

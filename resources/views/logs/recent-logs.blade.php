@@ -1,6 +1,6 @@
 @extends('layouts.app')
 @section('content-title')
-
+  RECENT LOGS
 @endsection
 @section('content')
 <div class="col-12 ">

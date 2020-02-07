@@ -1,6 +1,6 @@
 @extends('layouts.app')
 @section('content-title')
-Template Type
+    SETUP TYPE TEAMPLATE
 @endsection
 @push('scripts')
 @endpush

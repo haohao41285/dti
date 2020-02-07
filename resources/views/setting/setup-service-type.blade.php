@@ -1,6 +1,6 @@
 @extends('layouts.app')
-@section('title')
-    Setup Service Type
+@section('content-title')
+    SETUP SERVICE TYPE
 @stop
 @section('content')
     <div class="row">

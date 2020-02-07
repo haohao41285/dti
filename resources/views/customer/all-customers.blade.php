@@ -1,6 +1,6 @@
 @extends('layouts.app')
 @section('content-title')
-    Customers Management
+    ALL CUSTOMER
 @endsection
 @push('style')
   <style>

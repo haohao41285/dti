@@ -1,9 +1,8 @@
 @extends('layouts.app')
-@section('title')
-    My Orders
+@section('content-title')
+    MY ORDERS
 @endsection
 @section('content')
-<h4 class="border border-info border-top-0 mb-3 border-right-0 border-left-0 text-info">MY ORDER</h4>
 <div class="table-responsive">
 	<div class="form-group col-md-12 row">
         <div class="col-md-4">
