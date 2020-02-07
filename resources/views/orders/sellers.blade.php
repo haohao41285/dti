@@ -1,6 +1,6 @@
 @extends('layouts.app')
 @section('content-title')
-    Seller's Orders
+    SELLER'S ORDERS
 @endsection
 @section('content')
 <div class="table-responsive">

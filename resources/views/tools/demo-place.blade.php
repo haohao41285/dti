@@ -1,6 +1,6 @@
 @extends('layouts.app')
 @section('content-title')
-    {{-- Places --}}
+    DEMO PLACES
 @endsection
 @push('styles')
     <style>
@@ -124,9 +124,6 @@
 @section('content')
     <div class="col-12 ">
         <div class="card shadow mb-4 ">
-            <div class="card-header py-2">
-                <h6 class="m-0 font-weight-bold text-primary">Places List </h6>
-            </div>
             <div class="card-body">
                 <div class="table-responsive">
                     <table class="table table-sm table-striped table-hover" id="places-datatable" width="100%" cellspacing="0">
@@ -147,7 +144,7 @@
     </div>
     {{-- detail place --}}
     <div class="modal fade" id="detail" tabindex="-1" role="dialog">
-        <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+        <div class="modal-dialog modal-dialog-scrollable modal-lg" width:80% role="document">
             <form id="add-form">
                 <div class="modal-content">
                     <div class="modal-header">
@@ -156,33 +153,33 @@
                         </div>
                     </div>
                     <div class="modal-body row">
-                        <div class="col-12 ">
-                            <div class="col-12 row">
-                                <div class="input-group mb-3 input-group-sm col-md-6">
+                        <div class="col-12 row">
+                            <div class="col-8 row">
+                                <div class="input-group mb-3 input-group-sm col-md-12">
                                     <div class="input-group-prepend">
                                         <span class="input-group-text">First name</span>
                                     </div>
                                     <input type="text" class="form-control" name="customer_firstname">
                                 </div>
-                                <div class="input-group mb-3 input-group-sm col-md-6">
+                                <div class="input-group mb-3 input-group-sm col-md-12">
                                     <div class="input-group-prepend">
                                         <span class="input-group-text">Last Name</span>
                                     </div>
                                     <input type="text" class="form-control" name="customer_lastname">
                                 </div>
-                                <div class="input-group mb-3 input-group-sm col-md-6">
+                                <div class="input-group mb-3 input-group-sm col-md-12">
                                     <div class="input-group-prepend">
                                         <span class="input-group-text">Phone<sup class="text-danger">*</sup></span>
                                     </div>
                                     <input type="text" onkeypress="return isNumberKey(event)" class="form-control customer_phone" name="customer_phone">
                                 </div>
-                                <div class="input-group mb-3 input-group-sm col-md-6">
+                                <div class="input-group mb-3 input-group-sm col-md-12">
                                     <div class="input-group-prepend">
                                         <span class="input-group-text">Email</span>
                                     </div>
                                     <input type="email" class="form-control" name="customer_email">
                                 </div>
-                                <div class="input-group mb-3 input-group-sm col-md-6">
+                                <div class="input-group mb-3 input-group-sm col-md-12">
                                     <div class="input-group-prepend">
                                         <span class="input-group-text">Address</span>
                                     </div>
@@ -200,7 +197,7 @@
                                 <div class="col-md-12"></div>
                                 <div class="col-md-12 row border-bottom border-dark">
                                     @foreach($theme_list as $theme)
-                                        <div class="col-md-2">
+                                        <div class="col-md-4">
                                           <div class="gallery-card">
                                             <div class="gallery-card-body">
                                               <label class="block-check">
@@ -216,6 +213,16 @@
                                         </div>
                                     @endforeach
                                 </div>
+                            </div>
+                            <div class="col-4">
+                                <label><b>Combos/ Services</b></label>
+                                
+                                @foreach($services as $service)
+                                    <div class="custom-control custom-checkbox">
+                                        <input type="checkbox" class="custom-control-input" id="service_{{ $service->id }}" name="service[]">
+                                        <label class="custom-control-label" for="service_{{ $service->id }}">{{ $service->cs_name }}</label>
+                                    </div>
+                                @endforeach
                             </div>
                         </div>
                     </div>

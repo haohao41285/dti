@@ -1,6 +1,6 @@
 @extends('layouts.app')
-@section('title')
-    My Tasks
+@section('content-title')
+    MY TASKS
 @endsection
 @section('content')
 {{-- MODAL INPUT FORM --}}
@@ -23,7 +23,6 @@
   </div>
 {{-- END MODAL --}}
 <div class="table-responsive">
-	<h4 class="border border-info border-top-0 border-right-0 border-left-0 text-info">MY TASK</h4>
     @include('task.search_task')
 
      <ul class="nav nav-tabs" role="tablist">

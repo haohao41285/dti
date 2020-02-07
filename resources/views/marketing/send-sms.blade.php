@@ -1,16 +1,12 @@
 @extends('layouts.app')
-@section('title','Send SMS')
+@section('content-title')
+    SEND SMS
+@endsection
 @push('styles')
-{{--
-<link href="https://gyrocode.github.io/jquery-datatables-checkboxes/1.2.11/css/dataTables.checkboxes.css" rel="stylesheet" type="text/css" /> --}}
+
 @endpush
 @section('content')
 <div class="row">
-    <div class="col-md-12">
-        <div class="card shadow mb-4 ">
-            <div class="card-header py-3">
-                <h6 class="m-0 font-weight-bold text-primary">Send SMS</h6>
-            </div>
             <div class="card-body">
                 <form action="{{route('post-send-sms')}}" method="post" enctype="multipart/form-data" accept-charset="utf-8">
                     {{csrf_field()}}

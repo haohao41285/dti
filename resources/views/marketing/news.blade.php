@@ -1,6 +1,6 @@
 @extends('layouts.app')
 @section('content-title')
-News
+    NEWS
 @endsection
 @push('styles')
 <style>

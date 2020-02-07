@@ -15,11 +15,13 @@ use DB;
 use Hash;
 use App\Models\MainTheme;
 use App\Models\MainCustomer;
+use App\Models\MainComboService;
 
 class DemoPlaceController extends Controller
 {
     public function index(){
         $data['theme_list'] = MainTheme::where('theme_status',1)->get();
+        $data['services'] = MainComboService::active()->orderBy('cs_name','asc')->get();
         return view('tools.demo-place',$data);
     }
     public function datatable(Request $request){

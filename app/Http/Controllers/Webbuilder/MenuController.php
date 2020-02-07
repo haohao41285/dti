@@ -49,13 +49,13 @@ class MenuController extends Controller
                     return $parent_item->menu_name ;
                 }else { return ""; }
             })
-            ->addColumn('enable_status',function($menu_item){
+            ->addColumn('menu_type',function($menu_item){
                      $checked = "";
-                if ($menu_item->enable_status == 1) {
+                if ($menu_item->menu_type == 1) {
                     $checked = 'checked';
                 }
                     return '<div class="custom-control custom-switch">
-                          <input type="checkbox" value="'.$menu_item->menu_id.'" name="menu_status" status="'.$menu_item->enable_status.'" id="menu_status_'.$menu_item->menu_id.'" class="custom-control-input show_id" data='.$menu_item->enable_status.' '.$checked.'/>
+                          <input type="checkbox" value="'.$menu_item->menu_id.'" name="menu_status" status="'.$menu_item->menu_type.'" id="menu_status_'.$menu_item->menu_id.'" class="custom-control-input show_id service-status-booking" data='.$menu_item->menu_type.' '.$checked.'/>
                           <label class="custom-control-label" for="menu_status_'.$menu_item->menu_id.'"></label>
                         </div>';
                 
@@ -67,7 +67,7 @@ class MenuController extends Controller
                 return '<a href="'.route('places.menus.edit',[Session::get('place_id'),$row->menu_id]).'"  class="btn btn-sm btn-secondary" ><i class="fa fa-edit"></i></a>
                         <a href="#" class="delete-menu btn btn-sm btn-secondary" id="'.$row->menu_id.'"><i class="fa fa-trash"></i></a>';
             })
-            ->rawColumns(['menu_name','enable_status','action'])
+            ->rawColumns(['menu_name','menu_type','action'])
             ->make(true);
     }
     
@@ -164,6 +164,8 @@ class MenuController extends Controller
                                     'menu_descript'     => $menu_descript,
                                     'menu_type'         => $request->menu_type,
                                 ]);
+
+                            Session::put('menus',1);
                         $request->session()->flash('message','Edit Menu Success');
 
                     return redirect()->route("place.webbuilder",Session::get('place_id'));
@@ -184,6 +186,7 @@ class MenuController extends Controller
                                 $PosMenu->menu_type         = $request->menu_type;
                                 $PosMenu->save();
                         if ($PosMenu) {
+                            Session::put('menus',1);
                             $request->session()->flash('message','Insert Menu Success');
                         }else{
                             $request->session()->flash('error','Insert Menu Error');

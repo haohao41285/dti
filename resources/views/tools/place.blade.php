@@ -1,6 +1,6 @@
 @extends('layouts.app')
 @section('content-title')
-{{-- Places --}}
+    PLACES
 @endsection
 @push('styles')
 <style>
@@ -18,9 +18,6 @@
 @section('content')
 <div class="col-12 ">
     <div class="card shadow mb-4 ">
-        <div class="card-header py-2">
-            <h6 class="m-0 font-weight-bold text-primary">Places List </h6>
-        </div>
         <div class="card-body">
             <div class="table-responsive">
                 <table class="table table-sm  table-bordered table-hover" id="places-datatable" width="100%" cellspacing="0">

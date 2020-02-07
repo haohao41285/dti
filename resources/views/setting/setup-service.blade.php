@@ -1,6 +1,6 @@
 @extends('layouts.app')
-@section('title')
-Combo/Service List
+@section('content-title')
+  SETUP SERVICE
 @stop
 @push('styles')
     <style>

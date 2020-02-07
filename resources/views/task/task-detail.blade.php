@@ -1,6 +1,6 @@
 @extends('layouts.app')
-@section('title')
-    Detail Task
+@section('content-title')
+    TASK #{{$id}} - {{$task_info->subject}}
 @endsection
 @push('styles')
 <style type="text/css" media="screen">
@@ -121,7 +121,6 @@
 </div>
 {{--END MODAL DETAIL REVIEW--}}
 <div class="table-responsive">
-	<h4 class="border border-info border-top-0 border-right-0 border-left-0 text-info text-uppercase">TASK #{{$id}} - {{$task_info->subject}}</h4>
     <table class="table table-striped mt-4 table-bordered" id="dataTableAllCustomer" widtd="100%" cellspacing="0">
         <tbody>
             <tr>
@@ -279,7 +278,7 @@
 
         </tbody>
     </table>
-    @if((isset($content_arr['order_review']) && $content_arr['order_review'] > 0)
+    @if( (isset($content_arr['order_review']) && $content_arr['order_review'] > 0)
         || (isset($content_arr['number']) && $content_arr['number'] > 0)
         )
         <form>
@@ -341,10 +340,15 @@
     <p class="text-primary">An email notification will also send to {{\Auth::user()->user_email}}</p>
      <div class="input-group mb-2 mr-sm-2">
         <div class="input-group-prepend">
-          <div class="input-group-text">Add CC:</div>
+            <div class="input-group-text">Add CC:</div>
         </div>
-        <input type="text" class="form-control" name="email_list" id="email_list_2" placeholder="">
-      </div>
+        <select name="email_list[]" id="email_list" class="form-control form-control-m" multiple>
+            @foreach($user_list as $user)
+                <option value="{{ $user->user_email }}">{{ $user->user_nickname."( ".$user->user_email." )" }}</option>
+            @endforeach
+        </select>
+       
+    </div>
     <p>CC Multiple Email for example:<i> email_1@gmail.com;email_2@gmail.com</i></p>
     @if($task_info->status == 3)
         <div class="form-group change-status-form">
@@ -371,6 +375,8 @@
 
         var file_size_total = 0;
         var file_image_list = [];
+
+        $("#email_list").multiselect();
 
         var table = $('#subtask-datatable').DataTable({
             // dom: "lBfrtip",
@@ -424,8 +430,8 @@
         });
         $(document).on('click', '.submit-comment', function(){
             var formData = new FormData($(this).parents('form')[0]);
-            formData.append('order_id',{{$task_info->order_id}});
-            formData.append('task_id',{{$id}});
+            formData.append('order_id','{{$task_info->order_id}}');
+            formData.append('task_id','{{$id}}');
             formData.append('_token','{{csrf_token()}}');
             amount_files = file_image_list.length;
 
@@ -450,8 +456,9 @@
                     return myXhr;
                 },
                 success: function (data) {
-                    if(data.status == 'error'){
-                        if(typeof(data.message) == "string")
+                    // console.log(data.message);return;
+                    if(data.status === 'error'){
+                        if(typeof(data.message) === "string")
                             toastr.error(data.message);
                         else{
                             $.each(data.message,function(ind,val){

@@ -1,6 +1,6 @@
 @extends('layouts.app')
-@section('title')
-    List User
+@section('content-title')
+    USERS
 @endsection
 @section('content')
 <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">

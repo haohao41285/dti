@@ -1,14 +1,11 @@
 @extends('layouts.app')
 @section('content-title')
-Theme Management
+    THEME MANAGEMENT
 @endsection
 @push('scripts')
 @endpush
 @section('content')
 <div class="card shadow mb-4 ">
-    <div class="card-header py-2">
-        <h6 class="m-0 font-weight-bold text-primary ">Website themes </h6>
-    </div>
     <div class="card-body">
         <div class="table-responsive">
             <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">

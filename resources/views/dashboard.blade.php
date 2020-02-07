@@ -1,7 +1,7 @@
 @extends('layouts.app')
 @section('title','DTI - Dashboard')
 @section('content-title')
-    Dashboard
+    DASHBOARD
 @endsection
 @section('content')
 	<div class="col-12">
@@ -115,7 +115,14 @@
             <div class="col-xl-6 col-lg-6">
                 <div class="card shadow mb-4">
                     <div class="card-header  d-flex flex-row align-items-center justify-content-between border-0">
-                        <span class="m-0 font-weight-bold text-primary">Processing Task</span> <a href="{{route('my-task')}}">View More >>></a>
+                        <span class="m-0 font-weight-bold text-primary">PENDING TASKS<sup class="text-danger">({{ $pendingTasks }})</sup></span>
+                        @if(\Gate::allows('permission','dashboard-admin'))
+                            <a href="{{route('all-task')}}">View More >>></a>
+                        @elseif(\Gate::allows('permission','dashboard-leader'))
+                            <a href="{{route('all-task')}}">View More >>></a>
+                        @else
+                            <a href="{{route('my-task')}}">View More >>></a>
+                        @endif
                     </div>
                     <table class="table table-sm table-hover" id="datatable-task-dashboard" width="100%" cellspacing="0">
                         <thead>
@@ -135,7 +142,7 @@
             <div class="col-xl-6 col-lg-6">
                 <div class="card shadow mb-4">
                     <div class="card-header d-flex flex-row align-items-center justify-content-between border-0" >
-                        <span class="m-0 font-weight-bold text-primary">Customer is about to expire</span> <a href="{{route('myCustomers')}}">View More >>></a>
+                        <span class="m-0 font-weight-bold text-primary">CUSTOMERS NEARLY EXPIRED<sup class="text-danger">({{ $nearlyExpired }})</sup></span><a href="{{route('myCustomers')}}">View More >>></a>
                     </div>
                     <table class="table table-sm table-hover" id="datatable-customer-service" width="100%" cellspacing="0">
                         <thead>
@@ -281,7 +288,7 @@
                 ],
                 processing: true,
                 serverSide: true,
-                ajax:{ url:"{{route('my-task-datatable')}}",
+                ajax:{ url:"{{route('task_dashboard_datatable')}}",
                     data: function (d) {
                         d.task_dashboard = 'task-dashboard';
                     }

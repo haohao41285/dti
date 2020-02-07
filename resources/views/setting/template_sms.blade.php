@@ -1,5 +1,7 @@
 @extends('layouts.app')
-@section('title','Send SMS')
+@section('content-title')
+  SETUP TEMPLATE SMS
+@endsection
 @push('styles')
 @endpush
 @section('content')

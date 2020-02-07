@@ -1,5 +1,6 @@
 @extends('layouts.app')
-@section('title')
+@section('content-title')
+    NEW ORDER
 @endsection
 @push('styles')
 <style>
@@ -12,8 +13,6 @@
 </style>
 @endpush
 @section('content')
-    <h4 class="border border-info border-top-0 mb-3 border-right-0 border-left-0 text-info">NEW ORDER</h4>
-
     <div class="">
     <form action="{{route('post-add-order')}}" method="post">
         @csrf()

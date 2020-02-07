@@ -1,6 +1,6 @@
 @extends('layouts.app')
-@section('title')
-Role List
+@section('content-title')
+	ROLES
 @stop
 @section('content')
 <div class="row">

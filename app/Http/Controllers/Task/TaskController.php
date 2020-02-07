@@ -34,7 +34,7 @@ class TaskController extends Controller
     protected $presenter = 'App\\Presenters\\ThemeMailPresenter';
 
     public function index(){
-        if(Gate::denies('permission','my-task-read'))
+        if(Gate::denies('permission','my-task'))
             return doNotPermission();
 
         $data['user_list'] = MainUser::active()->get();
@@ -119,14 +119,14 @@ class TaskController extends Controller
         return response(['status'=>'error','message'=>'Amount of files maximum is 20 files']);
        }
     	$rule = [
-    		'order_id' => 'required',
+    		// 'order_id' => 'required',
             'note' => 'required'
     	];
-    	$message = [
+    	/*$message = [
     		'order_id.required' => 'Order not exist!',
             'note.required' => 'Comment required!'
-    	];
-    	$validator = Validator::make($request->all(),$rule,$message);
+    	];*/
+    	$validator = Validator::make($request->all(),$rule);
     	if($validator->fails())
     		return response([
     			'status'=>'error',
@@ -145,7 +145,7 @@ class TaskController extends Controller
     		'task_id' => $task_id==0?NULL:$task_id,
     		'content' => $content,
     		'created_by' => Auth::user()->user_id,
-            'email_list' => $request->email_list,
+            'email_list' => $request->email_list?implode(';',$request->email_list):"",
             'receiver_id' => $request->receiver_id,
     	];
     	DB::beginTransaction();
@@ -239,6 +239,7 @@ class TaskController extends Controller
         $assign_to_arr = explode(';',$data['task_info']->assign_to);
         $data['assign_to'] = MainUser::whereIn('user_id',$assign_to_arr)->get();
         $data['team'] = MainTeam::all();
+        $data['user_list'] = MainUser::where('user_id','!=',Auth::user()->user_id)->get();
 
         if(in_array(Auth::user()->user_id, $assign_to_arr) && $data['assign_to']->count() > 2){
             $data['button'] = 'button';
@@ -625,7 +626,7 @@ class TaskController extends Controller
     }
     public function allTask(){
 
-        if(Gate::denies('permission','all-task-read'))
+        if(Gate::denies('permission','all-task-admin') && Gate::denies('permission','all-task-leader'))
             return doNotPermission();
 
         $data['user_list'] = MainUser::active()->get();
@@ -634,13 +635,33 @@ class TaskController extends Controller
     }
     public function allTaskDatatable(Request $request){
 
-        if(Gate::denies('permission','all-task-read'))
-            return doNotPermission();
+        // if(Gate::denies('permission','all-task-read'))
+        //     return doNotPermission();
 
         if(Auth::user()->user_group_id == 1)
             $task_list = MainTask::whereNull('task_parent_id');
         else
             $task_list = MainTask::where('updated_by',Auth::user()->user_id)->whereNull('task_parent_id');
+
+        if(Gate::allows('permission','all-task-admin'))
+            $task_list = MainTask::whereNull('task_parent_id');
+        elseif(Gate::allows('permission','all-task-leader')){
+            $users = MainUser::where('user_team',Auth::user()->user_team)->get();
+            $task_list = [];
+            foreach ($users as $key => $user) {
+                $tasks = MainTask::whereNull('task_parent_id')->where(function($query) use ($user) {
+                    $query->where('assign_to',$user->user_id)
+                    ->orWhere('assign_to','LIKE','%;'.$user->user_id)
+                    ->orWhere('assign_to','LIKE','%;'.$user->user_id.';%')
+                    ->orWhere('assign_to','LIKE',$user->user_id.';%');
+                })->get();
+                foreach ($tasks as $key => $task) {
+                    $task_list[] = $task;
+                }
+            }
+            $task_list = array_unique($task_list);
+        }else
+            return doNotPermission();
 
         if($request->category != "")
             $task_list->where('category',$request->category);
@@ -950,6 +971,64 @@ class TaskController extends Controller
         }
 
         return DataTables::of($task_list)
+            ->editColumn('priority',function($row){
+                return getPriorityTask()[$row->priority];
+            })
+            ->editColumn('status',function($row){
+                return getStatusTask()[$row->status];
+            })
+            ->addColumn('task',function($row){
+                if(count($row->getSubTask) >0){
+                    $detail_button = "<i class=\"fas fa-plus-circle details-control text-danger\" id='".$row->id."'></i>";
+                }else $detail_button = "";
+
+                return $detail_button.'&nbsp&nbsp<a href="'.route('task-detail',$row->id).'"> #'.$row->id.'</a>';
+            })
+            ->editColumn('order_id',function($row){
+                if($row->order_id != null)
+                    return '<a href="'.route('order-view',$row->order_id).'">#'.$row->order_id.'</a>';
+            })
+            ->editColumn('date_start',function($row){
+                if($row->date_start != "")
+                    $date_start = Carbon::parse($row->date_start)->format('m/d/Y');
+                else
+                    $date_start = "";
+
+                return $date_start;
+            })
+            ->editColumn('category',function($row){
+                return getCategory()[$row->category];
+            })
+            ->editColumn('date_end',function($row){
+                if($row->date_end != "")
+                    $date_end = Carbon::parse($row->date_end)->format('m/d/Y');
+                else
+                    $date_end = "";
+
+                return $date_end;
+            })
+            ->editColumn('updated_at',function($row){
+                return Carbon::parse($row->updated_at)->format('m/d/Y h:i A');
+            })
+            ->editColumn('complete_percent',function($row){
+                if(!empty($row->complete_percent))
+                    return $row->complete_percent."%";
+            })
+            ->rawColumns(['order_id','task'])
+            ->make(true);
+    }
+    public function taskDashboardDatatable(){
+
+        $task_list = MainTask::getListPendingTasks();
+
+        if(Gate::allows('permission','dashboard-admin'))
+            $tasks = $task_list->skip(0)->take(5)->get();
+        elseif(Gate::allows('permission','dashboard-leader'))
+            $tasks = array_slice($task_list, 0, 5, true);
+        else
+            $tasks = $task_list->skip(0)->take(5)->get();
+
+        return DataTables::of($tasks)
             ->editColumn('priority',function($row){
                 return getPriorityTask()[$row->priority];
             })

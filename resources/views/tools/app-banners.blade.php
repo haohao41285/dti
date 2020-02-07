@@ -1,6 +1,6 @@
 @extends('layouts.app')
 @section('content-title')
-App Banners 
+  APP BANNERS
 @endsection
 @push('scripts')
 

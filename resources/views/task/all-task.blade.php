@@ -1,6 +1,6 @@
 @extends('layouts.app')
-@section('title')
-    All Tasks
+@section('content-title')
+    ALL TASKS
 @endsection
 @section('content')
     {{-- MODAL INPUT FORM --}}
@@ -24,7 +24,6 @@
     </div>
     {{-- END MODAL --}}
     <div class="table-responsive">
-        <h4 class="border border-info border-top-0 border-right-0 border-left-0 text-info">ALL TASK</h4>
         @include('task.search_task')
         <table class="table mt-4 table-sm table-hover" id="task-datatable" width="100%" cellspacing="0">
             <thead  class="thead-light">

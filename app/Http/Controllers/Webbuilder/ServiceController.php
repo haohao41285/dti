@@ -85,7 +85,7 @@ class ServiceController extends Controller
                     $checked= "checked";
                 }
                 return '<div class="custom-control custom-switch">
-                          <input type="checkbox" class="custom-control-input" id="enable_status_'.$row->service_id.'"  name="service_enable_status" value="'.$row->service_id.'" status="'.$row->enable_status.'" '.$checked.'>
+                          <input type="checkbox" class="custom-control-input service-status-booking" id="enable_status_'.$row->service_id.'"  name="service_enable_status" value="'.$row->service_id.'" status="'.$row->enable_status.'" '.$checked.'>
                           <label class="custom-control-label" for="enable_status_'.$row->service_id.'"></label>
                         </div>';
             })
@@ -95,7 +95,7 @@ class ServiceController extends Controller
                     $checked1= "checked";
                 }
                 return '<div class="custom-control custom-switch">
-                          <input type="checkbox" class="custom-control-input" id="booking_online_status'.$row->service_id.'"  name="booking_online_status" value="'.$row->service_id.'" status="'.$row->booking_online_status.'" '.$checked1.'>
+                          <input type="checkbox" class="custom-control-input service-status-booking" id="booking_online_status'.$row->service_id.'"  name="booking_online_status" value="'.$row->service_id.'" status="'.$row->booking_online_status.'" '.$checked1.'>
                           <label class="custom-control-label" for="booking_online_status'.$row->service_id.'"></label>
                         </div>';
             })
@@ -250,9 +250,10 @@ class ServiceController extends Controller
             {
                 
                 $service_list = PosService::create($arr);
-                if($service_list)
-
+                if($service_list){
+                    Session::put('services',1);
                     $request->session()->flash('message','Insert Service Success');
+                }
                 else
                     $request->session()->flash('error','Insert Insert Error');
             }elseif($check_exist ==1)
@@ -261,9 +262,10 @@ class ServiceController extends Controller
                 $service_list = PosService::where('service_place_id',$place_id)
                                             ->where('service_id',$service_id)
                                             ->update($arr);
-                if($service_list)
-
+                if($service_list){
+                    Session::put('services',1);
                     $request->session()->flash('message','Edit Service Success');
+                }
                 else
                     $request->session()->flash('error','Edit Insert Error');
             }
@@ -297,7 +299,7 @@ class ServiceController extends Controller
                     ['menu_place_id',Session::get('place_id')],
                     ['menu_id',$param_id]
                 ])
-                ->update(['enable_status'=>$status_update]);
+                ->update(['menu_type'=>$status_update]);
                 
         if(!isset($update))
             return response(['status'=>'error','message'=>'Failed! Change Status Failed!']);

@@ -1,5 +1,7 @@
 @extends('layouts.app')
-@section('title','Sms History')
+@section('content-title')
+    TRACKING HISTORY
+@endsection
 @push('styles')
 @endpush
 @section('content')
@@ -39,9 +41,6 @@
 <div class="row ">
   <div class="col-lg-12">
      <div class="card shadow mb-4 ">
-      <div class="card-header py-3">
-        <h6 class="m-0 font-weight-bold text-primary">Tracking History</h6>
-      </div>
       <div class="card-body">
         <div class="table-responsive">
           <table class="table table-bordered" id="dataTable" style="width: 100%" cellspacing="0">

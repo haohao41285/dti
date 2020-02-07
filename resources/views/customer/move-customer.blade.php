@@ -1,6 +1,6 @@
 @extends('layouts.app')
 @section('content-title')
-    Move Customers
+    MOVE CUSTOMERS
 @endsection
 @section('styles')
 

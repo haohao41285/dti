@@ -1,6 +1,6 @@
 @extends('layouts.app')
-@section('title')
-    My Tasks
+@section('content-title')
+    DETAIL CUSTOMER
 @endsection
 @push('styles')
     <style type="text/css" media="screen">
@@ -41,8 +41,6 @@
     </style>
 @endpush
 @section('content')
-
-<h4 class="border border-info border-top-0 mb-3 border-right-0 border-left-0 text-info">CUSTOMER INFORMATION</h4>
     <div class="row">
         <div class="col-md-6">
             <span class="col-md-4"><b>FullName:</b></span>
@@ -206,6 +204,11 @@
         <div class="input-group-prepend">
             <div class="input-group-text">Add CC:</div>
         </div>
+        <select name="email_list[]" id="email_list" class="form-control form-control-m" multiple>
+            @foreach($user_list as $user)
+                <option value="{{ $user->user_email }}">{{ $user->user_nickname."( ".$user->user_email." )" }}</option>
+            @endforeach
+        </select>
        
     </div>
     
@@ -221,6 +224,8 @@
 
             var file_size_total = 0;
             var file_image_list = [];
+
+            $("#email_list").multiselect();
 
             var table = $('#tracking-datatable').DataTable({
                 // dom: "lBfrtip",
@@ -271,6 +276,7 @@
                         return myXhr;
                     },
                     success: function (data) {
+                        // console.log(data);return;
                         let message = "";
                         if(data.status == 'success'){
                             toastr.success(data.message);

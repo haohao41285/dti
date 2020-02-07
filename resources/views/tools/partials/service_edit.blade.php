@@ -50,20 +50,17 @@
                 <label class="col-sm-1 col-md-1">&nbsp;</label>
                 <label class="col-sm-3 col-md-2">Price up & down</label>
                 <div class="col-sm-3 col-md-3 form-inline">
-                   <div class="radio" style="margin-top: -20px;">
-                        <label>
-                            <input type="radio" class="flat icheckstyle" {{(!isset($service_item))?"checked":""}} {{(isset($service_item) && $service_item->service_updown==0)?"checked":""}} value="0" name="service_updown">&nbsp;Medium
-                        </label>
+                    <div class="custom-control custom-radio">
+                        <input type="radio" class="custom-control-input" id="medium" {{(!isset($service_item))?"checked":""}} {{(isset($service_item) && $service_item->service_updown==0)?"checked":""}} value="0" name="service_updown">
+                        <label class="custom-control-label" for="medium">Medium&nbsp;</label>
                     </div>
-                    <div class="radio" style="margin-left:10px;margin-top: -20px;">
-                        <label>
-                            <input type="radio" class="flat icheckstyle" {{(isset($service_item) && $service_item->service_updown==1)?"checked":""}} value="1" name="service_updown">&nbsp;Up
-                        </label>
+                    <div class="custom-control custom-radio">
+                        <input type="radio" class="custom-control-input" id="up" {{(isset($service_item) && $service_item->service_updown==1)?"checked":""}} value="1" name="service_updown">
+                        <label class="custom-control-label" for="up">Up&nbsp;</label>
                     </div>
-                    <div class="radio" style="margin-left:10px;margin-top: -20px;">
-                        <label>
-                            <input type="radio" class="flat icheckstyle" {{(isset($service_item) && $service_item->service_updown==2)?"checked":""}} value="2" name="service_updown">&nbsp;Down
-                        </label>
+                    <div class="custom-control custom-radio">
+                        <input type="radio" class="custom-control-input" id="down" {{(isset($service_item) && $service_item->service_updown==2)?"checked":""}} value="2" name="service_updown">
+                        <label class="custom-control-label" for="down">Down&nbsp;</label>
                     </div>
                 </div>   
                   
@@ -82,9 +79,12 @@
                         <span>{{$errors->first('service_price')}}</span>
                 </div>    
                 <label class="col-sm-1 col-md-1"></label>
-                <label class="col-sm-3 col-md-2">Enable online bookings</label>
+                <label class="col-sm-3 col-md-2" for="enable_booking">Enable online bookings</label>
                 <div class="col-sm-2 col-md-2">
-                    <input type="checkbox" checked="checked" class="icheckstyle" name="booking_online_status" {{(isset($service_item) && $service_item->booking_online_status==1)?"checked":""}}  >
+                    <div class="custom-control custom-checkbox">
+                        <input type="checkbox" class="custom-control-input" id="enable_booking" name="booking_online_status" {{(isset($service_item) && $service_item->booking_online_status==1)?"checked":""}}  >
+                        <label class="custom-control-label" for="enable_booking"></label>
+                    </div>
                 </div> 
                 
                 <!-- <label class="col-sm-3 col-md-2">Tag Name</label>
@@ -105,7 +105,7 @@
                 <label class="col-sm-3 col-md-2">Status</label>
                 
                 <div class="col-sm-3 col-md-3 form-inline">
-                    <div class="radio" style="margin-top: -20px;">
+                    {{-- <div class="radio" style="margin-top: -20px;">
                         <label>
                           <input type="radio" class="flat icheckstyle" {{(!isset($service_item))?"checked":""}} {{(isset($service_item) && $service_item->enable_status==1)?"checked":""}} value="1" name="service_status">&nbsp;Enabled
                         </label>
@@ -114,6 +114,14 @@
                         <label>
                           <input type="radio" class="flat icheckstyle" {{(isset($service_item) && $service_item->enable_status==0)?"checked":""}} value="0" name="service_status">&nbsp;Disabled
                         </label>
+                    </div> --}}
+                    <div class="custom-control custom-radio">
+                        <input type="radio" class="custom-control-input" id="enabled" {{(!isset($service_item))?"checked":""}} {{(isset($service_item) && $service_item->enable_status==1)?"checked":""}} value="1" name="service_status">
+                        <label class="custom-control-label" for="enabled">Enabled&nbsp;&nbsp;</label>
+                    </div>
+                    <div class="custom-control custom-radio">
+                        <input type="radio" class="custom-control-input" id="disabled" {{(isset($service_item) && $service_item->enable_status==0)?"checked":""}} value="0" name="service_status">
+                        <label class="custom-control-label" for="disabled">Disabled</label>
                     </div>
                 </div>    
                 <!-- <label class="col-sm-3 col-md-2">Price Repair</label>
