@@ -72,7 +72,7 @@
                     </div>
                     <div class="form-group">
                         <div class="col-md-7 form-inline">
-                            <label class="col-sm-4 required">Email</label>
+                            <label class="col-sm-4">Email</label>
                             <div class="col-sm-8">
                                 <input type='email' name="ct_email" value="{{old('ct_email')}}"  class="form-control form-control-sm" />
                             </div>
@@ -80,7 +80,7 @@
                     </div>
                     <div class="form-group">
                         <div class="col-md-7 form-inline">
-                            <label class="col-md-4 required" >Address</label>
+                            <label class="col-md-4" >Address</label>
                             <div class="col-md-8">
                                 <input type='text' name="ct_address" value="{{old('ct_address')}}"  class="form-control form-control-sm" />
                             </div>
@@ -195,8 +195,10 @@
     $(document).on("keypress","#business_phone,#ct_cell_phone,#ct_business_phone",function() {
        let number_phone = $(this).val();
 
-       if(number_phone.length >9)
+       if(number_phone.length >9){
+        toastr.error('Phone Number only 10 characters');
         return false;
+       }
     });
 
     $('.select2').select2();

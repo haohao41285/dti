@@ -42,7 +42,15 @@
                                 </div>
                                 <label class="col-lg-2 col-form-label form-control-label">Time send</label>
                                 <div class="col-lg-4">
-                                    <input id="timepicker" required name="sms_send_event_start_time" value="" />
+                                    {{-- <input id="timepicker" required name="sms_send_event_start_time" value="" /> --}}
+                                    <div class="form-group">
+                                        <div class='input-group date' id='timepicker'>
+                                            <input type='text' class="form-control"  name="sms_send_event_start_time" />
+                                            <span class="input-group-addon">
+                                                <span class="glyphicon glyphicon-time"></span>
+                                            </span>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                             <div class="form-group row">
@@ -153,8 +161,11 @@ $("#date").datepicker({
     todayHighlight: true,
     setDate: new Date(),
 });
-$('#timepicker').timepicker({
+/*$('#timepicker').timepicker({
     uiLibrary: 'bootstrap4'
+});*/
+$('#timepicker').datetimepicker({
+    format: 'LT'
 });
 
 

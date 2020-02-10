@@ -78,58 +78,69 @@
                     <input class="form-control form-control-sm" type="text" disabled id="payment_amount_disable" name="payment_amount_disable" value="{{$order_info->csb_charge}}">
                     <input class="form-control form-control-sm" type="hidden" id="payment_amount_hidden" name="payment_amount_hidden" value="{{$order_info->csb_charge}}">
                 </div>
-            </div>
-            <div class="col-md-12 form-group row">
-                <label class="col-md-2 required">Credit Card Type</label>
-                <div class="col-md-4"><select class="form-control form-control-sm" name="credit_card_type" id="credit_card_type">
-                        <option value="MasterCard">MasterCard</option>
-                        <option value="VISA">VISA</option>
-                        <option value="Discover">Discover</option>
-                        <option value="American Express">American Express</option>
-                        <option value="E-CHECK">E-CHECK</option>
-                    </select></div>
-            </div>
-            <div class="col-md-12 form-group row check" style="display: none">
-                <label class="col-md-2 required">Routing Number</label>
-                <div class="col-md-4"><input class="form-control form-control-sm" type="text" name="routing_number"  value="{{old('routing_number')}}"></div>
-            </div>
-            <div class="col-md-12 form-group row check" style="display: none">
-                <label class="col-md-2 required">Account Number</label>
-                <div class="col-md-4"><input class="form-control form-control-sm" type="text" name="account_number"  value="{{old('account_number')}}"></div>
-            </div>
-            <div class="col-md-12 form-group row check" style="display: none">
-                <label class="col-md-2 required">Bank Name</label>
-                <div class="col-md-4"><input class="form-control form-control-sm" type="text" name="bank_name"  value="{{old('bank_name')}}"></div>
-            </div>
-            <div class="col-md-12 form-group row credit">
-                <label class="col-md-2 required">Credit Card Number</label>
-                <div class="col-md-4"><input class="form-control form-control-sm" type="text" name="credit_card_number"  value="{{old('credit_card_number')}}"></div>
-            </div>
-            <div class="col-md-12 form-group row credit">
-                <label class="col-md-2 required">Experation Date</label>
-                <div class="col-md-2"><select class="form-control form-control-sm"  name="experation_month">
-                        @for($i=1;$i<13;$i++)
-                            <option value="{{$i}}">{{$i}}</option>
-                        @endfor
-                    </select></div>
-                <div class="col-md-2"><select class="form-control form-control-sm" name="experation_year">
-                        @php
-                        $current_year = date('Y');
+            </div>\
+            
 
-                        @endphp
-                        @for($i=2019;$i<$current_year+200;$i++)
-                            <option value="{{$i}}">{{$i}}</option>
-                        @endfor
-                    </select></div>
-            </div>
-            <div class="col-md-12 form-group row credit">
-                <label class="col-md-2 required">CVV Number</label>
-                <div class="col-md-4"><input class="form-control form-control-sm" type="text"  value="{{old('cvv_number')}}" name="cvv_number"></div>
-            </div>
-            <div class="col-md-12 form-group row">
-                <label class="col-md-2 required">Name On Card</label>
-                <div class="col-md-4"><input class="form-control form-control-sm" type="text" value="{{old('fullname')}}" name="fullname" placeholder="Last Name"></div>
-            </div>
+                <div class="col-md-12 form-group row">
+                    <label class="col-md-2 required">Credit Card Type</label>
+                    <div class="col-md-4">
+                        <select class="form-control form-control-sm" name="credit_card_type" id="credit_card_type">
+                        @if($order_info->csb_payment_method == 3)
+                            <option value="E-CHECK">E-CHECK</option>
+                        @else
+                            <option value="MasterCard">MasterCard</option>
+                            <option value="VISA">VISA</option>
+                            <option value="Discover">Discover</option>
+                            <option value="American Express">American Express</option>
+                        @endif
+                        </select>
+                    </div>
+                </div>
+            @if($order_info->csb_payment_method == 3)
+                <div class="col-md-12 form-group row check">
+                    <label class="col-md-2 required">Number Check</label>
+                    <div class="col-md-4"><input class="form-control form-control-sm" type="text" name="routing_number"  value="{{old('routing_number')}}"></div>
+                </div>{{-- 
+                <div class="col-md-12 form-group row check">
+                    <label class="col-md-2 required">Account Number</label>
+                    <div class="col-md-4"><input class="form-control form-control-sm" type="text" name="account_number"  value="{{old('account_number')}}"></div>
+                </div>
+                <div class="col-md-12 form-group row check">
+                    <label class="col-md-2 required">Bank Name</label>
+                    <div class="col-md-4"><input class="form-control form-control-sm" type="text" name="bank_name"  value="{{old('bank_name')}}"></div>
+                </div> --}}
+            @else
+                <div class="col-md-12 form-group row credit">
+                    <label class="col-md-2 required">Credit Card Number</label>
+                    <div class="col-md-4"><input class="form-control form-control-sm" type="text" name="credit_card_number"  value="{{old('credit_card_number')}}"></div>
+                </div>
+                <div class="col-md-12 form-group row credit">
+                    <label class="col-md-2 required">Experation Date</label>
+                    <div class="col-md-2"><select class="form-control form-control-sm"  name="experation_month">
+                            @for($i=1;$i<13;$i++)
+                                <option value="{{$i}}">{{$i}}</option>
+                            @endfor
+                        </select></div>
+                    <div class="col-md-2"><select class="form-control form-control-sm" name="experation_year">
+                            @php
+                            $current_year = date('Y');
+
+                            @endphp
+                            @for($i=2019;$i<$current_year+200;$i++)
+                                <option value="{{$i}}">{{$i}}</option>
+                            @endfor
+                        </select></div>
+                </div>
+                <div class="col-md-12 form-group row credit">
+                    <label class="col-md-2 required">CVV Number</label>
+                    <div class="col-md-4"><input class="form-control form-control-sm" type="text"  value="{{old('cvv_number')}}" name="cvv_number"></div>
+                </div>
+                <div class="col-md-12 form-group row">
+                    <label class="col-md-2 required">Name On Card</label>
+                    <div class="col-md-4"><input class="form-control form-control-sm" type="text" value="{{old('fullname')}}" name="fullname" placeholder="Last Name"></div>
+                </div>
+            @endif
+                
             <div class="col-md-12 form-group row">
                 <label class="col-md-2">Address</label>
                 <div class="col-md-4"><input class="form-control form-control-sm" type="text" value="{{old('address')}}"  name="address"></div>
@@ -264,44 +275,6 @@
                     $(".credit").css('display', '');
                 }
             });
-            /*$("#btn-submit").click(function(){
-                var formData = new FormData($(this).parents('form')[0]);
-                formData.append('_token','{{ csrf_token() }}');
-                ableProcessingLoader();
-                $.ajax({
-                    url: '{{ route('authorize') }}',
-                    type: 'POST',
-                    data: formData,
-                    contentType: false, // NEEDED, DON'T OMIT THIS (requires jQuery 1.6+)
-                    processData: false, // NEEDED, DON'T OMIT THIS
-                })
-                .done(function(data) {
-                    console.log(data);
-                    // data = JSON.parse(data);
-                    if(data.status === 'error'){
-                        if( typeof(data.message) === 'string' )
-                            toastr.error(data.message);
-                        else{
-                            $.each(data.message, function(index, val) {
-                                toastr.error(val);
-                            });
-                        }
-                    }else if(data.status === 'errorAfterCharge'){
-                        toastr.error(data.message);
-                        window.location.href = "{{ route('payment-order-list') }}";
-                    }
-                    else {
-                        toastr.success(data.message);
-                        window.location.href = "{{ route('payment-order-list') }}";
-                    }
-                    unableProcessingLoader();
-                })
-                .fail(function() {
-                    toastr.error('Error!');
-                    unableProcessingLoader();
-                });
-                
-            })*/
             $(".btn-submit").click(function(){
                 ableProcessingLoader();
             })

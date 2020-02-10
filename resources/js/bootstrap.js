@@ -4,7 +4,7 @@
  //window.bootstrapMulty = require('bootstrap-multiselect/dist/js/bootstrap-multiselect.js');
  window.datatableCheckbox = require('jquery-datatables-checkboxes/js/dataTables.checkboxes.min.js');
 
- window.gijgo = require('gijgo/js/gijgo.min.js');
+ // window.gijgo = require('gijgo/js/gijgo.min.js');
 
  // window.bootstrapMulty = require('bootstrap-multiselect/dist/js/bootstrap-multiselect.js');
 

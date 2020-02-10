@@ -49,6 +49,9 @@ class MainCustomer extends Model
     public function getOrder(){
         return $this->hasMany(MainComboServiceBought::class,'csb_customer_id','customer_id');
     }
+    public function getCustomerTemplate(){
+        return $this->belongsTo(MainCustomerTemplate::class,'customer_customer_template_id','id');
+    }
 
     public static function getTotalNewCustomersEveryMonthByYear($year){
         $startDate = $year."-01-01";

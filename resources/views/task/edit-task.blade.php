@@ -73,10 +73,15 @@
                     <th>
                         <input type="text" id="complete_percent" onkeypress="return isNumberKey(event)" class="form-control form-control-sm" value="{{$task_info->complete_percent}}" name="complete_percent">
                     </th>
+                    @php
+                        $assign_to = $task_info->assign_to;
+                        $assign_list = explode(';', $assign_to);
+                    @endphp
                     <th>
-                        <select name="assign_to" class="form-control form-control-sm text-capitalize">
+                        <select name="assign_to[]" id="assign_to" class="form-control form-control-sm text-capitalize" multiple>
+
                             @foreach($user_list as $key => $user)
-                            <option {{$task_info->assign_to==$user->user_id?"selected":""}} value="{{$user->user_id}}" >{{$user->user_nickname}}({{$user->getFullname()}})</option>
+                            <option {{in_array($user->user_id,$assign_list)?"selected":""}} value="{{$user->user_id}}" >{{$user->user_nickname}}({{$user->getFullname()}})</option>
                             @endforeach
                         </select>
                     </th>
@@ -173,6 +178,7 @@
                $(this).val(100);
             }
         });
+        $("#assign_to").multiselect();
 	});
 </script>
 @endpush

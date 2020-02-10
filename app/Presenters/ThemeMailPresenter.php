@@ -28,7 +28,7 @@ class ThemeMailPresenter extends Presenter{
                 </tr>
 	        ';
         }
-		return "<div style='background: url(".asset('images/logo_email_2.png').") 0 0 repeat'>
+		return "<div style='background: url(".asset('images/logo_email_3.png').") 0 0 repeat'>
 <div style=\"border-bottom: 2px black solid\">
             <span><img src='".asset('images/logo274x29.png')."'></span>
             <span style=\"float: right\"><b>INVOICE</b></span>

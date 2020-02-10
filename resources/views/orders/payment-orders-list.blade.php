@@ -51,6 +51,7 @@
                             <th>Subtotal($)</th>
                             <th>Discount($)</th>
                             <th>Total Charged($)</th>
+                            <th>Payment method</th>
                             <th>Payment</th>
                         </tr>
                     </thead>
@@ -103,6 +104,7 @@
                     { data: 'subtotal', name: 'subtotal',class:'text-right' },
                     { data: 'discount', name: 'discount',class:'text-right' },
                     { data: 'total_charge', name: 'total_charge',class:'text-right' },
+                    { data: 'payment_method', name: 'payment_method', class:'text-center'},
                     { data: 'action' , name:'action' ,orderable: false, searcheble: false ,class:'text-center'}
                 ],
             });

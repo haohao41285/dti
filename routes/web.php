@@ -432,6 +432,7 @@ Route::group(['middleware' => ['auth']], function () {
         Route::get('receiver-task-datatable', 'TaskController@receiverTaskDatatable')->name('receiver-task-datatable');
         Route::get('my-created-task-datatable', 'TaskController@myCreatedTaskDatatable')->name('my_created_task_datatable');
         Route::get('task-dashboard-datatable', 'TaskController@taskDashboardDatatable')->name('task_dashboard_datatable');
+        Route::get('expired-task-dashboard-datatable', 'TaskController@taskExpiredDashboardDatatable')->name('expired_task_dashboard_datatable');
 
         Route::get('all-task', 'TaskController@allTask')->name('all-task');
         Route::get('all-task-datatable', 'TaskController@allTaskDatatable')->name('all-task-datatable');
@@ -441,6 +442,8 @@ Route::group(['middleware' => ['auth']], function () {
         Route::get('get-review', 'TaskController@getReview')->name('get_review');
         Route::post('save-review', 'TaskController@saveReview')->name('save_review');
         Route::post('update-assign-task', 'TaskController@updateAssignTask')->name('update_assign_task');
+        Route::get('get_assign_to', 'TaskController@getAssignTo')->name('get_assign_to');
+        Route::post('search-customer-task', 'TaskController@searchCustomerTask')->name('search_customer_task');
 
 
     });

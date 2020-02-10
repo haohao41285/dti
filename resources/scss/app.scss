@@ -1,5 +1,9 @@
+
 @import "variables";
 @import "custom";
+
+//Import gijgo
+//@import "../../node_modules/gijgo/css/gijgo";
 
 // Import Bootstrap
 @import "../../node_modules/bootstrap/scss/bootstrap.scss";
@@ -29,6 +33,7 @@
 
 // bootstrap-datetimepicker
 @import "../../node_modules/bootstrap-datepicker/dist/css/bootstrap-datepicker3";
+@import "../../node_modules/bootstrap-timepicker/css/bootstrap-timepicker";
 
 // switchery
 @import "../../node_modules/switchery/switchery";
@@ -45,9 +50,6 @@
 //Import iCheck
 @import "../../node_modules/icheck/skins/flat/_all";
 
-
-//Import gijgo
-@import "../../node_modules/gijgo/css/gijgo";
 
 //Import Select2
 @import "../../node_modules/select2/dist/css/select2"

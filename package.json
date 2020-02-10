@@ -43,14 +43,12 @@
         "webpack-cli": "^3.3.10"
     },
     "dependencies": {
-        "bootstrap-multiselect": "^0.9.15",
-        "bootstrap-timepicker": "^0.5.2",
+        "bootstrap-multiselect": "^0.9.13",
         "bootstrap-toggle": "^2.2.2",
         "canvasjs": "^1.8.1",
         "codemirror": "^5.51.0",
         "dropzone": "^5.5.1",
         "eonasdan-bootstrap-datetimepicker": "^4.17.47",
-        "gijgo": "^1.9.13",
         "gulp": "^4.0.2",
         "icheck": "^1.0.2",
         "jquery-datatables-checkboxes": "^1.2.11",

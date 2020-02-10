@@ -149,6 +149,7 @@ class OrdersController extends Controller
 
     function addOrder(Request $request)
     {
+        // return $request->all();
         if (Gate::denies('permission', 'new-order-create'))
             return doNotPermission();
 
@@ -219,6 +220,7 @@ class OrdersController extends Controller
             'csb_cashback' => 0, 
             'csb_status' => $status,
             'created_by' => Auth::user()->user_id,
+            'csb_payment_method' => $request->csb_payment_method
         ];
         //CREATE NEW PLACE IN POS_PLACE, NEW USER IN POS_USER IF CHOOSE NEW PLACE
         if ($request->place_id == 0) {
@@ -421,8 +423,8 @@ class OrdersController extends Controller
         //GET CUSTOMER
         $customer_info = MainCustomerTemplate::where('ct_cell_phone',$customer_phone)->first();
 
-         if ($customer_info->count() ==  0)
-            return response(['status' => 'error', 'message' => 'You dont have any customer']);
+         if ( !isset($customer_info) )
+            return response(['status' => 'error', 'message' => 'This phone number does not exist - Please create a new customer or get it from all customers before creating an order']);
         $customer_id = $customer_info->id;
 
         //GET CUSTOMER ASSIGN
@@ -1070,9 +1072,6 @@ class OrdersController extends Controller
                 'payment_amount' => 'required',
                 'credit_card_type' => 'required',
                 'routing_number' => 'required',
-                'account_number' => 'required',
-                'bank_name' => 'required',
-                'fullname' => 'required',
                 'order_id' => 'required'
             ];
         }
@@ -1095,22 +1094,20 @@ class OrdersController extends Controller
         }else
             $input['csb_payment_method'] = 3;
 
-        if($input['credit_card_number'] != ""){
+        if(isset($input['credit_card_number']) && $input['credit_card_number'] != ""){
             $input['credit_card_number'] = substr($input['credit_card_number'],0,4)."####".substr($input['credit_card_number'],-4);
         }
-        if($input['routing_number'] != ""){
+        if(isset($input['routing_number']) && $input['routing_number'] != ""){
             $input['routing_number'] = substr($input['routing_number'],0,4)."####".substr($input['routing_number'],-4);
         }
         $order_arr = [
             'csb_payment_method' => $input['csb_payment_method'],
             'csb_card_type' => $input['credit_card_type'],
-            'csb_card_number' => $input['credit_card_number'],
+            'csb_card_number' => $input['credit_card_number']??"",
             'csb_status' => 1,
             'csb_note' => $input['note'],
             'updated_by' => Auth::user()->user_id,
-            'bank_name' => $input['bank_name'],
-            'account_number' => $input['account_number'],
-            'routing_number' => $input['routing_number'],
+            'routing_number' => $input['routing_number']??"",
             'csb_trans_id' => $input['csb_trans_id']
         ];
 
@@ -1365,6 +1362,13 @@ class OrdersController extends Controller
             //GET CUSTOMER INFORMATION
             $customer = "<span>Customer: <b>".$order->customer_firstname. " " .$order->customer_lastname."</b></span><br><span>Business Phone: <b>".$order->getPlace->place_phone."</b></span><br><span>Email: <b>".$order->getPlace->place_email."</b></span>";
 
+            if($order->csb_payment_method == 2)
+                $payment_method = 'CREDIT';
+            elseif($order->csb_payment_method == 3)
+                $payment_method = 'E-CHECK';
+            else
+                $payment_method = 'OTHER';
+
             $my_order_arr[] = [
                 'id' => $order->id,
                 'order_date' => $order_date,
@@ -1373,6 +1377,7 @@ class OrdersController extends Controller
                 'subtotal' => $order->csb_amount,
                 'discount' => $order->csb_amount_deal,
                 'total_charge' => $order->csb_charge,
+                'payment_method' => $payment_method,
             ];
         }
         return  DataTables::of($my_order_arr)
@@ -1382,7 +1387,7 @@ class OrdersController extends Controller
             ->addColumn('action',function ($row){
                 return '<a class="btn btn-sm"  href="'.route('payment-order',$row['id']).'" title="Payment Order"><i class="fas fa-wallet"></i></a>';
             })
-            ->rawColumns(['servivce','information','customer','order_date','action','total_charge'])
+            ->rawColumns(['servivce','information','customer','order_date','action','total_charge','payment_method'])
             ->make(true);
     }
     public function getDataInputForm(Request $request){

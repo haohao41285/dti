@@ -149,6 +149,23 @@
             <input class="form-control form-control-sm" type="hidden" id="payment_amount_hidden" name="payment_amount_hidden" value="{{old('payment_amount_hidden')}}">
         </div>
     </div>
+    <div class="col-md-12 form-group row">
+        <label class="col-md-2">Payment Method</label>
+        <div class="col-md-4 row">
+            <div class="custom-control custom-radio">
+                <input type="radio" class="custom-control-input" checked id="credit" name="csb_payment_method" value="2">
+                <label class="custom-control-label" for="credit">CREDIT &nbsp; &nbsp;</label>
+            </div>
+            <div class="custom-control custom-radio">
+                <input type="radio" class="custom-control-input" id="check" name="csb_payment_method" value="3">
+                <label class="custom-control-label" for="check">CHECK &nbsp; &nbsp;</label>
+            </div>
+            <div class="custom-control custom-radio">
+                <input type="radio" class="custom-control-input" id="other" name="csb_payment_method" value="1">
+                <label class="custom-control-label" for="other">OTHER</label>
+            </div>
+        </div>
+    </div>
     <div class="form-group col-md-12">
         <div class="col-md-6 float-right">
         <button type="submit" class="btn btn-primary">Submit</button>
@@ -236,8 +253,6 @@
             data: {customer_phone: customer_phone},
         })
         .done(function(data) {
-            console.log(data);
-            // return;
             data = JSON.parse(data);
             if(data.status == 'error'){
                 $("#customer_bussiness").val("");

@@ -127,7 +127,7 @@
                     <table class="table table-sm table-hover" id="datatable-task-dashboard" width="100%" cellspacing="0">
                         <thead>
                         <tr class="thead-light">
-                            <th>Task#</th>
+                            {{-- <th>Task#</th> --}}
                             <th>Subject</th>
                             <th class="text-center">Status</th>
                             <th class="text-center">(%)Percent Complete</th>
@@ -147,7 +147,7 @@
                     <table class="table table-sm table-hover" id="datatable-customer-service" width="100%" cellspacing="0">
                         <thead>
                         <tr class="thead-light">
-                            <th>ID</th>
+                            {{-- <th>ID</th> --}}
                             <th>Customer Name</th>
                             <th>Customer Phone</th>
                             <th>Service</th>
@@ -160,6 +160,32 @@
                 </div>
             </div>
             @endif
+            <div class="col-xl-6 col-lg-6">
+                <div class="card shadow mb-4">
+                    <div class="card-header d-flex flex-row align-items-center justify-content-between border-0" >
+                        <span class="m-0 font-weight-bold text-primary">TASKS NEARLY EXPIRED</span>
+                        @if(\Gate::allows('permission','dashboard-admin'))
+                            <a href="{{route('all-task')}}">View More >>></a>
+                        @elseif(\Gate::allows('permission','dashboard-leader'))
+                            <a href="{{route('all-task')}}">View More >>></a>
+                        @else
+                            <a href="{{route('my-task')}}">View More >>></a>
+                        @endif
+                    </div>
+                    <table class="table table-sm table-hover" id="task-expired-datatable" width="100%" cellspacing="0">
+                        <thead>
+                        <tr class="thead-light">
+                            {{-- <th>Task#</th> --}}
+                            <th>Subject</th>
+                            <th class="text-center">Status</th>
+                            <th class="text-center">(%)Percent Complete</th>
+                            <th class="text-center">Order#</th>
+                            <th class="text-center">Last Updated</th>
+                        </tr>
+                        </thead>
+                    </table>
+                </div>
+            </div>
             {{-- REMIDER CUSTOMER'S REVIEW--}}
             <div class="col-xl-6 col-lg-6">
                 <div class="card shadow mb-4">
@@ -266,7 +292,7 @@
                     }
                 },
                 columns: [
-                    { data: 'cs_id', name: 'cs_id',class:'text-center' },
+                    // { data: 'cs_id', name: 'cs_id',class:'text-center' },
                     { data: 'customer_name', name: 'customer_name' },
                     { data: 'customer_phone', name: 'customer_phone' },
                     { data: 'service_info', name: 'service_info'},
@@ -280,7 +306,7 @@
             var table = $('#datatable-task-dashboard').DataTable({
                 // dom: "lBfrtip",
                 responsive: false,
-                order:[[5,'desc']],
+                order:[[4,'desc']],
                 info: false,
                 paging:false,
                 searching: false,
@@ -294,7 +320,7 @@
                     }
                 },
                 columns: [
-                    { data: 'task', name: 'task',class:'text-center' },
+                    // { data: 'task', name: 'task',class:'text-center' },
                     { data: 'subject', name: 'subject',class:'text-center' },
                     // { data: 'priority', name: 'priority',class:'text-center' },
                     { data: 'status', name: 'status',class:'text-center' },
@@ -373,6 +399,34 @@
                     { data: 'order_review', name: 'order_review', class:'text-center'},
                     { data: 'date_end', name: 'date_end',class: 'text-center'},
                     // { data: 'action' , name:'action' ,orderable: false, searcheble: false ,class:'text-center'}
+                ],
+            });
+            var tableExpiredTask = $('#task-expired-datatable').DataTable({
+                // dom: "lBfrtip",
+                responsive: false,
+                // order:[[4,'desc']],
+                info: false,
+                paging:false,
+                searching: false,
+                buttons: [
+                ],
+                processing: true,
+                serverSide: true,
+                ajax:{ url:"{{route('expired_task_dashboard_datatable')}}",
+                    data: function (d) {
+                    }
+                },
+                columns: [
+                    // { data: 'task', name: 'task',class:'text-center' },
+                    { data: 'subject', name: 'subject',class:'text-center' },
+                    // { data: 'priority', name: 'priority',class:'text-center' },
+                    { data: 'status', name: 'status',class:'text-center' },
+                    // { data: 'date_start', name: 'date_start',class:'text-center' },
+                    // { data: 'date_end', name: 'date_end',class:'text-center' },
+                    // { data: 'complete_percent', name: 'complete_percent',class: 'text-center' },
+                    { data: 'complete_percent', name: 'complete_percent',class: 'text-right' },
+                    { data: 'order_id', name: 'order_id',class: 'text-center' },
+                    { data: 'updated_at', name: 'updated_at',class: 'text-center'},
                 ],
             });
         });

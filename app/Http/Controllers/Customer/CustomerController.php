@@ -733,17 +733,12 @@ class CustomerController extends Controller
             'ct_lastname' => 'required',
             'ct_salon_name' => 'required',
             'ct_business_phone' => 'required|unique:main_customer_template,ct_business_phone|numeric|digits_between:10,15',
-            'ct_email' => 'required|email',
-            'ct_address' => 'required',
             'ct_cell_phone' => 'required|unique:main_customer_template,ct_cell_phone|digits_between:10,15'
         ];
         $message = [
             'ct_firstname.required' => 'Enter Firstname',
             'ct_lastname.required' => 'Enter Lastname',
             'ct_salon_name.required' => 'Enter Business Name',
-            'ct_email.required' => 'Enter Email',
-            'ct_email.email' =>'Enter a Email',
-            'ct_address.required' => 'Enter Address',
             'ct_business_phone.required' => 'Enter Business Phone',
             'ct_business_phone.unique' => 'Business Phone has Existed',
             'ct_business_phone.numeric' => 'Enter Number',
@@ -755,6 +750,9 @@ class CustomerController extends Controller
         $validator = Validator::make($request->all(),$rule,$message);
         if($validator->fails())
             return back()->withErrors($validator)->withInput();
+
+        if($request->ct_cell_phone == $request->ct_business_phone)
+            return back()->with(['error'=>'Cell Phone and Business Phone can not be duplicated. Enter Them again, Please!']);
 
         //GET COLUMN FOR UPDATE CUSTOMER STATUS
         $team_slug = MainTeam::find(Auth::user()->user_team)->getTeamType->slug;

@@ -27,6 +27,8 @@ use ZipArchive;
 use Laracasts\Presenter\PresentableTrait;
 use App\Models\MainNotification;
 use Gate;
+use App\Models\PosPlace;
+use App\Models\MainUserCustomerPlace;
 
 class TaskController extends Controller
 {
@@ -341,26 +343,35 @@ class TaskController extends Controller
         }
 
         $input =  $request->all();
+        if(is_null($input['complete_percent'] ))
+            $input['complete_percent'] = 0;
 
         if($request->date_start != "")
             $input['date_start'] = format_date_db($request->date_start);
         if($request->date_end != "")
             $input['date_end'] = format_date_db($request->date_end);
 
-        if(isset($request->cskh_task)){
-            $assign_arr = [];
+        // if(isset($request->cskh_task)){
 
-            $assign_list = MainUser::active()->where('user_team',$request->assign_to)->where('user_id','!=',Auth::user()->user_id)->select('user_id')->get();
-            if($assign_list->count() == 0)
-                return back()->with(['error'=>'Team empty for assign!']);
+            if($request->assign_type == 1){
+                $assign_arr = [];
 
-            foreach ($assign_list as $key => $value) {
-                $assign_arr[] = $value->user_id;
+                $assign_list = MainUser::active()->where('user_team',$request->assign_to)->where('user_id','!=',Auth::user()->user_id)->select('user_id')->get();
+                if($assign_list->count() == 0)
+                    return back()->with(['error'=>'Team empty for assign!']);
+
+                foreach ($assign_list as $key => $value) {
+                    $assign_arr[] = $value->user_id;
+                }
+                $assign_list = implode(';', $assign_arr);
+            }else{
+                if(is_array($request->assign_to))
+                    $assign_list = implode(';',$request->assign_to);
+                else
+                    $assign_list = $request->assign_to; 
             }
-            $assign_list = implode(';', $assign_arr);
             $input['assign_to'] = $assign_list; 
-        }
-
+        // }
         if(!isset($request->id)){
 
             $input['created_by'] = Auth::user()->user_id;
@@ -455,13 +466,13 @@ class TaskController extends Controller
             if(isset($request->complete_percent) && $request->complete_percent != $task_info->complete_percent)
                 $content .= "Complete Percent has been change from: <span class='text-danger'>".$task_info->complete_percent."</span> to <span class='text-danger'>".$request->complete_percent."</span><br>";
 
-            if(isset($request->assign_to) && $request->assign_to != $task_info->assign_to){
+            /*if(isset($request->assign_to) && $request->assign_to != $task_info->assign_to){
                 $user_list = MainUser::all();
                 $user_list = collect($user_list);
                 $old_assign = $user_list->where('user_id',$task_info->assign_to)->first()->user_nickname;
                 $new_assign =  $user_list->where('user_id',$request->assign_to)->first()->user_nickname;
                 $content .= "Assign has been change from: <span class='text-danger'>".$old_assign."</span> to <span class='text-danger'>".$new_assign."</span><br>";
-            }
+            }*/
 
 
             //UPDATE TASK
@@ -1035,12 +1046,124 @@ class TaskController extends Controller
             ->editColumn('status',function($row){
                 return getStatusTask()[$row->status];
             })
-            ->addColumn('task',function($row){
+            ->editColumn('order_id',function($row){
+                if($row->order_id != null)
+                    return '<a href="'.route('order-view',$row->order_id).'">#'.$row->order_id.'</a>';
+            })
+            ->editColumn('date_start',function($row){
+                if($row->date_start != "")
+                    $date_start = Carbon::parse($row->date_start)->format('m/d/Y');
+                else
+                    $date_start = "";
+
+                return $date_start;
+            })
+            ->editColumn('category',function($row){
+                return getCategory()[$row->category];
+            })
+            ->editColumn('date_end',function($row){
+                if($row->date_end != "")
+                    $date_end = Carbon::parse($row->date_end)->format('m/d/Y');
+                else
+                    $date_end = "";
+
+                return $date_end;
+            })
+            ->editColumn('updated_at',function($row){
+                return Carbon::parse($row->updated_at)->format('m/d/Y h:i A');
+            })
+            ->editColumn('complete_percent',function($row){
+                if(!empty($row->complete_percent))
+                    return $row->complete_percent."%";
+            })
+            ->editColumn('subject',function($row){
                 if(count($row->getSubTask) >0){
-                    $detail_button = "<i class=\"fas fa-plus-circle details-control text-danger\" id='".$row->id."'></i>";
+                    $detail_button = "<i class=\"fas fa-plus-circle details-control text-danger\" id='".$row->id."'></i> ";
                 }else $detail_button = "";
 
-                return $detail_button.'&nbsp&nbsp<a href="'.route('task-detail',$row->id).'"> #'.$row->id.'</a>';
+                return $detail_button.'&nbsp&nbsp<a href="'.route('task-detail',$row->id).'"> #'.$row->id." ".$row->subject.'</a> ';
+            })
+            ->rawColumns(['order_id','subject'])
+            ->make(true);
+    }
+    public function getAssignTo(Request $request){
+
+        $assign_type = $request->assign_type;
+        $assign_to = '';
+
+        if($assign_type == 1){
+            $teams = MainTeam::active()->where('id','!=',Auth::user()->user_team)->get();
+            foreach ($teams as $key => $team) {
+                $assign_to .= "<option value=".$team->id." >".$team->team_name."</option>";
+            }
+
+        }else{
+            $users = MainUser::active()->where('user_id','!=',Auth::user()->user_id)->get();
+            foreach ($users as $key => $user) {
+                $assign_to .= "<option value=".$user->user_id." >".$user->user_nickname."(".$user->getFullname().")</option>";
+            }
+        }
+        return $assign_to;
+    }
+    public function searchCustomerTask(Request $request){
+        $business_phone_customer = $request->business_phone_customer;
+        //CHECK CUSTOMER EXISTED
+        $check_customer = PosPlace::where('place_phone',$business_phone_customer)->first();
+        if(!isset($check_customer))
+            return response(['status'=>'error','message'=>'Customer NOT existed!']);
+        //CHECK SALE'S CUSTOMER
+        $check_place = MainUserCustomerPlace::where([['user_id',Auth::user()->user_id],['place_id',$check_customer->place_id]])->first();
+
+        if(!isset($check_customer))
+            return response(['status'=>'error','message'=>'You do NOT include this customer']);
+        return response(['status'=>'success','place_info'=>$check_customer]); 
+    }
+    public function taskExpiredDashboardDatatable(){
+
+        $today = today();
+        $date_add_a_month = Carbon::parse(now())->addMonth(1)->format('Y-m-d');
+
+         if(Gate::allows('permission','dashboard-admin')){
+            $tasks = MainTask::where('complete_percent','!=',"100")->whereBetween('date_end',[$today,$date_add_a_month])->skip(0)->take(5)->get();
+        }
+        elseif(Gate::allows('permission','dashboard-leader')){
+            //GET USER OF TEAM
+            $users = MainUser::where('user_team',Auth::user()->user_team)->get();
+            $task_list = [];
+            foreach ($users as $key => $user) {
+                $tasks = MainTask::where('complete_percent','!=',"100")->where(function($query) use ($user) {
+                    $query->where('assign_to',$user->user_id)
+                    ->orWhere('assign_to','LIKE','%;'.$user->user_id)
+                    ->orWhere('assign_to','LIKE','%;'.$user->user_id.';%')
+                    ->orWhere('assign_to','LIKE',$user->user_id.';%');
+                })
+                ->whereBetween('date_end',[$today,$date_add_a_month])
+                ->get();
+                foreach ($tasks as $key => $task) {
+                    $task_list[] = $task;
+                }
+            }
+            $task_list = array_unique($task_list);
+            $tasks = array_slice($task_list, 0, 5, true);
+        }
+        else{
+            $tasks = MainTask::where('complete_percent','!=',"100")
+                        ->where(function($query) {
+                            $query->where('assign_to',Auth::user()->user_id)
+                            ->orWhere('assign_to','LIKE','%;'.Auth::user()->user_id)
+                            ->orWhere('assign_to','LIKE','%;'.Auth::user()->user_id.';%')
+                            ->orWhere('assign_to','LIKE',Auth::user()->user_id.';%');
+                        })
+                        ->whereBetween('date_end',[$today,$date_add_a_month])
+                        ->skip(0)->take(5)->get();
+            }
+                    
+        return DataTables::of($tasks)
+            ->editColumn('priority',function($row){
+                return getPriorityTask()[$row->priority];
+            })
+            ->editColumn('status',function($row){
+                return getStatusTask()[$row->status];
             })
             ->editColumn('order_id',function($row){
                 if($row->order_id != null)
@@ -1072,7 +1195,14 @@ class TaskController extends Controller
                 if(!empty($row->complete_percent))
                     return $row->complete_percent."%";
             })
-            ->rawColumns(['order_id','task'])
+            ->editColumn('subject',function($row){
+                if(count($row->getSubTask) >0){
+                    $detail_button = "<i class=\"fas fa-plus-circle details-control text-danger\" id='".$row->id."'></i> ";
+                }else $detail_button = "";
+
+                return $detail_button.'&nbsp&nbsp<a href="'.route('task-detail',$row->id).'"> #'.$row->id." ".$row->subject.'</a> ';
+            })
+            ->rawColumns(['order_id','subject'])
             ->make(true);
     }
 }

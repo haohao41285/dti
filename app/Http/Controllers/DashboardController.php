@@ -201,7 +201,10 @@ class DashboardController extends Controller {
             ->addColumn('action',function($row){
                 return '<a class="order-service" href="'.route('add-order',$row['customer_customer_template_id']).'" title="Go To Order"><i class="fas fa-shopping-cart"></i></a>';
             })
-            ->rawColumns(['action','seller_name','service_info','expired_date','cs_id'])
+            ->editColumn('customer_name',function($row){
+                return '<a href="'.route('customer-detail',$row['customer_customer_template_id']).'">'.$row['cs_id']." ".$row['customer_name'].'</a>';
+            })
+            ->rawColumns(['action','seller_name','service_info','expired_date','customer_name'])
             ->make(true);
     }
     public function reviewDashboardDatatable(Request $request){
