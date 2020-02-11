@@ -289,6 +289,14 @@
                                             <b>`+val.business_name+`</b>
                                         </label>`;
                     });
+                    salon_html += `
+                        <input type="hidden" id="business_name_assign" name="business_name">
+                        <input type="hidden" id="business_phone_assign" name="business_phone">
+                        <input type="hidden" id="customer_id_assign" name="customer_id_assign">
+                        <input type="hidden" id="email_assign" name="email">
+                        <input type="hidden" id="website_assign" name="website">
+                        <input type="hidden" id="address_assign" name="address">
+                    `;
                 }
                 
                     $("#salon_list").html(salon_html);
@@ -309,7 +317,7 @@
             $(".credit").css('display', '');
         }
    });
-   $(".place_id").click(function () {
+   $(document).on("click",".place_id",function () {
        var place_id = $(this).val();
        if(place_id == 0){
            var business_name = $(this).attr('business_name');
