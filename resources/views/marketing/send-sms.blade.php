@@ -3,7 +3,29 @@
     SEND SMS
 @endsection
 @push('styles')
+<style>
+    td.day{
+      position:relative;  
+    }
+    td.day.disabled{
+      text-decoration: line-through;
+    }
 
+    td.day.disabled:hover:before {
+        content: 'This time is closed';
+        border: 1px red solid;
+        border-radius: 11px;
+        color: red;
+        background-color: white;
+        top: -22px;
+        position: absolute;
+        width: 136px;
+        left: -34px;
+        z-index: 1000;
+        text-align: center;
+        padding: 2px;
+    }
+</style>
 @endpush
 @section('content')
 <div class="row">
@@ -42,13 +64,12 @@
                                 </div>
                                 <label class="col-lg-2 col-form-label form-control-label">Time send</label>
                                 <div class="col-lg-4">
-                                    {{-- <input id="timepicker" required name="sms_send_event_start_time" value="" /> --}}
                                     <div class="form-group">
-                                        <div class='input-group date' id='timepicker'>
-                                            <input type='text' class="form-control"  name="sms_send_event_start_time" />
-                                            <span class="input-group-addon">
+                                        <div class='input-group date ' id='timepicker'>
+                                            <input type='text' class="form-control input-group-addon"  name="sms_send_event_start_time" />
+                                            {{-- <span class="input-group-addon">
                                                 <span class="fas fa-clock"></span>
-                                            </span>
+                                            </span> --}}
                                         </div>
                                     </div>
                                 </div>
@@ -160,6 +181,7 @@ $(document).ready(function() {
 $("#date").datepicker({
     todayHighlight: true,
     setDate: new Date(),
+    startDate: new Date()
 });
 /*$('#timepicker').timepicker({
     uiLibrary: 'bootstrap4'
