@@ -47,7 +47,7 @@
                                         <div class='input-group date' id='timepicker'>
                                             <input type='text' class="form-control"  name="sms_send_event_start_time" />
                                             <span class="input-group-addon">
-                                                <span class="glyphicon glyphicon-time"></span>
+                                                <span class="fas fa-clock"></span>
                                             </span>
                                         </div>
                                     </div>
