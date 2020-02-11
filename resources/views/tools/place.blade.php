@@ -879,8 +879,8 @@ function getServicesByPlaceId(placeId) {
 $(document).ready(function() {
     perviewImage();
 
-    $('input.timepicker').timepicker({
-        // format: 'LT'
+    $('input.timepicker').datetimepicker({
+        format: 'LT'
     });
 
     var type = null;
