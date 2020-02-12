@@ -357,6 +357,15 @@ Route::group(['middleware' => ['auth']], function () {
             Route::post('save', 'SetupTeamController@cskhSave');
         });
 
+        Route::group(['prefix' => 'setup-term-service'], function() {
+            Route::get('/', 'SetupTermService@index')->name('setup-term-service');
+            Route::get('/datatable', 'SetupTermService@datatable')->name('setup_term_service.datatable');
+            Route::post('/save', 'SetupTermService@save')->name('setup_term_sevice.save');
+            Route::post('/delete', 'SetupTermService@destroy')->name('setup_term_service.delete');
+            Route::get('/get-files', 'SetupTermService@getFiles')->name('setup_term_service.get_files');
+            Route::post('/upload-file', 'SetupTermService@uploadFile')->name('setup_term_service.upload_file');
+            Route::get('/change-status', 'SetupTermService@changeStatus')->name('setup_term_service.change_status');
+        });
         Route::get('menu-app','SetupServiceController@menuApp')->name('get_menu_app');
     });
 
