@@ -19,22 +19,23 @@ class ImagesHelper
 
     public static function uploadImage2($file, $current_month,$path_save) {
 
-        // $pathFile = config('app.url_file_write');
-        $name = $file->getClientOriginalName();
-        $name = str_replace(" ", "-", $name);
+        $file_name = $file->getClientOriginalName();
+        $original_name = pathinfo($file_name, PATHINFO_FILENAME);
+        $extension = pathinfo($file_name, PATHINFO_EXTENSION);
+
+        $name = str_slug($original_name).".".$extension;
         $pathImage = $path_save.$current_month.'/';
-        $filename = strtotime('now') . strtolower($name);
-        // //dd(config('app.url_file_write'));
+
+        if($current_month != "term_service"){
+          $filename = strtotime('now') . strtolower($name);
+        }else{
+          $filename = strtolower($name);
+        }
+        
          if (!file_exists($pathImage)) {
              mkdir($pathImage, 0777, true);
          }
         $file->move($path_save.$current_month, $filename);
-        // $tmpUpload = "tmp-upload/".$filename;
-
-        // self::sendRequestToApi($tmpUpload,$filename,$pathImage);
-        // unlink("tmp-upload/".$filename);
-
-        // die();
         return $pathImage. $filename;
     }
 

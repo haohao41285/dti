@@ -154,7 +154,7 @@
                     </div>
                     <div class="modal-body row">
                         <div class="col-12 row">
-                            <div class="col-8 row">
+                            <div class="col-md-8">
                                 <div class="input-group mb-3 input-group-sm col-md-12">
                                     <div class="input-group-prepend">
                                         <span class="input-group-text">First name</span>
@@ -214,12 +214,12 @@
                                     @endforeach
                                 </div>
                             </div>
-                            <div class="col-4">
+                            <div class="col-md-4">
                                 <label><b>Combos/ Services</b></label>
                                 
                                 @foreach($services as $service)
                                     <div class="custom-control custom-checkbox">
-                                        <input type="checkbox" class="custom-control-input" id="service_{{ $service->id }}" name="service[]">
+                                        <input type="checkbox" class="custom-control-input" id="service_{{ $service->id }}" value="{{ $service->id }}" name="services[]">
                                         <label class="custom-control-label" for="service_{{ $service->id }}">{{ $service->cs_name }}</label>
                                     </div>
                                 @endforeach
