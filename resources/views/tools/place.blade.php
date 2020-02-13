@@ -297,59 +297,38 @@
                                                 <label class="col-sm-2">Time Start</label>
                                                 <div class="col-sm-10 time-start workingtime">
                                                     <div class="col-day input-group-spaddon day_monday">
-                                                        <div class="input-group date">
-                                                            <input type="time" id="mon-start" name="mon_start" value="19:00" class="form-control form-control-sm">
-                                                            <span class="input-group-addon">
-                                                                <span class="glyphicon glyphicon-time"></span>
-                                                            </span>
+                                                        <div class="input-group date timepicker">
+                                                            <input type="text" id="mon-start" name="mon_start" value="19:00" class="form-control form-control-sm input-group-addon">
                                                         </div>
                                                     </div>
                                                     <div class="col-day input-group-spaddon day_tuesday">
-                                                        <div class="input-group date">
-                                                            <input type="time" id="tue-start" name="tue_start" value="21:00" class="form-control form-control-sm">
-                                                            <span class="input-group-addon">
-                                                                <span class="glyphicon glyphicon-time"></span>
-                                                            </span>
+                                                        <div class="input-group date timepicker">
+                                                            <input type="text" id="tue-start" name="tue_start" value="21:00" class="form-control form-control-sm input-group-addon">
                                                         </div>
                                                     </div>
                                                     <div class="col-day input-group-spaddon day_wednesday">
-                                                        <div class="input-group date">
-                                                            <input type="time" id="wed-start" name="wed_start" value="21:00" class="form-control form-control-sm">
-                                                            <span class="input-group-addon">
-                                                                <span class="glyphicon glyphicon-time"></span>
-                                                            </span>
+                                                        <div class="input-group date timepicker">
+                                                            <input type="text" id="wed-start" name="wed_start" value="21:00" class="form-control form-control-sm input-group-addon">
                                                         </div>
                                                     </div>
                                                     <div class="col-day input-group-spaddon day_thursday">
-                                                        <div class="input-group date">
-                                                            <input type="time" id="thustart" name="thu_start" value="21:00" class="form-control form-control-sm">
-                                                            <span class="input-group-addon">
-                                                                <span class="glyphicon glyphicon-time"></span>
-                                                            </span>
+                                                        <div class="input-group date timepicker">
+                                                            <input type="text" id="thustart" name="thu_start" value="21:00" class="form-control form-control-sm input-group-addon">
                                                         </div>
                                                     </div>
                                                     <div class="col-day input-group-spaddon day_friday">
-                                                        <div class="input-group date">
-                                                            <input type="time" id="fri-start" name="fri_start" value="21:00" class="form-control form-control-sm">
-                                                            <span class="input-group-addon">
-                                                                <span class="glyphicon glyphicon-time"></span>
-                                                            </span>
+                                                        <div class="input-group date timepicker">
+                                                            <input type="text" id="fri-start" name="fri_start" value="21:00" class="form-control form-control-sm input-group-addon">
                                                         </div>
                                                     </div>
                                                     <div class="col-day input-group-spaddon day_saturday">
-                                                        <div class="input-group date">
-                                                            <input type="time" id="sat-start" name="sat_start" value="21:00" class="form-control form-control-sm">
-                                                            <span class="input-group-addon">
-                                                                <span class="glyphicon glyphicon-time"></span>
-                                                            </span>
+                                                        <div class="input-group date timepicker">
+                                                            <input type="text" id="sat-start" name="sat_start" value="21:00" class="form-control form-control-sm input-group-addon">
                                                         </div>
                                                     </div>
                                                     <div class="col-day input-group-spaddon day_sunday">
-                                                        <div class="input-group date">
-                                                            <input type="time" id="sun-start" name="sun_start" value="23:00" class="form-control form-control-sm">
-                                                            <span class="input-group-addon">
-                                                                <span class="glyphicon glyphicon-time"></span>
-                                                            </span>
+                                                        <div class="input-group date timepicker">
+                                                            <input type="text" id="sun-start" name="sun_start" value="23:00" class="form-control form-control-sm input-group-addon">
                                                         </div>
                                                     </div>
                                                 </div>
@@ -360,59 +339,38 @@
                                                 <label class="col-sm-2">Time End</label>
                                                 <div class="col-sm-10 time-end workingtime">
                                                     <div class="col-day input-group-spaddon day_monday">
-                                                        <div class="input-group date">
-                                                            <input type="time" id="mon-end" name="mon_end" value="19:00" class="form-control form-control-sm ">
-                                                            <span class="input-group-addon">
-                                                                <span class="glyphicon glyphicon-time"></span>
-                                                            </span>
+                                                        <div class="input-group date timepicker">
+                                                            <input type="text" id="mon-end" name="mon_end" value="19:00" class="form-control form-control-sm input-group-addon">
                                                         </div>
                                                     </div>
                                                     <div class="col-day input-group-spaddon day_tuesday">
-                                                        <div class="input-group date">
-                                                            <input type="time" id="tue-end" name="tue_end" value="21:00" class="form-control form-control-sm ">
-                                                            <span class="input-group-addon">
-                                                                <span class="glyphicon glyphicon-time"></span>
-                                                            </span>
+                                                        <div class="input-group date timepicker">
+                                                            <input type="text" id="tue-end" name="tue_end" value="21:00" class="form-control form-control-sm input-group-addon">
                                                         </div>
                                                     </div>
                                                     <div class="col-day input-group-spaddon day_wednesday">
-                                                        <div class="input-group date">
-                                                            <input type="time" id="wed-end" name="wed_end" value="21:00" class="form-control form-control-sm ">
-                                                            <span class="input-group-addon">
-                                                                <span class="glyphicon glyphicon-time"></span>
-                                                            </span>
+                                                        <div class="input-group date timepicker">
+                                                            <input type="text" id="wed-end" name="wed_end" value="21:00" class="form-control form-control-sm input-group-addon">
                                                         </div>
                                                     </div>
                                                     <div class="col-day input-group-spaddon day_thursday">
-                                                        <div class="input-group date">
-                                                            <input type="time" id="thu-end" name="thu_end" value="21:00" class="form-control form-control-sm ">
-                                                            <span class="input-group-addon">
-                                                                <span class="glyphicon glyphicon-time"></span>
-                                                            </span>
+                                                        <div class="input-group date timepicker">
+                                                            <input type="text" id="thu-end" name="thu_end" value="21:00" class="form-control form-control-sm input-group-addon">
                                                         </div>
                                                     </div>
                                                     <div class="col-day input-group-spaddon day_friday">
-                                                        <div class="input-group date">
-                                                            <input type="time" id="fri-end" name="fri_end" value="21:00" class="form-control form-control-sm ">
-                                                            <span class="input-group-addon">
-                                                                <span class="glyphicon glyphicon-time"></span>
-                                                            </span>
+                                                        <div class="input-group date timepicker">
+                                                            <input type="text" id="fri-end" name="fri_end" value="21:00" class="form-control form-control-sm input-group-addon">
                                                         </div>
                                                     </div>
                                                     <div class="col-day input-group-spaddon day_saturday">
-                                                        <div class="input-group date">
-                                                            <input type="time" id="sat-end" name="sat_end" value="21:00" class="form-control form-control-sm ">
-                                                            <span class="input-group-addon">
-                                                                <span class="glyphicon glyphicon-time"></span>
-                                                            </span>
+                                                        <div class="input-group date timepicker">
+                                                            <input type="text" id="sat-end" name="sat_end" value="21:00" class="form-control form-control-sm input-group-addon">
                                                         </div>
                                                     </div>
                                                     <div class="col-day input-group-spaddon day_sunday">
-                                                        <div class="input-group date">
-                                                            <input type="time" id="sun-end" name="sun_end" value="23:00" class="form-control form-control-sm ">
-                                                            <span class="input-group-addon">
-                                                                <span class="glyphicon glyphicon-time"></span>
-                                                            </span>
+                                                        <div class="input-group date timepicker">
+                                                            <input type="text" id="sun-end" name="sun_end" value="23:00" class="form-control form-control-sm input-group-addon">
                                                         </div>
                                                     </div>
                                                 </div>
@@ -879,8 +837,8 @@ function getServicesByPlaceId(placeId) {
 $(document).ready(function() {
     perviewImage();
 
-    $('input.timepicker').timepicker({
-        // format: 'LT'
+    $('.timepicker').datetimepicker({
+        format: 'LT'
     });
 
     var type = null;

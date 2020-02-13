@@ -1,0 +1,1 @@
+INSERT INTO `main_menu_dti` (`id`, `name`, `icon`, `link`, `parent_id`, `status`, `created_at`, `updated_at`) VALUES (NULL, 'Setup Term Service', NULL, 'setting/setup-term-service', '32', '1', NULL, NULL);

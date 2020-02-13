@@ -16,6 +16,8 @@ use Hash;
 use App\Models\MainTheme;
 use App\Models\MainCustomer;
 use App\Models\MainComboService;
+use App\Models\MainCustomerService;
+use Auth;
 
 class DemoPlaceController extends Controller
 {
@@ -55,7 +57,6 @@ class DemoPlaceController extends Controller
             return response(['status'=>'success','message'=>'Successfully! Change Demo Status Successfully!']);
     }
     public function save(Request $request){
-        // return $request->all();
 
         $rule = [
             'customer_phone' => 'required|unique:pos_user,user_phone|digits:10',
@@ -179,6 +180,24 @@ class DemoPlaceController extends Controller
                 'mpug_place_id' => $place_max
             ];
             $create_permission = PosMerchantPerUserGroup::create($permission_admin);
+
+            //UPDATE MAIN CUSTOMER SERVICE
+            $date_expired = today()->addMonth(1)->format('Y-m-d');
+            if(!empty($request->services)){
+
+                foreach ($request->services as $key => $service) {
+
+                    MainCustomerService::insert([
+                        'cs_service_id'=>$service,
+                        'cs_date_expire' => $date_expired,
+                        'cs_customer_id' => $customer_id_max,
+                        'cs_place_id' => $place_max,
+                        'cs_type' => 0,
+                        'cs_status' => 1,
+                        'created_by' => Auth::user()->user_id,
+                    ]);
+                }
+            }
 
             if( !isset($create_place) || !isset($create_user) || !isset($create_role) || !isset($create_permission) || !isset($customer_insert) ){
                 DB::callback();

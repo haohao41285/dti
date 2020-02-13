@@ -15,7 +15,7 @@ class MainComboService extends Model
     	'cs_menu_id',
     	'cs_description',
     	'cs_status',
-    	'cs_type', // Service or Combo
+    	'cs_type', // 1-combo 2-service
     	'cs_assign_to',
         'cs_form_type',
         'cs_combo_service_type', //main_combo_service_type
