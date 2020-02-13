@@ -1,6 +1,6 @@
 @extends('layouts.app')
 @section('content-title')
-    PLACES
+PLACES
 @endsection
 @push('styles')
 <style>
@@ -313,7 +313,7 @@
                                                     </div>
                                                     <div class="col-day input-group-spaddon day_thursday">
                                                         <div class="input-group date timepicker">
-                                                            <input type="text" id="thustart" name="thu_start" value="21:00" class="form-control form-control-sm input-group-addon">
+                                                            <input type="text" id="thu-start" name="thu_start" value="" class="form-control form-control-sm input-group-addon">
                                                         </div>
                                                     </div>
                                                     <div class="col-day input-group-spaddon day_friday">
