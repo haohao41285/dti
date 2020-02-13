@@ -72,7 +72,7 @@ class SendNotification implements ShouldQueue
         // $mail->addBCC('bcc@example.com');
 
         //Attachments
-//        $mail->addAttachment('invoice9267054355559.pdf');        // Add attachments
+       $mail->addAttachment('file/review_google.pdf');        // Add attachments
         // $mail->addAttachment('/tmp/image.jpg', 'new.jpg');    // Optional name
 
         //Content

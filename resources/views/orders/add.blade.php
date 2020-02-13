@@ -18,7 +18,7 @@
         @csrf()
     <div class="form-group col-md-12 row">
         <div class="col-md-2">
-            <label class="required">Customer phone:</label>
+            <label class="required">Customer Cell phone:</label>
         </div>
         @if(empty($customer_info))
         <div class="col-md-4" >

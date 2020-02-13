@@ -25,6 +25,9 @@
 .table-responsive{
     overflow-x: hidden;
 }
+.datepicker{
+    background-color: rgb(234, 236, 244);
+}
 </style>
 
 @stack('styles')

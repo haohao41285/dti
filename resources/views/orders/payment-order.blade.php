@@ -78,9 +78,7 @@
                     <input class="form-control form-control-sm" type="text" disabled id="payment_amount_disable" name="payment_amount_disable" value="{{$order_info->csb_charge}}">
                     <input class="form-control form-control-sm" type="hidden" id="payment_amount_hidden" name="payment_amount_hidden" value="{{$order_info->csb_charge}}">
                 </div>
-            </div>\
-            
-
+            </div>
                 <div class="col-md-12 form-group row">
                     <label class="col-md-2 required">Credit Card Type</label>
                     <div class="col-md-4">
