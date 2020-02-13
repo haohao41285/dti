@@ -12,6 +12,7 @@ use App\Models\MainUser;
 use Laracasts\Presenter\PresentableTrait;
 //use OneSignal;
 use App\Jobs\SendNotificationOrderOnesignal;
+use App\Models\MainTermService;
 
 class OrderObserver
 {
@@ -83,7 +84,14 @@ class OrderObserver
                 $service_array = explode(";",$service_list);
                 $mainComboServiceBought['combo_service_list'] = MainComboService::whereIn('id',$service_array)->get();
 
-                $content = $mainComboServiceBought->present()->getThemeMail;
+                //GET TERM SERVICE
+                $input['file_term_service'] = [];
+                $term_services = MainTermService::whereIn('service_id',$service_arrray)->where('file_name')->select('file_name')->distinct('file_name')->get();
+                foreach ($term_services as $key => $term_service) {
+                    if(file_exists($term_service->file_name))
+                    $input['file_term_service'][] = $term_service->file_name;
+                }
+                $content = $order_info->present()->getThemeMail_2;
 
                 $input['subject'] = 'INVOICE';
                 $input['email'] = $mainComboServiceBought->getCustomer->customer_email;

@@ -74,6 +74,8 @@ class SetupTermService extends Controller
     		$term_service_arr['created_by'] = Auth::user()->user_id;
     		$update_term_sevice = MainTermService::create($term_service_arr);
     	}else{
+    		$term_service_arr['updated_by'] = Auth::user()->user_id;
+    		$update_term_sevice = MainTermService::find($request->id)->update($term_service_arr);
     	}
     	if(!$update_term_sevice)
     		return response(['status'=>'error','message'=>'Failed! Save Term Service Error!']);

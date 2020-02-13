@@ -294,7 +294,6 @@ $(document).ready(function($) {
         $("#modal-upload-file").modal('hide');
         $("#preview-image").attr('src','');
         old_service = 0;
-        id = 0;
     }
     function clearView(){
         $("#form-add-edit-term")[0].reset();
