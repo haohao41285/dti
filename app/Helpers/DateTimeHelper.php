@@ -49,6 +49,13 @@ if (!function_exists('format_time24h')) {
     }
 }
 
+if (!function_exists('format_time12h')) {
+    function format_time12h($time)
+    {
+        return Carbon::parse($time)->format('g:i A') ;
+    }
+}
+
 if (!function_exists('format_dayMonth')){
     function format_dayMonth($date)
     {

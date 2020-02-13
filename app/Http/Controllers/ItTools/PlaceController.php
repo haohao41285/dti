@@ -183,12 +183,50 @@ class PlaceController extends Controller
                 ->where('place_id',$request->placeId)
                 ->where('place_status',1)
                 ->first();
-        $place_actiondate = json_decode($place->place_actiondate,true);
+        $place_actiondate = json_decode($place->place_actiondate,true); //dd(format_time12h($place_actiondate['mon']['start']));
+
+        $arrActiondate = [
+            'mon' => [
+                'start' => format_time12h($place_actiondate['mon']['start']),
+                'end' => format_time12h($place_actiondate['mon']['end']),
+                'closed' => $place_actiondate['mon']['closed'],
+            ],
+            'tue' => [
+                'start' => format_time12h($place_actiondate['tue']['start']),
+                'end' => format_time12h($place_actiondate['tue']['end']),
+                'closed' => $place_actiondate['tue']['closed'],
+            ],
+            'wed' => [
+                'start' => format_time12h($place_actiondate['wed']['start']),
+                'end' => format_time12h($place_actiondate['wed']['end']),
+                'closed' => $place_actiondate['wed']['closed'],
+            ],
+            'thur' => [
+                'start' => format_time12h($place_actiondate['thur']['start']),
+                'end' => format_time12h($place_actiondate['thur']['end']),
+                'closed' => $place_actiondate['thur']['closed'],
+            ],
+            'fri' => [
+                'start' => format_time12h($place_actiondate['fri']['start']),
+                'end' => format_time12h($place_actiondate['fri']['end']),
+                'closed' => $place_actiondate['fri']['closed'],
+            ],
+            'sat' => [
+                'start' => format_time12h($place_actiondate['sat']['start']),
+                'end' => format_time12h($place_actiondate['sat']['end']),
+                'closed' => $place_actiondate['sat']['closed'],
+            ],
+            'sun' => [
+                'start' => format_time12h($place_actiondate['sun']['start']),
+                'end' => format_time12h($place_actiondate['sun']['end']),
+                'closed' => $place_actiondate['sun']['closed'],
+            ],
+        ];
 
 
         $result = [
             'place' =>$place,
-            'place_actiondate' => $place_actiondate,
+            'place_actiondate' => $arrActiondate,
         ];
 
         return response()->json(['status'=>1,'data'=>$result]);
@@ -353,38 +391,38 @@ class PlaceController extends Controller
 
         $arrActiondate = [
             'mon' => [
-                'start' => $request->mon_start,
-                'end' => $request->mon_end,
+                'start' => format_time24h($request->mon_start),
+                'end' => format_time24h($request->mon_end),
                 'closed' => $request->work_mon == 0 ? true : false,
             ],
             'tue' => [
-                'start' => $request->tue_start,
-                'end' => $request->tue_end,
+                'start' => format_time24h($request->tue_start),
+                'end' => format_time24h($request->tue_end),
                 'closed' => $request->work_tue == 0 ? true : false,
             ],
             'wed' => [
-                'start' => $request->wed_start,
-                'end' => $request->wed_end,
+                'start' => format_time24h($request->wed_start),
+                'end' => format_time24h($request->wed_end),
                 'closed' => $request->work_wed == 0 ? true : false,
             ],
             'thur' => [
-                'start' => $request->thu_start,
-                'end' => $request->thu_end,
+                'start' => format_time24h($request->thu_start),
+                'end' => format_time24h($request->thu_end),
                 'closed' => $request->work_thu == 0 ? true : false,
             ],
             'fri' => [
-                'start' => $request->fri_start,
-                'end' => $request->fri_end,
+                'start' => format_time24h($request->fri_start),
+                'end' => format_time24h($request->fri_end),
                 'closed' => $request->work_fri == 0 ? true : false,
             ],
             'sat' => [
-                'start' => $request->sat_start,
-                'end' => $request->sat_end,
+                'start' => format_time24h($request->sat_start),
+                'end' => format_time24h($request->sat_end),
                 'closed' => $request->work_sat == 0 ? true : false,
             ],
             'sun' => [
-                'start' => $request->sun_start,
-                'end' => $request->sun_end,
+                'start' => format_time24h($request->sun_start),
+                'end' => format_time24h($request->sun_end),
                 'closed' => $request->work_sun == 0 ? true : false,
             ],
         ];
