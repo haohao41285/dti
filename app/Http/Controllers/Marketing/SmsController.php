@@ -8,12 +8,14 @@ use App\Models\MainSmsContentTemplate;
 use App\Models\MainSmsSend;
 use App\Models\MainUserCustomerPlace;
 use App\Models\MainCustomerTemplate;
+use App\Models\MainSmsSendDetail;
 use GuzzleHttp\Client;
 use Carbon\Carbon;
 use DataTables;
 use Validator;
 use Auth;
 use Gate;
+use DB;
 
 
 class SmsController extends Controller
@@ -46,7 +48,7 @@ class SmsController extends Controller
             return "Error download template";
     }
 
-     public function postSendSMS(Request $request){
+     public function postSendSMS(Request $request, MainSmsSendDetail $mainSmsSendDetail){
 
          if(Gate::denies('permission','send-sms'))
              return doNotPermissionAjax();
@@ -67,60 +69,59 @@ class SmsController extends Controller
         $validator = Validator::make($request->all(), $rules, $messages);
 
         if ($validator->fails()) {
-
             return redirect()->back()->withErrors($validator)->withInput();
+        }
+        // else{
+        //     if($request->sms_send_event_template_id == ""){
 
-        }else{
-            if($request->sms_send_event_template_id == ""){
+        //         return back()->with("error","Template SMS Empty!");
+        //     }
+        // 	$sms_total = 0;
+        //     // dd($request->all());
 
-                return back()->with("error","Template SMS Empty!");
-            }
-        	$sms_total = 0;
-            // dd($request->all());
+	       //  if($request->hasFile('upload_list_receiver')){
 
-	        if($request->hasFile('upload_list_receiver')){
+	       //  $path = $request->file('upload_list_receiver')->getRealPath();
 
-	        $path = $request->file('upload_list_receiver')->getRealPath();
+	       //  $data = \Excel::load($path)->toArray();
 
-	        $data = \Excel::load($path)->toArray();
+        //         if(!empty($data)){
 
-                if(!empty($data)){
+        //             $arr = [];
+        //             $receiver_total = [];
+        //             $count = 0;
 
-                    $arr = [];
-                    $receiver_total = [];
-                    $count = 0;
+        //             foreach($data as $key => $value){
 
-                    foreach($data as $key => $value){
+        //                 if($value['phone'] != ""){
+        //                     $receiver_total[] = [
+        //                         'name' =>$value['name'],
+        //                         'phone'=>$value['phone'],
+        //                         'birthday'=>$value['birthday'],
+        //                         'code' =>$value['code'],
+        //                         'time1'=>$value['time1'],
+        //                         'time2'=>$value['time2'],
+        //                     ];
+        //                     $arr[] = $value['phone'];
+        //                     $count++;
+        //                 }
+        //             }
+        //             if($count == 0)
+        //                 return back()->with('error','Phone number empty!');
+        //             $upload_list_receiver = implode(";", $arr);
 
-                        if($value['phone'] != ""){
-                            $receiver_total[] = [
-                                'name' =>$value['name'],
-                                'phone'=>$value['phone'],
-                                'birthday'=>$value['birthday'],
-                                'code' =>$value['code'],
-                                'time1'=>$value['time1'],
-                                'time2'=>$value['time2'],
-                            ];
-                            $arr[] = $value['phone'];
-                            $count++;
-                        }
-                    }
-                    if($count == 0)
-                        return back()->with('error','Phone number empty!');
-                    $upload_list_receiver = implode(";", $arr);
-
-                    $sms_total = $key+1 ;
-                }else{
-                    $upload_list_receiver = "";
-                    $request->session()->flash("error","Upload List Receiver Empty!");
-                    return back();
-                }
-	        }
-	        else
-	        {
-	            $upload_list_receiver = "";
-	            $sms_total = 0;
-	        }
+        //             $sms_total = $key+1 ;
+        //         }else{
+        //             $upload_list_receiver = "";
+        //             $request->session()->flash("error","Upload List Receiver Empty!");
+        //             return back();
+        //         }
+	       //  }
+	       //  else
+	       //  {
+	       //      $upload_list_receiver = "";
+	       //      $sms_total = 0;
+	       //  }
         	
         	//SmsSend::create($arr);
         	$date = now()->format('Y_m_d_His');
@@ -131,7 +132,7 @@ class SmsController extends Controller
             $listId = explode(',',$request->list_phone);
             $listId = array_values(array_filter($listId));
             // dd($listId);
-            $receiver_total = MainCustomerTemplate::select(
+            $customer = MainCustomerTemplate::select(
                 'id',
                 'ct_fullname as name',
                 'ct_cell_phone as phone',
@@ -142,36 +143,36 @@ class SmsController extends Controller
             // echo $customer->phone; die;
 
 
-            \Excel::create($file_name,function($excel) use ($receiver_total,$request){
+            // \Excel::create($file_name,function($excel) use ($receiver_total,$request){
 
-                $excel ->sheet($request->sms_send_event_title, function ($sheet) use ($receiver_total)
-                {
-                    $sheet->cell('A1', function($cell) {$cell->setValue('phone');   });
-                    $sheet->cell('B1', function($cell) {$cell->setValue('{p2}');   });
-                    $sheet->cell('C1', function($cell) {$cell->setValue('{p3}');   });
-                    $sheet->cell('D1', function($cell) {$cell->setValue('{p4}');   });
-                    $sheet->cell('E1', function($cell) {$cell->setValue('{p5}');   });
-                    $sheet->cell('F1', function($cell) {$cell->setValue('{p6}');   });
+            //     $excel ->sheet($request->sms_send_event_title, function ($sheet) use ($receiver_total)
+            //     {
+            //         $sheet->cell('A1', function($cell) {$cell->setValue('phone');   });
+            //         $sheet->cell('B1', function($cell) {$cell->setValue('{p2}');   });
+            //         $sheet->cell('C1', function($cell) {$cell->setValue('{p3}');   });
+            //         $sheet->cell('D1', function($cell) {$cell->setValue('{p4}');   });
+            //         $sheet->cell('E1', function($cell) {$cell->setValue('{p5}');   });
+            //         $sheet->cell('F1', function($cell) {$cell->setValue('{p6}');   });
 
-                    if (!empty($receiver_total)) {
-                        foreach ($receiver_total as $key => $value) {
-                            $i= $key+2; 
-                            if($value['phone'] != ""){
-                                $sheet->cell('A'.$i, $value['phone'] ?? NULL);
-                                $sheet->cell('B'.$i, $value['name'] ?? NULL);
-                                $sheet->cell('C'.$i, Carbon::parse($value['birthday'])->format('d/m/Y') ?? NULL);
-                                $sheet->cell('D'.$i, $value['code'] ?? NULL);
-                                $sheet->cell('E'.$i, $value['time1'] ?? NULL);
-                                $sheet->cell('F'.$i, $value['time2'] ?? NULL);
-                            }
-                        }
-                    }
-                });
-            })->store('xlsx', false, true);
+            //         if (!empty($receiver_total)) {
+            //             foreach ($receiver_total as $key => $value) {
+            //                 $i= $key+2; 
+            //                 if($value['phone'] != ""){
+            //                     $sheet->cell('A'.$i, $value['phone'] ?? NULL);
+            //                     $sheet->cell('B'.$i, $value['name'] ?? NULL);
+            //                     $sheet->cell('C'.$i, Carbon::parse($value['birthday'])->format('d/m/Y') ?? NULL);
+            //                     $sheet->cell('D'.$i, $value['code'] ?? NULL);
+            //                     $sheet->cell('E'.$i, $value['time1'] ?? NULL);
+            //                     $sheet->cell('F'.$i, $value['time2'] ?? NULL);
+            //                 }
+            //             }
+            //         }
+            //     });
+            // })->store('xlsx', false, true);
             // dd('dd');
-            $file_url = storage_path('exports/'.$file_name.".xlsx");
+            // $file_url = storage_path('exports/'.$file_name.".xlsx");
 
-            $input = $request->all();
+            // $input = $request->all();
 
             $arr = [
                 'sms_send_event_title' => $request->sms_send_event_title,
@@ -179,8 +180,8 @@ class SmsController extends Controller
                 'sms_send_event_start_day' => Carbon::parse($request->sms_send_event_start_day)->format('Y-m-d'),
                 'sms_send_event_start_time' => $request->sms_send_event_start_time,
                 'sms_send_event_status' => 1,
-                'sms_total'=>$sms_total,
-                'upload_list_receiver' => $file_url,
+                'sms_total'=>$sms_total ?? 0,
+                // 'upload_list_receiver' => $file_url,
                 'created_by' => Auth::user()->user_id,
                 'updated_by' => Auth::user()->user_id,
                 'sms_send_event_enable' => 1
@@ -190,24 +191,48 @@ class SmsController extends Controller
                                                       ->first()
                                                       ->sms_content_template;
 
-            $input['sms_content_template'] = $sms_content_template;
+            // $input['sms_content_template'] = $sms_content_template;
 
-            $input['id'] = MainSmsSend::max('id')+1;
+            // $input['id'] = MainSmsSend::max('id')+1;
 
-        	$result = $this->PushApiSMS($input,$file_url);
+        	// $result = $this->PushApiSMS($input,$file_url);
             // dd($file_url);
-        	$result = json_decode($result,true);
+        	// $result = json_decode($result,true);
 
-        	if($result['status'] == 1){
+        	// if($result['status'] == 1){
+            DB::beginTransaction();
+            try {
+                $smsSend = MainSmsSend::create($arr);
 
-                MainSmsSend::create($arr);
+                foreach ($customer as $key => $value) {
+                    $search  = ['{name}', '{phone}'];
+                    $replace = [$value->name, $value->phone];
 
-        		return back()->with('success',$result['messages']);
-            }
-        	else
-        		return back()->with('error',$result['messages']);
+                    $arr = [
+                        'sms_send_id' => $smsSend->id,
+                        'datetime' => format_datetime_db($smsSend->sms_send_event_start_day.' '.$smsSend->sms_send_event_start_time),
+                        'phone' => '1'.$value->phone,
+                        'content' => str_replace($search, $replace, $sms_content_template),
+                    ];
+                    // dd($arr);
 
-        }
+                    $mainSmsSendDetail->createByArr($arr);
+                }
+                DB::commit();
+
+                return back()->with('success','Saved successfully');
+            } catch (\Exception $e) {
+                DB::rollBack();
+                \Log::info($e);
+
+                return back()->with('error','Failed to save');
+            }          
+        	
+         //    }
+        	// else
+        	// 	return back()->with('error',$result['messages']);
+
+        
     }
     private function PushApiSMS($input,$file_url,$url = ""){
 
@@ -329,47 +354,12 @@ class SmsController extends Controller
             ->rawColumns(['action','sms_content_template','sms_send_event_title'])
             ->make(true);
     }
-     public function eventDetail(Request $request){
-
-        $event_id = $request->event_id;
-        $data_sum = [];
-
-        if($event_id != 0){
-
-            $url_api = "history?merchant_id=1&storage_event_id=".$event_id;
-
-            $url = env("SMS_API_URL").$url_api;
-
-            $header = array('Authorization'=>'Bearer ' .env("SMS_API_KEY"));
-            $client = new Client([
-                // 'timeout'  => 5.0,
-            ]);
-            $response = $client->get($url, array('headers' => $header));
-
-            $resp=  (string)$response->getBody();
-            // return $resp;
-
-            $data_arr = json_decode($resp);
-
-                foreach($data_arr->data as $data){
-                    $data_sum[] = [
-                        'phone' => $data->phone,
-                        'content' => $data->content,
-                        'date_time' => $data->updated_at,
-                    ];
-                }
-        }else{
-            $data_sum[] = [
-                        'phone' => "",
-                        'content' => "",
-                        'date_time' => "",
-                    ];
-        }
-
-        return Datatables::of($data_sum)
-                           ->make(true);
+    public function eventDetail(Request $request, MainSmsSendDetail $mainSmsSendDetail){        
+        return $mainSmsSendDetail->datatable($request->event_id);        
     }
-     public function calculateSms(Request $request){
+
+     public function calculateSms(Request $request,  MainSmsSendDetail $mainSmsSendDetail){
+        return response()->json(['status'=>'success']);
 
         $event_id = $request->event_id;
 

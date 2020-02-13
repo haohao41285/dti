@@ -28,6 +28,13 @@ if (!function_exists('format_date_db')) {
     }
 }
 
+if (!function_exists('format_datetime_db')) {
+    function format_datetime_db($date)
+    {
+        return Carbon::parse($date)->format('Y-m-d H:i') ;
+    }
+}
+
 if (!function_exists('format_datetime')) {
     function format_datetime($date)
     {
