@@ -952,23 +952,28 @@ class OrdersController extends Controller
         $order_id = $request->order_id;
         $order_status = $request->order_status;
 
-        if($order_status == 0){
+        /*if($order_status == 0){
             $status_update = 1;
             $status_text = "PAID";
         }
         else{ 
             $status_update = 2;
             $status_text = "DELIVERED";
-        }
-        if($status_update == 2)
+        }*/
+        $status_update = $order_status + 1;
+        $status_text = getOrderStatus()[$status_update];
+
+        if($status_update == 4){
+            //SEND SMS
             $order_update = MainComboServiceBought::find($order_id)->update(['csb_status' => $status_update,'csb_last_call'=>now()]);
+        }
         else
             $order_update = MainComboServiceBought::find($order_id)->update(['csb_status' => $status_update]);
 
         if (!isset($order_update))
             return response(['status' => 'error', 'message' => 'Failed!']);
         else
-            return response(['status' => 'success', 'message' => 'Successfully','status_text'=>$status_text]);
+            return response(['status' => 'success', 'message' => 'Successfully','status_text'=>$status_text,'order_status'=> $status_update]);
     }
 
     public function resendInvoice(Request $request)

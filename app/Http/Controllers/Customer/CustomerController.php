@@ -109,6 +109,8 @@ class CustomerController extends Controller
         $customers = MainCustomerTemplate::leftjoin('main_user',function($join){
             $join->on('main_customer_template.created_by','main_user.user_id');
         });
+        if(Gate::denies('permission','serviced-customer'))
+            $customers->where($team_slug,'!=',4);
 
         if($start_date != "" && $end_date != ""){
 
@@ -189,14 +191,6 @@ class CustomerController extends Controller
         if(!isset($customer_list))
             return 0;
         else{
-
-            // $team_customer_status = MainTeam::find($team_id)->getTeamType->team_customer_status;
-            // $customer_status_arr = json_decode($team_customer_status,TRUE);
-            // if(!isset($customer_status_arr[$customer_list->id]))
-            //     $customer_status = 'New Arrivals';
-            // else
-            //     $customer_status = GeneralHelper::getCustomerStatus($customer_status_arr[$customer_list->id]);
-
             //GET CUSTOMER STATUS IN CURRENT TEAM
             $slug = MainTeam::find($team_id)->getTeamType->slug;
             $customer_status = MainCustomerTemplate::find($customer_id)->$slug;
@@ -237,6 +231,14 @@ class CustomerController extends Controller
                     ->where('team_id',Auth::user()->user_team)
                     ->where('customer_id',$customer_id)
                     ->count();
+                //CHECK CUSTOMER IN TEAM TYPE , DEFFERENT TEAM
+                $data['count_serviced_customer'] = 1;
+                if(Gate::allows('permission','serviced-customer'))
+                    $data['count_serviced_customer'] = MainUserCustomerPlace::where('user_id','!=',Auth::user()->user_id)
+                    ->where('team_id',Auth::user()->user_team)
+                    ->where('customer_id',$customer_id)
+                    ->count();
+
             }
             //GET PALCE, SERVICE
 

@@ -1,117 +1,4 @@
-<?php
-namespace App\Presenters;
-
-use Laracasts\Presenter\Presenter;
-
-class ThemeMailPresenter extends Presenter{
-
-	public function getThemeMail(){
-
-	    $combo_service_html = "";
-	    $image_check_1 = "";
-	    $image_check_2 = "";
-
-	    if($this->csb_card_number != ""){
-	        $image_check_1 = "<img src='".public_path('images/green_mark.png')."'>";
-	    }
-        if($this->routing_number != ""){
-            $image_check_2 = "<img src='".public_path('images/green_mark.png')."'>";
-        }
-
-	    foreach($this->combo_service_list as $combo_service){
-	        $combo_service_html .= '
-	         <tr>
-                    <td style="border: 1px solid black;">'.$combo_service->cs_name.'</td>
-                    <td style="text-align: right;border: 1px solid black;">1</td>
-                    <td style="text-align: right;border: 1px solid black;">'.$combo_service->cs_price.'</td>
-                    <td style="text-align: right;border: 1px solid black;">'.$combo_service->cs_price.'</td>
-                </tr> 
-	        ';
-        }
-		return "<div style='background: url(".public_path('images/logo_email_3.png').") 0 0 repeat;margin: 0px 0px 100px'>
-                    <div style=\"border-bottom: 2px black solid\">
-                        <span><img src='".public_path('images/logo274x29.png')."'></span>
-                        <span style=\"float: right\"><b>INVOICE</b></span>
-                    </div>
-                    <div>
-                        <span style=\"width: 50%;float:left\">
-                            10161 Bolsa Ave, Ste 207A<br>
-                            Westminster, CA 92683<br>
-                            Email: info@dataeglobal.com<br>
-                            Phone: (888) 840-8070
-                        </span>
-                        <span style=\"float: right\">
-                            Invoice Number: #".$this->id."<br>
-                            Order Date: ".format_date($this->created_at)."
-                        </span>
-                    </div>
-                    <br>
-                    <div style=\"margin-top: 100px\">
-                        <table style=\"border-collapse: collapse;width: 100%;\">
-                            <thead>
-                            <tr>
-                                <th style=\"text-align: center;border: 1px solid black;background-color: #b6b6b6;width: 50%\"><b>Bill to</b></th>
-                                <th style=\"text-align: center;border: 1px solid black;background-color: #b6b6b6;width: 50%\"><b>Ship to</b></th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            <tr>
-                                <td style=\"border: 1px solid black;text-align: center\">
-                                    ".$this->getPlace->place_name."<br>
-                                    ".$this->getPlace->place_address."<br>
-                                    <b>Attn:".$this->getCustomer->customer_firstname." ".$this->getCustomer->customer_lastname."</b>
-                                </td>
-                                <td style=\"border: 1px solid black;text-align: center\">
-                                    ".$this->getPlace->place_name."<br>
-                                    ".$this->getPlace->place_address."<br>
-                                    <b>Attn:".$this->getCustomer->customer_firstname." ".$this->getCustomer->customer_lastname."</b>
-                                </td>
-                            </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                    <div style=\"margin-top: 30px\">
-                        <table style=\"border-collapse: collapse;width: 100%\">
-                            <thead>
-                            <tr>
-                                <th style=\"text-align: left;border: 1px solid black;background-color: #b6b6b6;width: 50%\"><b>Item Service</b></th>
-                                <th style=\"text-align: center;border: 1px solid black;background-color: #b6b6b6;width: 10%\"><b>Quantity</b></th>
-                                <th style=\"text-align: center;border: 1px solid black;background-color: #b6b6b6;width: 20%\"><b>Unit Price</b></th>
-                                <th style=\"text-align: center;border: 1px solid black;background-color: #b6b6b6;width: 20%\"><b>Amount</b></th
-                            </tr>
-                            </thead>
-                            <tbody>
-                            ".$combo_service_html."
-                            </tbody>
-                        </table>
-                    </div>
-                    <div style=\"width: 50%;float: right;margin-top: 30px;\">
-                        <div style=\"float: left\">
-                            <span>Sub Total:</span><br>
-                            <span>Discount:</span><br>
-                            <span><b>Total Charge</b></span>
-                        </div>
-                        <div style=\"float: right;text-align: right\">
-                            <span >$".$this->csb_amount."</span><br>
-                            <span >$".$this->csb_amount_deal."</span><br>
-                            <span ><b>$".$this->csb_charge."</b></span>
-                        </div>
-                    </div>
-                    <div style =\"clear: both;\"></div>
-                    <div style=\"margin-top: 30px;\">
-                        <span style=\"width: 40%;float: left;\" >Payment made by:<b>".$this->getCreatedBy->user_firstname." ".$this->getCreatedBy->user_lastname."</b></span>
-                        <span style=\"width: 30%;\" >".$image_check_1."Credit Cards End <b>".substr($this->csb_card_number,-5)."</b></span>
-                        <span style=\"width: 30%;float: right\" >".$image_check_2."Check <b>#".$this->routing_number."</b></span>
-                    </div>
-                    <div style=\"text-align: center;margin-top: 50px\">
-                        If you have any question about this invoice, please contact us shown above.
-                        <h4><b>THANKS FOR YOUR BUSINESS</b></h4>
-                    </div>
-                </div>
-                    ";
-	}
-    public function getThemeMail_2(){
-        return '<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <title>Bootstrap Example</title>
@@ -289,7 +176,7 @@ class ThemeMailPresenter extends Presenter{
         <div class="row p-0 m-0">
             <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 pl-pr-0-mb">
                 <div class="deg-bg1">
-                    <img src="'.public_path('images/banner.png').'" class="w-100" alt="">
+                    <img src="'.public_path('/image/banner.png').'" class="w-100" alt="">
                 </div>
             </div>
         </div>
@@ -303,7 +190,7 @@ class ThemeMailPresenter extends Presenter{
                             <h1>Website &<br>Inailso</h1>
                         </div> 
                         <div class="deg-bg-text w-100">
-                            <img src="'.public_path('images/1.png').'" class="w-100" alt="">
+                            <img src="'.public_path('/image/1.png').'" class="w-100" alt="">
                         </div>
                     </div>
                     <div class="deg-text-inail">
@@ -314,7 +201,7 @@ class ThemeMailPresenter extends Presenter{
             </div>
             <div class="col-xs-12 col-sm-12 col-md-12 col-lg-7" style="position: relative;z-index: 1;">
                 <div class="deg-img deg-img-inailso">
-                    <img src="'.public_path('images/web.png').'" class="w-100" alt="">
+                    <img src="'.public_path('/image/web.png').'" class="w-100" alt="">
                 </div>
             </div>
         </div>
@@ -325,7 +212,7 @@ class ThemeMailPresenter extends Presenter{
         <div class="row p-0 m-0">
             <div class="col-xs-12 col-sm-12 col-md-12 col-lg-7" style="position: relative;z-index: 1;">
                 <div class="deg-img deg-img-design">
-                    <img src="'.public_path('images/design.png').'" class="w-100" alt="" style="transform: scale(1.5);">
+                    <img src="'.public_path('/image/design.png').'" class="w-100" alt="" style="transform: scale(1.5);">
                 </div>
             </div>
             <div class="col-xs-12 col-sm-12 col-md-12 col-lg-5" style="position: relative;z-index: 3;">
@@ -335,7 +222,7 @@ class ThemeMailPresenter extends Presenter{
                             <h1>Design</h1>
                         </div>
                         <div class="deg-bg-text deg-bg-text-r w-100">
-                            <img src="'.public_path('images/2.png').'" class="w-100" alt="">
+                            <img src="'.public_path('/image/2.png').'" class="w-100" alt="">
                         </div>
                     </div>
                     <div class="deg-text-design text-right">
@@ -358,7 +245,7 @@ class ThemeMailPresenter extends Presenter{
                             <h1>Review<br>Google Map</h1>
                         </div>
                         <div class="deg-bg-text deg-bg-text-review w-100">
-                            <img src="'.public_path('images/3.png').'" class="w-100" alt="">
+                            <img src="'.public_path('/image/3.png').'" class="w-100" alt="">
                         </div>
                     </div>
                     <div class="deg-text-review">
@@ -369,7 +256,7 @@ class ThemeMailPresenter extends Presenter{
             </div>
             <div class="col-xs-12 col-sm-12 col-md-12 col-lg-7" style="position: relative;z-index: 1;">
                 <div class="deg-img deg-img-review">
-                    <img src="'.public_path('images/review.png').'" class="w-100" alt="">
+                    <img src="'.public_path('/image/review.png').'" class="w-100" alt="">
                 </div>
             </div>
         </div>
@@ -380,7 +267,7 @@ class ThemeMailPresenter extends Presenter{
         <div class="row p-0 m-0">
             <div class="col-xs-12 col-sm-12 col-md-12 col-lg-7" style="position: relative;z-index: 1;">
                 <div class="deg-img deg-img-fanpage">
-                    <img src="'.public_path('images/fanpage.png').'" class="w-100" alt="" style="transform: scale(1);">
+                    <img src="'.public_path('/image/fanpage.png').'" class="w-100" alt="" style="transform: scale(1);">
                 </div>
             </div>
             <div class="col-xs-12 col-sm-12 col-md-12 col-lg-5" style="position: relative;z-index: 3;">
@@ -390,7 +277,7 @@ class ThemeMailPresenter extends Presenter{
                             <h1>Fanpage/google<br>Maintenance</h1>
                         </div>
                         <div class="deg-bg-text deg-bg-text-r w-100">
-                            <img src="'.public_path('images/4.png').'" class="w-100" alt="">
+                            <img src="'.public_path('/image/4.png').'" class="w-100" alt="">
                         </div>
                     </div>
                     <div class="deg-text-fanpage text-right">
@@ -412,7 +299,7 @@ class ThemeMailPresenter extends Presenter{
                             <h1>Fanpage<br>Recommendation</h1>
                         </div>
                         <div class="deg-bg-text deg-bg-text-review w-100">
-                            <img src="'.public_path('images/5.png').'" class="w-100" alt="">
+                            <img src="'.public_path('/image/5.png').'" class="w-100" alt="">
                         </div>
                     </div>
                     <div class="deg-text-review">
@@ -423,7 +310,7 @@ class ThemeMailPresenter extends Presenter{
             </div>
             <div class="col-xs-12 col-sm-12 col-md-12 col-lg-7" style="position: relative;z-index: 1;">
                 <div class="deg-img deg-img-review">
-                    <img src="'.public_path('images/google.png').'" class="w-100" alt="">
+                    <img src="'.public_path('/image/google.png').'" class="w-100" alt="">
                 </div>
             </div>
         </div>
@@ -449,7 +336,3 @@ class ThemeMailPresenter extends Presenter{
 
 </body>
 </html>
-';
-    }
-}
-?>
