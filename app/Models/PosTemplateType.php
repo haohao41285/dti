@@ -45,7 +45,7 @@ class PosTemplateType extends Model
                     <a class="btn btn-sm btn-secondary delete-coupon-type" data="'.$coupon->template_type_id.'" href="#" data-toggle="tooltip" ><i  title="Delete" class="fas fa-trash"></i></a>';
             })
         ->editColumn('template_type_form',function($coupon){
-            $val = $coupon->template_type_form == 1 ? 'Default' : 'Form';
+            $val = $coupon->template_type_form == 1 ? 'Happy Birthday' : ? == 2 ? 'Remider' : 'Holiday';
             return "<span data='$coupon->template_type_form'>$val</span>";
         })
         ->rawColumns(['template_type_form','theme_image','theme_status','action'])
