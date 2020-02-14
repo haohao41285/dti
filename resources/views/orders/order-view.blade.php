@@ -48,8 +48,9 @@
             <tr>
                 <th>#{{$id}}</th>
                 <th class="status">
-                    @if($order_info->csb_status==0) NOTPAYMENT @elseif($order_info->csb_status==1) PAID @else DELIVERED @endif
-                    @if($order_info->csb_status != 2)
+                    {{-- @if($order_info->csb_status==0) NOTPAYMENT @elseif($order_info->csb_status==1) PAID @else DELIVERED @endif --}}
+                    {{ getOrderStatus()[$order_info->csb_status] }}
+                    @if($order_info->csb_status != 4)
                     <a href="javascript:void(0)" id="change-status" order-status="{{ $order_info->csb_status }}"> <i class="fas fa-edit"></i><span>Change Status</span></a>
                     @endif
                 </th>
@@ -648,7 +649,7 @@
                 console.log("error");
             });
         });
-        $("#change-status").click(function(){
+        $(document).on('click',"#change-status",function(){
             let order_status = $(this).attr('order-status');
             $.ajax({
                 url: '{{route('change-status-order')}}',
@@ -668,7 +669,13 @@
                     toatr.error(data.mesage);
                 else{
                     toastr.success(data.message);
-                    $(".status").text(data.status_text);
+
+                    let status_html = data.status_text;
+
+                    if(data.status_text !== 'DELIVERED')
+                        status_html += '<a href="javascript:void(0)" id="change-status" order-status="'+data.order_status+'"> <i class="fas fa-edit"></i><span>Change Status</span></a>';
+
+                    $(".status").html(status_html);
                 }
             })
             .fail(function() {

@@ -51,8 +51,9 @@
                         <label class="col-2 ">Form</label>
                         {{-- <input class="form-control-sm form-control col-10" type="text" name="name"> --}}
                         <select class="form-control-sm form-control col-10" name="form">
-                            <option value="1">Default</option>
-                            <option value="2">From</option>
+                            <option value="1">Happy Birthday</option>
+                            <option value="2">Remider</option>
+                            <option value="3">Holiday</option>
                         </select>
                     </div>
                 </div>
