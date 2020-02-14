@@ -87,7 +87,7 @@
                 <th>{{ $order_info->getPlace->place_name }}</th>
                 <th>{{ $order_info->getPlace->place_phone }}</th>
             </tr>
-            @if(\Gate::allows('permission','order-invoice'))
+            @if(\Gate::allows('permission','order-invoice') && $order_info->csb_status == 1)
             <tr>
                 <td colspan="2">ORDER NOTES: {{$order_info->csb_note}}</td>
                 <td>
@@ -286,17 +286,17 @@
                 if(content !== "" && typeof(content['star']) != "undefined" && content['star'] !== null)
                     star_html = "<b>"+content['star']+"</b>";
                 else
-                    star_html = '<input type="number" class="form-control form-control-sm col-md-6" id="number_of_stars" name="star" value="">';
+                    star_html = '<input type="text" onkeypress="return isNumberKey(event)" class="form-control form-control-sm col-md-6" id="number_of_stars" name="star" value="">';
 
                 if(content !== "" && typeof(content['current_review']) != "undefined" && content['current_review'] !== null)
                     current_review_html = "<b>"+content['current_review']+"</b>";
                 else
-                    current_review_html = '<input type="number" class="form-control form-control-sm col-md-6"  id="number_of_reviews" name="current_review" value="">';
+                    current_review_html = '<input type="text" onkeypress="return isNumberKey(event)" class="form-control form-control-sm col-md-6"  id="number_of_reviews" name="current_review" value="">';
 
                 if(content !== "" && typeof(content['order_review']) != "undefined" && content['order_review'] !== null)
                     order_review_html = "<b>"+content['order_review']+"</b>";
                 else
-                    order_review_html = '<input type="number" class="form-control form-control-sm col-md-6"  id="number_of_reviews" name="order_review" value="">';
+                    order_review_html = '<input type="text" onkeypress="return isNumberKey(event)" class="form-control form-control-sm col-md-6"  id="number_of_reviews" name="order_review" value="">';
 
                 if(content !== "" && typeof(content['complete_date']) != "undefined" && content['complete_date'] !== null)
                     complete_date_html = "<b>"+content['complete_date']+"</b><input type='hidden'  name='complete_date' value='"+content['complete_date']+"' >";
@@ -529,7 +529,7 @@
                 if(content !== "" && typeof(content['business_phone']) != "undefined" && content['business_phone'] !== null)
                     business_phone = '<b>'+content['business_phone']+'</b>';
                 else
-                    business_phone = `<input type="number" class="col-md-3 form-control form-control-sm" id="business_phone" name="business_phone">`;
+                    business_phone = `<input type="text" onkeypress="return isNumberKey(event)" class="col-md-3 form-control form-control-sm" id="business_phone" name="business_phone">`;
 
                 if(content !== "" && typeof(content['email']) != "undefined" && content['email'] !== null)
                     email = '<b>'+content['email']+'</b>';
@@ -688,15 +688,15 @@
             })
                 .done(function(data) {
                     data = JSON.parse(data);
+                    // console.log(data);return;
                     if(data.status == 'error'){
                         toastr.error(data.message);
                     }else{
                         toastr.success(data.message);
                     }
-                    console.log(data);
                 })
                 .fail(function() {
-                    console.log("error");
+                    toastr.error("error");
                 });
         });
 

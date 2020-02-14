@@ -1,0 +1,1 @@
+ALTER TABLE `main_combo_service_bought` ADD `csb_invoice` VARCHAR(255) NULL COMMENT 'invoice\'s file name' AFTER `csb_combo_service_id`; 

@@ -44,7 +44,8 @@ class MainComboServiceBought extends Model
         'routing_number',
         'csb_last_call', //for remider cskh call for customer
         'csb_status_call',
-        'csb_user_call'
+        'csb_user_call',
+        'csb_invoice', //invoice's file name
     ];
     public function getCustomer(){
         return $this->belongsTo(MainCustomer::class,'csb_customer_id','customer_id');

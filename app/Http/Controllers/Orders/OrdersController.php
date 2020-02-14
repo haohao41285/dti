@@ -39,6 +39,7 @@ use Hash;
 use ZipArchive;
 use Dompdf\Dompdf;
 use Gate;
+use App\Models\MainTermService;
 
 class OrdersController extends Controller
 {
@@ -93,7 +94,6 @@ class OrdersController extends Controller
 
     public function add($customer_id = 0)
     {
-
         if (Gate::denies('permission', 'new-order-create'))
             return doNotPermission();
 
@@ -211,8 +211,9 @@ class OrdersController extends Controller
         $request->service_price_hidden == 0?$status = 1:$status = 0;
 
         //INSERT MAIN_COMBO_SERVICE_BOUGHT
+        $order_id = MainComboServiceBought::max('id')+1;
         $order_history_arr = [
-            'id' => MainComboServiceBought::max('id')+1,
+            'id' => $order_id,
             'csb_customer_id' => $customer_id,
             'csb_combo_service_id' => $combo_service_list,
             'csb_amount' => $request->service_price_hidden,
@@ -220,7 +221,8 @@ class OrdersController extends Controller
             'csb_cashback' => 0, 
             'csb_status' => $status,
             'created_by' => Auth::user()->user_id,
-            'csb_payment_method' => $request->csb_payment_method
+            'csb_payment_method' => $request->csb_payment_method,
+            'csb_invoice' => 'file/invoices/invoice_'.$order_id.'.pdf'
         ];
         //CREATE NEW PLACE IN POS_PLACE, NEW USER IN POS_USER IF CHOOSE NEW PLACE
         if ($request->place_id == 0) {
@@ -985,12 +987,21 @@ class OrdersController extends Controller
         $service_arrray = explode(";", $service_list);
         $order_info['combo_service_list'] = MainComboService::whereIn('id', $service_arrray)->get();
 
-        $content = $order_info->present()->getThemeMail;
+        //GET TERM SERVICE
+        $input['file_term_service'] = [];
+        $term_services = MainTermService::whereIn('service_id',$service_arrray)->active()->select('file_name')->distinct('file_name')->get();
+        foreach ($term_services as $key => $term_service) {
+            if(file_exists($term_service->file_name))
+            $input['file_term_service'][] = $term_service->file_name;
+        }
+        $input['file_term_service'][] = $order_info->csb_invoice;
+        $content = $order_info->present()->getThemeMail_2;
 
         $input['subject'] = 'INVOICE';
         $input['email'] = $customer_email;
         $input['name'] = $order_info->getCustomer->customer_firstname . " " . $order_info->getCustomer->customer_lastname;
         $input['message'] = $content;
+
 
         dispatch(new SendNotification($input));
 
@@ -1011,11 +1022,25 @@ class OrdersController extends Controller
 
         $dompdf->loadHtml($content);
         // (Optional) Setup the paper size and orientation
-        $dompdf->setPaper('A4', 'landscape');
+        $dompdf->setPaper('A4', 'portrait');
         // Render the HTML as PDF
         $dompdf->render();
         // Output the generated PDF to Browser
-        $dompdf->stream();
+        $file_name = 'invoice_'.$order_id;
+        $dompdf->stream($file_name);
+
+        // $output = $dompdf->output();
+        // $pathFile = 'file/invoices/';
+
+        // if (!file_exists($pathFile)) {
+        //     mkdir($pathFile, 0777, true);
+        // }
+
+        // $file_name = $pathFile.'invoice_'.$order_id.'.pdf';
+
+
+        // file_put_contents(public_path($file_name), $output);
+
     }
 
     public function paymentOrderList()
@@ -1131,6 +1156,25 @@ class OrdersController extends Controller
                 $service_arr[] = $value;
         }
         $cs_id = MainCustomerService::where('cs_place_id', $place_id)->max('cs_id') + 1;
+
+        //SAVE INVOICE TO DATABASE
+        $order_info['combo_service_list'] = MainComboService::whereIn('id', $service_arr)->get();
+
+        $content = $order_info->present()->getThemeMail;
+        $dompdf = new Dompdf();
+        $dompdf->loadHtml($content);
+        // (Optional) Setup the paper size and orientation
+        $dompdf->setPaper('A4', 'portrait');
+        // Render the HTML as PDF
+        $dompdf->render();
+        // save file pdf
+        $output = $dompdf->output();
+        $pathFile = 'file/invoices/';
+        if (!file_exists($pathFile)) {
+            mkdir($pathFile, 0777, true);
+        }
+        $file_name = $pathFile.'invoice_'.$input['order_id'].'.pdf';
+        file_put_contents(public_path($file_name), $output);
 
         //UPDATE MAIN_CUSTOMER_SERVICE
         foreach ($service_arr as $key => $service) {
