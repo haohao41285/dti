@@ -94,7 +94,6 @@ class OrdersController extends Controller
 
     public function add($customer_id = 0)
     {
-
         if (Gate::denies('permission', 'new-order-create'))
             return doNotPermission();
 
@@ -405,28 +404,6 @@ class OrdersController extends Controller
             $order_history_arr['csb_place_id'] = $place_id;
             //INSERT NEW ORDER
             $insert_order = MainComboServiceBought::create($order_history_arr);
-
-            //SAVE INVOICE TO DATABASE
-            $order_info = MainComboServiceBought::find($insert_order->id);
-            $service_list = $order_info->csb_combo_service_id;
-            $service_arrray = explode(";", $service_list);
-            $order_info['combo_service_list'] = MainComboService::whereIn('id', $service_arrray)->get();
-
-            $content = $order_info->present()->getThemeMail;
-            $dompdf = new Dompdf();
-            $dompdf->loadHtml($content);
-            // (Optional) Setup the paper size and orientation
-            $dompdf->setPaper('A4', 'portrait');
-            // Render the HTML as PDF
-            $dompdf->render();
-            // save file pdf
-            $output = $dompdf->output();
-            $pathFile = 'file/invoices/';
-            if (!file_exists($pathFile)) {
-                mkdir($pathFile, 0777, true);
-            }
-            $file_name = $pathFile.'invoice_'.$insert_order->id.'.pdf';
-            file_put_contents(public_path($file_name), $output);
 
             if (!isset($insert_order)
                 || !isset($update_team_customr_status)) {
@@ -1012,11 +989,12 @@ class OrdersController extends Controller
 
         //GET TERM SERVICE
         $input['file_term_service'] = [];
-        $term_services = MainTermService::whereIn('service_id',$service_arrray)->where('file_name')->select('file_name')->distinct('file_name')->get();
+        $term_services = MainTermService::whereIn('service_id',$service_arrray)->active()->select('file_name')->distinct('file_name')->get();
         foreach ($term_services as $key => $term_service) {
             if(file_exists($term_service->file_name))
             $input['file_term_service'][] = $term_service->file_name;
         }
+        $input['file_term_service'][] = $order_info->csb_invoice;
         $content = $order_info->present()->getThemeMail_2;
 
         $input['subject'] = 'INVOICE';
@@ -1178,6 +1156,25 @@ class OrdersController extends Controller
                 $service_arr[] = $value;
         }
         $cs_id = MainCustomerService::where('cs_place_id', $place_id)->max('cs_id') + 1;
+
+        //SAVE INVOICE TO DATABASE
+        $order_info['combo_service_list'] = MainComboService::whereIn('id', $service_arr)->get();
+
+        $content = $order_info->present()->getThemeMail;
+        $dompdf = new Dompdf();
+        $dompdf->loadHtml($content);
+        // (Optional) Setup the paper size and orientation
+        $dompdf->setPaper('A4', 'portrait');
+        // Render the HTML as PDF
+        $dompdf->render();
+        // save file pdf
+        $output = $dompdf->output();
+        $pathFile = 'file/invoices/';
+        if (!file_exists($pathFile)) {
+            mkdir($pathFile, 0777, true);
+        }
+        $file_name = $pathFile.'invoice_'.$input['order_id'].'.pdf';
+        file_put_contents(public_path($file_name), $output);
 
         //UPDATE MAIN_CUSTOMER_SERVICE
         foreach ($service_arr as $key => $service) {

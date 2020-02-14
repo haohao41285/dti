@@ -86,12 +86,13 @@ class OrderObserver
 
                 //GET TERM SERVICE
                 $input['file_term_service'] = [];
-                $term_services = MainTermService::whereIn('service_id',$service_arrray)->where('file_name')->select('file_name')->distinct('file_name')->get();
+                $term_services = MainTermService::whereIn('service_id',$service_array)->active()->select('file_name')->distinct('file_name')->get();
                 foreach ($term_services as $key => $term_service) {
                     if(file_exists($term_service->file_name))
                     $input['file_term_service'][] = $term_service->file_name;
                 }
-                $content = $order_info->present()->getThemeMail_2;
+                $input['file_term_service'][] = $mainComboServiceBought->csb_invoice;
+                $content = $mainComboServiceBought->present()->getThemeMail_2;
 
                 $input['subject'] = 'INVOICE';
                 $input['email'] = $mainComboServiceBought->getCustomer->customer_email;

@@ -87,7 +87,7 @@
                 <th>{{ $order_info->getPlace->place_name }}</th>
                 <th>{{ $order_info->getPlace->place_phone }}</th>
             </tr>
-            @if(\Gate::allows('permission','order-invoice'))
+            @if(\Gate::allows('permission','order-invoice') && $order_info->csb_status == 1)
             <tr>
                 <td colspan="2">ORDER NOTES: {{$order_info->csb_note}}</td>
                 <td>
@@ -694,10 +694,9 @@
                     }else{
                         toastr.success(data.message);
                     }
-                    console.log(data);
                 })
                 .fail(function() {
-                    console.log("error");
+                    toastr.error("error");
                 });
         });
 

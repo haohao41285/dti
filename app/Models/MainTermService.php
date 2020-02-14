@@ -14,4 +14,7 @@ class MainTermService extends Model
     	'updated_by', //main_user
     	'status'
     ];
+    function scopeActive($query){
+    	return $query->where('status',1);
+    }
 }

@@ -112,7 +112,7 @@ class ThemeMailPresenter extends Presenter{
 	}
     public function getThemeMail_2(){
         return '<div>
-                    <p>Dear <i>Nguyen Thieu</i> !</p>
+                    <p>Dear <i>'.$this->getCustomer->customer_firstname." ".$this->getCustomer->customer_lastname.'</i> !</p>
                     <p>
                     Cảm ơn bạn vì đã sử dụng Dịch vụ của Dataeglobal. Chúng tôi chắc chắn sẽ hoàn thành dịch vụ tốt nhât và gửi đến bạn sớm nhất có thể.<br>
                     Chúng tôi có gửi  INVOICE và THƯ XÁC NHẬN DỊCH VỤ được đính kèm bên dưới.</p>
@@ -123,7 +123,7 @@ class ThemeMailPresenter extends Presenter{
                 -----------------------------------***------------------------------------
                 </div>
                 <address>
-                    <p style="color: #1be131c4">Thuỳ Lâm</p><br>
+                    <p style="color: #1be131c4">Thuỳ Lâm</p>
                     DATA EGLOBAL _Together we growth<br>
                     Cell:  408 430 7739       Tollfree: 888 840 8070<br>
                     Add: 10161 Bolsa Ave., Ste 207A Westminster, CA 92683<br><br>
