@@ -34,6 +34,7 @@ class SendNotification implements ShouldQueue
      */
     public function handle()
     {
+        $message = file_get_contents('email_theme'); 
         $mail = new PHPMailer(true);
 
         $mail->SMTPOptions = array(

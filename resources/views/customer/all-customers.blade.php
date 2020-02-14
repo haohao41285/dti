@@ -64,9 +64,11 @@
     <li class="nav-item">
       <a class="nav-link active" data-toggle="tab" href="#home">ALL CUSTOMERS</a>
     </li>
-    <li class="nav-item">
-      <a class="nav-link" data-toggle="tab" href="#menu1">SERVICED CUSTOMERS</a>
-    </li>
+    @if(\Gate::allows('permission','serviced-customer'))
+      <li class="nav-item">
+        <a class="nav-link" data-toggle="tab" href="#menu1">SERVICED CUSTOMERS</a>
+      </li>
+    @endif
   </ul>
 
   <!-- Tab panes -->
@@ -90,25 +92,27 @@
         </table>
       </div>
     </div>
-    <div id="menu1" class="tab-pane fade"><br>
-      <div style="height:700px" style="overflow:auto">
-        <table class="table table-sm table-hover" id="servicedCustomer" width="100%" cellspacing="0">
-            <thead>
-                <tr class="sticky-top bg-primary text-white"  style="z-index: 9">
-                  <th>ID</th>
-                  <th>Business</th>
-                  <th>Contact Name</th>
-                  <th>Business Phone</th>
-                  <th>Cell Phone</th>
-                  <th>Note</th>
-                  <th>Status</th>
-                  <th>Created Date</th>
-                  <th style="width: 15%">Action</th>
-                </tr>
-            </thead>
-        </table>
+    @if(\Gate::allows('permission','serviced-customer'))
+      <div id="menu1" class="tab-pane fade"><br>
+        <div style="height:700px" style="overflow:auto">
+          <table class="table table-sm table-hover" id="servicedCustomer" width="100%" cellspacing="0">
+              <thead>
+                  <tr class="sticky-top bg-primary text-white"  style="z-index: 9">
+                    <th>ID</th>
+                    <th>Business</th>
+                    <th>Contact Name</th>
+                    <th>Business Phone</th>
+                    <th>Cell Phone</th>
+                    <th>Note</th>
+                    <th>Status</th>
+                    <th>Created Date</th>
+                    <th style="width: 15%">Action</th>
+                  </tr>
+              </thead>
+          </table>
+        </div>
       </div>
-    </div>
+    @endif
   </div>
 </div>
 
@@ -315,13 +319,19 @@
         }else{
           data = JSON.parse(data);
             var button = ``;
-            if(data.count_customer_user == 0)
+            if(data.count_customer_user === 0)
                 button = `<button type="button" id=`+data.customer_list.id+` class="btn btn-primary btn-sm get-customer">Assign</button>`;
+
             if(data.ct_status === 'Disabled')
                 button = '';
-            if(data.customer_list.ct_status != 'New Arrivals' && data.customer_list.ct_status != 'Disabled' && data.count_customer_user == 0 ){
+
+            else if(data.customer_list.ct_status != 'New Arrivals' && data.customer_list.ct_status != 'Disabled'){
+              if(data.count_serviced_customer === 0){
+
+              }else if(data.count_customer_user === 0){
                 data.customer_list.ct_salon_name = '<input type="text" name="business_name" id="business_name" class="form-control form-control-sm col-12" required>';
                 data.customer_list.ct_business_phone = '<input type="text" name="business_phone" onkeypress="return isNumberKey(event)" id="business_phone" class="form-control form-control-sm col-12" required>';
+              }
             }
           data = data.customer_list;
           if(data.ct_salon_name==null)data.ct_salon_name="";

@@ -83,10 +83,19 @@ function getReviewStatus(){
     ];
 }
 // if(!function_exists('getTimeType'))
-    function getTimeType(){
-        return [
-            1 => 'Month',
-            2 => 'Day'
-        ];
-    }
+function getTimeType(){
+    return [
+        1 => 'Month',
+        2 => 'Day'
+    ];
+}
+function getOrderStatus(){
+    return [
+        0 => 'NOTPAYMENT',
+        1 => 'PAID',
+        2 => 'PROCESSING',
+        3 => 'DONE',
+        4 => 'DELIVERED'
+    ];
+}
 ?>
