@@ -40,6 +40,8 @@ use ZipArchive;
 use Dompdf\Dompdf;
 use Gate;
 use App\Models\MainTermService;
+use Mail;
+use App\Jobs\SendNotificationInvoice;
 
 class OrdersController extends Controller
 {
@@ -999,7 +1001,8 @@ class OrdersController extends Controller
             if(file_exists($term_service->file_name))
             $input['file_term_service'][] = $term_service->file_name;
         }
-        $input['file_term_service'][] = $order_info->csb_invoice;
+        if($order_info->csb_invoice && file_exists(public_path($order_info->csb_invoice)))
+            $input['file_term_service'][] = $order_info->csb_invoice;
         $content = $order_info->present()->getThemeMail_2;
 
         $input['subject'] = 'INVOICE';
@@ -1007,8 +1010,7 @@ class OrdersController extends Controller
         $input['name'] = $order_info->getCustomer->customer_firstname . " " . $order_info->getCustomer->customer_lastname;
         $input['message'] = $content;
 
-
-        dispatch(new SendNotification($input));
+        dispatch(new SendNotificationInvoice($input));
 
         return response(['status' => 'success', 'message' => 'Send Mail Successfully!']);
     }

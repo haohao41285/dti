@@ -13,6 +13,7 @@ use Laracasts\Presenter\PresentableTrait;
 //use OneSignal;
 use App\Jobs\SendNotificationOrderOnesignal;
 use App\Models\MainTermService;
+use App\Jobs\SendNotificationInvoice;
 
 class OrderObserver
 {
@@ -91,7 +92,8 @@ class OrderObserver
                     if(file_exists($term_service->file_name))
                     $input['file_term_service'][] = $term_service->file_name;
                 }
-                $input['file_term_service'][] = $mainComboServiceBought->csb_invoice;
+                if($mainComboServiceBought->csb_invoice && file_exists(public_path($mainComboServiceBought->csb_invoice)))
+                    $input['file_term_service'][] = $mainComboServiceBought->csb_invoice;
                 $content = $mainComboServiceBought->present()->getThemeMail_2;
 
                 $input['subject'] = 'INVOICE';
@@ -101,7 +103,7 @@ class OrderObserver
                 $input['mail_username_invoice'] = env('MAIL_USERNAME_INVOICE');
                 $input['mail_password_invoice'] = env('MAIL_PASSWORD_INVOICE');
 
-                dispatch(new SendNotification($input))->delay(now()->addSecond(5));
+                dispatch(new SendNotificationInvoice($input))->delay(now()->addSecond(5));
             }
             elseif($mainComboServiceBought->csb_status == 2)
             {
