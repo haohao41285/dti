@@ -525,3 +525,10 @@ Route::get('check-customer','ChangeDataController@checkCustomer');
 Route::get('merge-customer','ChangeDataController@mergeCustomer');
 
 
+Route::get('email_theme',function(){
+    return view('email_theme_2');
+});
+Route::get('customer-rating',function(){
+    return view('customer_rating');
+});
+
