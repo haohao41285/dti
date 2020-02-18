@@ -15,7 +15,7 @@ class CustomerRatingController extends Controller
     	$data['order_info'] = MainComboServiceBought::where('csb_token',$token)->first();
     	if(!$data['order_info'])
     		$data['error'] = 'error';
-    	
+
     	else{
     		$data['place_info'] = $data['order_info']->getPlace;
 	    	$combo_service_arr = explode(';',$data['order_info']->csb_combo_service_id);

@@ -675,4 +675,7 @@ class ReportController extends Controller
         $data['today'] = today()->format('m-d-Y');
         return $data;
     }
+    public function ratingCustomer(){
+        return view('reports.rating_customer');
+    }
 }

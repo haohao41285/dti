@@ -500,6 +500,12 @@ Route::group(['middleware' => ['auth']], function () {
             Route::get('export', 'ReportController@reviewsExport')->name('report.reviews.export');
             Route::get('review-today', 'ReportController@reviewsToday')->name('report.reviews.review_today');
         });
+        Route::group(['prefix' => 'rating-customer'], function () {
+            Route::get('/', 'ReportController@ratingCustomer')->name('report.rating');
+            Route::get('datatable', 'ReportController@reviewsDataTable')->name('report.reviews.datatable');
+            Route::get('export', 'ReportController@reviewsExport')->name('report.reviews.export');
+            Route::get('review-today', 'ReportController@reviewsToday')->name('report.reviews.review_today');
+        });
     });
 });
 
