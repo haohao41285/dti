@@ -997,9 +997,10 @@ class OrdersController extends Controller
         //GET TERM SERVICE
         $input['file_term_service'] = [];
         $term_services = MainTermService::whereIn('service_id',$service_arrray)->active()->select('file_name')->distinct('file_name')->get();
+
         foreach ($term_services as $key => $term_service) {
-            if(file_exists($term_service->file_name))
-            $input['file_term_service'][] = $term_service->file_name;
+             if(file_exists($term_service->file_name))
+                $input['file_term_service'][] = $term_service->file_name;
         }
         if($order_info->csb_invoice && file_exists(public_path($order_info->csb_invoice)))
             $input['file_term_service'][] = $order_info->csb_invoice;
@@ -1017,7 +1018,6 @@ class OrdersController extends Controller
 
     public function dowloadInvoice($order_id)
     {
-
         $order_info = MainComboServiceBought::find($order_id);
         $service_list = $order_info->csb_combo_service_id;
         $service_arrray = explode(";", $service_list);
