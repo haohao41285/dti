@@ -528,7 +528,13 @@ Route::get('merge-customer','ChangeDataController@mergeCustomer');
 Route::get('email_theme',function(){
     return view('email_theme_2');
 });
-Route::get('customer-rating',function(){
-    return view('customer_rating');
+// Route::get('customer-rating/{token}',function(){
+//     return view('customer_rating');
+// });
+Route::get('customer-rating/{token}','CustomerRatingController@index');
+
+Route::group(['prefix' => 'customer-rating'], function () {
+    Route::get('/{token}', 'CustomerRatingController@index')->name('customer_rating.index');
+    Route::post('/', 'CustomerRatingController@postRating')->name('customer_rating.post');
 });
 
