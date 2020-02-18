@@ -99,7 +99,7 @@ Class WebsiteThemeController extends Controller
                 'theme_booking_js' => $request->booking_js,
                 'theme_descript' => $request->description,
                 'theme_license' => $request->license,
-                'theme_status' => $request->status ?? 0,
+                // 'theme_status' => $request->status ?? 0,
                 'theme_image' => $image ?? $mainTheme->theme_image,
             ];
 
