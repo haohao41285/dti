@@ -687,6 +687,15 @@ class ReportController extends Controller
         if($request->rating_level && $request->rating_level != ''){
             $rating_list = $rating_list->where('rating_level',$request->rating_level);
         }
+        if($request->service && $request->service != ''){
+            $rating_list = $rating_list->where('service',$request->service);
+        }
+        if($request->continue_buy && $request->continue_buy != ''){
+            $rating_list = $rating_list->where('continue_buy',$request->continue_buy);
+        }
+        if($request->introduce && $request->introduce != ''){
+            $rating_list = $rating_list->where('introduce',$request->introduce);
+        }
         if($request->start_date != "" && $request->end_date != ""){
             $start_date = Carbon::parse($request->start_date)->subDay(1)->format('Y-m-d');
             $end_date = Carbon::parse($request->end_date)->addDay(1)->format('Y-m-d');
@@ -699,6 +708,15 @@ class ReportController extends Controller
         })
         ->editColumn('rating_level',function($row){
             return ratingCustomer()[$row->rating_level];
+        })
+        ->editColumn('service',function($row){
+            return ratingCustomer()[$row->service];
+        })
+        ->editColumn('continue_buy',function($row){
+            return yesNo()[$row->continue_buy];
+        })
+        ->editColumn('introduce',function($row){
+            return yesNo()[$row->introduce];
         })
         ->editColumn('created_at',function($row){
             return format_datetime($row->created_at);

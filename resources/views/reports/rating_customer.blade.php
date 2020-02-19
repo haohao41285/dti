@@ -14,11 +14,38 @@
                         <input type="text" class="input-sm form-control form-control-sm" id="end_date" name="end" />
                     </div>
                 </div>
-                <div class="col-md-3">
-                    <label for="">Rating</label>
+                <div class="col-md-2">
+                    <label for="">Dịch vụ</label>
                     <select name="rating_level" id="rating_level" class="form-control form-control-sm">
                             <option value="">Tất Cả</option>
                         @foreach(ratingCustomer() as $key => $rating)
+                            <option value="{{$key}}">{{$rating}}</option>
+                        @endforeach
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <label for="">Nhân viên</label>
+                    <select name="service" id="service" class="form-control form-control-sm">
+                            <option value="">Tất Cả</option>
+                        @foreach(ratingCustomer() as $key => $rating)
+                            <option value="{{$key}}">{{$rating}}</option>
+                        @endforeach
+                    </select>
+                </div>
+                <div class="col-md-1">
+                    <label for="">Tiếp tục mua</label>
+                    <select name="continue_buy" id="continue_buy" class="form-control form-control-sm">
+                            <option value="">Tất Cả</option>
+                        @foreach(yesNo() as $key => $rating)
+                            <option value="{{$key}}">{{$rating}}</option>
+                        @endforeach
+                    </select>
+                </div>
+                <div class="col-md-1">
+                    <label for="">Giới thiệu</label>
+                    <select name="introduce" id="introduce" class="form-control form-control-sm">
+                            <option value="">Tất Cả</option>
+                        @foreach(yesNo() as $key => $rating)
                             <option value="{{$key}}">{{$rating}}</option>
                         @endforeach
                     </select>
@@ -35,9 +62,12 @@
             <thead>
                 <tr class="thead-light">
                     <th style="width: 10%">Order ID</th>
-                    <th style="width: 20%">Rating</th>
-                    <th>Note</th>
-                    <th style="width: 20%" class="text-center">Created At</th>
+                    <th>Dịch vụ</th>
+                    <th>Nhân Viên</th>
+                    <th>Tiếp tục mua</th>
+                    <th>Giới Thiệu</th>
+                    <th>Ghi chú</th>
+                    <th style="width: 20%" class="text-center">Ngày tạo</th>
                 </tr>
             </thead>
         </table>
@@ -62,11 +92,17 @@
                         d.start_date = $("#start_date").val();
                         d.end_date = $("#end_date").val();
                         d.rating_level = $("#rating_level").val();
+                        d.service = $("#service").val();
+                        d.continue_buy = $("#continue_buy").val();
+                        d.introduce = $("#introduce").val();
                     }
                 },
                 columns: [
                     { data: 'order_id', name: 'order_id',class:'text-center' },
                     { data: 'rating_level', name: 'rating_level' },
+                    { data: 'service', name: 'service' },
+                    { data: 'continue_buy', name: 'continue_buy' },
+                    { data: 'introduce', name: 'introduce' },
                     { data: 'note', name: 'note',},
                     { data: 'created_at', name: 'created_at' ,class:'text-center'},
                 ],

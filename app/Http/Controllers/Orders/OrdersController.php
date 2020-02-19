@@ -998,7 +998,7 @@ class OrdersController extends Controller
 
                 $file_url = storage_path('exports/'.$file_name.".xlsx");
 
-                $sms_content_template = "Dear {name}! DEG would like to thank you for being an integral part of our success story. We really regard you as a treasure and appreciate you. Happy Birthday!";
+                $sms_content_template = "Gửi từ Dataeglobal!Cảm ơn anh/ chị {name} đã  tin tưởng và sử dụng dịch vụ của Dataelobal. Mong Quý vị vui lòng để lại ý kiến về chất lượng dịch vụ cũng như cách nhân viên tư vấn hỗ trợ cho quý vị. Để Dataeglobal ngày càng hoàn thiện hơn. Rất hi vọng được đồng hành cùng quý vị trong thời gian tới ".$url;
 
                 $url_event = 'pushsms';
 

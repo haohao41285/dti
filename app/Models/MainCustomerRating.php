@@ -11,6 +11,9 @@ class MainCustomerRating extends Model
     	'order_id',
     	'note',
     	'created_at',
-    	'rating_level'
+    	'rating_level',
+    	'service',
+    	'continue_buy',
+    	'introduce'
     ];
 }
