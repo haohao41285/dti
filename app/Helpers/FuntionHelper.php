@@ -98,4 +98,11 @@ function getOrderStatus(){
         4 => 'DELIVERED'
     ];
 }
+function ratingCustomer(){
+    return [
+        1 => 'Không hài lòng',
+        2 => 'Hài lòng',
+        3 => 'Rất hài lòng'
+    ];
+}
 ?>

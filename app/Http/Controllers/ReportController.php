@@ -18,6 +18,7 @@ use Auth;
 use Carbon\Carbon;
 use Gate,DB;
 use App\Models\MainTeamType;
+use App\Models\MainCustomerRating;
 
 class ReportController extends Controller
 {
@@ -674,5 +675,35 @@ class ReportController extends Controller
         $data['failed_total'] = $failed_total;
         $data['today'] = today()->format('m-d-Y');
         return $data;
+    }
+    public function ratingCustomer(){
+
+        return view('reports.rating_customer');
+    }
+    public function ratingCustomerDataTable(Request $request){
+
+        $rating_list = MainCustomerRating::all();
+
+        if($request->rating_level && $request->rating_level != ''){
+            $rating_list = $rating_list->where('rating_level',$request->rating_level);
+        }
+        if($request->start_date != "" && $request->end_date != ""){
+            $start_date = Carbon::parse($request->start_date)->subDay(1)->format('Y-m-d');
+            $end_date = Carbon::parse($request->end_date)->addDay(1)->format('Y-m-d');
+            $rating_list = $rating_list->whereBetween('created_at',[$start_date,$end_date]);
+        }
+
+        return Datatables::of($rating_list)
+        ->editColumn('order_id',function($row){
+            return '<a href="'.route('order-view',$row->order_id).'" title="">#'.$row->order_id.'</a>';
+        })
+        ->editColumn('rating_level',function($row){
+            return ratingCustomer()[$row->rating_level];
+        })
+        ->editColumn('created_at',function($row){
+            return format_datetime($row->created_at);
+        })
+        ->rawColumns(['order_id'])
+        ->make(true);
     }
 }

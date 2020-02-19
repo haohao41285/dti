@@ -11,7 +11,33 @@
    .note-popover.popover {
         display: none;
    }
+   .loader {
+        border: 8px solid #f3f3f3;
+        border-radius: 50%;
+        border-top: 8px solid blue;
+        border-right: 8px solid green;
+        border-bottom: 8px solid red;
+        border-left: 8px solid pink;
+        width: 80px;
+        height: 80px;
+        -webkit-animation: spin 2s linear infinite; /* Safari */
+        animation: spin 2s linear infinite;
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        z-index: 100000;
+        display: none; 
+    }
+    /* Safari */
+    @-webkit-keyframes spin {
+      0% { -webkit-transform: rotate(0deg); }
+      100% { -webkit-transform: rotate(360deg); }
+    }
 
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
 </style>
 @endpush
 @section('content')
@@ -651,6 +677,7 @@
         });
         $(document).on('click',"#change-status",function(){
             let order_status = $(this).attr('order-status');
+            ableProcessingLoader();
             $.ajax({
                 url: '{{route('change-status-order')}}',
                 type: 'POST',
@@ -677,13 +704,16 @@
 
                     $(".status").html(status_html);
                 }
+                unableProcessingLoader();
             })
             .fail(function() {
                 console.log("error");
+                unableProcessingLoader();
             });
         });
         $(".resend-invoice").click(function(){
             var order_id = '{{$id}}';
+            ableProcessingLoader();
             $.ajax({
                 url: '{{route('resend-invoice')}}',
                 type: 'POST',
@@ -701,9 +731,11 @@
                     }else{
                         toastr.success(data.message);
                     }
+                    unableProcessingLoader();
                 })
                 .fail(function() {
                     toastr.error("error");
+                    unableProcessingLoader();
                 });
         });
 
@@ -720,6 +752,14 @@
             }
             $("#file_names").html(name_html);
         })
+        function ableProcessingLoader(){
+            $('.loader').css('display','inline');
+            $("#content").css('opacity',.5);
+        }
+        function unableProcessingLoader(){
+            $('.loader').css('display','none');
+            $("#content").css('opacity',1);
+        }
     });
 </script>
 @endpush

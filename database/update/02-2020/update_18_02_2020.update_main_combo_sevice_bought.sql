@@ -1,0 +1,1 @@
+ALTER TABLE `main_combo_service_bought` ADD `csb_token` VARCHAR(255) NULL COMMENT 'for customer rating' AFTER `csb_status`; 

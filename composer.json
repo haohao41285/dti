@@ -9,9 +9,8 @@
     "license": "MIT",
 
     "require": {
-        "php": "7.2.5",
+        "php": "7.1.*",
         "authorizenet/authorizenet": "^2.0",
-        "barryvdh/laravel-dompdf": "0.8.3",
         "berkayk/onesignal-laravel": "^1.0",
         "dompdf/dompdf": "^0.8.3",
         "fideloper/proxy": "^4.0",
@@ -22,11 +21,12 @@
         "laravelcollective/html": "^5.7",
         "laravelcollective/remote": "^5.7",
         "maatwebsite/excel": "~2.1.0",
-        "phpmailer/phpmailer": "~6.0",
-        "symfony/process": "^4.3",
-        "yajra/laravel-datatables-oracle": "^8.13",
         "nexmo/laravel": "1.1",
-        "symfony/translation": "4.3.8"
+        "phpmailer/phpmailer": "~6.0",
+        "shivella/laravel-bitly": "^1.1",
+        "symfony/process": "^4.3",
+        "symfony/translation": "4.3.8",
+        "yajra/laravel-datatables-oracle": "^8.13"
     },
     "require-dev":
     {
@@ -41,10 +41,7 @@
     {
         "optimize-autoloader": true,
         "preferred-install": "dist",
-        "sort-packages": true,
-        "platform": {
-            "php": "7.2.5"
-        }
+        "sort-packages": true
     },
     "extra":
     {

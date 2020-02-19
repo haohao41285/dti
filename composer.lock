@@ -4,9 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-
-    "content-hash": "1c37dd6186c92adfb50bfba082f642f2",
-
+    "content-hash": "7b2fb74302d44e30fcaff82b8029f841",
     "packages": [
         {
             "name": "authorizenet/authorizenet",
@@ -50,62 +48,6 @@
                 "payment"
             ],
             "time": "2019-01-14T13:32:41+00:00"
-        },
-        {
-            "name": "barryvdh/laravel-dompdf",
-            "version": "v0.8.3",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/barryvdh/laravel-dompdf.git",
-                "reference": "46781d0304277845a19c09c169bc595fd182cce4"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/barryvdh/laravel-dompdf/zipball/46781d0304277845a19c09c169bc595fd182cce4",
-                "reference": "46781d0304277845a19c09c169bc595fd182cce4",
-                "shasum": ""
-            },
-            "require": {
-                "dompdf/dompdf": "^0.8",
-                "illuminate/support": "5.5.x|5.6.x|5.7.x",
-                "php": ">=7"
-            },
-            "type": "library",
-            "extra": {
-                "branch-alias": {
-                    "dev-master": "0.8-dev"
-                },
-                "laravel": {
-                    "providers": [
-                        "Barryvdh\\DomPDF\\ServiceProvider"
-                    ],
-                    "aliases": {
-                        "PDF": "Barryvdh\\DomPDF\\Facade"
-                    }
-                }
-            },
-            "autoload": {
-                "psr-4": {
-                    "Barryvdh\\DomPDF\\": "src"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Barry vd. Heuvel",
-                    "email": "barryvdh@gmail.com"
-                }
-            ],
-            "description": "A DOMPDF Wrapper for Laravel",
-            "keywords": [
-                "dompdf",
-                "laravel",
-                "pdf"
-            ],
-            "time": "2018-08-31T13:25:44+00:00"
         },
         {
             "name": "berkayk/onesignal-laravel",
@@ -273,30 +215,28 @@
         },
         {
             "name": "doctrine/lexer",
-            "version": "1.2.0",
+            "version": "1.0.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/doctrine/lexer.git",
-                "reference": "5242d66dbeb21a30dd8a3e66bf7a73b66e05e1f6"
+                "reference": "1febd6c3ef84253d7c815bed85fc622ad207a9f8"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/doctrine/lexer/zipball/5242d66dbeb21a30dd8a3e66bf7a73b66e05e1f6",
-                "reference": "5242d66dbeb21a30dd8a3e66bf7a73b66e05e1f6",
+                "url": "https://api.github.com/repos/doctrine/lexer/zipball/1febd6c3ef84253d7c815bed85fc622ad207a9f8",
+                "reference": "1febd6c3ef84253d7c815bed85fc622ad207a9f8",
                 "shasum": ""
             },
             "require": {
-                "php": "^7.2"
+                "php": ">=5.3.2"
             },
             "require-dev": {
-                "doctrine/coding-standard": "^6.0",
-                "phpstan/phpstan": "^0.11.8",
-                "phpunit/phpunit": "^8.2"
+                "phpunit/phpunit": "^4.5"
             },
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "1.2.x-dev"
+                    "dev-master": "1.0.x-dev"
                 }
             },
             "autoload": {
@@ -310,12 +250,12 @@
             ],
             "authors": [
                 {
-                    "name": "Guilherme Blanco",
-                    "email": "guilhermeblanco@gmail.com"
-                },
-                {
                     "name": "Roman Borschel",
                     "email": "roman@code-factory.org"
+                },
+                {
+                    "name": "Guilherme Blanco",
+                    "email": "guilhermeblanco@gmail.com"
                 },
                 {
                     "name": "Johannes Schmitt",
@@ -331,7 +271,7 @@
                 "parser",
                 "php"
             ],
-            "time": "2019-10-30T14:39:59+00:00"
+            "time": "2019-06-08T11:03:04+00:00"
         },
         {
             "name": "dompdf/dompdf",
@@ -3107,6 +3047,65 @@
             "time": "2019-02-22T07:42:52+00:00"
         },
         {
+            "name": "shivella/laravel-bitly",
+            "version": "1.1.2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/Shivella/laravel-bitly.git",
+                "reference": "a78d2783be3a2f01a07a089a2e8025932f6bf852"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/Shivella/laravel-bitly/zipball/a78d2783be3a2f01a07a089a2e8025932f6bf852",
+                "reference": "a78d2783be3a2f01a07a089a2e8025932f6bf852",
+                "shasum": ""
+            },
+            "require": {
+                "ext-json": "*",
+                "guzzlehttp/guzzle": "~6.0",
+                "illuminate/support": "^5.1 || ^6.0",
+                "php": ">=7.1"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "^8.1",
+                "symfony/http-foundation": "~3.0"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "Shivella\\Bitly\\BitlyServiceProvider"
+                    ],
+                    "aliases": {
+                        "Bitly": "Shivella\\Bitly\\Facade\\Bitly"
+                    }
+                }
+            },
+            "autoload": {
+                "psr-0": {
+                    "Shivella\\Bitly": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Wessel Strengholt",
+                    "email": "wessel.strengholt@gmail.com"
+                }
+            ],
+            "description": "Laravel package for generating bitly url",
+            "homepage": "https://github.com/Shivella/laravel-bitly",
+            "keywords": [
+                "bitly",
+                "laravel",
+                "package"
+            ],
+            "time": "2019-09-12T10:50:28+00:00"
+        },
+        {
             "name": "swiftmailer/swiftmailer",
             "version": "v6.2.3",
             "source": {
@@ -3246,25 +3245,25 @@
         },
         {
             "name": "symfony/css-selector",
-            "version": "v5.0.4",
+            "version": "v4.4.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/css-selector.git",
-                "reference": "ff60c90cb7950b592ebc84ad1289d0345bf24f9f"
+                "reference": "a167b1860995b926d279f9bb538f873e3bfa3465"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/css-selector/zipball/ff60c90cb7950b592ebc84ad1289d0345bf24f9f",
-                "reference": "ff60c90cb7950b592ebc84ad1289d0345bf24f9f",
+                "url": "https://api.github.com/repos/symfony/css-selector/zipball/a167b1860995b926d279f9bb538f873e3bfa3465",
+                "reference": "a167b1860995b926d279f9bb538f873e3bfa3465",
                 "shasum": ""
             },
             "require": {
-                "php": "^7.2.5"
+                "php": "^7.1.3"
             },
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "5.0-dev"
+                    "dev-master": "4.4-dev"
                 }
             },
             "autoload": {
@@ -3295,7 +3294,7 @@
             ],
             "description": "Symfony CssSelector Component",
             "homepage": "https://symfony.com",
-            "time": "2020-01-04T14:08:26+00:00"
+            "time": "2020-01-04T13:00:46+00:00"
         },
         {
             "name": "symfony/debug",
@@ -3733,20 +3732,20 @@
         },
         {
             "name": "symfony/mime",
-            "version": "v5.0.4",
+            "version": "v4.4.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/mime.git",
-                "reference": "2a3c7fee1f1a0961fa9cf360d5da553d05095e59"
+                "reference": "225034620ecd4b34fd826e9983d85e2b7a359094"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/mime/zipball/2a3c7fee1f1a0961fa9cf360d5da553d05095e59",
-                "reference": "2a3c7fee1f1a0961fa9cf360d5da553d05095e59",
+                "url": "https://api.github.com/repos/symfony/mime/zipball/225034620ecd4b34fd826e9983d85e2b7a359094",
+                "reference": "225034620ecd4b34fd826e9983d85e2b7a359094",
                 "shasum": ""
             },
             "require": {
-                "php": "^7.2.5",
+                "php": "^7.1.3",
                 "symfony/polyfill-intl-idn": "^1.10",
                 "symfony/polyfill-mbstring": "^1.0"
             },
@@ -3755,12 +3754,12 @@
             },
             "require-dev": {
                 "egulias/email-validator": "^2.1.10",
-                "symfony/dependency-injection": "^4.4|^5.0"
+                "symfony/dependency-injection": "^3.4|^4.1|^5.0"
             },
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "5.0-dev"
+                    "dev-master": "4.4-dev"
                 }
             },
             "autoload": {
@@ -3791,7 +3790,7 @@
                 "mime",
                 "mime-type"
             ],
-            "time": "2020-01-04T14:08:26+00:00"
+            "time": "2020-01-04T13:00:46+00:00"
         },
         {
             "name": "symfony/polyfill-ctype",
@@ -4444,20 +4443,20 @@
         },
         {
             "name": "symfony/service-contracts",
-            "version": "v2.0.1",
+            "version": "v1.1.8",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/service-contracts.git",
-                "reference": "144c5e51266b281231e947b51223ba14acf1a749"
+                "reference": "ffc7f5692092df31515df2a5ecf3b7302b3ddacf"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/service-contracts/zipball/144c5e51266b281231e947b51223ba14acf1a749",
-                "reference": "144c5e51266b281231e947b51223ba14acf1a749",
+                "url": "https://api.github.com/repos/symfony/service-contracts/zipball/ffc7f5692092df31515df2a5ecf3b7302b3ddacf",
+                "reference": "ffc7f5692092df31515df2a5ecf3b7302b3ddacf",
                 "shasum": ""
             },
             "require": {
-                "php": "^7.2.5",
+                "php": "^7.1.3",
                 "psr/container": "^1.0"
             },
             "suggest": {
@@ -4466,7 +4465,7 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "2.0-dev"
+                    "dev-master": "1.1-dev"
                 }
             },
             "autoload": {
@@ -4498,7 +4497,7 @@
                 "interoperability",
                 "standards"
             ],
-            "time": "2019-11-18T17:27:11+00:00"
+            "time": "2019-10-14T12:27:06+00:00"
         },
         {
             "name": "symfony/translation",
@@ -5559,38 +5558,41 @@
         },
         {
             "name": "phpdocumentor/reflection-docblock",
-            "version": "5.0.0",
+            "version": "4.3.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/phpDocumentor/ReflectionDocBlock.git",
-                "reference": "a48807183a4b819072f26e347bbd0b5199a9d15f"
+                "reference": "da3fd972d6bafd628114f7e7e036f45944b62e9c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phpDocumentor/ReflectionDocBlock/zipball/a48807183a4b819072f26e347bbd0b5199a9d15f",
-                "reference": "a48807183a4b819072f26e347bbd0b5199a9d15f",
+                "url": "https://api.github.com/repos/phpDocumentor/ReflectionDocBlock/zipball/da3fd972d6bafd628114f7e7e036f45944b62e9c",
+                "reference": "da3fd972d6bafd628114f7e7e036f45944b62e9c",
                 "shasum": ""
             },
             "require": {
-                "ext-filter": "^7.1",
-                "php": "^7.2",
-                "phpdocumentor/reflection-common": "^2.0",
-                "phpdocumentor/type-resolver": "^1.0",
-                "webmozart/assert": "^1"
+                "php": "^7.0",
+                "phpdocumentor/reflection-common": "^1.0.0 || ^2.0.0",
+                "phpdocumentor/type-resolver": "~0.4 || ^1.0.0",
+                "webmozart/assert": "^1.0"
             },
             "require-dev": {
-                "doctrine/instantiator": "^1",
-                "mockery/mockery": "^1"
+                "doctrine/instantiator": "^1.0.5",
+                "mockery/mockery": "^1.0",
+                "phpdocumentor/type-resolver": "0.4.*",
+                "phpunit/phpunit": "^6.4"
             },
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "5.x-dev"
+                    "dev-master": "4.x-dev"
                 }
             },
             "autoload": {
                 "psr-4": {
-                    "phpDocumentor\\Reflection\\": "src"
+                    "phpDocumentor\\Reflection\\": [
+                        "src/"
+                    ]
                 }
             },
             "notification-url": "https://packagist.org/downloads/",
@@ -5601,14 +5603,10 @@
                 {
                     "name": "Mike van Riel",
                     "email": "me@mikevanriel.com"
-                },
-                {
-                    "name": "Jaap van Otterdijk",
-                    "email": "account@ijaap.nl"
                 }
             ],
             "description": "With this component, a library can provide support for annotations via DocBlocks or otherwise retrieve information that is embedded in a DocBlock.",
-            "time": "2020-02-09T09:16:15+00:00"
+            "time": "2019-12-28T18:55:12+00:00"
         },
         {
             "name": "phpdocumentor/type-resolver",
@@ -6717,10 +6715,7 @@
     "prefer-stable": true,
     "prefer-lowest": false,
     "platform": {
-        "php": "7.2.5"
+        "php": "7.1.*"
     },
-    "platform-dev": [],
-    "platform-overrides": {
-        "php": "7.2.5"
-    }
+    "platform-dev": []
 }
