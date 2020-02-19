@@ -174,8 +174,6 @@ return [
         // App\Providers\BroadcastServiceProvider::class,
         App\Providers\EventServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
-        Barryvdh\DomPDF\ServiceProvider::class,
-
         /**
          * My App
          */
@@ -183,6 +181,7 @@ return [
         Maatwebsite\Excel\ExcelServiceProvider::class,
         App\Providers\ComposerServiceProvider::class,
         Berkayk\OneSignal\OneSignalServiceProvider::class,
+        Shivella\Bitly\BitlyServiceProvider::class,
     ],
 
     /*
@@ -235,7 +234,7 @@ return [
         'View' => Illuminate\Support\Facades\View::class,
         'Excel' => Maatwebsite\Excel\Facades\Excel::class,
         'OneSignal' => Berkayk\OneSignal\OneSignalFacade::class,
-        'PDF' => Barryvdh\DomPDF\Facade::class,
+        'Bitly' => Shivella\Bitly\Facade\Bitly::class,
 
     ],
 

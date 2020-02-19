@@ -8,7 +8,7 @@
 		background-size: contain;
 	}
 	.jumbotron {
-	    padding: 1rem 2rem 4rem!important;
+	    padding: 1rem .5rem 4rem!important;
 	}
 	.confirm{
 		border:  3px dashed #307f2b;
@@ -27,6 +27,7 @@
 	  width: 150px;
 	  height: 150px;
 	  border-radius: 9999px;
+	  background-size: contain;
 	  /* background-color: HSL(45,100%,50%); */
 	}
 

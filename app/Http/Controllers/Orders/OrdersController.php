@@ -42,6 +42,8 @@ use Gate;
 use App\Models\MainTermService;
 use Mail;
 use App\Jobs\SendNotificationInvoice;
+use Bitly;
+use GuzzleHttp\Client;
 
 class OrdersController extends Controller
 {
@@ -953,29 +955,143 @@ class OrdersController extends Controller
 
         $order_id = $request->order_id;
         $order_status = $request->order_status;
-
-        /*if($order_status == 0){
-            $status_update = 1;
-            $status_text = "PAID";
-        }
-        else{ 
-            $status_update = 2;
-            $status_text = "DELIVERED";
-        }*/
         $status_update = $order_status + 1;
         $status_text = getOrderStatus()[$status_update];
 
         if($status_update == 4){
-            //SEND SMS
-            $order_update = MainComboServiceBought::find($order_id)->update(['csb_status' => $status_update,'csb_last_call'=>now()]);
-        }
-        else
-            $order_update = MainComboServiceBought::find($order_id)->update(['csb_status' => $status_update]);
 
-        if (!isset($order_update))
+            $token = csrf_token();
+            $url = Bitly::getUrl(route('customer_rating.index',$token));
+            $order_info = MainComboServiceBought::find($order_id);
+            $customer_info = $order_info->getCustomer;
+
+            //SEND SMS
+            $receiver_total[] = [
+                'name' => $customer_info->customer_firstname." ".$customer_info->customer_lastname,
+                'phone' => $customer_info->customer_phone,
+            ];
+            if(!empty($receiver_total)){
+                $date = now()->format('Y_m_d_His');
+
+                $file_name = "receiver_sms_list_".$date;
+
+                \Excel::create($file_name,function($excel) use ($receiver_total){
+
+                    $excel ->sheet('receiver_list_send_birthday', function ($sheet) use ($receiver_total)
+                    {
+                        $sheet->cell('A1', function($cell) {$cell->setValue('phone');   });
+                        $sheet->cell('B1', function($cell) {$cell->setValue('{p2}');   });
+                        // $sheet->cell('C1', function($cell) {$cell->setValue('{p3}');   });
+
+                        if (!empty($receiver_total)) {
+                            foreach ($receiver_total as $key => $value) {
+                                $i= $key+2;
+                                if($value['phone'] != ""){
+                                    $sheet->cell('A'.$i, $value['phone']);
+                                    $sheet->cell('B'.$i, $value['name']);
+                                    // $sheet->cell('C'.$i, Carbon::parse($value['birthday'])->format('d/m/Y'));
+                                }
+                            }
+                        }
+                    });
+                })->store('xlsx', false, true);
+
+                $file_url = storage_path('exports/'.$file_name.".xlsx");
+
+                $sms_content_template = "Dear {name}! DEG would like to thank you for being an integral part of our success story. We really regard you as a treasure and appreciate you. Happy Birthday!";
+
+                $url_event = 'pushsms';
+
+                $url = env('SMS_API_URL').$url_event;
+
+                $client = new Client([
+                ]);
+
+                $sms_content_template = str_replace("{phone}","{p1}",$sms_content_template);
+                $sms_content_template = str_replace("{name}","{p2}",$sms_content_template);
+                // $sms_content_template = str_replace("{birthday}","{p3}",$sms_content_template);
+
+                $date_time_send = format_date_d_m_y(now())." 00:00:00";
+                $date_time_end =  format_date_d_m_y(now())." 23:59:59";
+
+                $response = $client->request('POST', $url ,[
+                    'multipart' => [
+                        [
+                            'name' => 'content',
+                            'contents' => $sms_content_template,
+                        ],
+                        [
+                            'name' => 'title',
+                            'contents' => 'notification happy birthday',
+                        ],
+                        [
+                            'name' => 'merchant_id',
+                            'contents' => 1,
+                        ],
+                        [
+                            'name' => 'start',
+                            'contents' => $date_time_send,
+                        ],
+                        [
+                            'name' => 'date_before',
+                            'contents' => '0',
+                        ],
+                        [
+                            'name' => 'repeat',
+                            'contents' => '0',
+                        ],
+                        [
+                            'name' => 'repeat_on',
+                            'contents' => '0',
+                        ],
+                        [
+                            'name' => 'timesend',
+                            'contents' => Carbon::parse(now())->addMinute(2)->format('H:i'),
+                        ],
+                        [
+                            'name' => 'type_event',
+                            'contents' => 1,
+                        ],
+                        [
+                            'name' => 'event_id',
+                            'contents' => 1,
+                        ],
+                        [
+                            'name' => 'end',
+                            'contents' => $date_time_end,
+                        ],
+                        [
+                            'name'     => 'upfile',
+                            'contents' => fopen($file_url,'r'),
+                        ],
+                        [
+                            'name' => 'status',
+                            'contents' => 1,
+                        ]
+
+                    ],
+                    'headers' => [
+                        'Authorization' => 'Bearer ' .env("SMS_API_KEY"),
+                    ],
+                ]);
+
+            $resp =  (string)$response->getBody();
+            $send_sms_status = json_decode($resp)->status;
+            $message = 'Successfully'.' '.json_decode($resp)->messages;
+
+        }
+            $order_update = $order_info->update(['csb_status' => $status_update,'csb_last_call'=>now(),'csb_token'=>$token]);
+        }
+        else{
+            $send_sms_status = 1;
+            $order_update = MainComboServiceBought::find($order_id)->update(['csb_status' => $status_update]);
+            $message = 'Successfully';
+        }
+
+        if (!isset($order_update) || $send_sms_status == 0)
             return response(['status' => 'error', 'message' => 'Failed!']);
         else
-            return response(['status' => 'success', 'message' => 'Successfully','status_text'=>$status_text,'order_status'=> $status_update]);
+            return response(['status' => 'success', 'message' => $message,'status_text'=>$status_text,'order_status'=> $status_update]);
     }
 
     public function resendInvoice(Request $request)

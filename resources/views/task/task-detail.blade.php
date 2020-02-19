@@ -12,14 +12,14 @@
         display: none;
    }
    .loader {
-      border: 16px solid #f3f3f3;
+      border: 8px solid #f3f3f3;
       border-radius: 50%;
-      border-top: 16px solid blue;
-      border-right: 16px solid green;
-      border-bottom: 16px solid red;
-      border-left: 16px solid pink;
-      width: 120px;
-      height: 120px;
+      border-top: 8px solid blue;
+      border-right: 8px solid green;
+      border-bottom: 8px solid red;
+      border-left: 8px solid pink;
+      width: 80px;
+      height: 80px;
       -webkit-animation: spin 2s linear infinite; /* Safari */
       animation: spin 2s linear infinite;
       position: fixed;
