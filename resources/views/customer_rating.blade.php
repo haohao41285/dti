@@ -2,16 +2,24 @@
 <html>
 @include('layouts.partials.htmlhead')
 <style type="text/css" media="screen">
+	h5{
+		font-weight: 500;
+	}
 	.content-confirm{
 		background: url('{{ asset('images/tks.png') }}') no-repeat;
 		background-position: center;
 		background-size: contain;
 	}
 	.jumbotron {
-	    padding: 1rem .5rem 4rem!important;
+	    padding: .1rem!important;
+	    margin: 0px;
 	}
 	.confirm{
 		border:  3px dashed #307f2b;
+	}
+	.content{
+		background: url('{{ asset('images/pattern_background.png') }}');
+		background-size: contain;background-attachment: fixed;
 	}
 	.sonar-wrapper {
 	  /* position: relative; */
@@ -24,8 +32,8 @@
 	.sonar-emitter {
 	  position: relative;
 	  margin: 0 auto;
-	  width: 150px;
-	  height: 150px;
+	  width: 60px;
+	  height: 60px;
 	  border-radius: 9999px;
 	  background-size: contain;
 	  /* background-color: HSL(45,100%,50%); */
@@ -43,14 +51,20 @@
 	  z-index: 2;
 	  pointer-events: none;
 	}
-	.sad{
-		background-color: HSL(116.4, 49.4%, 33.3%);
+	.happy{
+		background-color: HSL(0, 92.9%, 49.6%);
 	}
 	.yay{
-		background-color: HSL(50.8, 89.8%, 50%);
+		background-color: HSL(320.7, 89.8%, 50%);
 	}
-	.haha{
-		background-color: HSL(0, 100%, 56.5%);
+	.normal{
+		background-color: HSL(59, 100%, 53.1%);
+	}
+	.satisfied{
+		background-color: HSL(104.1, 100%, 56.5%);
+	}
+	.very_satisfied{
+		background-color: HSL(0, 0%, 5.1%);
 	}
 
 	/*
@@ -69,7 +83,7 @@
 	    opacity: 0.4;
 	  }
 	  to {
-	    transform: scale(3);
+	    transform: scale(5);
 	    opacity: 0;
 	  }
 	}
@@ -77,7 +91,7 @@
 </style>
 	@if(isset($error))
 	<body class="content content-confirm">
-		<div class="col-md-6 offset-md-3 mt-5">
+		<div class="col-md-6 offset-md-3 mt-5 p-3" style="background-color: white;border-radius: 10px">
 			<div class="text-center col-md-12">
 				<a href="https://dataeglobal.com" title="">
 					<img src="{{ asset('images/logo%20dung%20luongj%20cao-79.png') }}" class="w-100" alt="">
@@ -90,43 +104,161 @@
 	</body>
 	@else
 	<body class="content">
-	    <div class="col-md-6 offset-md-3">
+	    <div class="col-md-6 offset-md-3" style="background-color: white;padding-top: 1rem">
 			<div class="text-center col-md-12">
 				<a href="https://dataeglobal.com" title="">
 					<img src="{{ asset('images/logo%20dung%20luongj%20cao-79.png') }}" class="w-100" alt="">
 				</a>
 			</div>
-			<div class="col-md-12 text-center jumbotron">
-				<h3 class="m-3">Đánh giá của quý vị sẽ giúp <a href="https://dataeglobal.com" style="text-decoration: none" title=""><b>DataEglobal</b></a> cải thiện dịch vụ tốt hơn</h3>
-					<div class="row">
-						<div class="col-md-4">
+			<div class="col-md-12">
+				<h3 class="m-3 text-center">Đánh giá của quý vị sẽ giúp <a href="https://dataeglobal.com" style="text-decoration: none" title=""><b>DataEglobal</b></a> cải thiện dịch vụ tốt hơn</h3>
+				<hr>
+				<h5>1. Quý vị có hài lòng với dịch vụ của chúng tôi không?</h5>
+					<div class="row text-center jumbotron">
+						<div class="col p-0">
 							<div class="sonar-wrapper">
-								<div class="sonar-emitter" rating-level=3 style="background: url({{ asset('images/haha.png') }}) no-repeat center center;background-size: 100% 100%;">
-							    <div class="sonar-wave haha"></div>
+								<div class="sonar-emitter rating_level" rating-level=1 style="background: url({{ asset('images/happy.png') }}) no-repeat center center;background-size: 100% 100%;">
+							    <div class="sonar-wave happy"></div>
 							    </div>
-							    <b>Rất hài lòng</b>
+							    Rất hài lòng
 							</div>
 						</div>
-						<div class="col-md-4">
+						<div class="col p-0">
 							<div class="sonar-wrapper">
-								<div class="sonar-emitter" rating-level=2 style="background: url({{ asset('images/yay.png') }}) no-repeat center center;background-size: 100% 100%;">
+								<div class="sonar-emitter rating_level" rating-level=2 style="background: url({{ asset('images/yay.png') }}) no-repeat center center;background-size: 100% 100%;">
 							    <div class="sonar-wave yay"></div>
 							    </div>
-							    <b>Hài lòng</b>
+							    Hài lòng
 							</div>
 						</div>
-						<div class="col-md-4">
+						<div class="col p-0">
 							<div class="sonar-wrapper">
-								<div class="sonar-emitter" rating-level=1 style="background: url({{ asset('images/sad.png') }}) no-repeat center center;background-size: 100% 100%;">
-							    <div class="sonar-wave sad"></div>
+								<div class="sonar-emitter rating_level" rating-level=3 style="background: url({{ asset('images/normal.png') }}) no-repeat center center;background-size: 100% 100%;">
+							    <div class="sonar-wave normal"></div>
 							    </div>
-							    <b>Chưa hài lòng</b>
+							    Bình thường
+							</div>
+						</div>
+						<div class="col p-0">
+							<div class="sonar-wrapper">
+								<div class="sonar-emitter rating_level" rating-level=4 style="background: url({{ asset('images/satisfied.png') }}) no-repeat center center;background-size: 100% 100%;">
+							    <div class="sonar-wave satisfied"></div>
+							    </div>
+							    Không hài lòng
+							</div>
+						</div>
+						<div class="col p-0">
+							<div class="sonar-wrapper">
+								<div class="sonar-emitter rating_level" rating-level=5 style="background: url({{ asset('images/very_satisfied.png') }}) no-repeat center center;background-size: 100% 100%;">
+							    <div class="sonar-wave very_satisfied"></div>
+							    </div>
+							    Rất không hài lòng
 							</div>
 						</div>
 					</div>
-				<label for="note" class="float-left mt-3"><b>Góp Ý</b></label>
-				<textarea name="" id="note" class="form-control form-control-sm col-md-12" rows="5"></textarea>
-				<input type="button" name="" value="Submit" class="btn btn-sm btn-primary float-right m-2 submit-rating">
+					<div class="text-center">
+						<img style="max-height: 20px" src="{{ asset('images/pattern_1.png') }}" alt="">
+					</div>
+				<h5>2. Quý vị có hài lòng với Nhân viên tư vấn và Chăm sóc khách hàng của dataeglobal không?</h5>
+					<div class="row text-center jumbotron">
+						<div class="col p-0">
+							<div class="sonar-wrapper">
+								<div class="sonar-emitter service" rating-level=1 style="background: url({{ asset('images/happy.png') }}) no-repeat center center;background-size: 100% 100%;">
+							    <div class="sonar-wave happy"></div>
+							    </div>
+							    Rất hài lòng
+							</div>
+						</div>
+						<div class="col p-0">
+							<div class="sonar-wrapper">
+								<div class="sonar-emitter service" rating-level=2 style="background: url({{ asset('images/yay.png') }}) no-repeat center center;background-size: 100% 100%;">
+							    <div class="sonar-wave yay"></div>
+							    </div>
+							    Hài lòng
+							</div>
+						</div>
+						<div class="col p-0">
+							<div class="sonar-wrapper">
+								<div class="sonar-emitter service" rating-level=3 style="background: url({{ asset('images/normal.png') }}) no-repeat center center;background-size: 100% 100%;">
+							    <div class="sonar-wave normal"></div>
+							    </div>
+							    Bình thường
+							</div>
+						</div>
+						<div class="col p-0">
+							<div class="sonar-wrapper">
+								<div class="sonar-emitter service" rating-level=4 style="background: url({{ asset('images/satisfied.png') }}) no-repeat center center;background-size: 100% 100%;">
+							    <div class="sonar-wave satisfied"></div>
+							    </div>
+							    Không hài lòng
+							</div>
+						</div>
+						<div class="col p-0">
+							<div class="sonar-wrapper">
+								<div class="sonar-emitter service" rating-level=5 style="background: url({{ asset('images/very_satisfied.png') }}) no-repeat center center;background-size: 100% 100%;">
+							    <div class="sonar-wave very_satisfied"></div>
+							    </div>
+							    Rất không hài lòng
+							</div>
+						</div>
+					</div>
+					<div class="text-center">
+						<img style="max-height: 20px" src="{{ asset('images/pattern_1.png') }}" alt="">
+					</div>
+				<h5>3. Quí vị sẽ tiếp tục  mua dịch vụ của chúng tôi lần sau chứ?</h5>
+					<div class="row text-center jumbotron">
+						<div class="col p-0">
+							<div class="sonar-wrapper">
+								<div class="sonar-emitter continue_buy" rating-level=1 style="background: url({{ asset('images/yay.png') }}) no-repeat center center;background-size: 100% 100%;">
+							    <div class="sonar-wave yay"></div>
+							    </div>
+							    Có
+							</div>
+						</div>
+						<div class="col p-0">
+							<div class="sonar-wrapper">
+								<div class="sonar-emitter continue_buy" rating-level=2 style="background: url({{ asset('images/satisfied.png') }}) no-repeat center center;background-size: 100% 100%;">
+							    <div class="sonar-wave satisfied"></div>
+							    </div>
+							    Không
+							</div>
+						</div>
+					</div>
+					<div class="text-center">
+						<img style="max-height: 20px" src="{{ asset('images/pattern_1.png') }}" alt="">
+					</div>
+				<h5>4. Quí vị có sẵn sàng giới thiệu công ty của chúng tôi đến bạn bè?</h5>
+					<div class="row text-center jumbotron">
+						<div class="col p-0">
+							<div class="sonar-wrapper">
+								<div class="sonar-emitter introduce" rating-level=1 style="background: url({{ asset('images/yay.png') }}) no-repeat center center;background-size: 100% 100%;">
+							    <div class="sonar-wave yay"></div>
+							    </div>
+							    Có
+							</div>
+						</div>
+						<div class="col p-0">
+							<div class="sonar-wrapper">
+								<div class="sonar-emitter introduce" rating-level=2 style="background: url({{ asset('images/satisfied.png') }}) no-repeat center center;background-size: 100% 100%;">
+							    <div class="sonar-wave satisfied"></div>
+							    </div>
+							    Không
+							</div>
+						</div>
+					</div>
+					<div class="text-center">
+						<img style="max-height: 20px" src="{{ asset('images/pattern_1.png') }}" alt="">
+					</div>
+					<div class="col-md-12 mb-6">
+						<div class="form-group">
+							<label for="note" class="float-left mt-3"><b>Ý kiến đóng góp của quí vị</b></label>
+							<textarea name="" id="note" class="form-control form-control-sm col-md-12" rows="5"></textarea>
+						</div>
+					</div>
+					<div class="row col-md-12">
+						<input type="button" name="" value="Submit" class="btn btn-sm btn-primary float-right m-2 submit-rating">
+						
+					</div>
 			</div>
 			<div class="col-md-12 mt-10 jumbotron">
 				<address>
@@ -160,7 +292,7 @@
 			</div>
 			
 		</div>
-		<div class="col-md-12 text-center" style="background-color: #323337 ">
+		<div class="col-md-6 offset-md-3 text-center" style="background-color: #323337 ">
 	            <div>
 	                <address>
 	                    <span style="font-size: 20px;">Data E Global</span><br>
@@ -184,16 +316,59 @@
 	$(document).ready(function($) {
 
 		var rating_level = 0;
+		var service = 0;
+		var continue_buy = 0;
+		var introduce = 0;
 
-		$(".sonar-emitter").click(function(){
+		$(".rating_level").click(function(){
 
 			let rating = $(this).attr('rating-level');
 
-			if(rating == 1 || rating == 2 || rating == 3){
+			if(rating == 1 || rating == 2 || rating == 3 || rating == 4 || rating == 5){
 
-				$(".sonar-emitter").removeClass('confirm');
+				$(".rating_level").removeClass('confirm');
 				$(this).addClass('confirm');
 				rating_level = rating;
+			}
+			else
+				toastr.error('Vui lòng chọn đánh giá lại!');
+		});
+		$(".service").click(function(){
+
+			let rating = $(this).attr('rating-level');
+
+			if(rating == 1 || rating == 2 || rating == 3 || rating == 4 || rating == 5){
+
+				$(".service").removeClass('confirm');
+				$(this).addClass('confirm');
+				service = rating;
+			}
+			else
+				toastr.error('Vui lòng chọn đánh giá lại!');
+		});
+		$(".continue_buy").click(function(){
+
+			let rating = $(this).attr('rating-level');
+
+			if(rating == 1 || rating == 2){
+
+				$(".continue_buy").removeClass('confirm');
+				$(this).addClass('confirm');
+				continue_buy = rating;
+			}
+			else
+				toastr.error('Vui lòng chọn đánh giá lại!');
+		});
+
+		$(".introduce").click(function(){
+
+			let rating = $(this).attr('rating-level');
+
+			if(rating == 1 || rating == 2){
+
+				$(".introduce").removeClass('confirm');
+				$(this).addClass('confirm');
+				introduce = rating;
 			}
 			else
 				toastr.error('Vui lòng chọn đánh giá lại!');
@@ -201,7 +376,7 @@
 		//SEND CUSTOMER RATING
 		$(".submit-rating").click(function(){
 
-			if(rating_level == 0){
+			if(rating_level == 0 || service == 0 || continue_buy == 0 || introduce ==0){
 				toastr.error('Vui lòng chọn đánh giá.');
 				return;
 
@@ -217,7 +392,10 @@
 						rating_level: rating_level,
 						order_token: '{{ $token }}',
 						_token: '{{ csrf_token() }}',
-						note: note
+						note: note,
+						service : service,
+						continue_buy : continue_buy,
+						introduce : introduce
 					},
 				})
 				.done(function(data) {
@@ -228,12 +406,12 @@
 						toastr.success(data.message);
 						var content_html = '';
 						content_html = `
-						<div class="col-md-6 offset-md-3 mt-5">
+						<div class="col-md-6 offset-md-3 mt-5 p-3" style="background-color: white;border-radius:10px">
 							<div class="text-center col-md-12">
 								<a href="https://dataeglobal.com" title="">
 									<img src="`+'{{ asset('images/logo%20dung%20luongj%20cao-79.png') }}'+`" class="w-100" alt="">
 								</a>
-								<h4> Chúng tôi vô cùng trân trọng đánh giá của quý vị. </h4>
+								<h4> Chúng tôi ghi nhận và trân trọng đánh giá của quý vị. </h4>
 								Quý vị có thể tìm hiểu các dịch vụ của chúng tôi tại <a href="https://dataeglobal.com/" >DataEglobal</a>
 
 							</div>

@@ -100,9 +100,17 @@ function getOrderStatus(){
 }
 function ratingCustomer(){
     return [
-        1 => 'Không hài lòng',
+        1 => 'Rất hài lòng',
         2 => 'Hài lòng',
-        3 => 'Rất hài lòng'
+        3 => 'Bình thường',
+        4 => 'Không hài lòng',
+        5 => 'Rất không hài lòng'
+    ];
+}
+function yesNo(){
+    return [
+        1 => 'Có',
+        2 => 'Không'
     ];
 }
 ?>

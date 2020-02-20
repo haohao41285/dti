@@ -103,14 +103,6 @@ class ReportController extends Controller
 
             $customer_list = $customer_list->get();
 
-            //GET CUSTOMER BY SERVICE
-            // $service_customers = MainComboServiceBought::all();
-            $service_customers = DB::table('main_combo_service_bought')->join('main_user',function($join){
-                $join->on('main_combo_service_bought.created_by','main_user.user_id');
-            });
-            $service_customers = collect($service_customers);
-
-
             foreach ($customer_list as $key => $customer) {
 
                 $discount_total = 0;
@@ -123,11 +115,19 @@ class ReportController extends Controller
                 else{
                     $ct_status = GeneralHelper::getCustomerStatus($customer->$team_slug);
                     if($customer->$team_slug == 4){
-                        $order_info = $service_customers->where('csb_customer_id',$customer->customer_id);
-                        $seller_list  = $order_info->select('created_by')->distinct('created_by')->get();
+
+                        $order_info = DB::table('main_combo_service_bought')->join('main_user',function($join){
+                            $join->on('main_combo_service_bought.created_by','main_user.user_id');
+                        })
+                        ->where('csb_customer_id',$customer->customer_id);
+
+                        $seller_list  = $order_info->distinct('main_combo_service_bought.created_by')->get();
+                        $seller_name_list = [];
+
                         foreach($seller_list as $seller){
-                            $seller_name .= $seller->user_nickname.";";
+                            $seller_name_list[] = $seller->user_nickname;
                         }
+                        $seller_name = implode(';',array_unique($seller_name_list));
                         $discount_total = $order_info->sum('csb_amount_deal');
                         $charged_total = $order_info->sum('csb_charge');
                     }
@@ -591,20 +591,10 @@ class ReportController extends Controller
             foreach($task_list as $task){
                 $content = json_decode($task->content,TRUE);
 
-                // if( isset($content['order_review']) && !empty($content['order_review'])){
-                //     $review_total += intval($content['order_review']);
-                // }elseif(isset($content['number']) && !empty($content['number']) )
-                //     $review_total += intval($content['number']);
-
                 if( ((isset($content['order_review']) && !empty($content['order_review']))
                     || (isset($content['number']) && !empty($content['number'])))
                     && ($task->date_start != "" && $task->date_end != "")
                 ){
-                    //GET REVIEW OF MONTH
-                    // $d1 = $task->date_start;
-                    // $d2 = $task->date_end;
-                    // $count_month = (int)abs((strtotime($d1) - strtotime($d2))/(60*60*24*30));
-
                     $start_month = Carbon::parse($task->date_start)->format('m');
                     $end_month = Carbon::parse($task->date_end)->format('m');
 
@@ -687,6 +677,15 @@ class ReportController extends Controller
         if($request->rating_level && $request->rating_level != ''){
             $rating_list = $rating_list->where('rating_level',$request->rating_level);
         }
+        if($request->service && $request->service != ''){
+            $rating_list = $rating_list->where('service',$request->service);
+        }
+        if($request->continue_buy && $request->continue_buy != ''){
+            $rating_list = $rating_list->where('continue_buy',$request->continue_buy);
+        }
+        if($request->introduce && $request->introduce != ''){
+            $rating_list = $rating_list->where('introduce',$request->introduce);
+        }
         if($request->start_date != "" && $request->end_date != ""){
             $start_date = Carbon::parse($request->start_date)->subDay(1)->format('Y-m-d');
             $end_date = Carbon::parse($request->end_date)->addDay(1)->format('Y-m-d');
@@ -699,6 +698,15 @@ class ReportController extends Controller
         })
         ->editColumn('rating_level',function($row){
             return ratingCustomer()[$row->rating_level];
+        })
+        ->editColumn('service',function($row){
+            return ratingCustomer()[$row->service];
+        })
+        ->editColumn('continue_buy',function($row){
+            return yesNo()[$row->continue_buy];
+        })
+        ->editColumn('introduce',function($row){
+            return yesNo()[$row->introduce];
         })
         ->editColumn('created_at',function($row){
             return format_datetime($row->created_at);

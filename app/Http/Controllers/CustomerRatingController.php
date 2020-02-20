@@ -34,6 +34,9 @@ class CustomerRatingController extends Controller
     		'note' => $request->note,
     		'order_id' => $order_info->id,
     		'rating_level' => $request->rating_level,
+            'service' => $request->service,
+            'continue_buy' => $request->continue_buy,
+            'introduce' => $request->introduce
     	];
 
     	DB::beginTransaction();
