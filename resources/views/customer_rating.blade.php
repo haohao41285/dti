@@ -19,8 +19,7 @@
 	}
 	.content{
 		background: url('{{ asset('images/pattern_background.png') }}');
-		background-size: contain;
-		 background-repeat: repeat-y;
+		background-size: contain;background-attachment: fixed;
 	}
 	.sonar-wrapper {
 	  /* position: relative; */
@@ -92,7 +91,7 @@
 </style>
 	@if(isset($error))
 	<body class="content content-confirm">
-		<div class="col-md-6 offset-md-3 mt-5">
+		<div class="col-md-6 offset-md-3 mt-5 p-3" style="background-color: white;border-radius: 10px">
 			<div class="text-center col-md-12">
 				<a href="https://dataeglobal.com" title="">
 					<img src="{{ asset('images/logo%20dung%20luongj%20cao-79.png') }}" class="w-100" alt="">
@@ -105,7 +104,7 @@
 	</body>
 	@else
 	<body class="content">
-	    <div class="col-md-6 offset-md-3" style="background-color: white">
+	    <div class="col-md-6 offset-md-3" style="background-color: white;padding-top: 1rem">
 			<div class="text-center col-md-12">
 				<a href="https://dataeglobal.com" title="">
 					<img src="{{ asset('images/logo%20dung%20luongj%20cao-79.png') }}" class="w-100" alt="">
@@ -293,7 +292,7 @@
 			</div>
 			
 		</div>
-		<div class="col-md-12 text-center" style="background-color: #323337 ">
+		<div class="col-md-6 offset-md-3 text-center" style="background-color: #323337 ">
 	            <div>
 	                <address>
 	                    <span style="font-size: 20px;">Data E Global</span><br>
@@ -407,7 +406,7 @@
 						toastr.success(data.message);
 						var content_html = '';
 						content_html = `
-						<div class="col-md-6 offset-md-3 mt-5">
+						<div class="col-md-6 offset-md-3 mt-5 p-3" style="background-color: white;border-radius:10px">
 							<div class="text-center col-md-12">
 								<a href="https://dataeglobal.com" title="">
 									<img src="`+'{{ asset('images/logo%20dung%20luongj%20cao-79.png') }}'+`" class="w-100" alt="">
