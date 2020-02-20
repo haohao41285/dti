@@ -12,10 +12,10 @@ class ThemeMailPresenter extends Presenter{
 	    $image_check_2 = "";
 
 	    if($this->csb_card_number != ""){
-	        $image_check_1 = "<img src='".public_path('images/green_mark.png')."'>";
+	        $image_check_1 = "<img src='http://dti.datallys.com/images/green_mark.png'>";
 	    }
         if($this->routing_number != ""){
-            $image_check_2 = "<img src='".public_path('images/green_mark.png')."'>";
+            $image_check_2 = "<img src='http://dti.datallys.com/images/green_mark.png'>";
         }
 
 	    foreach($this->combo_service_list as $combo_service){
@@ -28,7 +28,7 @@ class ThemeMailPresenter extends Presenter{
                 </tr> 
 	        ';
         }
-		return "<div style='background: url(".public_path('images/logo_email_3.png').") 0 0 repeat;margin: 0px 0px 100px'>
+		return "<div style='background: url('http://dti.datallys.com/images/logo_email_3.png') 0 0 repeat;margin: 0px 0px 100px'>
                     <div style=\"border-bottom: 2px black solid\">
                         <span><img src='".public_path('images/logo274x29.png')."'></span>
                         <span style=\"float: right\"><b>INVOICE</b></span>
