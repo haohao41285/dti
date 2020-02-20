@@ -31,9 +31,9 @@ class SendNotificationTaskOnesignal implements ShouldQueue
      */
     public function handle()
     {
-        OneSignal::sendNotificationUsingTags($this->input['name_created'] . " have just created a task to you" ,
-            array(["field" => "tag", "key" => "user_id", "relation" => "=", "value" => $this->input['receiver_id']]),
-            $url = route('task-detail',$this->input['task_id'])
-        );
+        // OneSignal::sendNotificationUsingTags($this->input['name_created'] . " have just created a task to you" ,
+        //     array(["field" => "tag", "key" => "user_id", "relation" => "=", "value" => $this->input['receiver_id']])
+            // $url = route('task-detail',$this->input['task_id'])
+        // );
     }
 }
