@@ -15,7 +15,7 @@
         <div>
             <p>Dear <i>{{ $name }}</i> !</p>
             <p>
-            Cảm ơn quý vị vì đã sử dụng Dịch vụ của Dataeglobal. Chúng tôi chắc chắn sẽ hoàn thành dịch vụ tốt nhât và gửi đến bạn sớm nhất có thể.<br>
+            Cảm ơn quý vị vì đã sử dụng Dịch vụ của Dataeglobal. Chúng tôi chắc chắn sẽ hoàn thành dịch vụ tốt nhât và gửi đến quý vị sớm nhất có thể.<br>
             Chúng tôi có gửi  INVOICE và THƯ XÁC NHẬN DỊCH VỤ được đính kèm bên dưới.</p>
             <p>Trân trọng, </p>
             
