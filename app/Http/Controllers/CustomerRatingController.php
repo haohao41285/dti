@@ -36,7 +36,9 @@ class CustomerRatingController extends Controller
     		'rating_level' => $request->rating_level,
             'service' => $request->service,
             'continue_buy' => $request->continue_buy,
-            'introduce' => $request->introduce
+            'introduce' => $request->introduce,
+            'reason' => $request->reason,
+            'product_feature' => $request->product_feature
     	];
 
     	DB::beginTransaction();

@@ -1,0 +1,1 @@
+ALTER TABLE `main_customer_rating` ADD `reason` TEXT NULL AFTER `note`, ADD `product_feature` TEXT NULL AFTER `reason`; 
