@@ -306,6 +306,7 @@ Route::group(['middleware' => ['auth']], function () {
         Route::get('sms-template-datatable','SetupSmsController@smsTemplateDatatable')->name('sms-template-datatable');
         Route::post('delete-template','SetupSmsController@deleteTemplate')->name('delete-template');
         Route::post('save-template-sms','SetupSmsController@saveTemplateSms')->name('save-template-sms');
+        Route::get('short-link','SetupSmsController@shortLink')->name('short_link');
 
         Route::group(['prefix' => 'login-background'], function() {
             Route::get('/', 'SetupLoginBackground@index')->name('loginBackground');

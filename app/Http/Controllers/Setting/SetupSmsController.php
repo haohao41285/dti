@@ -10,6 +10,7 @@ use DataTables;
 use Auth;
 use Validator;
 use Gate;
+use Bitly;
 
 class SetupSmsController extends Controller
 {
@@ -83,6 +84,16 @@ class SetupSmsController extends Controller
 			return response(['status'=>'error','message'=>'Saving Error!']);
 		else
 			return response(['status'=>'success','message'=>'Saving Success']);
+    }
+    public function shortLink(Request $request){
+        $link = $request->link;
+
+        if(!$link || $link == "")
+            return response(['status'=>'error','message'=>'Failed! Choose Link Please!']);
+
+        $url = Bitly::getUrl($link);
+
+        return response(['url'=>$url]);
     }
 
 }

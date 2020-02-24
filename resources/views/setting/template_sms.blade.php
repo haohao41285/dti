@@ -11,13 +11,15 @@
       <!-- Modal content-->
       <div class="modal-content">
         <div class="modal-header">
+          <h5>Short Link</h5>
         </div>
         <div class="modal-body">
-          <div class="row">
-            <input type="text" name="link" id="link" class="form-control form-control-sm col-md-10" placeholder="Enter Your Link">
-            <button class="col-md-2 bg-primary text-white text-center" id="shorten">Shorten</button>
+          <div class="input-group mb-3">
+            <input type="text" class="form-control form-control-sm" name="link" id="link"  placeholder="Enter Your Link">
+            <div class="input-group-append">
+              <button class="btn btn-primary btn-sm" id="shorten" type="button">Go</button>
+            </div>
           </div>
-
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-danger btn-sm" data-dismiss="modal">Cancel</button>
@@ -79,7 +81,7 @@
             <button type="button" id="code" class="btn btn-sm btn-primary mt-1">Code</button>
             <button type="button" id="time1" class="btn btn-sm btn-primary mt-1">Time1</button>
             <button type="button" id="time2" class="btn btn-sm btn-primary mt-1">Time2</button>
-            {{-- <button type="button" id="short-link" class="btn btn-sm btn-primary">Short Link</button> --}}
+            <button type="button" id="short-link" class="btn btn-sm btn-primary mt-1">Short Link</button>
           </div>
         </div>
         <div class="form-group row" >
@@ -213,11 +215,25 @@
       var link = $("#link").val();
 
       $.ajax({
-        url: "",
+        url: "{{ route('short_link') }}",
         method: 'GET',
         data: {link: link},
         success:function(data){
-            alert(data);
+          if(data.status === 'error')
+            toastr.error(data.message);
+          else{
+
+            let text_message = $("#textMessage").val();
+            let new_text_message = '';
+
+            if(text_message === "")
+              new_text_message = data.url;
+            else
+              new_text_message = new_text_message+' '+data.url;
+            $("#textMessage").val(new_text_message);
+            $("#link").val('');
+            $("#short-link-modal").modal('hide');
+          }
         },
         error:function(){
             toastr.error('Error short link','Error !!');
