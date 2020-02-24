@@ -32,8 +32,8 @@
 	.sonar-emitter {
 	  position: relative;
 	  margin: 0 auto;
-	  width: 60px;
-	  height: 60px;
+	  width: 80px;
+	  height: 80px;
 	  border-radius: 9999px;
 	  background-size: contain;
 	  /* background-color: HSL(45,100%,50%); */
@@ -123,6 +123,10 @@
 		.social-btn{
 			display: none;
 		}
+		.sonar-emitter {
+			width: 35px;
+			height: 35px;
+		}
 	}
 
 </style>
@@ -154,7 +158,7 @@
 					<div class="row text-center jumbotron">
 						<div class="col p-0">
 							<div class="sonar-wrapper">
-								<div class="sonar-emitter rating_level" rating-level=1 style="background: url({{ asset('images/happy.png') }}) no-repeat center center;background-size: 100% 100%;">
+								<div class="sonar-emitter rating_level" rating-level=1 style="background: url({{ asset('images/happy.png') }}) no-repeat center;background-size: 120% 120%;">
 							    <div class="sonar-wave happy"></div>
 							    </div>
 							    Rất hài lòng
@@ -162,7 +166,7 @@
 						</div>
 						<div class="col p-0">
 							<div class="sonar-wrapper">
-								<div class="sonar-emitter rating_level" rating-level=2 style="background: url({{ asset('images/yay.png') }}) no-repeat center center;background-size: 100% 100%;">
+								<div class="sonar-emitter rating_level" rating-level=2 style="background: url({{ asset('images/yay.png') }}) no-repeat center;background-size: 120% 120%;">
 							    <div class="sonar-wave yay"></div>
 							    </div>
 							    Hài lòng
@@ -170,7 +174,7 @@
 						</div>
 						<div class="col p-0">
 							<div class="sonar-wrapper">
-								<div class="sonar-emitter rating_level" rating-level=3 style="background: url({{ asset('images/normal.png') }}) no-repeat center center;background-size: 100% 100%;">
+								<div class="sonar-emitter rating_level" rating-level=3 style="background: url({{ asset('images/normal.png') }}) no-repeat center;background-size: 120% 120%;">
 							    <div class="sonar-wave normal"></div>
 							    </div>
 							    Bình thường
@@ -178,7 +182,7 @@
 						</div>
 						<div class="col p-0">
 							<div class="sonar-wrapper">
-								<div class="sonar-emitter rating_level" rating-level=4 style="background: url({{ asset('images/satisfied.png') }}) no-repeat center center;background-size: 100% 100%;">
+								<div class="sonar-emitter rating_level" rating-level=4 style="background: url({{ asset('images/satisfied.png') }}) no-repeat center;background-size: 120% 120%;">
 							    <div class="sonar-wave satisfied"></div>
 							    </div>
 							    Không hài lòng
@@ -186,7 +190,7 @@
 						</div>
 						<div class="col p-0">
 							<div class="sonar-wrapper">
-								<div class="sonar-emitter rating_level" rating-level=5 style="background: url({{ asset('images/very_satisfied.png') }}) no-repeat center center;background-size: 100% 100%;">
+								<div class="sonar-emitter rating_level" rating-level=5 style="background: url({{ asset('images/very_satisfied.png') }}) no-repeat center;background-size: 120% 120%;">
 							    <div class="sonar-wave very_satisfied"></div>
 							    </div>
 							    Rất không hài lòng
@@ -197,7 +201,7 @@
 					<div class="row text-center jumbotron">
 						<div class="col p-0">
 							<div class="sonar-wrapper">
-								<div class="sonar-emitter service" rating-level=1 style="background: url({{ asset('images/happy.png') }}) no-repeat center center;background-size: 100% 100%;">
+								<div class="sonar-emitter service" rating-level=1 style="background: url({{ asset('images/happy.png') }}) no-repeat center;background-size: 120% 120%;">
 							    <div class="sonar-wave happy"></div>
 							    </div>
 							    Rất hài lòng
@@ -205,7 +209,7 @@
 						</div>
 						<div class="col p-0">
 							<div class="sonar-wrapper">
-								<div class="sonar-emitter service" rating-level=2 style="background: url({{ asset('images/yay.png') }}) no-repeat center center;background-size: 100% 100%;">
+								<div class="sonar-emitter service" rating-level=2 style="background: url({{ asset('images/yay.png') }}) no-repeat center;background-size: 120% 120%;">
 							    <div class="sonar-wave yay"></div>
 							    </div>
 							    Hài lòng
@@ -213,7 +217,7 @@
 						</div>
 						<div class="col p-0">
 							<div class="sonar-wrapper">
-								<div class="sonar-emitter service" rating-level=3 style="background: url({{ asset('images/normal.png') }}) no-repeat center center;background-size: 100% 100%;">
+								<div class="sonar-emitter service" rating-level=3 style="background: url({{ asset('images/normal.png') }}) no-repeat center;background-size: 120% 120%;">
 							    <div class="sonar-wave normal"></div>
 							    </div>
 							    Bình thường
@@ -221,7 +225,7 @@
 						</div>
 						<div class="col p-0">
 							<div class="sonar-wrapper">
-								<div class="sonar-emitter service" rating-level=4 style="background: url({{ asset('images/satisfied.png') }}) no-repeat center center;background-size: 100% 100%;">
+								<div class="sonar-emitter service" rating-level=4 style="background: url({{ asset('images/satisfied.png') }}) no-repeat center;background-size: 120% 120%;">
 							    <div class="sonar-wave satisfied"></div>
 							    </div>
 							    Không hài lòng
@@ -229,7 +233,7 @@
 						</div>
 						<div class="col p-0">
 							<div class="sonar-wrapper">
-								<div class="sonar-emitter service" rating-level=5 style="background: url({{ asset('images/very_satisfied.png') }}) no-repeat center center;background-size: 100% 100%;">
+								<div class="sonar-emitter service" rating-level=5 style="background: url({{ asset('images/very_satisfied.png') }}) no-repeat center;background-size: 120% 120%;">
 							    <div class="sonar-wave very_satisfied"></div>
 							    </div>
 							    Rất không hài lòng
@@ -240,7 +244,7 @@
 					<div class="row text-center jumbotron">
 						<div class="col p-0">
 							<div class="sonar-wrapper">
-								<div class="sonar-emitter continue_buy" rating-level=1 style="background: url({{ asset('images/yay.png') }}) no-repeat center center;background-size: 100% 100%;">
+								<div class="sonar-emitter continue_buy" rating-level=1 style="background: url({{ asset('images/yay.png') }}) no-repeat center;background-size: 120% 120%;">
 							    <div class="sonar-wave yay"></div>
 							    </div>
 							    Có
@@ -248,7 +252,7 @@
 						</div>
 						<div class="col p-0">
 							<div class="sonar-wrapper">
-								<div class="sonar-emitter continue_buy" rating-level=2 style="background: url({{ asset('images/satisfied.png') }}) no-repeat center center;background-size: 100% 100%;">
+								<div class="sonar-emitter continue_buy" rating-level=2 style="background: url({{ asset('images/satisfied.png') }}) no-repeat center;background-size: 120% 120%;">
 							    <div class="sonar-wave satisfied"></div>
 							    </div>
 							    Không
@@ -259,7 +263,7 @@
 					<div class="row text-center jumbotron">
 						<div class="col p-0">
 							<div class="sonar-wrapper">
-								<div class="sonar-emitter introduce" rating-level=1 style="background: url({{ asset('images/yay.png') }}) no-repeat center center;background-size: 100% 100%;">
+								<div class="sonar-emitter introduce" rating-level=1 style="background: url({{ asset('images/yay.png') }}) no-repeat center;background-size: 120% 120%;">
 							    <div class="sonar-wave yay"></div>
 							    </div>
 							    Có
@@ -267,7 +271,7 @@
 						</div>
 						<div class="col p-0">
 							<div class="sonar-wrapper">
-								<div class="sonar-emitter introduce" rating-level=2 style="background: url({{ asset('images/satisfied.png') }}) no-repeat center center;background-size: 100% 100%;">
+								<div class="sonar-emitter introduce" rating-level=2 style="background: url({{ asset('images/satisfied.png') }}) no-repeat center;background-size: 120% 120%;">
 							    <div class="sonar-wave satisfied"></div>
 							    </div>
 							    Không
@@ -287,11 +291,12 @@
 					<textarea name="" id="product_feature" class="form-control form-control-sm" rows="3"></textarea>
 				</div>
 					
-				<div class="row col-md-12">
+				<div class="col-md-12 float-right">
 					<input type="button" name="" value="Submit" class="btn btn-sm btn-primary float-right m-2 submit-rating">
 				</div>
 			</div>
-			<div class="col-md-12 mt-10 jumbotron">
+			<br><br>
+			<div class="col-md-12 jumbotron">
 				<address>
 					<h5 class="text-center">ORDER INFORMATION</h5>
 					Business: <b>{{ $place_info->place_name }}</b><br>
