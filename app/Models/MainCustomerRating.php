@@ -14,6 +14,8 @@ class MainCustomerRating extends Model
     	'rating_level',
     	'service',
     	'continue_buy',
-    	'introduce'
+    	'introduce',
+        'product_feature',
+        'reason',
     ];
 }

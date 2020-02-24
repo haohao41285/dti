@@ -961,7 +961,7 @@ class OrdersController extends Controller
         if($status_update == 4){
 
             $token = csrf_token();
-            $url = Bitly::getUrl(route('customer_rating.index',$token));
+            // $url = Bitly::getUrl(route('customer_rating.index',$token));
             $order_info = MainComboServiceBought::find($order_id);
             $customer_info = $order_info->getCustomer;
 
@@ -998,7 +998,7 @@ class OrdersController extends Controller
 
                 $file_url = storage_path('exports/'.$file_name.".xlsx");
 
-                $sms_content_template = "Gửi từ Dataeglobal!Cảm ơn anh/ chị {name} đã  tin tưởng và sử dụng dịch vụ của Dataelobal. Mong Quý vị vui lòng để lại ý kiến về chất lượng dịch vụ cũng như cách nhân viên tư vấn hỗ trợ cho quý vị. Để Dataeglobal ngày càng hoàn thiện hơn. Rất hi vọng được đồng hành cùng quý vị trong thời gian tới ".$url;
+                $sms_content_template = "Gửi từ Dataeglobal!Cảm ơn anh/ chị {name} đã  tin tưởng và sử dụng dịch vụ của Dataelobal. Mong Quý vị vui lòng để lại ý kiến về chất lượng dịch vụ cũng như cách nhân viên tư vấn hỗ trợ cho quý vị. Để Dataeglobal ngày càng hoàn thiện hơn. Rất hi vọng được đồng hành cùng quý vị trong thời gian tới "/*.$url*/;
 
                 $url_event = 'pushsms';
 

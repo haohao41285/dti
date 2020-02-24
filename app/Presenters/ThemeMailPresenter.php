@@ -28,7 +28,7 @@ class ThemeMailPresenter extends Presenter{
                 </tr> 
 	        ';
         }
-		return "<div style='background: url('http://dti.datallys.com/images/logo_email_3.png') 0 0 repeat;margin: 0px 0px 100px'>
+		return "<div style='background: url(http://dti.datallys.com/images/logo_email_3.png) 0 0 repeat;margin: 0px 0px 100px'>
                     <div style=\"border-bottom: 2px black solid\">
                         <span><img src='".public_path('images/logo274x29.png')."'></span>
                         <span style=\"float: right\"><b>INVOICE</b></span>

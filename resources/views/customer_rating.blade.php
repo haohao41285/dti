@@ -2,6 +2,10 @@
 <html>
 @include('layouts.partials.htmlhead')
 <style type="text/css" media="screen">
+	.col-md-6{
+		padding:  0;
+		border
+	}
 	h5{
 		font-weight: 500;
 	}
@@ -16,10 +20,6 @@
 	}
 	.confirm{
 		border:  3px dashed #307f2b;
-	}
-	.content{
-		background: url('{{ asset('images/pattern_background.png') }}');
-		background-size: contain;background-attachment: fixed;
 	}
 	.sonar-wrapper {
 	  /* position: relative; */
@@ -37,6 +37,10 @@
 	  border-radius: 9999px;
 	  background-size: contain;
 	  /* background-color: HSL(45,100%,50%); */
+	  box-shadow: 2px 10px 8px gray;
+	}
+	.submit-rating{
+		box-shadow: 2px 10px 8px gray;
 	}
 
 	/* the 'wave', same shape and size as its parent */
@@ -87,6 +91,39 @@
 	    opacity: 0;
 	  }
 	}
+	@media screen and (max-width: 800px) {
+		.text-header{
+			font-size: 18px;
+			padding :  0;
+		}
+		h5{
+			font-size: 18px;
+		}
+		.col-md-12,{
+			margin: 0;
+			padding : 2px;
+		}
+		.col-md-6{
+			padding:  0px;
+			margin: 0px;
+		}
+		.logo{
+			width: 70%!important;
+		}
+		.sonar-wrapper{
+			font-size: 13px;
+		}
+		.jumbotron{
+			margin-bottom: 15px;
+		}
+		.sonar-emitter{
+			height: 40px;
+			width: 40px;
+		}
+		.social-btn{
+			display: none;
+		}
+	}
 
 </style>
 	@if(isset($error))
@@ -94,9 +131,9 @@
 		<div class="col-md-6 offset-md-3 mt-5 p-3" style="background-color: white;border-radius: 10px">
 			<div class="text-center col-md-12">
 				<a href="https://dataeglobal.com" title="">
-					<img src="{{ asset('images/logo%20dung%20luongj%20cao-79.png') }}" class="w-100" alt="">
+					<img src="{{ asset('images/logo%20dung%20luongj%20cao-79.png') }}" class="w-100 logo" alt="">
 				</a>
-				<h4> Dịch vụ đã được đánh giá hoặc không tồn tại. Quý khách vui lòng kiểm tra lại! </h4>
+				<h4 class="text-header"> Dịch vụ đã được đánh giá hoặc không tồn tại. Quý khách vui lòng kiểm tra lại! </h4>
 				Quý vị có thể tìm hiểu các dịch vụ của chúng tôi tại <a href="https://dataeglobal.com/" >DataEglobal</a>
 
 			</div>
@@ -107,11 +144,11 @@
 	    <div class="col-md-6 offset-md-3" style="background-color: white;padding-top: 1rem">
 			<div class="text-center col-md-12">
 				<a href="https://dataeglobal.com" title="">
-					<img src="{{ asset('images/logo%20dung%20luongj%20cao-79.png') }}" class="w-100" alt="">
+					<img src="{{ asset('images/logo%20dung%20luongj%20cao-79.png') }}" class="w-100 logo" alt="">
 				</a>
 			</div>
 			<div class="col-md-12">
-				<h3 class="m-3 text-center">Đánh giá của quý vị sẽ giúp <a href="https://dataeglobal.com" style="text-decoration: none" title=""><b>DataEglobal</b></a> cải thiện dịch vụ tốt hơn</h3>
+				<h3 class="m-3 text-center text-header">Đánh giá của quý vị sẽ giúp <a href="https://dataeglobal.com" style="text-decoration: none" title=""><b>DataEglobal</b></a> cải thiện dịch vụ tốt hơn</h3>
 				<hr>
 				<h5>1. Quý vị có hài lòng với dịch vụ của chúng tôi không?</h5>
 					<div class="row text-center jumbotron">
@@ -156,9 +193,6 @@
 							</div>
 						</div>
 					</div>
-					<div class="text-center">
-						<img style="max-height: 20px" src="{{ asset('images/pattern_1.png') }}" alt="">
-					</div>
 				<h5>2. Quý vị có hài lòng với Nhân viên tư vấn và Chăm sóc khách hàng của dataeglobal không?</h5>
 					<div class="row text-center jumbotron">
 						<div class="col p-0">
@@ -202,10 +236,7 @@
 							</div>
 						</div>
 					</div>
-					<div class="text-center">
-						<img style="max-height: 20px" src="{{ asset('images/pattern_1.png') }}" alt="">
-					</div>
-				<h5>3. Quí vị sẽ tiếp tục  mua dịch vụ của chúng tôi lần sau chứ?</h5>
+				<h5>3. Quý vị sẽ tiếp tục  mua dịch vụ của chúng tôi lần sau chứ?</h5>
 					<div class="row text-center jumbotron">
 						<div class="col p-0">
 							<div class="sonar-wrapper">
@@ -224,10 +255,7 @@
 							</div>
 						</div>
 					</div>
-					<div class="text-center">
-						<img style="max-height: 20px" src="{{ asset('images/pattern_1.png') }}" alt="">
-					</div>
-				<h5>4. Quí vị có sẵn sàng giới thiệu công ty của chúng tôi đến bạn bè?</h5>
+				<h5>4. Quý vị có sẵn sàng giới thiệu công ty của chúng tôi đến bạn bè?</h5>
 					<div class="row text-center jumbotron">
 						<div class="col p-0">
 							<div class="sonar-wrapper">
@@ -246,19 +274,22 @@
 							</div>
 						</div>
 					</div>
-					<div class="text-center">
-						<img style="max-height: 20px" src="{{ asset('images/pattern_1.png') }}" alt="">
-					</div>
-					<div class="col-md-12 mb-6">
-						<div class="form-group">
-							<label for="note" class="float-left mt-3"><b>Ý kiến đóng góp của quí vị</b></label>
-							<textarea name="" id="note" class="form-control form-control-sm col-md-12" rows="5"></textarea>
-						</div>
-					</div>
-					<div class="row col-md-12">
-						<input type="button" name="" value="Submit" class="btn btn-sm btn-primary float-right m-2 submit-rating">
-						
-					</div>
+				<h5>5. Điều gi khiến bạn chưa hài lòng về chúng tôi ??</h5>
+				<div class="row text-center jumbotron">
+					<textarea name="" id="note" class="form-control form-control-sm" rows="3"></textarea>
+				</div>
+				<h5>6.	Lý do bạn mua sản phẩm của chúng tôi.</h5>
+				<div class="row text-center jumbotron">
+					<textarea name="" id="reason" class="form-control form-control-sm" rows="3"></textarea>
+				</div>
+				<h5>7.	Sản phẩm/ dịch vụ mà bạn mong chúng tôi có trong lương lai?</h5>
+				<div class="row text-center jumbotron">
+					<textarea name="" id="product_feature" class="form-control form-control-sm" rows="3"></textarea>
+				</div>
+					
+				<div class="row col-md-12">
+					<input type="button" name="" value="Submit" class="btn btn-sm btn-primary float-right m-2 submit-rating">
+				</div>
 			</div>
 			<div class="col-md-12 mt-10 jumbotron">
 				<address>
@@ -301,9 +332,9 @@
 	                <address>
 	            </div>
 	            <div style="text-align:center">
-	                <a href="https://dataeglobal.com/" title="" style="text-decoration: none;margin-right: 20px"><img style="max-width: 40px" class="img-responsive"  src=" {{ asset('/images/website.png') }} " alt="">WEBSITE </a>
-	                <a href="https://www.facebook.com/Posfornailsalon/" title="" style="text-decoration: none;margin-right: 20px"><img class="img-responsive" src="{{ asset('/images/facebook.png') }}" style="max-width: 40px" alt="">FANPAGE </a>
-	                <a href="https://www.youtube.com/channel/UC71jjSWf6kSqwBqBKyoz31w" title="" style="text-decoration: none"><img class="img-responsive" src="{{ asset('/images/youtube.png') }}" style="max-width: 40px"  alt="">YOUTUBE</a>
+	                <a href="https://dataeglobal.com/"  title="" style="text-decoration: none;margin-right: 20px"><img style="max-width: 40px" class="img-responsive"  src=" {{ asset('/images/website.png') }} " title="Website" alt="Website"><span class="social-btn">WEBSITE</span> </a>
+	                <a href="https://www.facebook.com/Posfornailsalon/" title="" style="text-decoration: none;margin-right: 20px"><img class="img-responsive" src="{{ asset('/images/facebook.png') }}" style="max-width: 40px" title="Facebook" alt="Facebook"><span class="social-btn">FANPAGE </span></a>
+	                <a href="https://www.youtube.com/channel/UC71jjSWf6kSqwBqBKyoz31w" title="" style="text-decoration: none"><img class="img-responsive" src="{{ asset('/images/youtube.png') }}" style="max-width: 40px" title="Youtube"  alt="Youtube"><span class="social-btn">YOUTUBE</span></a>
 	            </div>
 			</div>
 	</body>
@@ -383,6 +414,9 @@
 			}else{
 
 				var note = $("#note").val();
+				var product_feature = $("#product_feature").val();
+				var reason = $("#reason").val();
+
 				//SEND RATING
 				$.ajax({
 					url: '{{ route('customer_rating.post') }}',
@@ -395,7 +429,10 @@
 						note: note,
 						service : service,
 						continue_buy : continue_buy,
-						introduce : introduce
+						introduce : introduce,
+						product_feature : product_feature,
+						reason : reason
+
 					},
 				})
 				.done(function(data) {
@@ -409,9 +446,9 @@
 						<div class="col-md-6 offset-md-3 mt-5 p-3" style="background-color: white;border-radius:10px">
 							<div class="text-center col-md-12">
 								<a href="https://dataeglobal.com" title="">
-									<img src="`+'{{ asset('images/logo%20dung%20luongj%20cao-79.png') }}'+`" class="w-100" alt="">
+									<img src="`+'{{ asset('images/logo%20dung%20luongj%20cao-79.png') }}'+`" class="w-100 logo" alt="">
 								</a>
-								<h4> Chúng tôi ghi nhận và trân trọng đánh giá của quý vị. </h4>
+								<h4 class="text-header"> Chúng tôi ghi nhận và trân trọng đánh giá của quý vị. </h4>
 								Quý vị có thể tìm hiểu các dịch vụ của chúng tôi tại <a href="https://dataeglobal.com/" >DataEglobal</a>
 
 							</div>
