@@ -84,5 +84,8 @@ class PosPlace extends BaseModel
         return $this->where('place_id',$placeId)
                     ->update($arr);
     }
+    public function scopeActive($query){
+        return $query->where('place_status',1);
+    }
 
 }

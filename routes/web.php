@@ -423,6 +423,10 @@ Route::group(['middleware' => ['auth']], function () {
         Route::post('order-calling','OrdersController@orderCalling')->name('order.calling');
         Route::get('finish-call','OrdersController@finishCall')->name('order.finish_call');
 
+        Route::group(['prefix' => 'old-order'], function() {
+            Route::get('/','OldOrderController@index')->name('orders.old_order');
+        });
+
     });
     Route::group(['prefix' => 'task','namespace' => 'Task'], function() {
         Route::get('/', 'TaskController@index')->name('my-task');
