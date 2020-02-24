@@ -1011,7 +1011,7 @@ class OrdersController extends Controller
                 $file_url = storage_path('exports/'.$file_name.".xlsx");
 
                 $sms_content_template = "Gui tu Dataeglobal! Cam on {name} da tin tuong va su dung dich vu cua Dataeglobal. Quy vi vui long de lai y kien ve chat luong dich vu cung nhu cach nha vien tu van ho tro cho quy vi de Dataeglobal ngay cang hoan thien hon ".$url;
-                
+
                 $url_event = 'pushsms';
 
                 $url = env('SMS_API_URL').$url_event;
@@ -1305,11 +1305,12 @@ class OrdersController extends Controller
         // save file pdf
         $output = $dompdf->output();
         $pathFile = 'file/invoices/';
-        if (!file_exists($pathFile)) {
+        if (!file_exists(public_path($pathFile) ) ) {
             mkdir($pathFile, 0777, true);
         }
         $file_name = $pathFile.'invoice_'.$input['order_id'].'.pdf';
-        file_put_contents(public_path($file_name), $output);
+        $path = public_path($file_name);
+        file_put_contents($path, $output);
 
         //UPDATE MAIN_CUSTOMER_SERVICE
         foreach ($service_arr as $key => $service) {
