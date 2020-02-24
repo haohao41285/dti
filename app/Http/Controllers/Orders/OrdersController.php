@@ -147,6 +147,7 @@ class OrdersController extends Controller
         //GET COMBO SERVICE COLLECTION INSIDE TYPE
         $combo_service = MainComboService::whereIn('id',$service_permission_arr)->get();
         $data['combo_service_list'] = collect($combo_service);
+        $data['user_list'] = MainUser::active()->get();
 
         return view('orders.add', $data);
     }
@@ -171,6 +172,16 @@ class OrdersController extends Controller
             return redirect()->back()->withErrors($validator)->withInput();
 
         DB::beginTransaction();
+
+        //GET CREATED BY
+        if(isset($request->created_by)){
+            $user_info = MainUser::where('user_id',$request->created_by)->first();
+            $user_id = $user_info->user_id;
+            $user_team = $user_info->user_team;
+        }else{
+            $user_id = Auth::user()->user_id;
+            $user_team = Auth::user()->user_team;
+        }
 
         //GET CUSTOMER INFORMATION
         $customer_phone = $request->customer_phone;
@@ -224,7 +235,7 @@ class OrdersController extends Controller
             'csb_charge' => $request->payment_amount_hidden,
             'csb_cashback' => 0, 
             'csb_status' => $status,
-            'created_by' => Auth::user()->user_id,
+            'created_by' => $user_id,
             'csb_payment_method' => $request->csb_payment_method,
             'csb_invoice' => 'file/invoices/invoice_'.$order_id.'.pdf'
         ];
@@ -252,8 +263,8 @@ class OrdersController extends Controller
                 'place_taxcode' => 'tax-code',
                 'place_customer_type' => 'customer type',
                 'place_url_plugin' => 'url plugin',
-                'created_by' => Auth::user()->user_id,
-                'updated_by' => Auth::user()->user_id,
+                'created_by' => $user_id,
+                'updated_by' => $user_id,
                 'place_ip_license' => $place_ip_license,
                 'place_status' => 1,
                 'place_bill_export' => 2,
@@ -265,19 +276,19 @@ class OrdersController extends Controller
             MainCustomerAssign::where([
                 ['business_phone',$request->business_phone],
                 ['business_name',$request->business_name],
-                ['user_id',Auth::user()->user_id]
+                ['user_id',$user_id]
             ])->delete();
             //INSERT MAIN_USER_CUSTOMER_PLACE
             $user_customer = [
-                'user_id' => Auth::user()->user_id,
-                'team_id' => Auth::user()->user_team,
+                'user_id' => $user_id,
+                'team_id' => $user_team,
                 'customer_id' => $customer_info->id,
                 'place_id' =>$place_id,
             ];
 //            return $user_customer;
             $check_user_customer_exist = MainUserCustomerPlace::where([
-                ['user_id',Auth::user()->user_id],
-                ['team_id',Auth::user()->user_team],
+                ['user_id',$user_id],
+                ['team_id',$user_team],
                 ['customer_id',$customer_info->id],
                 ['place_id',null]
             ]);
@@ -368,8 +379,8 @@ class OrdersController extends Controller
                     'user_email' => $customer_info->ct_email,
                     'user_token' => csrf_token(),
                     'remember_token' => csrf_token(),
-                    'created_by' => Auth::user()->user_id,
-                    'updated_by' => Auth::user()->user_id,
+                    'created_by' => $user_id,
+                    'updated_by' => $user_id,
                     'enable_status' => 1,
                     'user_status' => 1
                 ];
@@ -387,7 +398,7 @@ class OrdersController extends Controller
             }
         }
         //UPDATE CUSTOMER STATUS
-        $team_customer_status = MainTeam::find(Auth::user()->user_team)->getTeamType->team_customer_status;
+        $team_customer_status = MainTeam::find($user_team)->getTeamType->team_customer_status;
 
         if ($team_customer_status == "") {
 
@@ -399,7 +410,7 @@ class OrdersController extends Controller
         }
         $team_customer_status_list = json_encode($team_customer_status_arr);
 
-        $update_team_customr_status = MainTeam::find(Auth::user()->user_team)->getTeamtype->update(['team_customer_status' => $team_customer_status_list]);
+        $update_team_customr_status = MainTeam::find($user_team)->getTeamtype->update(['team_customer_status' => $team_customer_status_list]);
 
         if (!isset($update_team_customr_status) ) {
             DB::callback();
@@ -423,8 +434,9 @@ class OrdersController extends Controller
     public function getCustomerInfor(Request $request)
     {
         $customer_phone = $request->customer_phone;
-        $user_id = Auth::user()->user_id;
-        $team_id = Auth::user()->user_team;
+        $user_info = MainUser::where('user_id',$request->created_by)->first();
+        $user_id = $request->created_by;
+        $team_id = $user_info->user_team;
 
         //GET CUSTOMER
         $customer_info = MainCustomerTemplate::where('ct_cell_phone',$customer_phone)->first();
@@ -435,7 +447,7 @@ class OrdersController extends Controller
 
         //GET CUSTOMER ASSIGN
         $place_list_assign = MainCustomerAssign::where([
-            ['user_id',Auth::user()->user_id],
+            ['user_id',$user_id],
             ['customer_id',$customer_id],
         ])->get();
 

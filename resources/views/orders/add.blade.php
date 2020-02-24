@@ -10,12 +10,36 @@
     .card-header{
         padding: 0.5rem 0.75rem;
     }
+    .select2-container .select2-selection--single{
+            height:34px !important;
+        }
+        .select2-container--default .select2-selection--single{
+                 border: 1px solid #ccc !important; 
+             border-radius: 0px !important; 
+        }
+        .select2-container {
+            width: 100%!important;
+        }
 </style>
 @endpush
 @section('content')
     <div class="">
     <form action="{{route('post-add-order')}}" method="post">
         @csrf()
+
+    @if(empty($customer_info))
+    <div class="col-md-12 form-group row">
+        <label class="col-md-2">Order By</label>
+        <div class="col-md-4">
+            <select name="created_by" id="created_by" class="select2 form-control form-control-sm">
+                @foreach($user_list as $user)
+                    <option {{ \Auth::user()->user_id==$user->user_id?"selected":"" }} value="{{ $user->user_id }}">{{ $user->user_lastname." ".$user->user_firstname." (".$user->user_nickname." )" }}</option>
+                @endforeach
+            </select>
+        </div>
+    </div>
+    @endif
+    
     <div class="form-group col-md-12 row">
         <div class="col-md-2">
             <label class="required">Customer Cell phone:</label>
@@ -184,6 +208,8 @@
     var max_discount = 0;
     var place_id_arr = [];
 
+    $('.select2').select2();
+
    $(".combo_service").click(function(){
 
     var cs_price = $(this).attr('cs_price');
@@ -241,8 +267,12 @@
    });
 
    $(".btn-search").click(function(){
+        seachCustomer();
+   });
+   function seachCustomer(){
 
     var customer_phone = $("#customer_phone").val();
+    var created_by = $("#created_by").val();
 
     if(customer_phone != "")
     {
@@ -250,7 +280,10 @@
             url: '{{route('get-customer-infor')}}',
             type: 'GET',
             dataType: 'html',
-            data: {customer_phone: customer_phone},
+            data: {
+                customer_phone: customer_phone,
+                created_by: created_by,
+            },
         })
         .done(function(data) {
             data = JSON.parse(data);
@@ -306,7 +339,7 @@
             console.log("error");
         });
     }
-   });
+   }
    $("#credit_card_type").change(function(event) {
        var credit_card_type = $('#credit_card_type :selected').val();
        if(credit_card_type == 'E-CHECK'){
@@ -334,7 +367,10 @@
            $("#website_assign").val(website);
            $("#address_assign").val(address);
        }
-   })
+   });
+   $("#created_by").change(function(){
+        seachCustomer();
+   });
 });
 </script>
 @endpush
