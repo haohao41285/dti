@@ -29,7 +29,7 @@
         <div  id="content">
             <div style="width: 50%;float: left">
                 <div style="background: url(http://dti.datallys.com/images/1.png) no-repeat;background-size: 100% 120%;position: relative;text-align: left;background-position: left;padding-left: 20px;z-index: 90">
-                    <h1>Website &<br>Inailso</h1>
+                    <h2>Website &<br>Inailso</h2>
                 </div>
                 <div style="padding-left: 20px;letter-spacing: 1px;font-size:14px">
                      Website đóng vai trò là gương mặt đại diện cho doanh nghiệp của bạn trên thế giới trực tuyến.App Inailso giúp bạn booking & quản lý dễ dàng qua Phone
@@ -54,7 +54,7 @@
             </div>
             <div style="width: 50%;float: right">
                 <div style="background: url(http://dti.datallys.com/images/2.png) no-repeat;background-size: 100% 120%;position: relative;text-align: left;padding-left: 20px;background-position: left;z-index: 90">
-                    <h1>Design</h1>
+                    <h2>Design</h2>
                 </div>
                 <div style="padding-left: 20px;letter-spacing: 1px;font-size:14px">
                     Xây dựng nhận diện thương hiệu giúp cho cơ sở kinh doanh của bạn trở nên nổi bật so với đối thủ cạnh tranh
@@ -69,7 +69,7 @@
         <div style="display: inline-block">
             <div style="width: 50%;float: left">
                 <div style="background: url(http://dti.datallys.com/images/3.png) no-repeat;background-size: 100% 120%;position: relative;text-align: left;padding-left: 20px;background-position: left;z-index: 90">
-                    <h1>Review<br>Google Map</h1>
+                    <h2>Review<br>Google Map</h2>
                 </div>
                 <div style="padding-left: 20px;letter-spacing: 1px;font-size:14px">
                     Tăng độ tin cậy cho thương hiệu của bạn. tăng tiếp xúc trực tuyến cũng như SEO local của bạn, tăng tỷ lệ click...
@@ -94,7 +94,7 @@
             </div>
             <div style="width: 50%;float: right">
                 <div style="background: url(http://dti.datallys.com/images/4.png) no-repeat;background-size: 100% 120%;position: relative;text-align: left;padding-left: 20px;background-position: left;z-index: 90">
-                    <h1>Fanpage/google<br>Maintenance</h1>
+                    <h2>Fanpage/google<br>Maintenance</h2>
                 </div>
                 <div style="padding-left: 20px;letter-spacing: 1px;font-size:14px">
                     Duy trì tương tác với khách hàng cũ, xây dựng thương hiệu để dàng tiếp cận khách hàng mới. Tạo hình ảnh fanpage chuyên nghiệp, thân thiện với khách hàng.
@@ -109,7 +109,7 @@
         <div style="display: inline-block">
             <div style="width: 50%;float: left">
                 <div style="background: url(http://dti.datallys.com/images/5.png) no-repeat;background-size: 100% 120%;position: relative;text-align: left;padding-left: 20px;background-position: left;z-index: 90">
-                    <h1>Fanpage<br>Recommendation</h1>
+                    <h2>Fanpage<br>Recommendation</h2>
                 </div>
                 <div style="padding-left: 20px;letter-spacing: 1px;font-size:14px">
                     Tăng độ tin cậy cho thương hiệu của bạn. tăng tiếp xúc trực tuyến cũng như SEO local của bạn, tăng tỷ lệ click...
@@ -136,19 +136,16 @@
             </div>
             <div style="text-align:center">
                 <a href="https://dataeglobal.com/" title="" style="text-decoration: none;margin-right: 20px">
-                    <img src="http://dti.datallys.com/images/website.png" alt="">
+                    <img src="http://dti.datallys.com/images/website.png" style="max-width: 40px" alt="">
                     {{-- <img src="{{ asset('images/website.png') }}" style="max-width: 40px" alt=""> --}}
-                    WEBSITE 
                 </a>
                 <a href="https://www.facebook.com/Posfornailsalon/" title="" style="text-decoration: none;margin-right: 20px">
-                    <img src="http://dti.datallys.com/images/facebook.png" alt="">
+                    <img src="http://dti.datallys.com/images/facebook.png" style="max-width: 40px" alt="">
                     {{-- <img src="{{ asset('images/facebook.png') }}" style="max-width: 40px" alt=""> --}}
-                    FANPAGE 
                 </a>
                 <a href="https://www.youtube.com/channel/UC71jjSWf6kSqwBqBKyoz31w" title="" style="text-decoration: none">
-                    <img src="http://dti.datallys.com/images/youtube.png" alt="">
+                    <img src="http://dti.datallys.com/images/youtube.png" style="max-width: 40px" alt="">
                     {{-- <img src="{{ asset('images/youtube.png') }}" style="max-width: 40px" alt=""> --}}
-                    YOUTUBE
                 </a>
             </div>
         </div>
