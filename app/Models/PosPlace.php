@@ -87,5 +87,8 @@ class PosPlace extends BaseModel
     public function scopeActive($query){
         return $query->where('place_status',1);
     }
+    public function customer(){
+        return $this->belongsTo(MainCustomer::class,'place_customer_id','customer_id');
+    }
 
 }

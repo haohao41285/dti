@@ -82,7 +82,7 @@
                 <label class="col-sm-3 col-md-2" for="enable_booking">Enable online bookings</label>
                 <div class="col-sm-2 col-md-2">
                     <div class="custom-control custom-checkbox">
-                        <input type="checkbox" class="custom-control-input" id="enable_booking" name="booking_online_status" {{(isset($service_item) && $service_item->booking_online_status==1)?"checked":""}}  >
+                        <input type="checkbox" class="custom-control-input" id="enable_booking" name="booking_online_status" {{((isset($service_item) && $service_item->booking_online_status==1))||!isset($service_item)?"checked":""}}  >
                         <label class="custom-control-label" for="enable_booking"></label>
                     </div>
                 </div> 
@@ -349,8 +349,9 @@ $(document).ready(function() {
         ['fontsize', ['fontsize']],
         ['color', ['color']],
         ['para', ['ul', 'ol', 'paragraph']],
-        ['height', ['height']]
-      ]
+        ['height', ['height']],
+        ['codeview']
+      ],
     });
      if ($("input.checkFlat")[0]) {
         $('input.checkFlat').iCheck({

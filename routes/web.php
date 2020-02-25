@@ -425,6 +425,9 @@ Route::group(['middleware' => ['auth']], function () {
 
         Route::group(['prefix' => 'old-order'], function() {
             Route::get('/','OldOrderController@index')->name('orders.old_order');
+            Route::get('/search-business','OldOrderController@searchBusiness')->name('orders.old_order.search_business');
+            Route::get('/search-customer','OldOrderController@searchCustomer')->name('orders.old_order.search_customer');
+            Route::post('/save','OldOrderController@save')->name('orders.old_order.save');
         });
 
     });
