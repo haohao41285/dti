@@ -63,6 +63,7 @@ class OldOrderController extends Controller
 
     }
     public function save(Request $request){
+    	// return $request->all();
 
     	$created_by = $request->created_by;
 
@@ -113,24 +114,33 @@ class OldOrderController extends Controller
     	}
     	//UPDATE BUSINESS
     	if($request->place_id == 0){
-    		$max_place_id = PosPlace::where('place_customer_id',$customer_id)->max('place_id')+1;
+    		$max_place_id = PosPlace::max('place_id')+1;
+
+    		if(strlen($max_place_id) < 6){
+                $place_ip_license = "DEG-".str_repeat("0",(6 - strlen($max_place_id))).$max_place_id;
+            }else
+                $place_ip_license = "DEG-".$max_place_id;
+
     		$place_arr = [
     			'place_id' => $max_place_id,
-    			'place_code' => 'place_code',
+    			'place_customer_id' => $customer_id,
+    			'place_code' => 'place-'.$max_place_id,
     			'place_logo' => 'logo',
     			'place_name' => $request->place_name??"salon",
     			'place_website' => 'place_website',
     			'place_taxcode' => 'place_taxcode',
-    			'place_actiondate_option' => 1,
+    			'place_actiondate_option' => 0,
     			'place_customer_type' => 1,
     			'place_url_plugin' => 'url',
     			'created_by' => $created_by,
     			'updated_by' => $created_by,
-    			'place_ip_license' => 'DEG_'.$max_place_id,
+    			'place_ip_license' => $place_ip_license,
     			'place_phone' => $request->place_phone,
     			'place_address' => $request->place_address??"",
     			'place_email' => $request->place_email??"",
+    			'place_actiondate' => '{"mon": {"start": "09:00", "end": "21:00", "closed": false}, "tue": {"start": "09:00", "end": "21:00", "closed": false}, "wed": {"start": "09:00", "end": "21:00", "closed": false}, "thur": {"start": "09:00", "end": "21:00", "closed": false}, "fri": {"start": "09:00", "end": "21:00", "closed": false}, "sat": {"start": "09:00", "end": "21:00", "closed": false},"sun": {"start": "09:00", "end": "21:00", "closed": false} }',
     		];
+    		PosPlace::insert($place_arr);
     		$place_id = $max_place_id;
     	}else{
     		$place_id = $request->place_id;

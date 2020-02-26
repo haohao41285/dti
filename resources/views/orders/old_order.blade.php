@@ -60,7 +60,7 @@
             </select>
         </div>
         <div class="col-md-4 customer-box customer" style="display: none">
-            <select name="place_id" id="customer_id" class="place_id form-control form-control-sm select2">
+            <select name="customer_id" id="customer_id" class="place_id form-control form-control-sm select2">
                 @foreach($main_customer as $customer)
                     <option  value="{{ $customer->customer_id }}">{{ $customer->customer_firstname." ".$customer->customer_lastname." - ".$customer->customer_phone." - ".$customer->customer_address }}</option>
                 @endforeach
