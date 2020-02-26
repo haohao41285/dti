@@ -207,6 +207,18 @@ PLACES
                                             </label>
                                         </div>
                                     </div>
+                                    <div class="row col-12 row-detail">
+                                        <label class="col-sm-2">Booking V2(old theme)</label>
+                                        {{-- <label class="col-sm-8 row" id="hide-service-price">Hide service price</label> --}}
+                                        <div class="btn-group btn-group-toggle working-day" rel="bookingv2">
+                                            <label class="btn btn-sm btn-day cursor" rel="on">
+                                                <input name="bookingv2" value="1" type="radio"> On
+                                            </label>
+                                            <label class="btn btn-sm btn-day cursor" rel="off">
+                                                <input name="bookingv2" value="0" type="radio"> Off
+                                            </label>
+                                        </div>
+                                    </div>
                                     <div class=" form-group">
                                         <div class="col-md-12 row row-detail">
                                             <label class="col-sm-2">Working Day</label>
@@ -1017,6 +1029,7 @@ $(document).ready(function() {
             success: function(data) {
                 if (data.status == 1) {
                     var hide_service_price = data.data.place.hide_service_price;
+                    var bookingv2 = data.data.place.booking_v2;
                     $("#detail").modal("show");
 
                     $("#logo img").attr('src', "{{env('URL_FILE_VIEW')}}" + data.data.place.place_logo);
@@ -1158,6 +1171,12 @@ $(document).ready(function() {
                         $("div[rel='hide-service-price']").find("label[rel='on']").addClass("active");
                     } else {
                         $("div[rel='hide-service-price']").find("label[rel='off']").addClass("active");
+                    }
+
+                    if (bookingv2 == 1) {
+                        $("div[rel='bookingv2']").find("label[rel='on']").addClass("active");
+                    } else {
+                        $("div[rel='bookingv2']").find("label[rel='off']").addClass("active");
                     }
 
 

@@ -178,7 +178,8 @@ class PlaceController extends Controller
                                     'hide_service_price','place_worker_mark_bonus',
                                     'place_interest','place_website','place_phone','place_url_plugin',
                                     'place_map_direction',
-                                    'place_latlng'
+                                    'place_latlng',
+                                    'booking_v2'
                                 )
                 ->where('place_id',$request->placeId)
                 ->where('place_status',1)
@@ -431,6 +432,7 @@ class PlaceController extends Controller
               'place_name' => $request->business_name,
               'place_phone' => $request->business_phone,
               'hide_service_price' => $request->hide_service_price,
+              'booking_v2' => $request->bookingv2,
               'place_address' => $request->address,
               'place_email' => $request->email,
               'place_website' => $request->website,

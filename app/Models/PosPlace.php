@@ -61,7 +61,8 @@ class PosPlace extends BaseModel
         'place_theme_code',
         'place_demo',
         'place_latlng',
-        'hide_service_price'
+        'hide_service_price',
+        'booking_v2'
     ];
 
     protected $guarded = [];
