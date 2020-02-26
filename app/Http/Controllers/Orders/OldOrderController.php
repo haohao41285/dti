@@ -10,6 +10,11 @@ use App\Models\MainComboService;
 use App\Models\MainCustomer;
 use App\Models\MainCustomerTemplate;
 use App\Models\MainCustomerService;
+use App\Models\MainComboServiceBought;
+use Carbon\Carbon;
+use App\Models\MainTeam;
+use Auth;
+use DB;
 
 class OldOrderController extends Controller
 {
@@ -69,8 +74,12 @@ class OldOrderController extends Controller
     		return back()->with(['error'=>'Choose Customer']);
 
     	$service_list = implode(';', $request->cs_id);
+    	DB::beginTransaction();
 
     	if($request->customer_id == 0){
+    		//UPDATE CUSTOMER STATUS
+			$team_info = MainTeam::find(MainUser::where('user_id',$created_by)->first()->user_team)->getTeamType;
+		    $team_slug = $team_info->slug;
 
     		//CREATE MAIN CUSTOMER TEMPLATE
     		$ct_arr = [
@@ -78,9 +87,12 @@ class OldOrderController extends Controller
     			'ct_lastname' => $request->customer_lastname,
     			'ct_phone' => $request->customer_phone,
     			'ct_email' => $request->customer_email,
-    			'ct_address' => $request->customer_address
+    			'ct_address' => $request->customer_address,
+    			 $team_slug => 4
     		];
     		$ct_update = MainCustomerTemplate::create($ct_arr);
+
+    		$customer_id_template = $ct_update->id;
 
     		//CREATE MAINCUSTOMER
     		$max_customer_id = MainCustomer::max('customer_id')+1;
@@ -91,7 +103,7 @@ class OldOrderController extends Controller
     			'customer_phone' => $request->customer_phone,
     			'customer_email' => $request->customer_email,
     			'customer_address' => $request->customer_address,
-    			'customer_customer_template_id' => $ct_update->id
+    			'customer_customer_template_id' => $customer_id_template
     		];
     		$customer_update = MainCustomer::create($customer_arr);
 
@@ -123,79 +135,54 @@ class OldOrderController extends Controller
     	}else{
     		$place_id = $request->place_id;
     	}
+
+    	$date_order = format_datetime_db($request->date_order);
     	//UPDATE ORDER
 		$order_arr = [
 			'csb_customer_id' => $customer_id,
 			'csb_combo_service_id' => $service_list,
-			'csb_trans_id' => 111111,\
+			'csb_trans_id' => 111111,
 			'csb_place_id' => $place_id,
 			'csb_amount' => $request->csb_amount,
 			'csb_charge' => $request->csb_charge,
-			'csb_cashback' => $request->csb_cashback,
+			'csb_amount_deal' => $request->csb_amount_deal,
 			'created_by' => $created_by,
-			'csb_status' => 4
+			'csb_status' => 4,
+			'csb_cashback' => 0,
+			'created_at' => $date_order,
+			'updated_by' => Auth::user()->user_id,
 
 		];
 		$order_update = MainComboServiceBought::create($order_arr);
 
 		//UPDATE MAIN SERVICE CUSTOMER
-		$service_list = MainComboService::whereIn('id',$request->cs_id)->get();
-		foreach ($service_list as $key => $service) {
-			if($service->cs_type_time == 1){
-				$cs_date_expire = today()->addMonths($service->cs_expiry_period)->format('Y-d-m');
-			}else{
-				$cs_date_expire = today()->addDays($service->cs_expiry_period)->format('Y-d-m');
+		
+		if($request->customer_id == 0){
+			$service_list = MainComboService::whereIn('id',$request->cs_id)->get();
+			foreach ($service_list as $key => $service) {
+				if($service->cs_type_time == 1){
+					$cs_date_expire = Carbon::parse($request->date_order)->addMonths($service->cs_expiry_period)->format('Y-d-m');
+				}else{
+					$cs_date_expire = Carbon::parse($request->date_order)->addDays($service->cs_expiry_period)->format('Y-d-m');
+				}
+				$cs_arr = [
+					'cs_place_id' => $place_id,
+					'cs_customer_id' => $customer_id,
+					'cs_service_id' => $service->id,
+					'cs_date_expire' => $cs_date_expire,
+					'cs_type' => 0,
+					'created_by' => $created_by,
+					'updated_by' => $created_by,
+				];
+				$service_customer = MainCustomerService::create($cs_arr);
 			}
-			$cs_arr = [
-				'cs_place_id' => $place_id,
-				'cs_customer_id' => $customer_id,
-				'cs_service_id' => $service->id,
-				'cs_date_expire' => $cs_date_expire,
-				'cs_type' => 0,
-				'created_by' => $created_by,
-				'updated_by' => $created_by,
-			];
-			$service_customer = MainCustomerService::create($cs_arr);
 		}
-		//UPDATE MAIN_CUSTOMER_SERVICE
-        foreach ($service_arr as $key => $service) {
-            //GET EXPIRY PERIOD OF SERVICE
-            $service_expiry_period = MainComboService::where('id', $service)->first()->cs_expiry_period;
-            //CHECK CUSTOMER SERVICE EXIST
-            $check = MainCustomerService::where('cs_place_id', $place_id)
-                ->where('cs_customer_id', $customer_id)
-                ->where('cs_service_id', $service)
-                ->first();
-            if (isset($check)) {
-                $cs_date_expire = $check->cs_date_expire;
-                if ($cs_date_expire >= $today) {
-                    $cs_date_expire = Carbon::parse($cs_date_expire)->addMonths($service_expiry_period)->format('Y-m-d');
-                } else
-                    $cs_date_expire = Carbon::parse($today)->addMonths($service_expiry_period)->format('Y-m-d');
-
-                //UPDATE SERVICE IN MAIN CUSTOMER SERVICE
-                $customer_service_update = MainCustomerService::where('cs_place_id', $place_id)
-                    ->where('cs_service_id', $service)
-                    ->update(['cs_date_expire' => $cs_date_expire, 'updated_by' => $order_info->created_by]);
-            } else {
-                $cs_date_expire = Carbon::parse($today)->addMonths($service_expiry_period)->format('Y-m-d');
-
-                $order_arr = [
-                    'cs_id' => $cs_id,
-                    'cs_place_id' => $place_id,
-                    'cs_customer_id' => $customer_id,
-                    'cs_service_id' => $service,
-                    'cs_date_expire' => $cs_date_expire,
-                    'cs_type' => 0,
-                    'created_at' => Carbon::now(),
-                    'created_by' => $order_info->created_by,
-                    'cs_status' => 1,
-                ];
-                $customer_service_update = MainCustomerService::insert($order_arr);
-                $cs_id++;
-            }
-        }
-
-
+		if(!$order_update){
+			DB::callback();
+			return back()->with(['error'=>'Failed! Save Order Failed!']);
+		}else{
+			DB::commit();
+			return back()->with(['success'=> 'Save Order Successfully!']);
+		}
     }
 }

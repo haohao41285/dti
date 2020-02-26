@@ -84,10 +84,28 @@
         <div class="col-md-2 customer-tip"></div>
         <div class="col-md-4 business-customer-box"></div>
     </div>
-     <div class="col-md-12 form-group row">
+    <div class="col-md-12 form-group row">
         <label class="col-md-2"><b>Date Order</b></label>
         <div class="col-md-4">
             <input type="text" id="date_order" value="{{ today()->format('m/d/Y') }}" name="date_order" class="form-control form-control-sm">
+        </div>
+    </div>
+    <div class="col-md-12 form-group row">
+        <label class="col-md-2"><b>Amout</b></label>
+        <div class="col-md-4">
+            <input type="text" id="" onkeypress="return isNumberKey(event)" value="0" name="csb_amount" class="form-control form-control-sm">
+        </div>
+    </div>
+    <div class="col-md-12 form-group row">
+        <label class="col-md-2"><b>Discount</b></label>
+        <div class="col-md-4">
+            <input type="text" id="" value="0" onkeypress="return isNumberKey(event)" name="csb_amount_deal" class="form-control form-control-sm">
+        </div>
+    </div>
+    <div class="col-md-12 form-group row">
+        <label class="col-md-2"><b>Charge</b></label>
+        <div class="col-md-4">
+            <input type="text" id="" value="0" onkeypress="return isNumberKey(event)" name="csb_charge" class="form-control form-control-sm">
         </div>
     </div>
     <hr>
