@@ -46,7 +46,11 @@ class SendNotificationInvoice implements ShouldQueue
             $message->subject($input['subject']);
             if(!empty($input['file_term_service'])){
                 foreach ($input['file_term_service'] as $key => $file) {
-                    $message->attach(public_path($file)); 
+                    if(is_file(public_path($file)))
+                        $message->attach(public_path($file));
+                    elseif(is_file(storage_path($file)))
+                        $message->attach(storage_path($file));
+                    else{}
                 }
             }
             // $message->attach(public_path('file/review_google.pdf'));

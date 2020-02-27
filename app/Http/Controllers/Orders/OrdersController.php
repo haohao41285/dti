@@ -237,8 +237,9 @@ class OrdersController extends Controller
             'csb_status' => $status,
             'created_by' => $user_id,
             'csb_payment_method' => $request->csb_payment_method,
-            'csb_invoice' => 'file/invoices/invoice_'.$order_id.'.pdf'
+            'csb_invoice' => 'app/invoice_'.$order_id.'.pdf'
         ];
+
         //CREATE NEW PLACE IN POS_PLACE, NEW USER IN POS_USER IF CHOOSE NEW PLACE
         if ($request->place_id == 0) {
             //CREATE PLACE IP LICENSE
@@ -664,19 +665,28 @@ class OrdersController extends Controller
         $service_arr = [];
 
         //GET TASK LIST
-        $data['task_list'] = MainTask::with('getService')->leftjoin('main_user', function ($join) {
-            $join->on('main_task.updated_by', 'main_user.user_id');
-        })
-            ->where('main_task.order_id', $id)
-            ->where(function ($query) {
-                $query->where('main_task.created_by', Auth::user()->user_id)
-                    ->orWhere('main_task.assign_to', Auth::user()->user_id)
-                    ->orWhere('main_task.updated_by', Auth::user()->user_id);
+        if(Gate::denies('permission','task-cskh')){
+            $data['task_list'] = MainTask::with('getService')->leftjoin('main_user', function ($join) {
+                $join->on('main_task.updated_by', 'main_user.user_id');
             })
-            ->select('main_task.*', 'main_user.user_nickname')
-            ->get();
-            // return $data;
+                ->where('main_task.order_id', $id)
+                ->where(function ($query) {
+                    $query->where('main_task.created_by', Auth::user()->user_id)
+                        ->orWhere('main_task.assign_to', Auth::user()->user_id)
+                        ->orWhere('main_task.updated_by', Auth::user()->user_id);
+                })
+                ->select('main_task.*', 'main_user.user_nickname')
+                ->get();
 
+        }else{
+            $data['task_list'] = MainTask::with('getService')->leftjoin('main_user', function ($join) {
+                $join->on('main_task.updated_by', 'main_user.user_id');
+            })
+                ->where('main_task.order_id', $id)
+                ->select('main_task.*', 'main_user.user_nickname')
+                ->get();
+            }
+           
         return view('orders.order-view', $data);
     }
 
@@ -1130,7 +1140,7 @@ class OrdersController extends Controller
              if(file_exists($term_service->file_name))
                 $input['file_term_service'][] = $term_service->file_name;
         }
-        if($order_info->csb_invoice && file_exists(public_path($order_info->csb_invoice)))
+        if($order_info->csb_invoice && is_file(storage_path($order_info->csb_invoice)))
             $input['file_term_service'][] = $order_info->csb_invoice;
         $content = $order_info->present()->getThemeMail_2;
 
@@ -1172,9 +1182,11 @@ class OrdersController extends Controller
         // }
 
         // $file_name = $pathFile.'invoice_'.$order_id.'.pdf';
+        // $path = 'app/'.$file_name.'.pdf';
 
-
-        // file_put_contents(public_path($file_name), $output);
+        // if( is_file(storage_path($path) ) )
+        //     \Storage::delete($path);
+        // file_put_contents(storage_path($path), $output);
 
     }
 
@@ -1304,13 +1316,20 @@ class OrdersController extends Controller
         $dompdf->render();
         // save file pdf
         $output = $dompdf->output();
-        $pathFile = 'file/invoices/';
-        if (!file_exists(public_path($pathFile) ) ) {
-            mkdir($pathFile, 0777, true);
-        }
-        $file_name = $pathFile.'invoice_'.$input['order_id'].'.pdf';
-        $path = public_path($file_name);
-        file_put_contents($path, $output);
+        // $pathFile = 'file/invoices/';
+        // if (!file_exists(public_path($pathFile) ) ) {
+        //     mkdir($pathFile, 0777, true);
+        // }
+        // $file_name = $pathFile.'invoice_'.$input['order_id'].'.pdf';
+        // $path = public_path($file_name);
+        // file_put_contents($path, $output);
+
+        $file_name = 'invoice_'.$input['order_id'];
+        $path = 'app/'.$file_name.'.pdf';
+
+        if( is_file(storage_path($path) ) )
+            \Storage::delete($path);
+        file_put_contents(storage_path($path), $output);
 
         //UPDATE MAIN_CUSTOMER_SERVICE
         foreach ($service_arr as $key => $service) {

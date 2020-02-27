@@ -92,7 +92,7 @@ class OrderObserver
                     if(file_exists($term_service->file_name))
                     $input['file_term_service'][] = $term_service->file_name;
                 }
-                // if($mainComboServiceBought->csb_invoice && file_exists(base_path("public/".$mainComboServiceBought->csb_invoice)))
+                // if($mainComboServiceBought->csb_invoice && is_file(storage_path($mainComboServiceBought->csb_invoice)))
                     $input['file_term_service'][] = $mainComboServiceBought->csb_invoice;
                 $content = $mainComboServiceBought->present()->getThemeMail_2;
 
