@@ -17,6 +17,7 @@ use Auth;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
+use App\ModelsCustomer;
 
 class ChangeDataController extends Controller
 {
@@ -344,28 +345,117 @@ class ChangeDataController extends Controller
 
     }
     public function mergeCustomer(){
-        $max_customer_id = DB::table('main_customer_template')->max('id'); //915 - main__customer //24806 - main_customer_template
+        
+        MainCustomerTemplate::truncate();
 
-        $new_customer = DB::table('main_customer_new')->get();
-        $customer_arr = [];
+        DB::beginTransaction();
 
-       /* foreach ($new_customer as $key => $customer) {
-            $customer_arr[] = [
-                'customer_id' => $customer->customer->id,
-                'customer_lastname' => $customer->customer_lastname,
-                'customer_firstname' => $customer->customer_firstname,
-                'customer_email' => $customer->customer_email,
-                'customer_phone' => $customer->customer_phone,
-                'customer_address' => $customer->customer_address,
-                'customer_city' => $customer->customer_city,
-                'customer_zip' => $customer->,
-                'customer_state' => $customer->,
-                'customer_agent' => $customer->,
-                'customer_type' => $customer->,
-                'customer_status' => $customer->,
-                'customer_customer_template_id' => $customer->,
-                'created_at' => $customer->,
-            ];
-        }*/
+        ModelsCustomer::chunk(1000,function($customers){
+
+            foreach ($customers as $key => $customer) {
+
+                    if (strpos($customer->fullname, '.') !== false) {
+                        $customer_fullname = explode('.', $customer->fullname);
+                    }else{
+                        $customer_fullname = explode(' ', $customer->fullname);
+                    }
+
+                    $firstname = $customer_fullname[1]??'vi';
+                    $lastname = $customer_fullname[0]??'quy';
+
+                if($customer->status_id == 2){
+                    $business_phone = '1'.$customer->business_phone;
+                    //CHECK MAIN_CUSTOMER EXISTED
+                    $main_customer_info = MainCustomer::where('customer_phone',$business_phone);
+                    if($main_customer_info->count() > 0){
+                        $main_customer_info->update(['customer_customer_template_id'=>$customer->id]);
+
+                    }else{
+                        //CREATE MAIN_CUSTOMER
+                        $main_customer_arr = [
+                            'customer_lastname' => $lastname,
+                            'customer_firstname' => $firstname,
+                            'customer_email' => $customer->email,
+                            'customer_phone' => $business_phone,
+                            'customer_address' => $customer->address,
+                            'customer_city' => $customer->city,
+                            'customer_zip' => $customer->zipcode,
+                            'customer_state' => $customer->state,
+                            'customer_type' => 2,
+                            'customer_status' => 1,
+                            'customer_customer_template_id' => $customer->id,
+                            'created_at' => $customer->created_date,
+                        ];
+                        $customer_update = MainCustomer::create($main_customer_arr);
+                        //CREATE POS_PLACE
+                        $max_place_id = PosPlace::max('place_id')+1;
+
+                        if(strlen($max_place_id) < 6){
+                            $place_ip_license = "DEG-".str_repeat("0",(6 - strlen($max_place_id))).$max_place_id;
+                        }else
+                            $place_ip_license = "DEG-".$max_place_id;
+
+                        $place_arr = [
+                            'place_id' => $max_place_id,
+                            'place_customer_id' => MainCustomer::max('customer_id'),
+                            'place_code' => 'place-'.$max_place_id,
+                            'place_logo' => 'logo',
+                            'place_name' => $customer->business??"salon",
+                            'place_website' => 'place_website',
+                            'place_taxcode' => 'place_taxcode',
+                            'place_actiondate_option' => 0,
+                            'place_customer_type' => 1,
+                            'place_url_plugin' => 'url',
+                            'created_by' => 1,
+                            'updated_by' => 1,
+                            'place_ip_license' => $place_ip_license,
+                            'place_phone' => $customer->business_phone,
+                            'place_address' => $customer->address??"",
+                            'place_email' => $customer->email??"",
+                            'place_actiondate' => '{"mon": {"start": "09:00", "end": "21:00", "closed": false}, "tue": {"start": "09:00", "end": "21:00", "closed": false}, "wed": {"start": "09:00", "end": "21:00", "closed": false}, "thur": {"start": "09:00", "end": "21:00", "closed": false}, "fri": {"start": "09:00", "end": "21:00", "closed": false}, "sat": {"start": "09:00", "end": "21:00", "closed": false},"sun": {"start": "09:00", "end": "21:00", "closed": false} }',
+                        ];
+                        PosPlace::insert($place_arr);
+                    }
+                }
+                //CREATE MAIN_CUSTOMER_TEMPLATE
+                $customer_template_arr = [
+                    'id' => $customer->id,
+                    'ct_salon_name' => $customer->business??"salon",
+                    'ct_fullname' => $customer->fullname??"quy vi",
+                    'ct_firstname' => $firstname,
+                    'ct_lastname' => $lastname,
+                    'ct_business_phone' => $customer->cell_phone,
+                    'ct_cell_phone' => $customer->business_phone,
+                    'ct_email' => $customer->email,
+                    'ct_address' => $customer->address,
+                    'ct_website' => $customer->website,
+                    'ct_note' => $customer->notes,
+                    'created_by' => $customer->created_by,
+                    'updated_by' => $customer->modified_by,
+                    'created_at' => $customer->created_date,
+                    'ct_active' => 1,
+                ];
+                $customer_template_update = MainCustomerTemplate::insert($customer_template_arr);
+            }
+            if(!$customer_template_update){
+                DB::rollBack();
+                return 'error';
+            }else{
+                DB::commit();
+                return 'done';
+            }
+        });
+       
+    }
+    public function setDisabledCustomer(){
+        $team_type = MainTeamType::select('slug')->get();
+        $slug_update = [];
+        foreach ($team_type as $key => $slug) {
+            $slug_update[$slug->slug] = 2;
+        }
+        $customers = ModelsCustomer::where('status_id',4)->get();
+        foreach ($customers as $key => $customer) {
+            DB::table('main_customer_template')->where('id',$customer->id)->update($slug_update);
+        }
     }
 }

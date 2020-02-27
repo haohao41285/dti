@@ -537,6 +537,7 @@ Route::get('replace-character-space','ChangeDataController@replaceCharacterSpace
 Route::get('transfer-customer-id','ChangeDataController@tranferCustomerId');
 Route::get('check-customer','ChangeDataController@checkCustomer');
 Route::get('merge-customer','ChangeDataController@mergeCustomer');
+Route::get('disabled-customer','ChangeDataController@setDisabledCustomer');
 
 
 Route::get('email_theme',function(){

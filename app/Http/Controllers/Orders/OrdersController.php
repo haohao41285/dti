@@ -1316,13 +1316,6 @@ class OrdersController extends Controller
         $dompdf->render();
         // save file pdf
         $output = $dompdf->output();
-        // $pathFile = 'file/invoices/';
-        // if (!file_exists(public_path($pathFile) ) ) {
-        //     mkdir($pathFile, 0777, true);
-        // }
-        // $file_name = $pathFile.'invoice_'.$input['order_id'].'.pdf';
-        // $path = public_path($file_name);
-        // file_put_contents($path, $output);
 
         $file_name = 'invoice_'.$input['order_id'];
         $path = 'app/'.$file_name.'.pdf';
@@ -1419,6 +1412,30 @@ class OrdersController extends Controller
             ];
             $task_create = MainTask::create($task_arr);
         }
+
+        //SEND MAIL INVOICE FOR CUSTOMER
+        // $service_list = $mainComboServiceBought->csb_combo_service_id;
+        // $service_array = explode(";",$service_list);
+        // $mainComboServiceBought['combo_service_list'] = MainComboService::whereIn('id',$service_array)->get();
+        $input['file_term_service'] = [];
+
+        $term_services = MainTermService::whereIn('service_id',$service_arr)->active()->select('file_name')->distinct('file_name')->get();
+        foreach ($term_services as $key => $term_service) {
+            if(file_exists($term_service->file_name))
+            $input['file_term_service'][] = $term_service->file_name;
+        }
+        // if($mainComboServiceBought->csb_invoice && is_file(storage_path($mainComboServiceBought->csb_invoice)))
+            $input['file_term_service'][] = $order_info->csb_invoice;
+        $content = $order_info->present()->getThemeMail_2;
+
+        $input['subject'] = 'INVOICE';
+        $input['email'] = $order_info->getCustomer->customer_email;
+        $input['name'] = $order_info->getCustomer->customer_firstname. " ".$order_info->getCustomer->customer_lastname;
+        $input['message'] = $content;
+        $input['mail_username_invoice'] = env('MAIL_USERNAME_INVOICE');
+        $input['mail_password_invoice'] = env('MAIL_PASSWORD_INVOICE');
+
+        dispatch(new SendNotificationInvoice($input))->delay(now()->addSecond(5));
 
         if (!isset($update_order) || !isset($task_create) || !isset($customer_service_update)){
             DB::callback();

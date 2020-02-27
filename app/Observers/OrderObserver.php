@@ -79,37 +79,37 @@ class OrderObserver
     public function updated(MainComboServiceBought $mainComboServiceBought)
     {
         //SEND MAIL FOR CUSTOMER
-        if($mainComboServiceBought->getCustomer->customer_email != "" && $mainComboServiceBought->updated_by != ""){
-            if($mainComboServiceBought->csb_status == 1){
-                $service_list = $mainComboServiceBought->csb_combo_service_id;
-                $service_array = explode(";",$service_list);
-                $mainComboServiceBought['combo_service_list'] = MainComboService::whereIn('id',$service_array)->get();
+        // if($mainComboServiceBought->getCustomer->customer_email != "" && $mainComboServiceBought->updated_by != ""){
+        //     if($mainComboServiceBought->csb_status == 1){
+        //         $service_list = $mainComboServiceBought->csb_combo_service_id;
+        //         $service_array = explode(";",$service_list);
+        //         $mainComboServiceBought['combo_service_list'] = MainComboService::whereIn('id',$service_array)->get();
 
-                //GET TERM SERVICE
-                $input['file_term_service'] = [];
-                $term_services = MainTermService::whereIn('service_id',$service_array)->active()->select('file_name')->distinct('file_name')->get();
-                foreach ($term_services as $key => $term_service) {
-                    if(file_exists($term_service->file_name))
-                    $input['file_term_service'][] = $term_service->file_name;
-                }
-                // if($mainComboServiceBought->csb_invoice && is_file(storage_path($mainComboServiceBought->csb_invoice)))
-                    $input['file_term_service'][] = $mainComboServiceBought->csb_invoice;
-                $content = $mainComboServiceBought->present()->getThemeMail_2;
+        //         //GET TERM SERVICE
+        //         $input['file_term_service'] = [];
+        //         $term_services = MainTermService::whereIn('service_id',$service_array)->active()->select('file_name')->distinct('file_name')->get();
+        //         foreach ($term_services as $key => $term_service) {
+        //             if(file_exists($term_service->file_name))
+        //             $input['file_term_service'][] = $term_service->file_name;
+        //         }
+        //         // if($mainComboServiceBought->csb_invoice && is_file(storage_path($mainComboServiceBought->csb_invoice)))
+        //             $input['file_term_service'][] = $mainComboServiceBought->csb_invoice;
+        //         $content = $mainComboServiceBought->present()->getThemeMail_2;
 
-                $input['subject'] = 'INVOICE';
-                $input['email'] = $mainComboServiceBought->getCustomer->customer_email;
-                $input['name'] = $mainComboServiceBought->getCustomer->customer_firstname. " ".$mainComboServiceBought->getCustomer->customer_lastname;
-                $input['message'] = $content;
-                $input['mail_username_invoice'] = env('MAIL_USERNAME_INVOICE');
-                $input['mail_password_invoice'] = env('MAIL_PASSWORD_INVOICE');
+        //         $input['subject'] = 'INVOICE';
+        //         $input['email'] = $mainComboServiceBought->getCustomer->customer_email;
+        //         $input['name'] = $mainComboServiceBought->getCustomer->customer_firstname. " ".$mainComboServiceBought->getCustomer->customer_lastname;
+        //         $input['message'] = $content;
+        //         $input['mail_username_invoice'] = env('MAIL_USERNAME_INVOICE');
+        //         $input['mail_password_invoice'] = env('MAIL_PASSWORD_INVOICE');
 
-                dispatch(new SendNotificationInvoice($input))->delay(now()->addSecond(5));
-            }
-            elseif($mainComboServiceBought->csb_status == 2)
-            {
-             //SEND SMS   
-            }
-        }
+        //         dispatch(new SendNotificationInvoice($input))->delay(now()->addSecond(5));
+        //     }
+        //     elseif($mainComboServiceBought->csb_status == 2)
+        //     {
+        //      //SEND SMS   
+        //     }
+        // }
     }
 
     /**
