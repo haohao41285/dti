@@ -188,6 +188,7 @@ class DashboardController extends Controller {
                 'cs_id' => $key,
                 'customer_name' => $customer_info->customer_firstname. " ". $customer_info->customer_lastname,
                 'customer_phone' => $customer_info->customer_phone,
+                'customer_phone' => '',
                 'service_info' => $service_info,
                 'seller_name' => $seller_info,
                 'expired_date' => $expired_date,
