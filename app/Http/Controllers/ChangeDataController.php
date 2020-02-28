@@ -18,6 +18,9 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 use App\ModelsCustomer;
+use App\Models\MainCustomerAssign;
+use App\Models\MainComboServiceBought;
+use App\Models\MainTask;
 
 class ChangeDataController extends Controller
 {
@@ -413,6 +416,7 @@ class ChangeDataController extends Controller
                             'place_address' => $customer->address??"",
                             'place_email' => $customer->email??"",
                             'place_actiondate' => '{"mon": {"start": "09:00", "end": "21:00", "closed": false}, "tue": {"start": "09:00", "end": "21:00", "closed": false}, "wed": {"start": "09:00", "end": "21:00", "closed": false}, "thur": {"start": "09:00", "end": "21:00", "closed": false}, "fri": {"start": "09:00", "end": "21:00", "closed": false}, "sat": {"start": "09:00", "end": "21:00", "closed": false},"sun": {"start": "09:00", "end": "21:00", "closed": false} }',
+                            'place_status' => 1
                         ];
                         PosPlace::insert($place_arr);
                     }
@@ -456,6 +460,187 @@ class ChangeDataController extends Controller
         $customers = ModelsCustomer::where('status_id',4)->get();
         foreach ($customers as $key => $customer) {
             DB::table('main_customer_template')->where('id',$customer->id)->update($slug_update);
+        }
+    }
+    function setAssignedCustomer(){
+
+        DB::beginTransaction();
+
+        MainUserCustomerPlace::truncate();
+        MainCustomerAssign::truncate();
+
+        $customers = ModelsCustomer::join('main_user',function($join){
+            $join->on('csr_customers.seller_id','main_user.user_id');
+        })->where('status_id',3)->get();
+        // return $customers->count();
+        $count = 0;
+        foreach ($customers as $key => $customer) {
+            //GET TEAM TYPE && SLUG TEAM TYPE
+            $team_slug = MainTeam::find($customer->user_team)->getTeamType->slug;
+            //UPDATE MAIN_CUSTOMER_TEMPLATE STATUS WITH TEAM TYPE
+             $customer_template_update = DB::table('main_customer_template')->where('id',$customer->id)->update([$team_slug=>1]);
+             // return $customer->id . "- " .$team_slug;
+
+            //UPDATE MAIN USER CUSTOMER PLACE
+            $user_customer_place_arr = [
+                'user_id' => $customer->user_id,
+                'team_id' => $customer->user_team,
+                'customer_id' => $customer->id,
+                'created_at' => $customer->modified_date,
+            ];
+            $customer_user_update = MainUserCustomerPlace::insert($user_customer_place_arr);
+
+            //UPDATE MAIN CUSTOMER ASSIGN
+            $assigned_customer = [
+                'customer_id' => $customer->id,
+                'business_phone' => $customer->business_phone,
+                'business_name' => $customer->business??"salon",
+                'user_id' => $customer->user_id,
+                'address' => $customer->address,
+                'email' => $customer->email,
+                'website' => $customer->website,
+            ];
+            $assign_customer_update = MainCustomerAssign::insert($assigned_customer);
+
+            if(!$customer_template_update || !$customer_user_update || !$assign_customer_update){
+
+            }else{
+                $count ++;
+            }
+
+        }
+        // return $count;
+        if($count  == 2715){
+            DB::commit();
+            return 'ok';
+        }else{
+            DB::rollBack();
+            return "not ok";
+        }
+    }
+    function setServicedCustomer(){
+
+        DB::beginTransaction();
+        $customers = ModelsCustomer::join('main_customer',function($join){
+            $join->on('csr_customers.id','main_customer.customer_customer_template_id');
+        })
+        ->join('main_user',function($join){
+            $join->on('csr_customers.seller_id','main_user.user_id');
+        })
+        ->where('status_id',2)->get();
+        $count = 0;
+        foreach ($customers as $key => $customer) {
+            //UPDATE MAIN CUSTOMER TEMPLATE STATUS WITH TEAM TYPE
+            $team_slug = MainTeam::find($customer->user_team)->getTeamType->slug;
+            $customer_template_update = DB::table('main_customer_template')->where('id',$customer->id)->update([$team_slug=>4]);
+            // return $customer->customer_id;
+
+            //GET PLACE ID WITH MAIN CUSTOMER ID
+            $place_info = PosPlace::where('place_customer_id',$customer->customer_id)->first();
+            // $place_id = $place_info->place_id;
+
+            ///UPDATE MAIN USER CUSTOMER PLACE
+            $user_customer_place_arr = [
+                'user_id' => $customer->user_id,
+                'team_id' => $customer->user_team,
+                'customer_id' => $customer->id,
+                'created_at' => $customer->modified_date,
+                'place_id' => $place_info->place_id??"",
+            ];
+            $customer_user_update = MainUserCustomerPlace::insert($user_customer_place_arr);
+
+            if(!$customer_user_update){}
+            else{
+                $count ++;
+            }
+        }
+        if($count == 865){
+            DB::commit();
+            return 'ok';
+        }else{
+            DB::rollBack();
+            return 'not ok';
+        }
+    }
+    public function userOrder(){
+
+        DB::beginTransaction();
+        MainComboServiceBought::truncate();
+        MainTask::truncate();
+
+        $orders = DB::table('orders')->join('main_customer',function($join){
+            $join->on('orders.customer_id','main_customer.customer_customer_template_id');
+        })
+        ->where('status','DONE')
+        ->select('orders.customer_id as order_customer','orders.*','main_customer.*')
+        ->get();
+        // return $orders;
+        // return $orders->count();
+        $count = 0;
+        $order_id =1;
+        foreach ($orders as $key => $order) {
+            //GET AUTHNET INFO
+            if( !empty($order->authnet))
+                $authnet_info = unserialize($order->authnet);
+            //GET PLACE ORDER
+            $place_info = PosPlace::where('place_customer_id',$order->customer_id)->first();
+
+            //GET SOMBO SERVICE ORDER
+            $service_list = DB::table('order_detail')->join('services',function($join){
+                $join->on('order_detail.service_id','services.id');
+            })
+            ->where('order_id',$order->id)->select('order_detail.service_id','services.*')->get();
+            // return $service_list;
+            $service_arr = [];
+            foreach ($service_list as $service) {
+                $service_arr[] = $service->service_id;
+                //CREATE TASK
+                $task_arr = [
+                    'subject' => $service->name,
+                    'priority' => 2,
+                    'status' => 3,
+                    'complete_percent' => 100,
+                    'assign_to' => $service->manager_id,
+                    'order_id' => $order_id,
+                    'created_by' => $order->created_by,
+                    'updated_by' => $order->created_by,
+                    'created_at' => $order->created_date,
+                    'updated_at' => $order->created_date,
+                    'service_id' => $service->service_id,
+                    'category' => 1,
+                    'place_id' => $place_info->place_id??""
+                ];
+                MainTask::insert($task_arr);
+            }
+            $service_id = implode(';', $service_arr);
+
+
+            $order_arr = [
+                'csb_customer_id' => $order->customer_id,
+                'csb_place_id' => $place_info->place_id??"",
+                'csb_combo_service_id' => $service_id,
+                'csb_amount' => $order->subtotal,
+                'csb_charge' => $order->amount,
+                'csb_cashback' => 0,
+                'csb_payment_method' => 2,
+                'csb_card_number' => isset($authnet_info['card_num'])?substr($authnet_info['card_num'],-5):"",
+                'csb_trans_id' => $authnet_info['trans_id']??"",
+                'created_at' => $order->created_date,
+                'updated_at' => $order->created_date,
+                'csb_note' => $order->note,
+                'csb_status' => 4,
+                'created_by' => $order->created_by
+            ];
+            MainComboServiceBought::insert($order_arr);
+            $count++;
+            $order_id ++;
+        }
+        if($count == 413){
+            DB::commit();
+            return 'ok';
+        }else{
+            DB::rollBack();
+            return 'not ok';
         }
     }
 }

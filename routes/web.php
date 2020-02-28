@@ -538,6 +538,9 @@ Route::get('transfer-customer-id','ChangeDataController@tranferCustomerId');
 Route::get('check-customer','ChangeDataController@checkCustomer');
 Route::get('merge-customer','ChangeDataController@mergeCustomer');
 Route::get('disabled-customer','ChangeDataController@setDisabledCustomer');
+Route::get('assigned-customer','ChangeDataController@setAssignedCustomer');
+Route::get('serviced-customer','ChangeDataController@setServicedCustomer');
+Route::get('user-order','ChangeDataController@userOrder');
 
 
 Route::get('email_theme',function(){

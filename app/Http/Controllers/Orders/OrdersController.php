@@ -510,7 +510,7 @@ class OrdersController extends Controller
 
             //GET INFORMATION CARD
             if (!isset($request->my_order)){
-                if($order->csb_status == 1)
+                if($order->csb_status != 0)
                     $infor = "<span>ID: " . $order->csb_trans_id . "</span><br><span>Name: " . $order->csb_card_type . "</span><br><span>Number: " . $order->csb_card_number . "</span>";
                 else
                     $infor = "<span>Account Number: " . $order->account_number . "</span><br><span>Name: " . $order->routing_number . "</span><br><span>Bank Name: " . $order->bank_name . "</span>";
@@ -665,7 +665,7 @@ class OrdersController extends Controller
         $service_arr = [];
 
         //GET TASK LIST
-        if(Gate::denies('permission','task-cskh')){
+        if(Gate::denies('permission','cskh-task')){
             $data['task_list'] = MainTask::with('getService')->leftjoin('main_user', function ($join) {
                 $join->on('main_task.updated_by', 'main_user.user_id');
             })

@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class ModelsCustomer extends Model
 {
-    protected $table = 'customers';
+    protected $table = 'csr_customers';
     protected $fillable = [
     	'fullname',
     	'cell_phone',
@@ -17,6 +17,7 @@ class ModelsCustomer extends Model
     	'notes',
     	'created_by',
     	'modified_by',
+        'seller_id'
     	
     ];
 }
