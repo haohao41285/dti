@@ -1111,12 +1111,20 @@ class TaskController extends Controller
         $check_customer = PosPlace::where('place_phone',$business_phone_customer)->first();
         if(!isset($check_customer))
             return response(['status'=>'error','message'=>'Customer NOT existed!']);
-        //CHECK SALE'S CUSTOMER
-        $check_place = MainUserCustomerPlace::where([['user_id',Auth::user()->user_id],['place_id',$check_customer->place_id]])->first();
 
-        if(!isset($check_customer))
-            return response(['status'=>'error','message'=>'You do NOT include this customer']);
-        return response(['status'=>'success','place_info'=>$check_customer]); 
+        //CHECK SALE'S CUSTOMER
+        if(Gate::denies('permission','customer-search')){
+            $check_place = MainUserCustomerPlace::where([['user_id',Auth::user()->user_id],['place_id',$check_customer->place_id]])->first();
+            if(!isset($check_place))
+                return response(['status'=>'error','message'=>'You do NOT include this customer']);
+            return response(['status'=>'success','place_info'=>$check_customer]); 
+        }
+        else{
+            $check_place = MainUserCustomerPlace::where([['place_id',$check_customer->place_id]])->first();
+            if(!isset($check_place))
+                return response(['status'=>'error','message'=>'This customer has not bought service. Check again!']);
+            return response(['status'=>'success','place_info'=>$check_customer]); 
+        }
     }
     public function taskExpiredDashboardDatatable(){
 
