@@ -36,8 +36,10 @@ class DashboardController extends Controller {
 
         $yearNow = format_year(get_nowDate());
         $now = get_nowDate();
+        $current_month = today()->format('m');
+        $current_year = today()->format('Y');
 
-        $data['earnings'] = MainComboServiceBought::getSumChargeByYear($yearNow);
+        $data['earnings'] = MainComboServiceBought::getSumChargeByYear($current_month,$current_year);
         $data['pendingTasks'] = MainTask::getPendingTasks();
         $data['popularServices'] = MainComboServiceBought::getServicesByMonth($now);
 
