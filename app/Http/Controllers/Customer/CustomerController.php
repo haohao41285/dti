@@ -28,6 +28,7 @@ use DB;
 use Validator;
 use ZipArchive;
 use Gate;
+use App\Models\MainComboServiceBought;
 
 class CustomerController extends Controller
 {
@@ -820,10 +821,26 @@ class CustomerController extends Controller
             \Log::info($e);
             return redirect()->route('customers')->with(['error'=>'Failed! Get information failed!']);
         }
-        $data['place_service'] = MainCustomerService::where('cs_customer_id',$customer_id)->get()->groupBy('cs_place_id');
 
         $data['main_customer_info'] = MainCustomer::where('customer_id',$customer_id)->first();
         $data['id'] = $customer_id;
+
+        //GET SELLER LIST
+        $seller_list = MainComboServiceBought::join('main_user',function($join){
+            $join->on('main_combo_service_bought.created_by','main_user.user_id');
+        })
+        ->where('main_combo_service_bought.csb_customer_id',$customer_id)
+        ->select('main_user.*')->get();
+        $data['seller_list'] = collect($seller_list)->unique();
+
+        //GET PLACE
+        $place_list = MainCustomerService::leftjoin('pos_place',function($join){
+            $join->on('main_customer_service.cs_customer_id','pos_place.place_customer_id');
+        })
+        ->where('main_customer_service.cs_customer_id',$customer_id)
+        ->select('main_customer_service.*','main_customer_service.created_at as customer_created_at','pos_place.*')
+        ->get();
+        $data['place_list'] = $place_list->groupBy('place_name');
 
         $data['user_list'] = MainUser::where('user_id','!=',Auth::user()->user_id)->with('getTeam')->get();
         return view('customer.customer-detail',$data);

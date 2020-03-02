@@ -44,11 +44,11 @@
     <div class="row">
         <div class="col-md-6">
             <span class="col-md-4"><b>FullName:</b></span>
-            <span class="col-md-8 text-uppercase">{{$main_customer_info->present()->getFullname()}}</span><br>
+            <span class="col-md-8 text-uppercase">{{$template_customer_info->getFullname()}}</span><br>
             <span class="col-md-4"><b>Cell Phone:</b></span>
             <span class="col-md-8">{{$template_customer_info->ct_cell_phone}}</span><br>
             <span class="col-md-4"><b>Business Phone:</b></span>
-            <span class="col-md-8">{{$main_customer_info->customer_phone}}</span><br>
+            <span class="col-md-8">{{$template_customer_info->ct_business_phone}}</span><br>
             <span class="col-md-4"><b>Business Name:</b></span>
             <span class="col-md-8">
                 @foreach($main_customer_info->getPlaces as $key => $place)
@@ -56,11 +56,16 @@
                 @endforeach
             </span><br>
         </div>
-        <div class="col-md-6">
-            <span class="col-md-4"><b>Status:</b></span>
-            <span class="col-md-8 text-info">SERVICE</span><br>
-            <span class="col-md-4"><b>Seller:</b></span>
-            <span class="col-md-8"><span class="fullname_seller"></span><span class="email_seller"></span></span><br>
+        <div class="col-md-6 row">
+            <div class="col-md-4"><b>Status:</b></div>
+            <div class="col-md-8 text-info">SERVICE</div>
+            <div class="col-md-4"><b>Seller:</b></div>
+            <div class="col-md-8">
+                @foreach($seller_list as $seller)
+                    <span class="">{{ $seller->user_lastname." ".$seller->user_firstname }}</span>
+                    <span class="">-{{ $seller->user_email }}</span><br>
+                @endforeach
+            </div>
         </div>
         <div class="col-md-12">
             <span class="col-md-12"><b>Note:</b></span><br>
@@ -119,7 +124,7 @@
             $place_name = App\Models\PosPlace::where('place_id',$order->csb_place_id)->first();
 
             @endphp
-            @if($order_status == 1 ||$order_status == 2)
+            @if($order_status != 0)
             <tr>
                 <td class="text-center"><a href="{{route('order-view',$order->id)}}">#{{$order->id}}</a></td>
                 <td class="text-info">{{ isset($place_name)?$place_name->place_name:""}}</td>
@@ -129,7 +134,7 @@
                 <td class="text-right">${{$order->csb_amount_deal!=""?$order->csb_amount_deal:0}}</td>
                 <td class="text-right">${{$order->csb_charge!=""?$order->csb_charge:0}}</td>
                 <td>{!! $task_list !!}</td>
-                <td class="text-center">{{$order_status==1?"NEW":"PROCESSING"}}</td>
+                <td class="text-center">{{getOrderStatus()[$order_status]}}</td>
             </tr>
             @endif
         @endforeach
@@ -139,19 +144,19 @@
         <div class="tab-pane fade" id="profile" role="tabpanel" aria-labelledby="profile-tab">
             <table class="table table-hover table-sm table-bordered" id="place-order-datatable" widtd="100%" cellspacing="0">
                 <thead  class="thead-light">
-                <tr class="text-center">
+                <tr>
                     <th>Place Name</th>
                     <th>Service Name</th>
-                    <th>Expired date</th>
-                    <th>Created At</th>
-                    <th></th>
+                    <th class="text-center">Expired date</th>
+                    <th class="text-center">Created At</th>
+                    <th class="text-center">Order</th>
                 </tr>
                 </thead>
                 <tbody>
-                @foreach($place_service as $key => $places)
+                @foreach($place_list as $key => $places)
                     <tr>
-                        <td class="text-uppercase">{{\App\Models\PosPlace::where('place_id',$key)->first()->place_name}}</td>
-                        <td class="">
+                        <td class="text-uppercase text-info">{{ $key }}</td>
+                        <td class="text-info">
                             @foreach($places as $place)
                                 {{$place->getComboService->cs_name}}<br>
                             @endforeach
@@ -163,10 +168,10 @@
                         </td>
                         <td class="text-center">
                             @foreach($places as $place)
-                                {{format_datetime($place->created_at)." by ".$place->getCreatedBy->user_nickname}}<br>
+                                {{format_datetime($place->customer_created_at)}}<br>
                             @endforeach
                         </td>
-                        <td class="text-center"><a href="{{route('add-order',$id)}}"><button class="btn btn-sm btn-secondary">Order</button></a></td>
+                        <td class="text-center text-info"><a href="{{route('add-order',$id)}}"><i class="fas fa-shopping-cart"></i></a></td>
                     </tr>
                 @endforeach
                 </tbody>
@@ -313,29 +318,6 @@
                 $(this).parent('form').submit();
             });
 
-
-            $.ajax({
-                url: '{{route('get-seller')}}',
-                type: 'GET',
-                dataType: 'html',
-                data: {
-                    seller_id: {{$seller_id}},
-                },
-            })
-                .done(function(data) {
-                    data = JSON.parse(data);
-                    if(data.status == 'error'){
-                        toastr.error(data.message);
-                    }else{
-                        $(".email_seller").text(" ("+data.email+")");
-                        $(".fullname_seller").text(data.fullname);
-                        $("#email_seller").val(data.email);
-                        $("#receiver_id").val(data.receiver_id);
-                    }
-                })
-                .fail(function() {
-                    toastr.error('Saving Error!');
-                });
             $(document).on('change','#file_image_list_2',function(e){
                 file_size_total = 0;
                 file_image_list = Array.from(e.target.files);
