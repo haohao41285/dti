@@ -496,6 +496,9 @@ class OrdersController extends Controller
             $end_date = Carbon::parse($request->end_date)->addDay(1)->format('Y-m-d');
             $my_order_list = $my_order_list->whereBetween('main_combo_service_bought.created_at', [$start_date,$end_date]);
         }
+        if($request->csb_card_number != ""){
+            $my_order_list = $my_order_list->where('csb_card_number','like','%'.$request->csb_card_number.'%');
+        }
 
         $my_order_list = $my_order_list->select('main_combo_service_bought.*', 'main_customer.customer_lastname', 'main_customer.customer_firstname','main_customer.customer_phone','main_customer.customer_email', 'main_user.user_nickname')
             ->get();

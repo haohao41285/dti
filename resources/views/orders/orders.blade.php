@@ -4,31 +4,38 @@
 @endsection
 @section('content')
     <div class="table-responsive">
-    <div class="form-group col-md-12 row">
-        <div class="col-md-4">
-            <label for="">Created date</label>
-            <div class="input-daterange input-group" id="created_at">
-              <input type="text" class="input-sm form-control form-control-sm" id="start_date" value="{{ today()->subMonth(1)->format('m/d/Y') }}" name="start" />
-              <span class="input-group-addon">to</span>
-              <input type="text" class="input-sm form-control form-control-sm" value="{{ today()->format('m/d/Y') }}" id="end_date" name="end" />
+    <form>
+        <div class="form-group col-md-12 row">
+            <div class="col-md-4">
+                <label for="">Created date</label>
+                <div class="input-daterange input-group" id="created_at">
+                  <input type="text" class="input-sm form-control form-control-sm" id="start_date" value="{{ today()->subMonth(1)->format('m/d/Y') }}" name="start" />
+                  <span class="input-group-addon">to</span>
+                  <input type="text" class="input-sm form-control form-control-sm" value="{{ today()->format('m/d/Y') }}" id="end_date" name="end" />
+                </div>
+            </div>
+            <div class="col-md-2">
+                <label for="">Last 4 card Number</label>
+                <input type="text" name="csb_card_number" id="csb_card_number" onkeypress="return isNumberKey(event)" class="form-control form-control-sm">
+            </div>
+
+           {{--  <div class="col-md-2">
+                <label for="">Status</label>
+                <select id="status-customer" name="status_customer" class="form-control form-control-sm">
+                    <option value="">-- ALL --</option>
+                    @foreach ($status as $key =>  $element)
+                        <option value="{{$key}}">{{$element}}</option>
+                    @endforeach
+                </select>
+            </div> --}}
+            <div class="col-2 " style="position: relative;">
+                <div style="position: absolute;top: 50%;" class="">
+                <input type="button" class="btn btn-primary btn-sm" id="search-button" value="Search">
+                <input type="button" class="btn btn-secondary btn-sm" id="reset-btn" value="Reset">
+                </div>
             </div>
         </div>
-       {{--  <div class="col-md-2">
-            <label for="">Status</label>
-            <select id="status-customer" name="status_customer" class="form-control form-control-sm">
-                <option value="">-- ALL --</option>
-                @foreach ($status as $key =>  $element)
-                    <option value="{{$key}}">{{$element}}</option>
-                @endforeach
-            </select>
-        </div> --}}
-        <div class="col-2 " style="position: relative;">
-            <div style="position: absolute;top: 50%;" class="">
-            <input type="button" class="btn btn-primary btn-sm" id="search-button" value="Search">
-            <input type="button" class="btn btn-secondary btn-sm" id="reset" value="Reset">
-            </div>
-        </div>
-    </div>
+    </form>
     <hr>
     <table class="table table-sm table-bordered table-hover" id="dataTableAllCustomer" width="100%" cellspacing="0">
         <thead>
@@ -63,6 +70,7 @@
         data: function (d) {
             d.start_date = $("#start_date").val();
             d.end_date = $("#end_date").val();
+            d.csb_card_number = $('#csb_card_number').val();
             }
         },
         columns: [
@@ -82,6 +90,16 @@
     $("#search-button").click(function(){
         table.draw();
     });
+    $("#csb_card_number").keypress(function(event) {
+        let csb_card_number = $(this).val();
+        if(csb_card_number.length > 3 ){
+            return false;
+        }
+    });
+    $("#reset-btn").click(function(){
+        $(this).parents('form')[0].reset();
+        table.draw();
+    })
 });
 </script>
 @endpush
