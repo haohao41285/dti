@@ -25,7 +25,8 @@ if(!function_exists('getStatusTask')){
 	    return [
 	        1 => 'NEW',
 	        2 =>'PROCESSING',
-	        3 => 'DONE'
+	        3 => 'DONE',
+            4 => 'CANCEL'
 	    ];
 	}
 }

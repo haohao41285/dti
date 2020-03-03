@@ -63,7 +63,8 @@ class GeneralHelper{
         return [
             1 => 'NEW',
             2 =>'PROCESSING',
-            3 => 'DONE'
+            3 => 'DONE',
+            4 => 'CANCEL'
         ];
     }
     public static function convertGender($gender){

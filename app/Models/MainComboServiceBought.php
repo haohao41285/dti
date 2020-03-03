@@ -47,6 +47,7 @@ class MainComboServiceBought extends Model
         'csb_user_call',
         'csb_invoice', //invoice's file name
         'csb_token', //for customer rating
+        'csb_reason_cancel'
     ];
     public function getCustomer(){
         return $this->belongsTo(MainCustomer::class,'csb_customer_id','customer_id');

@@ -571,7 +571,7 @@ class ChangeDataController extends Controller
         $orders = DB::table('orders')->join('main_customer',function($join){
             $join->on('orders.customer_id','main_customer.customer_customer_template_id');
         })
-        ->where('status','DONE')
+        // ->where('status','DONE')
         ->select('orders.customer_id as order_customer','orders.*','main_customer.*')
         ->get();
         // return $orders;

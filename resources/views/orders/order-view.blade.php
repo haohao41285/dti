@@ -4,6 +4,15 @@
 @endsection
 @push('styles')
 <style type="text/css" media="screen">
+    #status-box ul{
+        list-style-type: none;
+        margin: 0;
+        padding: 0px;
+    }
+    #status-box ul li{
+        padding: 0px 10px;
+        border-radius: 0px 8px 8px 8px;
+    }
    .file-comment{
         /*max-width: 100px;*/
         max-height: 80px;
@@ -38,9 +47,50 @@
       0% { transform: rotate(0deg); }
       100% { transform: rotate(360deg); }
     }
+    #status-box{
+        position: absolute;
+        z-index: 1000;
+        background-color: #59b9cb;
+        border-radius: 0px 10px 10px 10px;
+        padding: 5px;
+        color: white;
+        display: none;
+    }
+    #status-box ul li:hover{
+        background-color: white;
+        color: black;
+    }
+    .enable{
+        display: block!important;
+    }
 </style>
 @endpush
 @section('content')
+{{-- MODAL REASON FOR CANCEL ORDER --}}
+<div class="modal fade" id="reason-modal">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+      
+        <!-- Modal Header -->
+        <div class="modal-header">
+          <h4 class="modal-title">Cancel order about:</h4>
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+        </div>
+        
+        <!-- Modal body -->
+        <div class="modal-body">
+            <input type="text" class="form-control form-control-sm" required id="reason" name="reason" placeholder="Enter Reason">
+        </div>
+        
+        <!-- Modal footer -->
+        <div class="modal-footer">
+          <button type="button" class="btn btn-danger btn-sm" data-dismiss="modal">Close</button>
+          <button type="button" class="btn btn-primary btn-sm" id="submit-btn">Submit</button>
+        </div>
+        
+      </div>
+    </div>
+  </div>
 {{-- MODAL INPUT FORM --}}
 <div class="modal fade" id="modal-input-form" role="dialog">
     <div class="modal-dialog modal-lg">
@@ -75,9 +125,19 @@
                 <th>#{{$id}}</th>
                 <th class="status">
                     {{-- @if($order_info->csb_status==0) NOTPAYMENT @elseif($order_info->csb_status==1) PAID @else DELIVERED @endif --}}
-                    {{ getOrderStatus()[$order_info->csb_status] }}
+                    {{ getOrderStatus()[$order_info->csb_status] }}<br>
                     @if($order_info->csb_status != 4)
-                    <a href="javascript:void(0)" id="change-status" order-status="{{ $order_info->csb_status }}"> <i class="fas fa-edit"></i><span>Change Status</span></a>
+                    <div style="position: relative">
+                         <a href="javascript:void(0)" id="change-status" order-status="{{ $order_info->csb_status }}"> <i class="fas fa-edit"></i><span>Change Status</span></a>
+                        <div id="status-box">
+                            <ul>
+                                @foreach(getOrderStatus() as $key => $status)
+                                    <li value="{{ $key }}" style=" {{ $key==$order_info->csb_status?'background-color:#ebecef;color:black':'' }}{{ $key==6?'color:red':'' }}">{{ $status }}</li>
+                                @endforeach
+                            </ul>
+                        </div>      
+                    </div>
+                       
                     @endif
                 </th>
                 <th>{{format_datetime($order_info->created_at)}}</th>
@@ -190,6 +250,8 @@
     $(document).ready(function() {
         var task_id = 0;
         var order_id = {{$id}};
+        var reason = "";
+        var order_status = "{{ $order_info->csb_status }}";
 
         $('#summernote').summernote({
             toolbar: [
@@ -675,8 +737,24 @@
                 console.log("error");
             });
         });
-        $(document).on('click',"#change-status",function(){
-            let order_status = $(this).attr('order-status');
+        $(document).on('click',"#status-box ul li",function(){
+            let order_status_check = $(this).attr('value');
+            if(order_status_check == order_status){
+                reason = "";
+                return false;
+            }
+            else if(order_status_check == 6){
+                $("#reason-modal").modal('show');
+                order_status = order_status_check;
+                return false;
+            }
+            else{
+                reason = "";
+                changeStatus(order_status_check,reason);
+            }
+                
+        });
+        function changeStatus(orderStatus,reason){
             ableProcessingLoader();
             $.ajax({
                 url: '{{route('change-status-order')}}',
@@ -685,7 +763,8 @@
                 data: {
                     order_id: '{{$id}}',
                     _token: '{{csrf_token()}}',
-                    order_status: order_status
+                    order_status: orderStatus,
+                    reason: reason
                 },
             })
             .done(function(data) {
@@ -696,13 +775,17 @@
                     toatr.error(data.mesage);
                 else{
                     toastr.success(data.message);
+                    getStatus();
+                    order_status = data.order_status;
+                    reason = "";
 
-                    let status_html = data.status_text;
+                    // let status_html = data.status_text;
 
-                    if(data.status_text !== 'DELIVERED')
-                        status_html += '<a href="javascript:void(0)" id="change-status" order-status="'+data.order_status+'"> <i class="fas fa-edit"></i><span>Change Status</span></a>';
+                    // if(data.status_text !== 'DELIVERED')
+                    //     status_html += '<a href="javascript:void(0)" id="change-status" order-status="'+data.order_status+'"> <i class="fas fa-edit"></i><span>Change Status</span></a>';
 
-                    $(".status").html(status_html);
+                    // $(".status").html(status_html);
+                    $("#reason-modal").modal('hide');
                 }
                 unableProcessingLoader();
             })
@@ -710,6 +793,10 @@
                 console.log("error");
                 unableProcessingLoader();
             });
+        }
+        $(document).on('click','#change-status',function(){
+            // alert('ok');
+            $("#status-box").toggleClass('enable');;
         });
         $(".resend-invoice").click(function(){
             var order_id = '{{$id}}';
@@ -759,6 +846,58 @@
         function unableProcessingLoader(){
             $('.loader').css('display','none');
             $("#content").css('opacity',1);
+        }
+        $("#submit-btn").click(function(){
+            var reason_text = $("#reason").val();
+            if(reason_text == ""){
+                toastr.error('Enter reason!');
+                return false;
+            }else{
+                reason = reason_text;
+                changeStatus(order_status,reason);
+            }
+        });
+        function getStatus(){
+            var order_id = '{{ $id }}';
+            $.ajax({
+                url: '{{ route('get_status_order') }}',
+                type: 'GET',
+                dataType: 'html',
+                data: {order_id: order_id},
+            })
+            .done(function(data) {
+
+                var status_list = '<?php echo json_encode(getOrderStatus()) ?>';
+                status_list = JSON.parse(status_list);
+                data = JSON.parse(data);
+
+                var status = "";
+
+                $.each(status_list, function(index, val) {
+                    let style ="";
+                    if(index == data.csb_status)
+                        style = "background-color:#ebecef;color:black";
+                    if(index == 6)
+                        style = "color: red";
+                    status += `<li value="`+index+`" style="`+style+`">`+val+`</li>`;
+                });
+
+                let status_html = `
+                    `+status_list[data.csb_status]+`<br>
+                    <div style="position: relative">
+                         <a href="javascript:void(0)" id="change-status" order-status=""> <i class="fas fa-edit"></i><span>Change Status</span></a>
+                        <div id="status-box">
+                            <ul>
+                                `+status+`
+                            </ul>
+                        </div>      
+                    </div>
+                `;
+                $(".status").html(status_html);
+            })
+            .fail(function() {
+                console.log("error");
+            });
         }
     });
 </script>

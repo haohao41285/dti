@@ -413,6 +413,7 @@ Route::group(['middleware' => ['auth']], function () {
         Route::post('resend-invoice', 'OrdersController@resendInvoice')->name('resend-invoice');
         Route::get('dowload-invoice/{id}', 'OrdersController@dowloadInvoice')->name('dowload-invoice');
         Route::get('get-data-input-form', 'OrdersController@getDataInputForm')->name('input_form.task');
+        Route::get('get-status-order', 'OrdersController@getStatusOrder')->name('get_status_order');
 
 
         Route::get('payment-orders-list','OrdersController@paymentOrderList')->name('payment-order-list');

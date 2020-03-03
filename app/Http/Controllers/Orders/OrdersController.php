@@ -977,11 +977,15 @@ class OrdersController extends Controller
 
     public function changeStatusOrder(Request $request)
     {
+        // return $request->all();
 
         $order_id = $request->order_id;
-        $order_status = $request->order_status;
-        $status_update = $order_status + 1;
+        $status_update = $request->order_status;
         $status_text = getOrderStatus()[$status_update];
+        $reason = $request->reason;
+        $user_id = Auth::user()->user_id;
+
+        DB::beginTransaction();
 
         if($status_update == 4){
 
@@ -1105,18 +1109,50 @@ class OrdersController extends Controller
             $message = 'Successfully'.' '.json_decode($resp)->messages;
 
         }
-            $order_update = $order_info->update(['csb_status' => $status_update,'csb_last_call'=>now(),'csb_token'=>$token]);
+            $order_update = $order_info->update(['csb_status' => $status_update,'csb_last_call'=>now(),'csb_token'=>$token,'csb_reason_cancel'=>$reason,'updated_by'=>$user_id]);
         }
         else{
             $send_sms_status = 1;
-            $order_update = MainComboServiceBought::find($order_id)->update(['csb_status' => $status_update]);
+            $order_update = MainComboServiceBought::find($order_id)->update(['csb_status' => $status_update,'csb_reason_cancel'=>$reason,'updated_by'=>$user_id]);
             $message = 'Successfully';
         }
 
-        if (!isset($order_update) || $send_sms_status == 0)
+        //UPDATE TASK'S ORDER
+        if( $status_update == 5 || $status_update == 6 ){
+            if( $status_update == 5 ){
+                $task_status = 2;
+            }elseif( $status_update == 6 )
+                $task_status = 4;
+
+            $update_task = MainTask::where('order_id',$order_id)->update(['status'=>$task_status]);
+            //SEND NOTIFICATION BY EMAIL
+            $task_list = MainTask::where('order_id',$order_id)->get();
+            foreach($task_list as $task){
+
+                $name_created = Auth::user()->user_nickname;
+                $content = "Dear Sir/Madam,<br>";
+                $content .= $name_created . " have just change status order #" . $order_id . "<hr>";
+                $content .= "<a href='" . route('order-view', $order_id) . "'  style='color:#e83e8c'>Click here to view ticket detail</a><br>";
+                $content .= "WEB MASTER (DTI SYSTEM)";
+
+                $input['subject'] = 'CHANGE STATUS TASK';
+                $input['email'] = $task->getAssignTo->user_email;
+                $input['name'] = $task->getAssignTo->user_firstname . " " . $task->getAssignTo->user_lastname;
+                $input['email_arr'][] = $task->getUpdatedBy->user_email;
+                $input['message'] = $content;
+                dispatch(new SendNotification($input))->delay(now()->addSecond(3));
+            }
+                
+        }
+            
+        if (!isset($order_update) || $send_sms_status == 0){
+            DB::rollBack();
             return response(['status' => 'error', 'message' => 'Failed!']);
-        else
+        }
+        else{
+            DB::commit();
             return response(['status' => 'success', 'message' => $message,'status_text'=>$status_text,'order_status'=> $status_update]);
+        }
     }
 
     public function resendInvoice(Request $request)
@@ -1737,6 +1773,10 @@ class OrdersController extends Controller
             return response(['status'=>'error','message'=>'Failed!']);
 
         return response(['status'=>'success','message'=>'Successfully!']); 
+    }
+    function getStatusOrder(Request $request){
+        $order_info = MainComboServiceBought::find($request->order_id);
+        return $order_info;
     }
 }
 
