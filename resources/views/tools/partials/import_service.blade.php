@@ -1,8 +1,8 @@
 @extends('layouts.app')
 @section('title', 'Services | Import')
 @push('styles')
- <link href="{{ asset('plugins/iCheck/skins/flat/green.css') }}" rel="stylesheet">  
- <link href="{{ asset('plugins/dropzone/dist/dropzone.min.css') }}" rel="stylesheet">
+ {{-- <link href="{{ asset('plugins/iCheck/skins/flat/green.css') }}" rel="stylesheet">   --}}
+ {{-- <link href="{{ asset('plugins/dropzone/dist/dropzone.min.css') }}" rel="stylesheet"> --}}
  <style>
      .dropzone {
         border: 2px solid #757575;
@@ -16,6 +16,7 @@
  <div class="x_panel">
      <div class="x_title">
          <h3>Import Category & Services</h3>
+         <a href="{{ route('places.service.template_import') }}" title="" class="text-info">Download template import</a>
      </div>
     <div class="x_content">
         <form action="{{route('places.service.post_import')}}" method="post" id="service-import-form" enctype="multipart/form-data" name="service-import-form">
@@ -76,9 +77,9 @@
 </div>    
 @stop
 @push('scripts')
-<script type="text/javascript" src="{{ asset('plugins/iCheck/icheck.min.js') }}"></script>
-<script type="text/javascript" src="{{ asset('plugins/dropzone/dist/dropzone.min.js') }}"></script>
-<script type="text/javascript" src="{{ asset('plugins/custom/bootstrap-filestyle.min.js') }}"></script>
+{{-- <script type="text/javascript" src="{{ asset('plugins/iCheck/icheck.min.js') }}"></script> --}}
+{{-- <script type="text/javascript" src="{{ asset('plugins/dropzone/dist/dropzone.min.js') }}"></script> --}}
+{{-- <script type="text/javascript" src="{{ asset('plugins/custom/bootstrap-filestyle.min.js') }}"></script> --}}
 <script type="text/javascript">
     $(document).ready(function() {
         $(".custom-file-input").on("change", function() {
@@ -177,10 +178,10 @@ $(document).ready(function() {
         });       
        
     }
-     $('#fileImport').filestyle({ 
-        text : 'Choose File',
-        btnClass : 'btn-primary'
-    }); 
+    //  $('#fileImport').filestyle({ 
+    //     text : 'Choose File',
+    //     btnClass : 'btn-primary'
+    // }); 
 
     initializeDropZone();
     
@@ -190,10 +191,10 @@ $(document).ready(function() {
         });       
        
     }
-     $('#fileImport').filestyle({ 
-        text : 'Choose File',
-        btnClass : 'btn-primary'
-    });
+    //  $('#fileImport').filestyle({ 
+    //     text : 'Choose File',
+    //     btnClass : 'btn-primary'
+    // });
     
 }); 
 </script>   

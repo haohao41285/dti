@@ -41,6 +41,8 @@ class MainCustomer extends Model
         'customer_birthday'
     ];
 
+    public $timestamps = false;
+
     protected $guarded = [];
 
     public function getPlaces(){

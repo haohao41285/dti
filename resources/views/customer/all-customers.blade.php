@@ -8,7 +8,7 @@
 @endpush
 @section('content')
 
-    @if(\Illuminate\Support\Facades\Auth::user()->user_group_id != 1)
+    @if(Gate::denies('permission','customer-admin')){
         <style>
             .an{
                 display: none;

@@ -36,8 +36,10 @@ class DashboardController extends Controller {
 
         $yearNow = format_year(get_nowDate());
         $now = get_nowDate();
+        $current_month = today()->format('m');
+        $current_year = today()->format('Y');
 
-        $data['earnings'] = MainComboServiceBought::getSumChargeByYear($yearNow);
+        $data['earnings'] = MainComboServiceBought::getSumChargeByYear($current_month,$current_year);
         $data['pendingTasks'] = MainTask::getPendingTasks();
         $data['popularServices'] = MainComboServiceBought::getServicesByMonth($now);
 
@@ -97,8 +99,10 @@ class DashboardController extends Controller {
 
         $customer_phone = $request->customer_phone;
 
-        // $customer_list = Auth::user()->user_customer_list;
-        $customer_list = MainUserCustomerPlace::select('customer_id')->where('user_id',Auth::user()->user_id);
+        if(Gate::allows('permission','customer-search'))
+            $customer_list = MainUserCustomerPlace::select('customer_id')->whereNotNull('place_id');
+        else
+            $customer_list = MainUserCustomerPlace::select('customer_id')->whereNotNull('place_id')->where('user_id',Auth::user()->user_id);
 
         if($customer_list->count() == 0)
             return response(['status'=>'error','message'=>'Customer empty!']);
@@ -112,8 +116,13 @@ class DashboardController extends Controller {
                             $query->where('ct_business_phone',$customer_phone)
                                 ->orWhere('ct_cell_phone',$customer_phone);
                         })->first();
-        if($customer_info == "")
-            return response(['status'=>'error','message'=>'Customer Error!']);
+        if($customer_info == ""){
+            if(Gate::allows('permission','customer-search'))
+                $message = "This customer has not bought service.";
+            else
+                $message = 'Your customer list not includes this customer';
+            return response(['status'=>'error','message'=>$message]);
+        }
         else
             return response(['status'=>'success','id'=>$customer_info->id]);
     }
@@ -188,6 +197,7 @@ class DashboardController extends Controller {
                 'cs_id' => $key,
                 'customer_name' => $customer_info->customer_firstname. " ". $customer_info->customer_lastname,
                 'customer_phone' => $customer_info->customer_phone,
+                'customer_phone' => '',
                 'service_info' => $service_info,
                 'seller_name' => $seller_info,
                 'expired_date' => $expired_date,

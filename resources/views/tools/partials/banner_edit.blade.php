@@ -122,7 +122,8 @@ $(document).ready(function() {
         ['fontsize', ['fontsize']],
         ['color', ['color']],
         ['para', ['ul', 'ol', 'paragraph']],
-        ['height', ['height']]
+        ['height', ['height']],
+        ['codeview']
       ]
     });
     $("input[type=file]").change(function() {

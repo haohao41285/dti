@@ -237,7 +237,7 @@ Route::group(['middleware' => ['auth']], function () {
             Route::post('upload-image-service','ServiceController@uploadImageService')->name('upload-image-service');
             Route::post('/delete','ServiceController@delete')->name('places.service.delete');
             Route::post('/change-status','ServiceController@changeStatus')->name('places.service.change_status');
-
+            Route::get('/template-import','ServiceController@templateImport')->name('places.service.template_import');
 
         });
         Route::group(['prefix' => 'menus'],function(){
@@ -250,6 +250,7 @@ Route::group(['middleware' => ['auth']], function () {
             Route::post('upload-multi-images','MenuController@uploadMultiImages')->name('upload-multi-images');
             Route::get('remove-image-menu','MenuController@removeMenu')->name('remove-image-menu');
             Route::post('/delete','MenuController@delete')->name('places.menus.delete');
+            Route::get('/template-import','MenuController@templateImport')->name('places.menus.template_import');
         });
         Route::group(['prefix' => 'banners'],function(){
             Route::get('/','BannerController@index')->name('places.banners');
@@ -413,6 +414,7 @@ Route::group(['middleware' => ['auth']], function () {
         Route::post('resend-invoice', 'OrdersController@resendInvoice')->name('resend-invoice');
         Route::get('dowload-invoice/{id}', 'OrdersController@dowloadInvoice')->name('dowload-invoice');
         Route::get('get-data-input-form', 'OrdersController@getDataInputForm')->name('input_form.task');
+        Route::get('get-status-order', 'OrdersController@getStatusOrder')->name('get_status_order');
 
 
         Route::get('payment-orders-list','OrdersController@paymentOrderList')->name('payment-order-list');
@@ -537,6 +539,10 @@ Route::get('replace-character-space','ChangeDataController@replaceCharacterSpace
 Route::get('transfer-customer-id','ChangeDataController@tranferCustomerId');
 Route::get('check-customer','ChangeDataController@checkCustomer');
 Route::get('merge-customer','ChangeDataController@mergeCustomer');
+Route::get('disabled-customer','ChangeDataController@setDisabledCustomer');
+Route::get('assigned-customer','ChangeDataController@setAssignedCustomer');
+Route::get('serviced-customer','ChangeDataController@setServicedCustomer');
+Route::get('user-order','ChangeDataController@userOrder');
 
 
 Route::get('email_theme',function(){

@@ -47,6 +47,7 @@ class MainComboServiceBought extends Model
         'csb_user_call',
         'csb_invoice', //invoice's file name
         'csb_token', //for customer rating
+        'csb_reason_cancel'
     ];
     public function getCustomer(){
         return $this->belongsTo(MainCustomer::class,'csb_customer_id','customer_id');
@@ -67,9 +68,10 @@ class MainComboServiceBought extends Model
         return $this->belongsTo(PosPlace::class,'csb_place_id','place_id')->withDefault()->where('place_demo','!=',1);
     }
 
-    public static function getSumChargeByYear($year){
+    public static function getSumChargeByYear($current_month,$current_year){
         $sum_charge = self::select('csb_charge','created_by')
-            ->whereYear('created_at',$year);
+            ->whereYear('created_at',$current_year)
+            ->whereMonth('created_at',$current_month);
         if(Gate::allows('permission','dashboard-admin')){
         }
         elseif(Gate::allows('permission','dashboard-leader')){

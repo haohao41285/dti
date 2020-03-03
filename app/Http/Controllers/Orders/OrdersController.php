@@ -237,8 +237,9 @@ class OrdersController extends Controller
             'csb_status' => $status,
             'created_by' => $user_id,
             'csb_payment_method' => $request->csb_payment_method,
-            'csb_invoice' => 'file/invoices/invoice_'.$order_id.'.pdf'
+            'csb_invoice' => 'app/invoice_'.$order_id.'.pdf'
         ];
+
         //CREATE NEW PLACE IN POS_PLACE, NEW USER IN POS_USER IF CHOOSE NEW PLACE
         if ($request->place_id == 0) {
             //CREATE PLACE IP LICENSE
@@ -495,6 +496,9 @@ class OrdersController extends Controller
             $end_date = Carbon::parse($request->end_date)->addDay(1)->format('Y-m-d');
             $my_order_list = $my_order_list->whereBetween('main_combo_service_bought.created_at', [$start_date,$end_date]);
         }
+        if($request->csb_card_number != ""){
+            $my_order_list = $my_order_list->where('csb_card_number','like','%'.$request->csb_card_number.'%');
+        }
 
         $my_order_list = $my_order_list->select('main_combo_service_bought.*', 'main_customer.customer_lastname', 'main_customer.customer_firstname','main_customer.customer_phone','main_customer.customer_email', 'main_user.user_nickname')
             ->get();
@@ -509,7 +513,7 @@ class OrdersController extends Controller
 
             //GET INFORMATION CARD
             if (!isset($request->my_order)){
-                if($order->csb_status == 1)
+                if($order->csb_status != 0)
                     $infor = "<span>ID: " . $order->csb_trans_id . "</span><br><span>Name: " . $order->csb_card_type . "</span><br><span>Number: " . $order->csb_card_number . "</span>";
                 else
                     $infor = "<span>Account Number: " . $order->account_number . "</span><br><span>Name: " . $order->routing_number . "</span><br><span>Bank Name: " . $order->bank_name . "</span>";
@@ -664,19 +668,28 @@ class OrdersController extends Controller
         $service_arr = [];
 
         //GET TASK LIST
-        $data['task_list'] = MainTask::with('getService')->leftjoin('main_user', function ($join) {
-            $join->on('main_task.updated_by', 'main_user.user_id');
-        })
-            ->where('main_task.order_id', $id)
-            ->where(function ($query) {
-                $query->where('main_task.created_by', Auth::user()->user_id)
-                    ->orWhere('main_task.assign_to', Auth::user()->user_id)
-                    ->orWhere('main_task.updated_by', Auth::user()->user_id);
+        if(Gate::denies('permission','cskh-task')){
+            $data['task_list'] = MainTask::with('getService')->leftjoin('main_user', function ($join) {
+                $join->on('main_task.updated_by', 'main_user.user_id');
             })
-            ->select('main_task.*', 'main_user.user_nickname')
-            ->get();
-            // return $data;
+                ->where('main_task.order_id', $id)
+                ->where(function ($query) {
+                    $query->where('main_task.created_by', Auth::user()->user_id)
+                        ->orWhere('main_task.assign_to', Auth::user()->user_id)
+                        ->orWhere('main_task.updated_by', Auth::user()->user_id);
+                })
+                ->select('main_task.*', 'main_user.user_nickname')
+                ->get();
 
+        }else{
+            $data['task_list'] = MainTask::with('getService')->leftjoin('main_user', function ($join) {
+                $join->on('main_task.updated_by', 'main_user.user_id');
+            })
+                ->where('main_task.order_id', $id)
+                ->select('main_task.*', 'main_user.user_nickname')
+                ->get();
+            }
+           
         return view('orders.order-view', $data);
     }
 
@@ -964,11 +977,15 @@ class OrdersController extends Controller
 
     public function changeStatusOrder(Request $request)
     {
+        // return $request->all();
 
         $order_id = $request->order_id;
-        $order_status = $request->order_status;
-        $status_update = $order_status + 1;
+        $status_update = $request->order_status;
         $status_text = getOrderStatus()[$status_update];
+        $reason = $request->reason;
+        $user_id = Auth::user()->user_id;
+
+        DB::beginTransaction();
 
         if($status_update == 4){
 
@@ -1092,18 +1109,50 @@ class OrdersController extends Controller
             $message = 'Successfully'.' '.json_decode($resp)->messages;
 
         }
-            $order_update = $order_info->update(['csb_status' => $status_update,'csb_last_call'=>now(),'csb_token'=>$token]);
+            $order_update = $order_info->update(['csb_status' => $status_update,'csb_last_call'=>now(),'csb_token'=>$token,'csb_reason_cancel'=>$reason,'updated_by'=>$user_id]);
         }
         else{
             $send_sms_status = 1;
-            $order_update = MainComboServiceBought::find($order_id)->update(['csb_status' => $status_update]);
+            $order_update = MainComboServiceBought::find($order_id)->update(['csb_status' => $status_update,'csb_reason_cancel'=>$reason,'updated_by'=>$user_id]);
             $message = 'Successfully';
         }
 
-        if (!isset($order_update) || $send_sms_status == 0)
+        //UPDATE TASK'S ORDER
+        if( $status_update == 5 || $status_update == 6 ){
+            if( $status_update == 5 ){
+                $task_status = 2;
+            }elseif( $status_update == 6 )
+                $task_status = 4;
+
+            $update_task = MainTask::where('order_id',$order_id)->update(['status'=>$task_status]);
+            //SEND NOTIFICATION BY EMAIL
+            $task_list = MainTask::where('order_id',$order_id)->get();
+            foreach($task_list as $task){
+
+                $name_created = Auth::user()->user_nickname;
+                $content = "Dear Sir/Madam,<br>";
+                $content .= $name_created . " have just change status order #" . $order_id . "<hr>";
+                $content .= "<a href='" . route('order-view', $order_id) . "'  style='color:#e83e8c'>Click here to view ticket detail</a><br>";
+                $content .= "WEB MASTER (DTI SYSTEM)";
+
+                $input['subject'] = 'CHANGE STATUS TASK';
+                $input['email'] = $task->getAssignTo->user_email;
+                $input['name'] = $task->getAssignTo->user_firstname . " " . $task->getAssignTo->user_lastname;
+                $input['email_arr'][] = $task->getUpdatedBy->user_email;
+                $input['message'] = $content;
+                dispatch(new SendNotification($input))->delay(now()->addSecond(3));
+            }
+                
+        }
+            
+        if (!isset($order_update) || $send_sms_status == 0){
+            DB::rollBack();
             return response(['status' => 'error', 'message' => 'Failed!']);
-        else
+        }
+        else{
+            DB::commit();
             return response(['status' => 'success', 'message' => $message,'status_text'=>$status_text,'order_status'=> $status_update]);
+        }
     }
 
     public function resendInvoice(Request $request)
@@ -1130,7 +1179,7 @@ class OrdersController extends Controller
              if(file_exists($term_service->file_name))
                 $input['file_term_service'][] = $term_service->file_name;
         }
-        if($order_info->csb_invoice && file_exists(public_path($order_info->csb_invoice)))
+        if($order_info->csb_invoice && is_file(storage_path($order_info->csb_invoice)))
             $input['file_term_service'][] = $order_info->csb_invoice;
         $content = $order_info->present()->getThemeMail_2;
 
@@ -1172,9 +1221,11 @@ class OrdersController extends Controller
         // }
 
         // $file_name = $pathFile.'invoice_'.$order_id.'.pdf';
+        // $path = 'app/'.$file_name.'.pdf';
 
-
-        // file_put_contents(public_path($file_name), $output);
+        // if( is_file(storage_path($path) ) )
+        //     \Storage::delete($path);
+        // file_put_contents(storage_path($path), $output);
 
     }
 
@@ -1304,13 +1355,13 @@ class OrdersController extends Controller
         $dompdf->render();
         // save file pdf
         $output = $dompdf->output();
-        $pathFile = 'file/invoices/';
-        if (!file_exists(public_path($pathFile) ) ) {
-            mkdir($pathFile, 0777, true);
-        }
-        $file_name = $pathFile.'invoice_'.$input['order_id'].'.pdf';
-        $path = public_path($file_name);
-        file_put_contents($path, $output);
+
+        $file_name = 'invoice_'.$input['order_id'];
+        $path = 'app/'.$file_name.'.pdf';
+
+        if( is_file(storage_path($path) ) )
+            \Storage::delete($path);
+        file_put_contents(storage_path($path), $output);
 
         //UPDATE MAIN_CUSTOMER_SERVICE
         foreach ($service_arr as $key => $service) {
@@ -1400,6 +1451,30 @@ class OrdersController extends Controller
             ];
             $task_create = MainTask::create($task_arr);
         }
+
+        //SEND MAIL INVOICE FOR CUSTOMER
+        // $service_list = $mainComboServiceBought->csb_combo_service_id;
+        // $service_array = explode(";",$service_list);
+        // $mainComboServiceBought['combo_service_list'] = MainComboService::whereIn('id',$service_array)->get();
+        $input['file_term_service'] = [];
+
+        $term_services = MainTermService::whereIn('service_id',$service_arr)->active()->select('file_name')->distinct('file_name')->get();
+        foreach ($term_services as $key => $term_service) {
+            if(file_exists($term_service->file_name))
+            $input['file_term_service'][] = $term_service->file_name;
+        }
+        // if($mainComboServiceBought->csb_invoice && is_file(storage_path($mainComboServiceBought->csb_invoice)))
+            $input['file_term_service'][] = $order_info->csb_invoice;
+        $content = $order_info->present()->getThemeMail_2;
+
+        $input['subject'] = 'INVOICE';
+        $input['email'] = $order_info->getCustomer->customer_email;
+        $input['name'] = $order_info->getCustomer->customer_firstname. " ".$order_info->getCustomer->customer_lastname;
+        $input['message'] = $content;
+        $input['mail_username_invoice'] = env('MAIL_USERNAME_INVOICE');
+        $input['mail_password_invoice'] = env('MAIL_PASSWORD_INVOICE');
+
+        dispatch(new SendNotificationInvoice($input))->delay(now()->addSecond(5));
 
         if (!isset($update_order) || !isset($task_create) || !isset($customer_service_update)){
             DB::callback();
@@ -1698,6 +1773,10 @@ class OrdersController extends Controller
             return response(['status'=>'error','message'=>'Failed!']);
 
         return response(['status'=>'success','message'=>'Successfully!']); 
+    }
+    function getStatusOrder(Request $request){
+        $order_info = MainComboServiceBought::find($request->order_id);
+        return $order_info;
     }
 }
 

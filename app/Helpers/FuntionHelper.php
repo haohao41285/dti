@@ -25,7 +25,8 @@ if(!function_exists('getStatusTask')){
 	    return [
 	        1 => 'NEW',
 	        2 =>'PROCESSING',
-	        3 => 'DONE'
+	        3 => 'DONE',
+            4 => 'CANCEL'
 	    ];
 	}
 }
@@ -95,7 +96,9 @@ function getOrderStatus(){
         1 => 'PAID',
         2 => 'PROCESSING',
         3 => 'DONE',
-        4 => 'DELIVERED'
+        4 => 'DELIVERED',
+        5 => 'FIXING',
+        6 => 'CANCEL'
     ];
 }
 function ratingCustomer(){

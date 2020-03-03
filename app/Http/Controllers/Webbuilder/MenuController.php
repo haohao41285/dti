@@ -342,7 +342,18 @@ class MenuController extends Controller
         } catch (\Exception $e) {
             return back()->with('error','Import Menus Error!');           
         }           
-        
+    }
+    public function templateImport()
+    {
+        //PDF file is stored under project/public/download/info.pdf
+        $file= storage_path("app/template_menu_import.xlsx");
+
+        $headers = array(
+                  'Content-Type: application/pdf',
+                );
+
+        return \Response::download($file, 'template_menu_import.xlsx', $headers);
+
     }
 }
 

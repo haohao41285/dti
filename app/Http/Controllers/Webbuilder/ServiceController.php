@@ -477,8 +477,8 @@ class ServiceController extends Controller
                                  ->on('pos_service.service_place_id','pos_cateservice.cateservice_place_id');
                            })
                            ->join('main_user',function($join_user){
-                           $join_user->on('pos_service.updated_by','main_user.user_id')
-                                 ->on('pos_service.service_place_id','main_user.user_place_id');
+                           $join_user->on('pos_service.updated_by','main_user.user_id');
+                                 // ->on('pos_service.service_place_id','main_user.user_place_id');
                            })
                            ->where('service_place_id',Session::get('place_id'))
                            ->where('service_status',1)
@@ -606,7 +606,17 @@ class ServiceController extends Controller
 
         return "Change Online Booking Succsess!";
     }
-    
+    public function templateImport()
+    {
+        //PDF file is stored under project/public/download/info.pdf
+        $file= storage_path("app/template_service_import.xlsx");
 
+        $headers = array(
+                  'Content-Type: application/pdf',
+                );
+
+        return \Response::download($file, 'template_service_import.xlsx', $headers);
+
+    }
 }
 

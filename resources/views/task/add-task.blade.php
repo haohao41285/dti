@@ -13,7 +13,7 @@
 	<div class="table-responsive">
        <form action="" method="get" accept-charset="utf-8">
             <div class="form-inline col-6">
-                <label for="">BUSINESS PHONE CUSTOMER</label>
+                <label for="business_phone">BUSINESS PHONE CUSTOMER </label>
                 <input type="text" onkeypress="return isNumberKey(event)" id="business_phone" class="form-control form-control-sm" name=""> 
                 <button class="btn btn-primary btn-sm search-customer-task" type="button">Search</button>
             </div>
@@ -103,7 +103,7 @@
                 <tr>
                     <td>PARENT TASK</td>
                     <td>
-                        <input type="number" class="form-control form-control-sm" id="task_parent_id" name="task_parent_id" value="{{$task_parent_id>0?$task_parent_id:""}}">
+                        <input type="text" class="form-control form-control-sm" onkeypress="return isNumberKey(event)" id="task_parent_id" name="task_parent_id" value="{{$task_parent_id>0?$task_parent_id:""}}">
                     </td>
                     <th colspan="5" id="task_name" class="text-uppercase">{{$task_name}}</th>
                 </tr>

@@ -27,7 +27,7 @@ class MainCustomerTemplate extends Model
         'old_customer_id'
     ];
     public function getFullname(){
-        return $this->ct_firstname." ".$this->ct_lastname;
+        return $this->ct_lastname." ".$this->ct_firstname;
     }
     public function getMainCustomer(){
         return $this->hasOne(MainCustomer::class,'customer_customer_template_id','id');

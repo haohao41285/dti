@@ -64,8 +64,11 @@ class CateServiceController extends Controller
     }
     public function save(Request $request)
     {
+        // return $request->all();
         $cateservice_id = $request->cateservice_id;
         $cateservice_name = $request->cateservice_name;
+        $description = $request->cateservice_description;
+
         $image_path ="";
         $place_id = $request->place_id;
         
@@ -82,6 +85,9 @@ class CateServiceController extends Controller
             // 'cateservice_description.required' => 'Please enter Description'
           ];
             $validator = Validator::make($request->all(), $rules, $messages);
+
+        if($description == '<p><br></p>' )
+            $description = "";
             
         //GET LICENSE PLACE
         $place_ip_license = PosPlace::where('place_id',$place_id)->first()->place_ip_license;
@@ -110,7 +116,7 @@ class CateServiceController extends Controller
                                     'cateservice_index'=>$request->cateservice_index?$request->cateservice_index:0,
                                     'cateservice_image'=>$image_path,
                                     'cateservice_icon_image'=>$icon_image_path,
-                                    'cateservice_description'=>$request->cateservice_description?$request->cateservice_description:"",
+                                    'cateservice_description'=>$description,
                                 ]);
                 if($PosCateservice){
                     $request->session()->flash('message', 'Edit CateService Success!');
@@ -129,7 +135,7 @@ class CateServiceController extends Controller
                                 $PosCateservice->cateservice_index = $request->cateservice_index?$request->cateservice_index:0;
                                 $PosCateservice->cateservice_image = $image_path;
                                 $PosCateservice->cateservice_icon_image = $icon_image_path;
-                                $PosCateservice->cateservice_description = $request->cateservice_description?$request->cateservice_description:"";
+                                $PosCateservice->cateservice_description = $description;
                                 $PosCateservice->cateservice_status = 1;
                                 $PosCateservice->save();
                     if($PosCateservice){
