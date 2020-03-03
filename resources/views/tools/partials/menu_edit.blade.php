@@ -135,7 +135,8 @@
                 ['fontsize', ['fontsize']],
                 ['color', ['color']],
                 ['para', ['ul', 'ol', 'paragraph']],
-                ['height', ['height']]
+                ['height', ['height']],
+                ['codeview']
               ]
         });
         $(".catalog-image-preview").on('click',function(){
