@@ -237,7 +237,7 @@ Route::group(['middleware' => ['auth']], function () {
             Route::post('upload-image-service','ServiceController@uploadImageService')->name('upload-image-service');
             Route::post('/delete','ServiceController@delete')->name('places.service.delete');
             Route::post('/change-status','ServiceController@changeStatus')->name('places.service.change_status');
-
+            Route::get('/template-import','ServiceController@templateImport')->name('places.service.template_import');
 
         });
         Route::group(['prefix' => 'menus'],function(){
@@ -250,6 +250,7 @@ Route::group(['middleware' => ['auth']], function () {
             Route::post('upload-multi-images','MenuController@uploadMultiImages')->name('upload-multi-images');
             Route::get('remove-image-menu','MenuController@removeMenu')->name('remove-image-menu');
             Route::post('/delete','MenuController@delete')->name('places.menus.delete');
+            Route::get('/template-import','MenuController@templateImport')->name('places.menus.template_import');
         });
         Route::group(['prefix' => 'banners'],function(){
             Route::get('/','BannerController@index')->name('places.banners');

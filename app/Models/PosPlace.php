@@ -75,7 +75,7 @@ class PosPlace extends BaseModel
     }
 
     public function getLicenseByPlaceId($placeId){
-        return self::select('place_id','place_ip_license')
+        return self::select('place_id','place_ip_license','place_code')
                     ->where('place_id',$placeId)
                     ->where('place_status',1)
                     ->first();

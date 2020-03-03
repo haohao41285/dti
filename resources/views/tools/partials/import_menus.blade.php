@@ -14,6 +14,7 @@
  <div class="x_panel">
      <div class="x_title">
          <h3>Import Menus</h3>
+         <a href="{{ route('places.menus.template_import') }}" class="text-info" title="">Download template import</a>
      </div>
     <div class="x_content">
         <form action="{{route('places.menus.post_import')}}" method="post" id="service-import-form" enctype="multipart/form-data" name="service-import-form">
