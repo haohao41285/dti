@@ -31,7 +31,8 @@ class MainUser extends Model
 		'user_token',
         'user_customer_list',
         'user_birthdate',
-        'user_team'
+        'user_team',
+        'user_phone_call'
 	];
 
 	protected $guarded = [];
