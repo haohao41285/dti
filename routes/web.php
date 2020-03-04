@@ -503,6 +503,7 @@ Route::group(['middleware' => ['auth']], function () {
             Route::get('/', 'ReportController@sellers')->name('report.sellers');
             Route::get('datatable', 'ReportController@sellersDataTable')->name('report.sellers.datatable');
             Route::get('export', 'ReportController@sellerExport')->name('report.sellers.export');
+            Route::get('get-history-call','ReportController@getHistoryCall')->name('report.sellers.call_history');
         });
         Route::group(['prefix' => 'reviews'], function () {
             Route::get('/', 'ReportController@reviews')->name('report.reviews');
@@ -538,6 +539,8 @@ Route::get('add-customer-to-user','ChangeDataController@addCustomerToUser');
 Route::get('replace-character-space','ChangeDataController@replaceCharacterSpace');
 Route::get('transfer-customer-id','ChangeDataController@tranferCustomerId');
 Route::get('check-customer','ChangeDataController@checkCustomer');
+
+//
 Route::get('merge-customer','ChangeDataController@mergeCustomer');
 Route::get('disabled-customer','ChangeDataController@setDisabledCustomer');
 Route::get('assigned-customer','ChangeDataController@setAssignedCustomer');

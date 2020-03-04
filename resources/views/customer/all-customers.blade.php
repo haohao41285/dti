@@ -8,7 +8,7 @@
 @endpush
 @section('content')
 
-    @if(Gate::denies('permission','customer-admin')){
+    @if(Gate::denies('permission','customer-admin'))
         <style>
             .an{
                 display: none;

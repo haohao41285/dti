@@ -9,6 +9,7 @@
     "license": "MIT",
 
     "require": {
+
         "authorizenet/authorizenet": "^2.0",
         "berkayk/onesignal-laravel": "^1.0",
         "dompdf/dompdf": "^0.8.3",

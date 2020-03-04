@@ -88,7 +88,7 @@ class PosTemplate extends Model
         })
         ->editColumn('template_type_id',function($data){
             $type = PosTemplateType::getById($data->template_type_id);
-            return $type->template_type_name;
+            return $type->template_type_name ?? NULL;
         })
         ->editColumn('template_list_cate',function($data) use ($placeId){
             $listCate = explode(";", $data->template_list_cate);

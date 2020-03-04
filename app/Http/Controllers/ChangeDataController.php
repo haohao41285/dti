@@ -33,9 +33,22 @@ class ChangeDataController extends Controller
     	$phone = 988888110;
 
     	foreach ($user_list_new as $key => $user) {
+
+            //GET NAME
+            $fullname = explode(' ',$user->fullname);
+            $fullname = array_filter($fullname);
+            $count = count($fullname);
+            $first_name = $fullname[$count-1];
+            $last_name = "";
+            for ($i=0; $i < $count-1 ; $i++) {
+                $last_name .= $fullname[$i]." ";
+            }
+
+
     		$user_arr = [
     			'user_id' => $user->id,
-    			'user_firstname' => $user->fullname,
+    			'user_firstname' => $first_name,
+                'user_lastname' => $last_name,
     			'user_nickname' => $user->username,
     			'user_password' => $user->password,
     			'user_phone' => $user->cellphone==""?"0".$phone:$user->cellphone,
@@ -43,12 +56,14 @@ class ChangeDataController extends Controller
     			'user_country_code' => '84',
     			'user_email' => $user->email,
     			'user_group_id' => 1,
-    			'user_team' => 1,
+    			'user_team' => 2,
     			'user_token' => csrf_token(),
     		];
     		$phone++;
-    	MainUser::create($user_arr);
+
+    	MainUser::insert($user_arr);
     	}
+        // return $user_arr;
 
     }
     public function transferService(){
@@ -75,6 +90,7 @@ class ChangeDataController extends Controller
     		}
 
     		$service_arr[] = [
+                'id' => $service->id,
     			'cs_name' => $service->name,
     			'cs_price' => $service->price,
     			'cs_expiry_period' => 6,
@@ -464,7 +480,7 @@ class ChangeDataController extends Controller
     }
     function setAssignedCustomer(){
 
-        DB::beginTransaction();
+        // DB::beginTransaction();
 
         MainUserCustomerPlace::truncate();
         MainCustomerAssign::truncate();
@@ -473,7 +489,7 @@ class ChangeDataController extends Controller
             $join->on('csr_customers.seller_id','main_user.user_id');
         })->where('status_id',3)->get();
         // return $customers->count();
-        $count = 0;
+        // $count = 0;
         foreach ($customers as $key => $customer) {
             //GET TEAM TYPE && SLUG TEAM TYPE
             $team_slug = MainTeam::find($customer->user_team)->getTeamType->slug;
@@ -502,21 +518,22 @@ class ChangeDataController extends Controller
             ];
             $assign_customer_update = MainCustomerAssign::insert($assigned_customer);
 
-            if(!$customer_template_update || !$customer_user_update || !$assign_customer_update){
+            // if(!$customer_template_update || !$customer_user_update || !$assign_customer_update){
 
-            }else{
-                $count ++;
-            }
+            // }else{
+            //     $count ++;
+            // }
 
         }
+        return 'done';
         // return $count;
-        if($count  == 2715){
-            DB::commit();
-            return 'ok';
-        }else{
-            DB::rollBack();
-            return "not ok";
-        }
+        // if($count  == 2715){
+        //     DB::commit();
+        //     return 'ok';
+        // }else{
+        //     DB::rollBack();
+        //     return "not ok";
+        // }
     }
     function setServicedCustomer(){
 
@@ -528,7 +545,7 @@ class ChangeDataController extends Controller
             $join->on('csr_customers.seller_id','main_user.user_id');
         })
         ->where('status_id',2)->get();
-        $count = 0;
+        // $count = 0;
         foreach ($customers as $key => $customer) {
             //UPDATE MAIN CUSTOMER TEMPLATE STATUS WITH TEAM TYPE
             $team_slug = MainTeam::find($customer->user_team)->getTeamType->slug;
@@ -549,18 +566,19 @@ class ChangeDataController extends Controller
             ];
             $customer_user_update = MainUserCustomerPlace::insert($user_customer_place_arr);
 
-            if(!$customer_user_update){}
-            else{
-                $count ++;
-            }
+            // if(!$customer_user_update){}
+            // else{
+            //     $count ++;
+            // }
         }
-        if($count == 865){
-            DB::commit();
-            return 'ok';
-        }else{
-            DB::rollBack();
-            return 'not ok';
-        }
+        // if($count == 865){
+        //     DB::commit();
+        //     return 'ok';
+        // }else{
+        //     DB::rollBack();
+        //     return 'not ok';
+        // }
+        return 'done';
     }
     public function userOrder(){
 
@@ -576,7 +594,7 @@ class ChangeDataController extends Controller
         ->get();
         // return $orders;
         // return $orders->count();
-        $count = 0;
+        // $count = 0;
         $order_id =1;
         foreach ($orders as $key => $order) {
             //GET AUTHNET INFO
@@ -632,15 +650,16 @@ class ChangeDataController extends Controller
                 'created_by' => $order->created_by
             ];
             MainComboServiceBought::insert($order_arr);
-            $count++;
+            // $count++;
             $order_id ++;
         }
-        if($count == 413){
-            DB::commit();
-            return 'ok';
-        }else{
-            DB::rollBack();
-            return 'not ok';
-        }
+        // if($count == 413){
+        //     DB::commit();
+        //     return 'ok';
+        // }else{
+        //     DB::rollBack();
+        //     return 'not ok';
+        // }
+        return 'done';
     }
 }
