@@ -503,7 +503,7 @@ Route::group(['middleware' => ['auth']], function () {
             Route::get('/', 'ReportController@sellers')->name('report.sellers');
             Route::get('datatable', 'ReportController@sellersDataTable')->name('report.sellers.datatable');
             Route::get('export', 'ReportController@sellerExport')->name('report.sellers.export');
-            Route::get('get-history-call','ReportController@getHistoryCall')->name('report.sellers.call_history');
+            Route::post('get-history-call','ReportController@getHistoryCall')->name('report.sellers.call_history');
         });
         Route::group(['prefix' => 'reviews'], function () {
             Route::get('/', 'ReportController@reviews')->name('report.reviews');

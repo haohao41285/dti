@@ -133,18 +133,13 @@ class ImagesHelper
     }
     public static function uploadImageWebbuilder($file , $folder_upload , $place_ip_license)
     {
-          $pathFile   = config('app.url_file_write');
           $name = $file->getClientOriginalName();
           $pathImage = '/images/'.$place_ip_license.'/website/'.$folder_upload.'/';
-          // if (!file_exists($pathFile.$pathImage)) {
-          //     mkdir($pathFile.$pathImage,0777, true);
-          // }
-          // $file->move($pathFile.$pathImage,$name);
           $file->move("tmp-upload", $name);
           $tmpUpload = "tmp-upload/".$name;
 
           self::sendRequestToApi($tmpUpload,$name,$pathImage);
-          unlink("tmp-upload/".$filename);
+          unlink("tmp-upload/".$name);
 
           return $pathImage.$name;
     }

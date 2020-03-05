@@ -2,10 +2,41 @@
 @section('content-title')
     SELLERS REPORT
 @endsection
+@push('styles')
+<style type="text/css" media="screen">
+    .loader {
+          border: 8px solid #f3f3f3;
+          border-radius: 50%;
+          border-top: 8px solid blue;
+          border-right: 8px solid green;
+          border-bottom: 8px solid red;
+          border-left: 8px solid pink;
+          width: 80px;
+          height: 80px;
+          -webkit-animation: spin 2s linear infinite; /* Safari */
+          animation: spin 2s linear infinite;
+          position: fixed;
+          top: 50%;
+          left: 50%;
+          z-index: 100000;
+          display: none; 
+        }
+        /* Safari */
+        @-webkit-keyframes spin {
+          0% { -webkit-transform: rotate(0deg); }
+          100% { -webkit-transform: rotate(360deg); }
+        }
+
+        @keyframes spin {
+          0% { transform: rotate(0deg); }
+          100% { transform: rotate(360deg); }
+        }
+</style>
+@endpush
 @section('content')
 {{-- MODAL FOR CALL LOG --}}
  <div class="modal fade" id="call-log-modal">
-    <div class="modal-dialog modal-lg" style="width: 100%">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable" style="max-width: 90%">
       <div class="modal-content">
       
         <!-- Modal Header -->
@@ -28,15 +59,30 @@
                     </div>
                     <div class="col-md-3">
                         <label for="">Seller</label>
-                        <select name="seller_id" id="seller_id" class="form-control form-control-sm">
-                            <option value="">--All--</option>
+                        <select name="extension" id="seller_id" class="form-control form-control-sm">
                             @foreach($sellers as $seller)
-                                <option value="{{$seller->user_id}}">{{$seller->getFullname()."(".$seller->user_nickname.")"}}</option>
+                                <option value="{{$seller->user_phone_call}}">{{$seller->getFullname()."(".$seller->user_nickname.")"}}</option>
                             @endforeach
                         </select>
                     </div><div class="col-md-3">
-                        <label for="">Seller</label>
-                        <input type="checkbox" name="">
+                        <label for="">InOutInternal</label>
+                        <div class="form-inline">
+                            <div class="custom-control custom-checkbox mb-3">
+                              <input type="checkbox" class="custom-control-input" id="In" value="In" name="in_out_internal[]">
+                              <label class="custom-control-label" for="In">In </label>
+                            </div>
+                            <div class="custom-control custom-checkbox mb-3">
+                              <input type="checkbox" class="custom-control-input" id="Out" value="Out" name="in_out_internal[]">
+                              <label class="custom-control-label" for="Out">Out </label>
+                            </div>
+                            <div class="custom-control custom-checkbox mb-3">
+                              <input type="checkbox" class="custom-control-input" id="Internal" value="Internal" name="in_out_internal[]">
+                              <label class="custom-control-label" for="Internal">Internal</label>
+                            </div>
+                        </div>
+                            
+
+
                     </div>
                     <div class="col-2 " style="position: relative;">
                         <div style="position: absolute;top: 50%;" class="">
@@ -45,6 +91,8 @@
                     </div>
                 </div>
             </form>
+            <div class="content-call-log">
+            </div>
         </div>
         
         <!-- Modal footer -->
@@ -95,7 +143,6 @@
                 <th>Total Orders</th>
                 <th>Total Discount($)</th>
                 <th>Total Charged($)</th>
-                <th>Call Log</th>
             </tr>
             </thead>
         </table>
@@ -119,6 +166,7 @@
                             document.location.href = "{{route('report.sellers.export')}}";
                         }
                     },
+                    @if(\Gate::allows('permission','call-log-admin') || \Gate::allows('permission','call-log-seller'))
                     {
                         text: '<i class="fas fa-address-book"></i> Call Log',
                         className: "btn-sm call_log",
@@ -126,6 +174,7 @@
                             document.location.href = "javascript:void(0)";
                         }
                     }
+                    @endif
                 ],
                 ajax:{ url:"{{ route('report.sellers.datatable') }}",
                     data: function (d) {
@@ -145,7 +194,6 @@
                     { data: 'total_orders', name: 'total_orders',class:'text-right' },
                     { data: 'total_discount', name: 'total_discount',class:'text-right' },
                     { data: 'total_charged', name: 'total_charged',class:'text-right' },
-                    { data: 'call_log', name: 'call_log',class:'text-center' },
 
                 ],
             });
@@ -163,11 +211,106 @@
                 $("#call-log-modal").modal('show');
             });
             $("#search_call_log").click(function(){
-                let user_id = $("#seller_id").val();
-                let from_date = $("#from_date").val();
-                let to_date = $("#to_date").val();
-            })
 
+                var formData = new FormData($(this).parents('form')[0]);
+                formData.append('_token','{{ csrf_token() }}');
+
+                ableProcessingLoader();
+
+                $.ajax({
+                    url: '{{ route('report.sellers.call_history') }}',
+                    type: 'POST',
+                    dataType: 'html',
+                    processData: false,
+                    contentType: false,
+                    data: formData,
+                })
+                .done(function(data) {
+                    data = JSON.parse(data);
+                    if(data.status == 'error')
+                        toastr.error(data.message);
+                    else{
+                        let content = $.parseXML(data.data);
+                        $content = $( content );
+                        console.log($content);
+                        var content_html = '';
+                        let row = "";
+
+                        $($content).find('Table1').each(function(i, v) {
+                            let rowIndex = $(v).find('rowIndex').text();
+                            let id = $(v).find('id').text();
+                            let direction = $(v).find('direction').text();
+                            let startCall = $(v).find('startCall').text();
+                            let startCall7 = $(v).find('startCall7').text();
+                            let start = $(v).find('start').text();
+                            let endCall = $(v).find('endCall').text();
+                            let billsec = $(v).find('billsec').text();
+                            let src = $(v).find('src').text();
+                            let dst = $(v).find('dst').text();
+                            let recordfile = "";
+                            @if(\Gate::allows('permission','call-log-admin'))
+                                recordfile = $(v).find('recordfile').text();
+                            @endif
+                            row +=`
+                                <tr>
+                                    <td>`+rowIndex+`</td>
+                                    <td>`+id+`</td>
+                                    <td>`+direction+`</td>
+                                    <td>`+startCall+`</td>
+                                    <td>`+startCall7+`</td>
+                                    <td>`+start+`</td>
+                                    <td>`+endCall+`</td>
+                                    <td>`+billsec+`</td>
+                                    <td>`+src+`</td>
+                                    <td>`+dst+`</td>
+                                    <td>`+recordfile+`</td>
+                                </tr>
+                            `;
+                            // $(".content-call-log").html($(this).find('recordfile').text());
+                        });
+                        content_html = `
+                            <table class="table table-hover table-stripped">
+                                <thead>
+                                    <tr class="thead-light">
+                                        <th>RowIndex</th>
+                                        <th>ID</th>
+                                        <th>Direction</th>
+                                        <th>StartCall</th>
+                                        <th>StartCall7</th>
+                                        <th>Start</th>
+                                        <th>EndCall</th>
+                                        <th>BillSec</th>
+                                        <th>src</th>
+                                        <th>dst</th>
+                                        <th>recordfile</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    `+row+`
+                                </tbody>
+                            </table>
+                        `;
+                        // alert(id);
+                        $(".content-call-log").html(content_html);
+                    }
+                    // console.log(data);
+                })
+                .fail(function() {
+                    toastr.error('Failed!');
+                })
+                .always(function() {
+                    unableProcessingLoader();
+                });
+            });
+            
+            function ableProcessingLoader(){
+                $('.loader').css('display','inline');
+                $("#content").css('opacity',.5);
+            }
+            function unableProcessingLoader(){
+                $('.loader').css('display','none');
+                $("#content").css('opacity',1);
+            }
         });
     </script>
 @endpush

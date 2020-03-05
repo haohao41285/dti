@@ -287,8 +287,10 @@ class ReportController extends Controller
                 $team_id_array = array_values($team_id);
                 $data['sellers'] = MainUser::whereIn('user_team',$team_id_array)->get();
             }
-            else
+            elseif(Gate::allows('permission','seller-report-leader'))
                 $data['sellers'] = MainUser::where('user_team',Auth::user()->user_team)->get();
+            else
+                $data['sellers'] = MainUser::where('user_id',Auth::user()->user_id)->get();
             
             return view('reports.sellers',$data);
         }else
@@ -353,10 +355,6 @@ class ReportController extends Controller
         ){
             $seller_list = self::getSellerList($request);
             return DataTables::of($seller_list)
-                ->addColumn('call_log',function($row){
-                    return '<a class="btn btn-sm btn-secondary call_log" phone="908"  href="javascript:void(0)"><i class="fas fa-address-book"></i></a>';
-                })
-                ->rawColumns(['call_log'])
                 ->make(true);
         }else
             return doNotPermission();
@@ -744,39 +742,27 @@ class ReportController extends Controller
         ->make(true);
     }
     function getHistoryCall(Request $request){
+        
         // return md5('u843787VaP33675517hd1B8D'.'2020-02-25'.'2020-02-29'.'In,Out,Internal '.'909');
-        $signature = '5b77ba6d004b711f461ffaf598d432b1';
+        // $signature = '5b77ba6d004b711f461ffaf598d432b1';
 
-        $client = new Client;
-        $response = $client->request('GET', 'http://vpsg.dataeglobal.com/API.asmx/CallLog',
-            [
-                'multipart' => [
-                      [
-                          'name'     => 'Signature',
-                          'contents' => $signature,
-                      ],
-                    [
-                        'name'     => 'FromDate',
-                        'contents' => '2020-02-25 2000:00:00',
-                    ],
-                    [
-                        'name'     => 'ToDate',
-                        'contents' => '2020-02-29 2023:00:00',
-                    ],
-                    [
-                        'name'     => 'InOutInternal',
-                        'contents' => 'In,Out',
-                    ],
-                    [
-                        'name'     => 'Extension',
-                        'contents' => '908'
-                    ]
-                  ],
-                  'headers' => [
-                      'Authorization' => 'Bearer '.'u843787VaP33675517hd1B8D',
-                  ],
-            ]);
-        $body = (string)$response->getBody();
-        return $body;
+        $key = env('CALL_LOG_KEY');
+        $from_date = Carbon::parse($request->from_date)->format('Y-m-d');
+        $to_date = Carbon::parse($request->to_date)->format('Y-m-d');
+        $InOutInternal = implode(',', $request->in_out_internal);
+        $extension = $request->extension;
+        $signature = md5($key.$from_date.$to_date.$InOutInternal.$extension);
+
+        try{
+            $client = new Client;
+            $response = $client->request('GET', env('CALL_LOG_URL').'?Signature='.$signature.'&FromDate='.$from_date.'%2000:00:00&ToDate='.$to_date.'%2023:00:00&InOutInternal='.$InOutInternal.'&Extension='.$extension);
+            $body = (string)$response->getBody();
+            return response(['status'=>'success','data'=>$body]);
+        }
+        catch(\Exception $e){
+            \Log::info($e);
+            return response(['status'=>'error','message'=>'Failed! Check again!']);
+        }
+        
     }
 }
