@@ -41,7 +41,7 @@
       
         <!-- Modal Header -->
         <div class="modal-header">
-          <h4 class="modal-title">CALL LOG</h4>
+          <h4 class="modal-title text-info">CALL LOG</h4>
           <button type="button" class="close" data-dismiss="modal">&times;</button>
         </div>
         
@@ -109,9 +109,9 @@
                 <div class="col-md-4">
                     <label for="">Created date</label>
                     <div class="input-daterange input-group" id="created_at">
-                        <input type="text" class="input-sm form-control form-control-sm" id="start_date" name="start" />
+                        <input type="text" class="input-sm form-control form-control-sm" value="{{today()->subMonths(6)->format('m/d/Y')}}" id="start_date" name="start" />
                         <span class="input-group-addon">to</span>
-                        <input type="text" class="input-sm form-control form-control-sm" id="end_date" name="end" />
+                        <input type="text" class="input-sm form-control form-control-sm" value="{{today()->format('m/d/Y')}}" id="end_date" name="end" />
                     </div>
                 </div>
                 <div class="col-md-3">
