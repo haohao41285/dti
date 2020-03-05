@@ -1326,7 +1326,7 @@ class CustomerController extends Controller
         if(Gate::denies('permission','seller-customer'))
             return doNotPermission();
 
-        $team_type_id = MainTeamType::where('team_type_name','Telemarketing')->first()->id;
+        $team_type_id = MainTeamType::where('team_type_name','Telesale MKT')->first()->id;
         $team_id = MainTeam::select('id')->where('team_type',$team_type_id)->get()->toArray();
         $team_id_array = array_values($team_id);
         $data['sellers'] = MainUser::whereIn('user_team',$team_id_array)->get();

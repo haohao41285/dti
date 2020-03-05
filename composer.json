@@ -12,6 +12,7 @@
         "php": "7.1.*",
         "authorizenet/authorizenet": "^2.0",
         "berkayk/onesignal-laravel": "^1.0",
+        "doctrine/dbal": "^2.9",
         "dompdf/dompdf": "^0.8.3",
         "fideloper/proxy": "^4.0",
         "guzzlehttp/guzzle": "~6.0",
