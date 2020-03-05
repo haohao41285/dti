@@ -1,0 +1,1 @@
+ALTER TABLE `main_user` ADD `user_phone_call` VARCHAR(15) NULL DEFAULT '909' COMMENT 'for call log' AFTER `user_team`; 

@@ -326,6 +326,7 @@
             })
                 .done(function(data) {
                     data = JSON.parse(data);
+                    console.log(data);
                     if(data.status == 'error')
                         toatr.error(data.mesage);
                     else{

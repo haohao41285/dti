@@ -3,6 +3,58 @@
     SELLERS REPORT
 @endsection
 @section('content')
+{{-- MODAL FOR CALL LOG --}}
+ <div class="modal fade" id="call-log-modal">
+    <div class="modal-dialog modal-lg" style="width: 100%">
+      <div class="modal-content">
+      
+        <!-- Modal Header -->
+        <div class="modal-header">
+          <h4 class="modal-title">CALL LOG</h4>
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+        </div>
+        
+        <!-- Modal body -->
+        <div class="modal-body">
+            <form id="call-log-form">
+                <div class="form-group col-md-12 row">
+                    <div class="col-md-4">
+                        <label for="">Created date</label>
+                        <div class="input-daterange input-group" id="from_to_date">
+                            <input type="text" class="input-sm form-control form-control-sm" id="from_date" name="from_date" />
+                            <span class="input-group-addon">to</span>
+                            <input type="text" class="input-sm form-control form-control-sm" id="to_date" name="to_date" />
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <label for="">Seller</label>
+                        <select name="seller_id" id="seller_id" class="form-control form-control-sm">
+                            <option value="">--All--</option>
+                            @foreach($sellers as $seller)
+                                <option value="{{$seller->user_id}}">{{$seller->getFullname()."(".$seller->user_nickname.")"}}</option>
+                            @endforeach
+                        </select>
+                    </div><div class="col-md-3">
+                        <label for="">Seller</label>
+                        <input type="checkbox" name="">
+                    </div>
+                    <div class="col-2 " style="position: relative;">
+                        <div style="position: absolute;top: 50%;" class="">
+                            <input type="button" class="btn btn-primary btn-sm" id="search_call_log" value="Search">
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+        
+        <!-- Modal footer -->
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary btn-sm" data-dismiss="modal">Close</button>
+        </div>
+        
+      </div>
+    </div>
+  </div>
     <div class="table-responsive">
         <form id="search-form">
             <div class="form-group col-md-12 row">
@@ -43,6 +95,7 @@
                 <th>Total Orders</th>
                 <th>Total Discount($)</th>
                 <th>Total Charged($)</th>
+                <th>Call Log</th>
             </tr>
             </thead>
         </table>
@@ -52,7 +105,7 @@
 @push('scripts')
     <script type="text/javascript">
         $(document).ready(function() {
-            $("#created_at").datepicker({});
+            $("#created_at,#from_to_date").datepicker({});
             var table = $('#dataTableAllService').DataTable({
                 // dom: "lBfrtip",
                 // order:[[6,"desc"]],
@@ -64,6 +117,13 @@
                         className: "btn-sm export",
                         action: function ( e, dt, node, config ) {
                             document.location.href = "{{route('report.sellers.export')}}";
+                        }
+                    },
+                    {
+                        text: '<i class="fas fa-address-book"></i> Call Log',
+                        className: "btn-sm call_log",
+                        action: function ( e, dt, node, config ) {
+                            document.location.href = "javascript:void(0)";
                         }
                     }
                 ],
@@ -85,6 +145,7 @@
                     { data: 'total_orders', name: 'total_orders',class:'text-right' },
                     { data: 'total_discount', name: 'total_discount',class:'text-right' },
                     { data: 'total_charged', name: 'total_charged',class:'text-right' },
+                    { data: 'call_log', name: 'call_log',class:'text-center' },
 
                 ],
             });
@@ -97,6 +158,15 @@
                 e.preventDefault();
                 table.ajax.reload(null, false);
             });
+            $(document).on('click','.call_log',function(){
+                // let phone = $(this).attr('phone');
+                $("#call-log-modal").modal('show');
+            });
+            $("#search_call_log").click(function(){
+                let user_id = $("#seller_id").val();
+                let from_date = $("#from_date").val();
+                let to_date = $("#to_date").val();
+            })
 
         });
     </script>
