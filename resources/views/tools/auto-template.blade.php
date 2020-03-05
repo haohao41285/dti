@@ -1,6 +1,6 @@
 @extends('layouts.app')
 @section('content-title')
-    COUPON/ PROMOTION TEMPLATE
+COUPON/ PROMOTION TEMPLATE
 @endsection
 @push('styles')
 @endpush
@@ -9,7 +9,9 @@
     <div class="col-8 ">
         <div class="form-group">
             <button class="btn-sm btn-primary btn " id="btn-coupon">Coupon</button>
-            <button class="btn-sm btn-danger btn " id="btn-promotion">Promotion</button>
+            <button class="btn-sm btn-primary btn " id="btn-promotion">Promotion</button>
+            <button class="btn-sm btn-primary btn " id="btn-happyhour">Happy Hour</button>
+            <button class="btn-sm btn-primary btn " id="btn-instanday">Instanday</button>
         </div>
         <div class="card shadow mb-4 ">
             <div class="card-header py-2">
@@ -145,6 +147,28 @@ $(document).ready(function() {
         reset(title);
         $(".coupon").hide();
         $(".promotion").show();
+    });
+
+    $("#btn-happyhour").on('click', function(e) {
+        e.preventDefault();
+        title = "Happy hour";
+        type = 3;
+        $(".table-title").text("Auto happy hour list");
+        autoTemplateTable.draw();
+        reset(title);
+        // $(".coupon").hide();
+        // $(".happyhour").show();
+    });
+
+    $("#btn-instanday").on('click', function(e) {
+        e.preventDefault();
+        title = "Instanday";
+        type = 4;
+        $(".table-title").text("Auto instanday list");
+        autoTemplateTable.draw();
+        reset(title);
+        // $(".coupon").hide();
+        // $(".instanday").show();
     });
 
     autoTemplateTable = $('#auto-coupon-datatable').DataTable({
@@ -298,6 +322,5 @@ $(document).ready(function() {
         $("#value-color").attr('data-color', color.hexString);
     });
 });
-
 </script>
 @endpush
