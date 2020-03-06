@@ -41,7 +41,7 @@
                                <input type='file' class="cateservice_image" name="cateservice_image" data-target="#catalogImagePreview1" accept=".png, .jpg, .jpeg" />
                                {{-- <label for="cateservice_image"></label> --}}
                            </div>
-                           <div class="catalog-image-preview">
+                           <div class="catalog-image-preview" style="height:200px">
                                <img id="catalogImagePreview1" style='display:{{(isset($cateservice_item)&&$cateservice_item->cateservice_image!="")?"":"none"}}' src ="{{config('app.url_file_view')}}{{isset($cateservice_item->cateservice_image)? $cateservice_item->cateservice_image:old('cateservice_image')}}" height ="100%" /> 
                            </div>
                     </div>

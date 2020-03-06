@@ -368,6 +368,11 @@ Route::group(['middleware' => ['auth']], function () {
             Route::post('/upload-file', 'SetupTermService@uploadFile')->name('setup_term_service.upload_file');
             Route::get('/change-status', 'SetupTermService@changeStatus')->name('setup_term_service.change_status');
         });
+        //SETTING SALE TEAM
+        Route::group(['prefix' => 'setup-sale-team'], function() {
+            Route::get('/', 'SetupSaleTeam@index')->name('setting.sale_team.index');
+            Route::get('datatable', 'SetupSaleTeam@datatable')->name('setting.sale_team.datatable');
+        });
         Route::get('menu-app','SetupServiceController@menuApp')->name('get_menu_app');
     });
 
