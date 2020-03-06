@@ -179,8 +179,8 @@
                               <input type="hidden" value="{{(isset($service_item))?$service_item->service_image:old('service_image')}}" name="service_image_hidden">
                               {{-- <label for="imageUpload2"></label> --}}
                           </div>
-                          <div class="catalog-image-preview">
-                              <img id="catalogImagePreview2"  style='display:{{(isset($service_item)&&$service_item->service_image!="")?"":"none"}}' src="{{config('app.url_file_view')}}{{(isset($service_item))?$service_item->service_image:old('service_image')}}" />
+                          <div class="catalog-image-preview" style="height:200px">
+                              <img id="catalogImagePreview2"  style='display:{{(isset($service_item)&&$service_item->service_image!="")?"":"none"}}' src="{{config('app.url_file_view')}}{{(isset($service_item))?$service_item->service_image:old('service_image')}}" height="100%" />
                           </div>
                       </div>
                 </div>
