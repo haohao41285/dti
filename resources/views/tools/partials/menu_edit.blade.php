@@ -74,8 +74,8 @@
                               {{-- <label for="menu_image"></label> --}}
                           </div>
                           
-                          <div class="catalog-image-preview">
-                              <img style='display:{{(isset($menu_item)&&$menu_item->menu_image!="")?"":"none"}}' id="catalogImagePreview2" src="{{config('app.url_file_view')}}{{isset($menu_item->menu_image)? $menu_item->menu_image:old('menu_image')}}" />
+                          <div class="catalog-image-preview" style="height:200px">
+                              <img style='display:{{(isset($menu_item)&&$menu_item->menu_image!="")?"":"none"}};height:100%' id="catalogImagePreview2" src="{{config('app.url_file_view')}}{{isset($menu_item->menu_image)? $menu_item->menu_image:old('menu_image')}}" />
                           </div>
                       </div>
                 </div> 

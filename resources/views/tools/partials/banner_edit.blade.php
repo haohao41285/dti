@@ -40,8 +40,8 @@
                             <input type='file' id="imageUpload2" name="ba_image" value="{{isset($ba_item->ba_image)}}" data-target="#catalogImagePreview2" accept=".png, .jpg, .jpeg" />
                            {{--  <label for="imageUpload1"></label> --}}
                         </div>
-                        <div class="catalog-image-preview">
-                            <img id="catalogImagePreview2" style='display:{{(isset($ba_item)&&$ba_item->ba_image!="")?"":"none"}}' src="{{config('app.url_file_view')}}{{isset($ba_item->ba_image)? $ba_item->ba_image:old('ba_image')}}" height="100px" />
+                        <div class="catalog-image-preview" style="height:200px">
+                            <img id="catalogImagePreview2" style='display:{{(isset($ba_item)&&$ba_item->ba_image!="")?"":"none"}};height:100%' src="{{config('app.url_file_view')}}{{isset($ba_item->ba_image)? $ba_item->ba_image:old('ba_image')}}" height="100px" />
                         </div>
                     </div>
                 </div>
