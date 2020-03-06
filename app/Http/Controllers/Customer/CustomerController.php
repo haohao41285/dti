@@ -419,6 +419,7 @@ class CustomerController extends Controller
                     return '
                           <a class="btn btn-sm btn-secondary add-note"  contact_name="'.$row->ct_fullname.'" customer_id="'.$row->id.'" href="javascript:void(0)" title="Add Customer Note"><i class="far fa-sticky-note"></i></a>
                           <a class="btn btn-sm btn-secondary view" customer_id="'.$row->id.'" href="javascript:void(0)" title="View Customer"><i class="fas fa-eye"></i></a>
+                          <a class="btn btn-sm btn-secondary edit-customer" customer_id="'.$row->id.'" href="javascript:void(0)"><i class="fas fa-edit"></i></a>
                     <a class="btn btn-sm btn-secondary order-service" href="'.route('add-order',$row->id).'" title="Go To Order"><i class="fas fa-shopping-cart"></i></a>';
                 })
             ->rawColumns(['action','id'])
@@ -439,6 +440,7 @@ class CustomerController extends Controller
             return $customer_info;
     }
     public function saveCustomer(Request $request){
+        // return $request->all();
 
         $ct_salon_name = $request->ct_salon_name;
         $ct_contact_name = $request->ct_contact_name;

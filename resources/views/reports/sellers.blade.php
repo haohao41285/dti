@@ -230,6 +230,7 @@
                     if(data.status == 'error')
                         toastr.error(data.message);
                     else{
+                        // console.log(data.data);return;
                         let content = $.parseXML(data.data);
                         $content = $( content );
                         console.log($content);

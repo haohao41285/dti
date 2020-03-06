@@ -204,16 +204,8 @@ MY CUSTOMER
 <!-- Modal view-->
 <div class="modal fade" id="viewModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
   <div style="max-width: 70%" class="modal-dialog modal-sm" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title text-center" id="exampleModalLabel"><b>Customer Detail</b></h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      <div class="modal-body" id="content-customer-detail">
-
-      </div>
+    <div class="modal-content" id="content-customer-detail">
+      
     </div>
   </div>
 </div>
@@ -254,6 +246,7 @@ MY CUSTOMER
 <script type="text/javascript">
  $(document).ready(function() {
     $("#created_at").datepicker({});
+    var customer_id = 0;
     var table = $('#dataTableAllCustomer').DataTable({
        // dom: "lBfrtip",
        order:[[7,"desc"]],
@@ -271,7 +264,7 @@ MY CUSTOMER
         },
        columns: [
 
-                { data: 'id', name: 'id',class:'text-center' },
+                { data: 'id', name: 'id',class:'w-10' },
                 { data: 'ct_salon_name', name: 'ct_salon_name' },
                 { data: 'ct_fullname', name: 'ct_fullname'},
                 { data: 'ct_business_phone', name: 'ct_business_phone' ,class:'text-center'},
@@ -291,7 +284,7 @@ MY CUSTOMER
 
     $(document).on("click",".view",function(){
 
-      var customer_id = $(this).attr('customer_id');
+      customer_id = $(this).attr('customer_id');
 
       $.ajax({
         url: '{{route('get-customer-detail')}}',
@@ -344,8 +337,15 @@ MY CUSTOMER
           if(data.customer_list.ct_status === 'New Arrivals')
             button = `<button type="button" id=`+data.customer_list.id+` class="btn btn-primary btn-sm get-customer">Get</button>`;
           $("#content-customer-detail").html(`
+          <div class="modal-header">
+            <h5 class="modal-title text-center" id="exampleModalLabel"><b>Customer Detail</b></h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
             <div class="row pr-5 pl-5" >
-          <div class="col-md-6">
+            <div class="col-md-6">
               <div class="row">
                 <span class="col-md-4">Business:</span>
                 <p class="col-md-8"><b>`+data.customer_list.ct_salon_name+`</b></p>
@@ -391,6 +391,7 @@ MY CUSTOMER
 
             </div>
             `+place_service+`
+          </div>
             <div class="col-md-12">
               <div class="row float-right">
                 `+button+`
@@ -736,6 +737,140 @@ MY CUSTOMER
      $(".cancel-move").click(function () {
          cleanModalPlace();
      });
+     $(document).on('click','.edit-customer',function(){
+
+      customer_id = $(this).attr('customer_id');
+
+      $.ajax({
+        url: '{{route('editCustomer')}}',
+        type: 'GET',
+        dataType: 'html',
+        data: {customer_id: customer_id},
+      })
+      .done(function(data) {
+        if(data == 0){
+          toastr.error('Getting Error! Check again!');
+        }else{
+          data = JSON.parse(data);
+            if(data.ct_salon_name==null)data.ct_salon_name="";
+            if(data.ct_contact_name==null)data.ct_contact_name="";
+
+            let cell_phone = "";
+            let business_phone = "";
+            @if(\Gate::allows('permission','customer-admin'))
+              if(data.ct_business_phone==null) business_phone="";
+              else business_phone = `
+                <input type="text" class="col-md-8 form-control form-control-sm" onkeypress="return isNumberKey(event)" name="ct_business_phone" id="ct_business_phone" value="`+data.ct_business_phone+`" placeholder="">
+                `;
+              if(data.ct_cell_phone==null) cell_phone="";
+              else cell_phone = `
+                <input type="text" onkeypress="return isNumberKey(event)" class="col-md-8 form-control form-control-sm" name="ct_cell_phone" id="ct_cell_phone" value="`+data.ct_cell_phone+`" placeholder="">
+                `;
+            @else
+              business_phone="";
+              cell_phone="";
+            @endif
+            if(data.ct_email==null)data.ct_email="";
+            if(data.ct_address==null)data.ct_address="";
+            if(data.ct_website==null)data.ct_website="";
+            if(data.ct_note==null)data.ct_note="";
+            if(data.ct_status==null)data.ct_status="";
+
+          $("#content-customer-detail").html(`
+            <div class="modal-header">
+              <h5 class="modal-title text-center" id="exampleModalLabel"><b>Edit Customer</b></h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body"">
+              <form id="edit-customer-form">
+                <div class="row">
+                  <div class="col-md-6">
+                    <div class="form-group row">
+                      <label class="col-md-4" for="ct_salon_name">Business Name<i class="text-danger">*</i></label>
+                      <input type="text" class="col-md-8 form-control form-control-sm" name="ct_salon_name" id="ct_salon_name" value="`+data.ct_salon_name+`" placeholder="">
+                      <input type="hidden" name="" id="customer_id" value="`+data.id+`" placeholder="">
+                    </div>
+                    <div class="form-group row">
+                      <label class="col-md-4" for="ct_contact_name">Contact Name<i class="text-danger">*</i></label>
+                      <input type="text" class="col-md-8 form-control form-control-sm" name="ct_contact_name" id="ct_contact_name" value="`+data.ct_fullname+`" placeholder="">
+                    </div>
+                    <div class="form-group row">
+                      <label class="col-md-4" for="ct_email">Email</label>
+                      <input type="email" class="col-md-8 form-control form-control-sm" name="ct_email" id="ct_email" value="`+data.ct_email+`" placeholder="">
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <div class="form-group row">
+                      <label class="col-md-4" for="ct_address">Address</label>
+                      <input type="text" class="col-md-8 form-control form-control-sm" name="ct_address" id="ct_address" value="`+data.ct_address+`" placeholder="">
+                    </div>
+                    <div class="form-group row">
+                      <label class="col-md-4" for="ct_website">Website</label>
+                      <input type="text" class="col-md-8 form-control form-control-sm" name="ct_website" id="ct_website" value="`+data.ct_website+`" placeholder="">
+                    </div>
+                    <div class="form-group row">
+                      <label class="col-md-4" for="ct_note">Note</label>
+                      <textarea class="col-md-8 form-control form-control-sm" name="ct_note" id="ct_note" rows="3" >`+data.ct_note+`</textarea>
+                    </div>
+                    <div class="form-group float-right">
+                      <button type="button" class="btn btn-danger btn-sm" data-dismiss="modal">Cancel</button>
+                      <button type="button" class="btn btn-primary btn-sm submit-edit" >Submit</button>
+                    </div>
+                  </div>
+                </div>
+              </form>
+            </div>
+            `);
+          $("#viewModal").modal('show');
+        }
+      })
+      .fail(function() {
+        console.log("error");
+      });
+    });
+$(document).on("click",".submit-edit",function(){
+    var ct_salon_name = $("#ct_salon_name").val();
+    var ct_contact_name = $("#ct_contact_name").val();
+    var ct_business_phone = $("#ct_business_phone").val();
+    var ct_cell_phone = $("#ct_cell_phone").val();
+    var ct_email = $("#ct_email").val();
+    var ct_address = $("#ct_address").val();
+    var ct_website = $("#ct_website").val();
+    var ct_note = $("#ct_note").val();
+
+    $.ajax({
+      url: '{{route('save-customer')}}',
+      type: 'GET',
+      dataType: 'html',
+      data: {
+        ct_salon_name: ct_salon_name,
+        ct_contact_name: ct_contact_name,
+        ct_business_phone: ct_business_phone,
+        ct_cell_phone: ct_cell_phone,
+        ct_email: ct_email,
+        ct_address: ct_address,
+        ct_website: ct_website,
+        ct_note: ct_note,
+        customer_id: customer_id
+      },
+    })
+    .done(function(data) {
+      // console.log(data);return;
+      if(data == 0){
+        toastr.error('Update Error! Check again!');
+      }else{
+        toastr.success('Update Success!');
+        $("#viewModal").modal('hide');
+        table.ajax.reload(null, false);
+        $(".modal-content").html("");
+      }
+    })
+    .fail(function() {
+      console.log("error");
+    });
+  });
 });
 </script>
 @endpush

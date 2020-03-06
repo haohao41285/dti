@@ -243,7 +243,7 @@
         columnDefs: [ {'targets': 0, 'searchable': false} ],
        columns: [
 
-                { data: 'id', name: 'id',class:'text-center w-10' },
+                { data: 'id', name: 'id',class:'w-10' },
                 { data: 'ct_salon_name', name: 'ct_salon_name' },
                 { data: 'ct_fullname', name: 'ct_fullname'},
                 { data: 'ct_business_phone', name: 'ct_business_phone' ,class:'text-center'},
@@ -276,7 +276,7 @@
         columnDefs: [ {'targets': 0, 'searchable': false} ],
        columns: [
 
-                { data: 'id', name: 'id',class:'text-center w-10' },
+                { data: 'id', name: 'id',class:'w-10' },
                 { data: 'ct_salon_name', name: 'ct_salon_name' },
                 { data: 'ct_fullname', name: 'ct_fullname'},
                 { data: 'ct_business_phone', name: 'ct_business_phone' ,class:'text-center'},
@@ -489,58 +489,58 @@
 
           $(".modal-content").html(`
              <div class="modal-header">
-        <h5 class="modal-title text-center" id="exampleModalLabel"><b>Edit Customer</b></h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      <div class="modal-body"">
-        <form id="edit-customer-form">
-          <div class="row">
-            <div class="col-md-6">
-              <div class="form-group row">
-                <label class="col-md-4" for="ct_salon_name">Business Name<i class="text-danger">*</i></label>
-                <input type="text" class="col-md-8 form-control form-control-sm" name="ct_salon_name" id="ct_salon_name" value="`+data.ct_salon_name+`" placeholder="">
-                <input type="hidden" name="" id="customer_id" value="`+data.id+`" placeholder="">
-              </div>
-              <div class="form-group row">
-                <label class="col-md-4" for="ct_contact_name">Contact Name<i class="text-danger">*</i></label>
-                <input type="text" class="col-md-8 form-control form-control-sm" name="ct_contact_name" id="ct_contact_name" value="`+data.ct_fullname+`" placeholder="">
-              </div>
-              <div class="form-group row">
-                <label class="col-md-4" for="ct_business_phone">Business Phone<i class="text-danger">*</i></label>
-                <input type="text" class="col-md-8 form-control form-control-sm" onkeypress="return isNumberKey(event)" name="ct_business_phone" id="ct_business_phone" value="`+data.ct_business_phone+`" placeholder="">
-              </div>
-              <div class="form-group row">
-                <label class="col-md-4" for="ct_cell_phone">Cell Phone<i class="text-danger">*</i></label>
-                <input type="text" onkeypress="return isNumberKey(event)" class="col-md-8 form-control form-control-sm" name="ct_cell_phone" id="ct_cell_phone" value="`+data.ct_cell_phone+`" placeholder="">
-              </div>
-              <div class="form-group row">
-                <label class="col-md-4" for="ct_email">Email</label>
-                <input type="text" class="col-md-8 form-control form-control-sm" name="ct_email" id="ct_email" value="`+data.ct_email+`" placeholder="">
-              </div>
+              <h5 class="modal-title text-center" id="exampleModalLabel"><b>Edit Customer</b></h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
             </div>
-            <div class="col-md-6">
-              <div class="form-group row">
-                <label class="col-md-4" for="ct_address">Address</label>
-                <input type="text" class="col-md-8 form-control form-control-sm" name="ct_address" id="ct_address" value="`+data.ct_address+`" placeholder="">
-              </div>
-              <div class="form-group row">
-                <label class="col-md-4" for="ct_website">Website</label>
-                <input type="text" class="col-md-8 form-control form-control-sm" name="ct_website" id="ct_website" value="`+data.ct_website+`" placeholder="">
-              </div>
-              <div class="form-group row">
-                <label class="col-md-4" for="ct_note">Note</label>
-                <textarea class="col-md-8 form-control form-control-sm" name="ct_note" id="ct_note" rows="3" >`+data.ct_note+`</textarea>
-              </div>
-              <div class="form-group float-right">
-                <button type="button" class="btn btn-danger btn-sm" data-dismiss="modal">Cancel</button>
-                <button type="button" class="btn btn-primary btn-sm submit-edit" >Submit</button>
-              </div>
+            <div class="modal-body"">
+              <form id="edit-customer-form">
+                <div class="row">
+                  <div class="col-md-6">
+                    <div class="form-group row">
+                      <label class="col-md-4" for="ct_salon_name">Business Name<i class="text-danger">*</i></label>
+                      <input type="text" class="col-md-8 form-control form-control-sm" name="ct_salon_name" id="ct_salon_name" value="`+data.ct_salon_name+`" placeholder="">
+                      <input type="hidden" name="" id="customer_id" value="`+data.id+`" placeholder="">
+                    </div>
+                    <div class="form-group row">
+                      <label class="col-md-4" for="ct_contact_name">Contact Name<i class="text-danger">*</i></label>
+                      <input type="text" class="col-md-8 form-control form-control-sm" name="ct_contact_name" id="ct_contact_name" value="`+data.ct_fullname+`" placeholder="">
+                    </div>
+                    <div class="form-group row">
+                      <label class="col-md-4" for="ct_business_phone">Business Phone<i class="text-danger">*</i></label>
+                      <input type="text" class="col-md-8 form-control form-control-sm" onkeypress="return isNumberKey(event)" name="ct_business_phone" id="ct_business_phone" value="`+data.ct_business_phone+`" placeholder="">
+                    </div>
+                    <div class="form-group row">
+                      <label class="col-md-4" for="ct_cell_phone">Cell Phone<i class="text-danger">*</i></label>
+                      <input type="text" onkeypress="return isNumberKey(event)" class="col-md-8 form-control form-control-sm" name="ct_cell_phone" id="ct_cell_phone" value="`+data.ct_cell_phone+`" placeholder="">
+                    </div>
+                    <div class="form-group row">
+                      <label class="col-md-4" for="ct_email">Email</label>
+                      <input type="text" class="col-md-8 form-control form-control-sm" name="ct_email" id="ct_email" value="`+data.ct_email+`" placeholder="">
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <div class="form-group row">
+                      <label class="col-md-4" for="ct_address">Address</label>
+                      <input type="text" class="col-md-8 form-control form-control-sm" name="ct_address" id="ct_address" value="`+data.ct_address+`" placeholder="">
+                    </div>
+                    <div class="form-group row">
+                      <label class="col-md-4" for="ct_website">Website</label>
+                      <input type="text" class="col-md-8 form-control form-control-sm" name="ct_website" id="ct_website" value="`+data.ct_website+`" placeholder="">
+                    </div>
+                    <div class="form-group row">
+                      <label class="col-md-4" for="ct_note">Note</label>
+                      <textarea class="col-md-8 form-control form-control-sm" name="ct_note" id="ct_note" rows="3" >`+data.ct_note+`</textarea>
+                    </div>
+                    <div class="form-group float-right">
+                      <button type="button" class="btn btn-danger btn-sm" data-dismiss="modal">Cancel</button>
+                      <button type="button" class="btn btn-primary btn-sm submit-edit" >Submit</button>
+                    </div>
+                  </div>
+                </div>
+              </form>
             </div>
-          </div>
-        </form>
-      </div>
             `);
           $("#viewModal").modal('show');
         }
