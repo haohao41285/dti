@@ -778,6 +778,79 @@ class ReportController extends Controller
             \Log::info($e);
             return response(['status'=>'error','message'=>'Failed! Check again!']);
         }
-        
+    }
+    public function registeringCustomer(){
+        return view('reports.registering-customer');
+    }
+    public function registeringCustomerDataTable(Request $request){
+        $orders = DB::table('web_order')->leftjoin('main_theme',function($join){
+            $join->on('web_order.web_service_id','main_theme.theme_id');
+        })
+        ->leftjoin('web_services',function($join){
+            $join->on('web_order.web_service_id','web_services.web_service_id');
+        })
+        ->leftjoin('main_user',function($join){
+            $join->on('web_order.updated_by','main_user.user_id');
+        });
+        if($request->start_date != "" && $request->end_date != ""){
+            $start_date = format_date_db($request->start_date);
+            $end_date = format_date_db($request->end_date);
+
+            $orders = $orders->whereBetween('web_order.created_at',[$start_date,$end_date]);
+        }
+        if($request->status != ""){
+            $status = $request->status==1?1:0;
+            $orders = $orders->where('web_order.web_order_status',$status);
+        }
+        if($request->type != ""){
+            $orders = $orders->where('web_order.web_order_type',$request->type);
+        }
+
+        $orders = $orders->select('web_order.*','main_theme.*','web_services.*','web_order.created_at as created_order',
+        'web_order.updated_at as updated_order','web_order.updated_by as updated_user','main_user.user_nickname');
+
+        return DataTables::of($orders)
+        ->addColumn('status',function($row){
+            return $row->web_order_status==0?"DONE":"<span class='text-info'>NEW</span>";
+        })
+        ->editColumn('web_service_id',function($row){
+            if($row->web_order_type == 1)
+                return '<a href="'.$row->theme_url.'" target="_blank" >#'.$row->theme_name.'</a>';
+            elseif($row->web_order_type == 2)
+                return "<img style='height: 4rem;' class='service-image' src='".env('URL_FILE_VIEW').$row->web_service_image."' alt=''>";
+        })
+        ->editColumn('web_order_type',function($row){
+            return orderType()[$row->web_order_type];
+        })
+        ->addColumn('customer_information',function($row){
+            return "Customer Name: <b>".$row->customer_name."</b><br>Business Name: <b>".$row->business_name."</b><br>Business Phone: <b>".$row->business_phone."</b><br>Cell Phone: <b>".$row->cell_phone."</b>";
+        })
+        ->editColumn('updated_order',function($row){
+            if(isset($row->updated_user))
+                return $row->updated_order." by ".$row->user_nickname;
+            else
+                return $row->updated_order;
+        })
+        ->editColumn('web_order_status',function($row){
+            if($row->web_order_status == 1)
+            return '<div class="custom-control custom-switch">
+                        <input type="checkbox" checked order="'.$row->web_order_id.'" class="custom-control-input update-order" id="type-'.$row->web_order_id.'" name="">
+                        <label class="custom-control-label" for="type-'.$row->web_order_id.'"></label>
+                    </div>';
+            else return "";
+        })
+        ->rawColumns(['customer_information','web_service_id','status','web_order_status'])
+        ->make(true);
+    }
+    public function registeringCustomerChangeStatus(Request $request){
+        $order_id = $request->order_id;
+        try{
+            DB::table('web_order')->where('web_order_id',$order_id)->update(['web_order_status'=>0,'updated_by'=>Auth::user()->user_id]);
+            return response(['status'=>'success','message'=>'Successfully!']);
+        }
+        catch(\Exception $e){
+            \Log::info($e);
+            return response(['status'=>'error','message'=>'Failed!']);
+        }
     }
 }

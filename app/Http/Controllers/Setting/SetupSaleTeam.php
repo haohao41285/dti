@@ -27,6 +27,25 @@ class SetupSaleTeam extends Controller
             return $row->getFullname();
         })
         ->make(true);
+    }
+    public function save(Request $request){
+        if(!$request->user_id)
+            return response(['status'=>'error','message'=>'Failed!']);
+        $user_update = MainUser::where('user_id',$request->user_id)
+        ->update(['user_phone_call'=>$request->user_phone_call,'user_target_sale'=>$request->user_target_sale]);
 
+        if(!$user_update)
+            return response(['status'=>'error','message'=>'Failed!']);
+
+        return response(['status'=>'success','message'=>'Successfully!']);
+    }
+    public function calendar(Request $request){
+        $today = today(); 
+        $dates = []; 
+
+        for($i=1; $i < $today->daysInMonth + 1; ++$i) {
+            $dates[] = \Carbon\Carbon::createFromDate($today->year, $today->month, $i)->format('F-d-Y');
+        }
+        return $dates;
     }
 }

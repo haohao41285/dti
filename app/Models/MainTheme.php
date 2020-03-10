@@ -53,7 +53,8 @@ class MainTheme extends BaseModel
                     return '<a class="btn btn-sm btn-secondary" target="_blank" href="'.$data->theme_url.'" data-toggle="tooltip" title="Demo"><i class="fas fa-link"></i></a>
                     <a class="btn btn-sm btn-secondary edit" data="'.$data->theme_id.'" href="#" data-toggle="tooltip" title="Edit"><i   class="fas fa-edit"></i></a>
                     <a class="btn btn-sm btn-secondary delete" data="'.$data->theme_id.'" href="#" data-toggle="tooltip" ><i  title="Delete" class="fas fa-trash"></i></a>
-                    <a class="btn btn-sm btn-secondary setup-properties" data="'.$data->theme_id.'" href="#" data-toggle="tooltip" title="Setup properties"><i   class="fas fa-cogs"></i> </a>';
+                    <a class="btn btn-sm btn-secondary setup-properties" data="'.$data->theme_id.'" href="#" data-toggle="tooltip" title="Setup properties"><i   class="fas fa-cogs"></i> </a>
+                    <a class="btn btn-sm btn-secondary add-order" data="'.$data->theme_id.'" href="javascript:void(0)" data-toggle="tooltip" title="Add Order"><i   class="fas fa-plus"></i> </a>';
             })
         ->rawColumns(['theme_image','theme_status','action'])
         ->make(true);

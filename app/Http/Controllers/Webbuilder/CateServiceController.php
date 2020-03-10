@@ -75,7 +75,7 @@ class CateServiceController extends Controller
           $rules = [
                 'cateservice_name' => 'required',
                 'cateservice_image' => 'mimes:jpeg,jpg,png,gif|max:1024', // max 3000kb
-                'cateservice_icon_image' => 'mimes:jpeg,jpg,png,gif|max:1024', // max 3000kb
+                'cateservice_icon_image' => 'mimes:jpeg,svg,jpg,png,gif|max:1024', // max 3000kb
                 // 'cateservice_description' => 'required'
           ];
           $messages = [

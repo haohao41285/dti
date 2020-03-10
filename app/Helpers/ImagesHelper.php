@@ -142,7 +142,7 @@ class ImagesHelper
           $tmpUpload = "tmp-upload/".$filename;
 
           self::sendRequestToApi($tmpUpload,$filename,$pathImage);
-          unlink("tmp-upload/".$filename);
+          // unlink("tmp-upload/".$filename);
 
           return $pathImage.$filename;
     }
@@ -171,7 +171,7 @@ class ImagesHelper
     public static function uploadImageDropZone_get_path($file , $folder_upload , $place_ip_license)
     {     
           $pathFile   = config('app.url_file_write');
-          $name = preg_replace("/[^A-Za-z0-9\-]\./",'_',$file->getClientOriginalName());
+          $name = strtotime('now').'-'.preg_replace("/[^A-Za-z0-9\-]\./",'_',$file->getClientOriginalName());
           $pathImage = '/images/'.$place_ip_license.'/website/'.$folder_upload.'/';
 
           if (!file_exists($pathFile.$pathImage)) {
@@ -182,7 +182,7 @@ class ImagesHelper
           $tmpUpload = "tmp-upload/".$name;
 
           self::sendRequestToApi($tmpUpload,$name,$pathImage);
-          unlink("tmp-upload/".$name);
+          // unlink("tmp-upload/".$name);
           
           return $pathImage.$name;
     }

@@ -16,7 +16,7 @@
 				      <a class="nav-link active service_categories" data-toggle="tab" href="#service_categories">Service Categories</a>
 				    </li>
 				    <li class="nav-item">
-				      <a class="nav-link service-nav services" data-toggle="tab" href="#services">Servivce</a>
+				      <a class="nav-link service-nav services" data-toggle="tab" href="#services">Services</a>
 				    </li>
 				    <li class="nav-item">
 				      <a class="nav-link menu-nav menus" data-toggle="tab" href="#menus">Menus</a>

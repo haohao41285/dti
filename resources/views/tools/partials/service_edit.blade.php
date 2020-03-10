@@ -194,7 +194,8 @@
                     @foreach(explode(";",$service_item->service_list_image) as $key => $image)
                         @if($image)
                             <span id="{{$key}}">
-                            <image class="img-rounded" style="max-width:100px;max-height:100px" src={{config('app.url_file_view').$image}}><i class="fa fa-times text-danger"  onclick="remove_image('{{$image}}','{{$key}}','{{$id}}',event)"  style="position: relative;z-index:1111;top: -30px;right: 9px"></i></image>
+                            {{-- <img class="img-rounded" style="max-width:100px;max-height:100px" src={{config('app.url_file_view').$image}}><i class="fa fa-times text-danger"  onclick="remove_image('{{$image}}','{{$key}}','{{$id}}',event)"  style="position: relative;z-index:1111;top: -30px;right: 9px"></i> --}}
+                            <iframe class="img-rounded" style="max-width:100px;max-height:100px" src={{config('app.url_file_view').$image}}></iframe>
                             </span>
                         @endif
                     @endforeach
@@ -219,7 +220,7 @@
             <label class="col-sm-3 col-md-2">&nbsp;</label>
              <div class="col-sm-5 col-md-4">
                   <button id="submit" class="btn btn-sm btn-primary" >SUBMIT</button>
-                  <button class="btn btn-sm btn-default" onclick="window.location='{{route('places.services')}}'" type="reset">CANCEL</button>
+                  <button class="btn btn-sm btn-danger"  onclick="window.location='{{route('place.webbuilder',Session::get('place_id'))}}'"  type="reset">CANCEL</button>
              </div>
        </div>           
     </form>

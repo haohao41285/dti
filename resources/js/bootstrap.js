@@ -34,10 +34,6 @@
 
  window.iCheck = require('icheck');
 
- window.Dropzone = require('dropzone');
-
- window.iCheck = require('icheck');
-
  window.select2 = require('select2');
 
 

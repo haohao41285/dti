@@ -8007,10 +8007,6 @@ window.Dropzone = __webpack_require__("./node_modules/dropzone/dist/dropzone.js"
 
 window.iCheck = __webpack_require__("./node_modules/icheck/icheck.js");
 
-window.Dropzone = __webpack_require__("./node_modules/dropzone/dist/dropzone.js");
-
-window.iCheck = __webpack_require__("./node_modules/icheck/icheck.js");
-
 window.select2 = __webpack_require__("./node_modules/select2/dist/js/select2.js");
 
 /**

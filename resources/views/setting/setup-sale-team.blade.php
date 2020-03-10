@@ -3,6 +3,31 @@
     SETUP SALE TEAM
 @stop
 @section('content')
+
+{{-- MODAL FOR SETUP calendar --}}
+<div class="modal fade" id="calendar-modal">
+    <div class="modal-dialog modal-lg" style="max-width:90%">
+      <div class="modal-content">
+      
+        <!-- Modal Header -->
+        <div class="modal-header">
+          <h4 class="modal-title">Modal Heading</h4>
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+        </div>
+        
+        <!-- Modal body -->
+        <div class="modal-body">
+            <div class="calendar-box"></div>
+        </div>
+        
+        <!-- Modal footer -->
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        </div>
+        
+      </div>
+    </div>
+  </div>
 <div class="col-12 row">
     <div class="col-md-8">
         <div class="card shadow mb-3 ">
@@ -27,21 +52,25 @@
     <div class="col-md-4 ">
         <div class="card shadow mb-3 ">
             <div class="card-header py-2">
-                <h6 class="m-0 font-weight-bold text-primary">Add Team Type</h6>
+                <h6 class="m-0 font-weight-bold text-primary">Edit Seller</h6>
             </div>
             <div class="card-body">
-                <form>
+                <form id="seller-form">
                     <div class="form-group">
-                        <label for="">Target</label>
-                        <input type="text" class="form-control form-control-sm" name="user_target_sale" id="user_target_sale">
+                        <label for="">User</label>
+                        <input type="text" class="form-control form-control-sm" disabled name="" id="fullname">
+                    </div>
+                    <div class="form-group">
+                        <label for="">Target(per day)</label>
+                        <input type="text" class="form-control form-control-sm" onkeypress="return isNumberKey(event)" name="user_target_sale" id="user_target_sale">
                     </div>
                     <div class="form-group">
                         <label for="">Phone</label>
-                        <input type="text" class="form-control form-control-sm" name="use_phone_call" id="use_phone_call">
+                        <input type="text" class="form-control form-control-sm" name="user_phone_call" id="user_phone_call">
                     </div>
                     <div class="form-group">
                         <button type="button" class="btn btn-sm btn-danger float-right cancel-tt ml-2">Cancel</button>
-                        <button type="button" class="btn btn-sm btn-primary float-right submit-tt">Submit</button>
+                        <button type="button" class="btn btn-sm btn-primary float-right submit-tt" style="display:none">Submit</button>
                     </div>
                 </form>
             </div>
@@ -62,7 +91,12 @@ $(document).ready(function($) {
         processing: true,
         serverSide: true,
         autoWidth: true,
-        buttons: [],
+        buttons: [
+            {
+                text: '<i class="fas fa-calendar"></i> Calendar',
+                className: "btn-calendar btn btn-sm btn-info",
+            }
+        ],
         ajax: { url: "{{route('setting.sale_team.datatable')}}" },
         columns: [
             { data: 'user_id', name: 'user_id', class: 'text-center' },
@@ -77,41 +111,37 @@ $(document).ready(function($) {
 
         $("#user_target_sale").val(dataTable.row(this).data()['user_target_sale']);
         $("#user_phone_call").val(dataTable.row(this).data()['user_phone_call']);
+        $("#fullname").val(dataTable.row(this).data()['fullname']);
         $(".tt-tip").text("Edit Seller");
-        id = dataTable.row(this).data()['id'];
         user_id = dataTable.row(this).data()['user_id'];
-
+        $('.submit-tt').css('display','');
+    
     });
     $(document).on('click', '.submit-tt', function() {
 
         let formData = new FormData($(this).parents('form')[0]);
         formData.append('_token','{{csrf_token()}}');
+        formData.append('user_id',user_id);
         $.ajax({
             url: '{{route('setting.sale_team.save')}}',
-            type: 'GET',
+            type: 'POST',
             dataType: 'html',
-            processing: false,
-            cacheData: fale,
+            processData: false,
+            contentType: false,
             data:formData,
         })
         .done(function(data) {
             data = JSON.parse(data);
-            if (data.status === 'error') {
-                if(typeof(data.message) === 'string' )
-                    toastr.error(data.message);
-                else{
-                    $.each(data.message,function (ind,val) {
-                        toastr.error(val);
-                    });
-                }
-            } else {
+            if (data.status === 'error')
+                toastr.error(data.message);
+            else {
                 clearView();
-                dataTable.draw();
+                dataTable.ajax.reload( null, false )
+                toastr.success(data.message);
             }
         })
         .fail(function(xhr, ajaxOptions, thrownError) {
             toastr.error('Error!');
-            // console.log(thrownError + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText);
         });
     });
     $(".cancel-tt").click(function() {
@@ -119,42 +149,22 @@ $(document).ready(function($) {
     })
 
     function clearView() {
-        $(".tt-tip").text("Add Team Type");
-        $("#team_type_description").val("");
-        $("#team_type_name").val("");
-        id = 0;
+        $("#seller-form")[0].reset();
+        $(".submit-tt").css('display','none');
     }
-    $(document).on("click", ".delete-tt", function() {
-        
-        if (confirm("Do you want to delete this team type?")) {
-
-            var tt_id = $(this).attr('tt_id');
-
-            $.ajax({
-                    url: '{{route('delete-team-type')}}',
-                    type: 'GET',
-                    dataType: 'html',
-                    data: { 
-                        tt_id: tt_id,
-                        old_team_type_name: old_team_type_name
-                    },
-                })
-                .done(function(data) {
-                    data = JSON.parse(data);
-                    if (data.status == 'error')
-                        toastr.error(data.message);
-                    else {
-                        toastr.success(data.message);
-                        dataTable.draw();
-                        clearView();
-                    }
-                })
-                .fail(function() {
-                    console.log("error");
-                });
-
-        }
-    })
+    $(document).on('click','.btn-calendar',function(){
+        $.ajax({
+            type: 'GET' ,
+            url: "{{route('setting.sale_team.calendar')}}",
+            data: "data",
+            dataType: "html",
+            success: function (data) {
+                console.log(data);
+            },
+            
+        });
+        $("#calendar-modal").modal('show');
+    });
 });
 
 </script>

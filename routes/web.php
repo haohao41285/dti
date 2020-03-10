@@ -216,6 +216,17 @@ Route::group(['middleware' => ['auth']], function () {
             Route::post('/delete', "AppBackgroundController@delete")->name('appBackground.delete');
 
         });
+         Route::group(['prefix' => 'web-service'], function() {
+            Route::get('/', "DesignController@index")->name('web_service.index');
+            Route::get('/datatable', "DesignController@datatable")->name('web_service.datatable');
+            Route::post('/save', "DesignController@save")->name('web_service.save');
+            Route::get('/edit/{id}', "DesignController@edit")->where(['id=>[0-9]+'])->name('web_service.edit');
+            Route::post('/upload-multi-image', "DesignController@uploadMultiImages")->name('web_service.upload_multi_image');
+            Route::post('/delete-service', "DesignController@deleteService")->name('web_service.delete_service');
+            Route::post('/delete', "DesignController@delete")->name('web_service.delete');
+            Route::get('/change-status', "DesignController@changeStatus")->name('web_service.change_status');
+
+        });
     });
     Route::group(['prefix'=>'tools','namespace'=>'Webbuilder'],function(){
 
@@ -372,6 +383,8 @@ Route::group(['middleware' => ['auth']], function () {
         Route::group(['prefix' => 'setup-sale-team'], function() {
             Route::get('/', 'SetupSaleTeam@index')->name('setting.sale_team.index');
             Route::get('datatable', 'SetupSaleTeam@datatable')->name('setting.sale_team.datatable');
+            Route::post('save', 'SetupSaleTeam@save')->name('setting.sale_team.save');
+            Route::get('calendar', 'SetupSaleTeam@calendar')->name('setting.sale_team.calendar');
         });
         Route::get('menu-app','SetupServiceController@menuApp')->name('get_menu_app');
     });
@@ -521,6 +534,11 @@ Route::group(['middleware' => ['auth']], function () {
             Route::get('datatable', 'ReportController@ratingCustomerDataTable')->name('report.rating-customer.datatable');
             Route::get('export', 'ReportController@reviewsExport')->name('report.reviews.export');
             Route::get('review-today', 'ReportController@reviewsToday')->name('report.reviews.review_today');
+        });
+        Route::group(['prefix' => 'registering-customer'], function () {
+            Route::get('/', 'ReportController@registeringCustomer')->name('report.registering-customer');
+            Route::get('datatable', 'ReportController@registeringCustomerDataTable')->name('report.registering-customer.datatable');
+            Route::get('change-status', 'ReportController@registeringCustomerChangeStatus')->name('report.registering-customer.change-status');
         });
     });
 });

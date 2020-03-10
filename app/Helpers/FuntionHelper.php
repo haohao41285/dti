@@ -116,4 +116,10 @@ function yesNo(){
         2 => 'Không'
     ];
 }
+function orderType(){
+    return [
+        1 => 'Website',
+        2 => 'Design',
+    ];
+}
 ?>
