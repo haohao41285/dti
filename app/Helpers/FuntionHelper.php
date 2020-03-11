@@ -122,4 +122,7 @@ function orderType(){
         2 => 'Design',
     ];
 }
+function dayOfWeek(){
+    return [ 'Monday','Tuesday','Wednesday','Thursday', 'Friday','Saturday','Sunday' ];
+}
 ?>

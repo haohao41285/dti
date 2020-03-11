@@ -39,13 +39,34 @@ class SetupSaleTeam extends Controller
 
         return response(['status'=>'success','message'=>'Successfully!']);
     }
-    public function calendar(Request $request){
-        $today = today(); 
-        $dates = []; 
+    public function datatableTeam(Request $request){
+        $teams = MainTeam::active()->with('getTeamType');
+        return DataTables::of($teams)
+        ->addColumn('team_type',function($row){
+            return $row->getTeamType->team_type_name;
+        })
+        ->make(true);
+    }
+    function saveTeam(Request $request){
 
-        for($i=1; $i < $today->daysInMonth + 1; ++$i) {
-            $dates[] = \Carbon\Carbon::createFromDate($today->year, $today->month, $i)->format('F-d-Y');
+        if( isset($request->other_date) && count(array_filter($request->other_date) ) > 0 ){
+            $other_date = implode(';', array_filter(array_filter($request->other_date)) );
+        }else
+        $other_date = "";
+
+        if( isset($request->sale_date) && count(array_filter($request->sale_date)) )
+            $sale_date = implode(';',array_filter($request->sale_date) );
+        else
+            $sale_date = '';
+
+        try{
+            MainTeam::find($request->team_id)->update(['sale_date'=>$sale_date,'other_date'=>$other_date]);
+            return response(['status'=>'success','message'=>'Successfully!']);
+        }catch(\Exception $e){
+            \Log::info($e);
+            return response(['status'=>'error','message'=>'Failed!']);
         }
-        return $dates;
+            
+        return $request->all();
     }
 }

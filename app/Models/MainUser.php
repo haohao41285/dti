@@ -32,7 +32,8 @@ class MainUser extends Model
         'user_customer_list',
         'user_birthdate',
         'user_team',
-        'user_phone_call'
+		'user_phone_call',
+		'user_phone_log', // for save log phone call sale
 	];
 
 	protected $guarded = [];

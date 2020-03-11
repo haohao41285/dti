@@ -91,6 +91,26 @@
                     </div>
                 </div>
             </form>
+            <div class="row">
+                @for($i=1;$i<32;$i++)
+                @if($i%3)
+                    <div class="text-center m-1 date" style="width:50px;line-height:30px;border:1px solid black">
+                        <div class="bg-primary text-white">{{$i}}</div>
+                        30
+                    </div>
+                @elseif($i%2)
+                    <div class="text-center m-1 date" style="width:50px;line-height:30px;border:1px solid black">
+                        <div class="bg-secondary text-white">{{$i}}</div>
+                        30
+                    </div>
+                @else
+                    <div class="text-center m-1 date" style="width:50px;line-height:30px;border:1px solid black">
+                        <div class="bg-danger text-white">{{$i}}</div>
+                        30
+                    </div>
+                @endif
+                @endfor
+            </div>
             <div class="content-call-log">
             </div>
         </div>

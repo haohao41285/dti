@@ -746,21 +746,6 @@ class ReportController extends Controller
         // return md5('u843787VaP33675517hd1B8D'.'2020-02-25'.'2020-02-29'.'In,Out,Internal '.'909');
         // $signature = '5b77ba6d004b711f461ffaf598d432b1';
 
-        // $client = new Client;
-        // $response = $client->request('GET', env('CALL_LOG_URL').'?Signature=5b77ba6d004b711f461ffaf598d432b1&FromDate=2020-02-25%2000:00:00&ToDate=2020-02-29%2023:00:00&InOutInternal=In,Out&Extension=908');
-        // $body = (string)$response->getBody();
-
-        // $path = 'app/trash.xml';
-
-        // if( is_file(storage_path($path) ) )
-        // \Storage::delete($path);
-        // file_put_contents(storage_path($path), $body);
-
-        // $xml = simplexml_load_file(storage_path($path));
-        // echo $xml->table1[0]->id;
-
-        // return response(['status'=>'success','data'=>$body]);
-
         $key = env('CALL_LOG_KEY');
         $from_date = Carbon::parse($request->from_date)->format('Y-m-d');
         $to_date = Carbon::parse($request->to_date)->format('Y-m-d');

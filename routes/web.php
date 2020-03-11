@@ -384,7 +384,8 @@ Route::group(['middleware' => ['auth']], function () {
             Route::get('/', 'SetupSaleTeam@index')->name('setting.sale_team.index');
             Route::get('datatable', 'SetupSaleTeam@datatable')->name('setting.sale_team.datatable');
             Route::post('save', 'SetupSaleTeam@save')->name('setting.sale_team.save');
-            Route::get('calendar', 'SetupSaleTeam@calendar')->name('setting.sale_team.calendar');
+            Route::get('datatable-team', 'SetupSaleTeam@datatableTeam')->name('setting.sale_team.datatable_teams');
+            Route::post('save-team', 'SetupSaleTeam@saveTeam')->name('setting.sale_team.save_team');
         });
         Route::get('menu-app','SetupServiceController@menuApp')->name('get_menu_app');
     });
