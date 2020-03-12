@@ -67,7 +67,6 @@ class OrdersController extends Controller
 
     public function getMyOrders()
     {
-
         if (Gate::denies('permission', 'my-orders-read'))
             return doNotPermission();
 
@@ -990,7 +989,10 @@ class OrdersController extends Controller
         if($status_update == 4){
 
             $token = csrf_token();
-            $url = Bitly::getUrl(route('customer_rating.index',$token));
+            // $url = Bitly::getUrl(route('customer_rating.index',$token));
+            //Make url shorten
+            $url = json_decode(GeneralHelper::getShortenUrl(route('customer_rating.index',$token)),TRUE)['data']['shortenUrl'];
+
             $order_info = MainComboServiceBought::find($order_id);
             $customer_info = $order_info->getCustomer;
 

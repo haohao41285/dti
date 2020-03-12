@@ -11,6 +11,7 @@ use Auth;
 use Validator;
 use Gate;
 use Bitly;
+use App\Helpers\GeneralHelper;
 
 class SetupSmsController extends Controller
 {
@@ -91,7 +92,8 @@ class SetupSmsController extends Controller
         if(!$link || $link == "")
             return response(['status'=>'error','message'=>'Failed! Choose Link Please!']);
 
-        $url = Bitly::getUrl($link);
+		// $url = Bitly::getUrl($link);
+		$url = json_decode(GeneralHelper::getShortenUrl($link),TRUE)['data']['shortenUrl'];
 
         return response(['url'=>$url]);
     }

@@ -19,6 +19,7 @@ class Kernel extends ConsoleKernel
         Commands\SendEventCskhCron::class,
         Commands\ReviewNotificationCron::class,
         Commands\SendSmsCron::class,
+        Commands\SaveNumberCallOfDay::class,
     ];
 
     /**
@@ -44,6 +45,9 @@ class Kernel extends ConsoleKernel
             //SEND REVIEW NOTIFICATION FOR EVERY MONTH
         $schedule->command('command:reviewNotification')
         ->dailyAt('08:00')->withoutOverlapping();
+            //AUTO GET SELLER'S NUMBER CALL LOG
+        $schedule->command('SaveNumberCallOfDay')
+        ->dailyAt('12:00')->withoutOverlapping();
 
         $schedule->command('command:sendSmsCron')
                  ->everyMinute()->withoutOverlapping();

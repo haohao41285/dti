@@ -20,7 +20,7 @@ class SetupSaleTeam extends Controller
     }
     public function datatable(Request $request){
         //GET TEAM SALE
-        $team_type_id = MainTeamType::where('team_type_name','Telesale MKT')->first()->id;
+        $team_type_id = MainTeamType::where('team_type_name','Telesale')->first()->id;
         $team_id = MainTeam::select('id')->where('team_type',$team_type_id)->get()->toArray();
         $team_id_array = array_values($team_id);
         //GET SELLERS

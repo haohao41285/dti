@@ -1,6 +1,7 @@
 <?php
-namespace App\Helpers;
 
+namespace App\Helpers;
+use GuzzleHttp\Client;
 
 class GeneralHelper{
     public static function getCustomerStatus($status_id){
@@ -113,5 +114,26 @@ class GeneralHelper{
 
         $result = curl_exec($curl);
         curl_close($curl);
+    }
+    public static function getShortenUrl($url){
+        $client = new Client;
+        $response = $client->request('POST', env('SHORTEN_URL'),
+          [
+                'multipart' => [
+                      [
+                          'name'     => 'url',
+                          'contents' => $url,
+                      ],
+                      [
+                          'name'     => 'token',
+                          'contents' => env('SHORTEN_KEY'),
+                      ]
+                  ],
+                  'headers' => [
+                      'Authorization' => 'Bearer '.env('SHORTEN_KEY'),
+                  ],
+          ]);
+        $body = (string)$response->getBody();
+        return $body;
     }
 }

@@ -293,7 +293,7 @@ class SetupTeamController  extends Controller
 		$slug = str_replace('-', '_', str_slug($team_type_name));
 		$old_team_type_name = $request->old_team_type_name;
 
-		if($old_team_type_name == 'CSKH' || $old_team_type_name == 'Telesale MKT' || $old_team_type_name == 'Review'){
+		if($old_team_type_name == 'CSKH' || $old_team_type_name == 'Telesale' || $old_team_type_name == 'Review'){
 			return response(['status'=>'error','message'=>'Can NOT change name this type!']);
 		}
 
