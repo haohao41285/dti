@@ -369,6 +369,7 @@ class PlaceController extends Controller
         $place_ip_license = PosPlace::where('place_id',$place_id)->first()->place_ip_license;
         Session::put('place_id',$place_id);
         Session::put('place_ip_license',$place_ip_license);
+        $data['cateservices'] = DB::table('pos_cateservice')->where([['cateservice_place_id',$place_id],['cateservice_status',1]])->get();
         return view('tools.webbuilder',$data);
     }
 

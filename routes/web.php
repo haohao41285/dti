@@ -523,6 +523,7 @@ Route::group(['middleware' => ['auth']], function () {
             Route::get('datatable', 'ReportController@sellersDataTable')->name('report.sellers.datatable');
             Route::get('export', 'ReportController@sellerExport')->name('report.sellers.export');
             Route::post('get-history-call','ReportController@getHistoryCall')->name('report.sellers.call_history');
+            Route::post('log-list','ReportController@logList')->name('report.sellers.log_list');
         });
         Route::group(['prefix' => 'reviews'], function () {
             Route::get('/', 'ReportController@reviews')->name('report.reviews');

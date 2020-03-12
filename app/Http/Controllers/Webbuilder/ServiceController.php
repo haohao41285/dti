@@ -50,7 +50,7 @@ class ServiceController extends Controller
             ->where('pos_service.service_place_id',$place_id)
             ->where('pos_service.service_status',1);
 
-        if($service_cate>0){
+        if($service_cate > 0){
 
            $servicelist->where('pos_service.service_cate_id',$service_cate);
         }
@@ -68,13 +68,13 @@ class ServiceController extends Controller
 
         return Datatables::of($servicelist)
 
-            ->editColumn('service_id', function ($row) 
-            {
-                return '<div class="custom-control custom-checkbox mb-3">
-                    <input type="checkbox" class="custom-control-input delete" value="'.$row->service_id.'" id="a'.$row->service_id.'" name="delete[]">
-                    <label class="custom-control-label" for="a'.$row->service_id.'">'.$row->service_id.'</label>
-                  </div>';
-            })
+            // ->editColumn('service_id', function ($row) 
+            // {
+            //     return '<div class="custom-control custom-checkbox mb-3">
+                    
+            //         <label class="custom-control-label" for="a'.$row->service_id.'">'.$row->service_id.'</label>
+            //       </div>';
+            // })
             ->editColumn('service_name', function ($row) use ($place_id)
             {
                 return '<a href="'.route('places.service.edit',[$place_id,$row->service_id]).'" >'.$row->service_name.'</a>';

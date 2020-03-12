@@ -114,73 +114,70 @@
         ]
     });
 		servicesTable = $('#services_datatable').DataTable({
-             // dom: "lBfrtip",
-          serverSide: true,
-        	responsive:false,
-          order:[[0,'desc']],
-          buttons: [
-                {
-                    text: '<i class="fa fa-trash"></i> Delete More',                    
-                    className: "btn-sm delete_service_more",
-                    
-                },
-                {
-                    text: '<i class="fa fa-plus "></i> Add New',                    
-                    className: "btn-sm btn-add",
-                    action: function ( e, dt, node, config ) {
-                        document.location.href = "{{ route('places.service.edit',$place_id) }}";
-                    }
-                },
-                {
-                    text: '<i class="fa fa-file-import"></i> Import',
-                    className: 'btn-sm',
-                    action: function ( e, dt, node, config ) {
-                        document.location.href = "{{ route('places.service.import') }}";
-                    }
-                },
-                {
-                    text: '<i class="fa fa-file-export"></i> Export',
-                    className: 'btn-sm',
-                    action: function ( e, dt, node, config ) {
-                        document.location.href = "{{ route('places.service.export') }}";
-                    }
+        processing: true,
+        serverSide: true,
+        buttons: [
+            {
+                text: '<i class="fa fa-trash"></i> Delete More',                    
+                className: "btn-sm delete_service_more",
+                
+            },
+            {
+                text: '<i class="fa fa-plus "></i> Add New',                    
+                className: "btn-sm btn-add",
+                action: function ( e, dt, node, config ) {
+                    document.location.href = "{{ route('places.service.edit',$place_id) }}";
                 }
-             ],
-             columnDefs: [
-             ],
-             ajax:{ url:"{{ route('places.services') }}",
-                 data: function (d) {
-                        d.search_service_cate = $('#search_service_cate :selected').val();
-                        d.search_service_status = $('#search_service_status :selected').val();
-                        d.search_service_booking = $('#search_service_booking :selected').val();
-                        d.place_id = place_id;
-                    }
-                  },
-                 columns: [
-
-                          // { data: 'delete', name: 'delete' },
-                          { data: 'service_id', name: 'service_id',class:'text-center' },
-                          { data: 'cateservice_name', name: 'cateservice_name' , searchable: false ,class:'text-left'},
-                          { data: 'service_name', name: 'service_name' ,class:'text-left'},
-                          { data: 'service_price', name: 'service_price',class:'text-right' },
-                          { data: 'service_duration', name: 'service_duration',class:'text-right' },
-                          { data: 'service_index', name: 'service_index',class:'text-right'},
-                          { data: 'action1' , name: 'action1',  orderable: false, searchable: false, class:'text-center' },
-                          { data: 'action2' , name: 'action2',  orderable: false, searchable: false,class:'text-center' },
-                          { data: 'updated_at', name: 'updated_at',class:'text-center'},
-                          { data: 'action' , name: 'action',  orderable: false, searchable: false, class:'text-center' }
-                ],
-                fnDrawCallback:function (oSettings) {
-                    var elems = Array.prototype.slice.call(document.querySelectorAll('.js-switch'));
-                    elems.forEach(function (html) {
-                        var switchery = new Switchery(html, {
-                            color: '#0874e8',
-                            className : 'switchery switchery-small'
-                        });
-                    });
+            },
+            {
+                text: '<i class="fa fa-file-import"></i> Import',
+                className: 'btn-sm',
+                action: function ( e, dt, node, config ) {
+                    document.location.href = "{{ route('places.service.import') }}";
                 }
-                                       
-        });
+            },
+            {
+                text: '<i class="fa fa-file-export"></i> Export',
+                className: 'btn-sm',
+                action: function ( e, dt, node, config ) {
+                    document.location.href = "{{ route('places.service.export') }}";
+                }
+            }
+          ],
+          ajax:{ url:"{{ route('places.services') }}",
+              data: function (d) {
+              d.search_service_cate = $('#search_service_cate :selected').val();
+              d.search_service_status = $('#search_service_status :selected').val();
+              d.search_service_booking = $('#search_service_booking :selected').val();
+          }
+          },
+          'columnDefs': [{
+          'targets': 0,
+          'checkboxes': {
+              'selectRow': true
+          }
+          }],
+          'select': {
+              'style': 'multi'
+          },
+          columns: [
+              // { data: 'delete', name: 'delete' },
+              { data: 'service_id', name: 'service_id',class:'text-center' },
+              { data: 'service_id', name: 'service_id',class:'text-center' },
+              { data: 'cateservice_name', name: 'cateservice_name' , searchable: false ,class:'text-left'},
+              { data: 'service_name', name: 'service_name' ,class:'text-left'},
+              { data: 'service_price', name: 'service_price',class:'text-right' },
+              { data: 'service_duration', name: 'service_duration',class:'text-right' },
+              { data: 'service_index', name: 'service_index',class:'text-right'},
+              { data: 'action1' , name: 'action1',  orderable: false, searchable: false, class:'text-center' },
+              { data: 'action2' , name: 'action2',  orderable: false, searchable: false,class:'text-center' },
+              { data: 'updated_at', name: 'updated_at',class:'text-center'},
+              { data: 'action' , name: 'action',  orderable: false, searchable: false, class:'text-center' }
+          ],                       
+      });
+      $(document).on('click','#search-service',function(){
+        servicesTable.draw();
+      });
 
      /* $(".service-nav").click(function(){
         servicesTable.ajax.reload(null,false);
@@ -479,8 +476,8 @@
       $(document).on('click','.delete_service_more',function(){
 
         service_id_array = [];
-        $('.delete:checkbox:checked').each(function(i){
-          service_id_array.push($(this).val());
+        $('tr.selected>td>input[type="checkbox"]').each(function(i){
+          service_id_array.push($(this).parent().next().text());
         });
 
         if(service_id_array.length === 0){
@@ -514,7 +511,7 @@
                 toastr.error(data.message);
               else if(data.status === 'success'){
                 toastr.success(data.message);
-                table_list.draw();
+                servicesTable.ajax.reload(null,false);
               }else {
                 toastr.error('Failed!');
               }

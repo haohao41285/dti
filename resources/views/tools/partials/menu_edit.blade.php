@@ -128,6 +128,7 @@
 <script type="text/javascript">
     $(document).ready(function() {
         $("#description").summernote({
+            height: 150,
             toolbar: [
                 // [groupName, [list of button]]
                 ['style', ['bold', 'italic', 'underline', 'clear']],

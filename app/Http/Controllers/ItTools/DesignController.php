@@ -9,12 +9,16 @@ use DB;
 use App\Models\WebService;
 use App\Models\WebServiceType;
 use App\Helpers\ImagesHelper;
+use Gate;
 
 
 class DesignController extends Controller
 {
     public function index(){
-        return view('tools.design-image');
+        if(Gate::allows('permission','web-service'))
+            return view('tools.design-image');
+        else
+            return doNotPermission();
     }
     public function datatable(Request $request){
         $web_services = DB::table('web_service_types');

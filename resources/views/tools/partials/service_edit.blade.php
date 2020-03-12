@@ -343,16 +343,17 @@ $(document).ready(function() {
     });
 
     $('#message').summernote({
+        height: 150,   //set editable area's height
         toolbar: [
-        // [groupName, [list of button]]
-        ['style', ['bold', 'italic', 'underline', 'clear']],
-        ['font', ['strikethrough', 'superscript', 'subscript']],
-        ['fontsize', ['fontsize']],
-        ['color', ['color']],
-        ['para', ['ul', 'ol', 'paragraph']],
-        ['height', ['height']],
-        ['codeview']
-      ],
+            // [groupName, [list of button]]
+            ['style', ['bold', 'italic', 'underline', 'clear']],
+            ['font', ['strikethrough', 'superscript', 'subscript']],
+            ['fontsize', ['fontsize']],
+            ['color', ['color']],
+            ['para', ['ul', 'ol', 'paragraph']],
+            ['height', ['500px']],
+            ['codeview']
+        ],
     });
      if ($("input.checkFlat")[0]) {
         $('input.checkFlat').iCheck({

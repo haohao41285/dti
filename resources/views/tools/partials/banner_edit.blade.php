@@ -115,6 +115,7 @@ $(document).ready(function() {
 
     }
     $('textarea.texteditor').summernote({
+        height: 150,
         toolbar: [
         // [groupName, [list of button]]
         ['style', ['bold', 'italic', 'underline', 'clear']],

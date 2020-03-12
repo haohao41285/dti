@@ -8,11 +8,15 @@ use App\Models\MainUser;
 use App\Models\MainTeamType;
 use App\Models\MainTeam;
 use DataTables;
+use Gate;
 
 class SetupSaleTeam extends Controller
 {
     public function index(){
-        return view('setting.setup-sale-team');
+        if(Gate::allows('permission','setup-sale-team'))
+            return view('setting.setup-sale-team');
+        else
+            return doNotPermission();
     }
     public function datatable(Request $request){
         //GET TEAM SALE

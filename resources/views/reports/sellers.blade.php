@@ -4,6 +4,14 @@
 @endsection
 @push('styles')
 <style type="text/css" media="screen">
+    .date{
+        width:40px;
+        line-height:30px;
+        border:1px solid #ebecef;
+        border-radius: 5px 5px;
+        box-shadow: 5px 5px #c1c0c0;
+        font-size: 14px;
+    }
     .loader {
           border: 8px solid #f3f3f3;
           border-radius: 50%;
@@ -59,9 +67,9 @@
                     </div>
                     <div class="col-md-3">
                         <label for="">Seller</label>
-                        <select name="extension" id="seller_id" class="form-control form-control-sm">
+                        <select name="extension" id="seller_id" onchange="getLogList()" class="form-control form-control-sm">
                             @foreach($sellers as $seller)
-                                <option value="{{$seller->user_phone_call}}">{{$seller->getFullname()."(".$seller->user_nickname.")"}}</option>
+                                <option value="{{$seller->user_phone_call}}" user-id={{$seller->user_id}}>{{$seller->getFullname()."(".$seller->user_nickname.")-".$seller->user_target_sale}}</option>
                             @endforeach
                         </select>
                     </div><div class="col-md-3">
@@ -80,9 +88,6 @@
                               <label class="custom-control-label" for="Internal">Internal</label>
                             </div>
                         </div>
-                            
-
-
                     </div>
                     <div class="col-2 " style="position: relative;">
                         <div style="position: absolute;top: 50%;" class="">
@@ -91,25 +96,8 @@
                     </div>
                 </div>
             </form>
-            <div class="row">
-                @for($i=1;$i<32;$i++)
-                @if($i%3)
-                    <div class="text-center m-1 date" style="width:50px;line-height:30px;border:1px solid black">
-                        <div class="bg-primary text-white">{{$i}}</div>
-                        30
-                    </div>
-                @elseif($i%2)
-                    <div class="text-center m-1 date" style="width:50px;line-height:30px;border:1px solid black">
-                        <div class="bg-secondary text-white">{{$i}}</div>
-                        30
-                    </div>
-                @else
-                    <div class="text-center m-1 date" style="width:50px;line-height:30px;border:1px solid black">
-                        <div class="bg-danger text-white">{{$i}}</div>
-                        30
-                    </div>
-                @endif
-                @endfor
+            <div class="row py-2 px-2" id="log_list">
+                
             </div>
             <div class="content-call-log">
             </div>
@@ -171,6 +159,7 @@
 @endsection
 @push('scripts')
     <script type="text/javascript">
+    getLogList();
         $(document).ready(function() {
             $("#created_at,#from_to_date").datepicker({});
             var table = $('#dataTableAllService').DataTable({
@@ -233,8 +222,8 @@
             $("#search_call_log").click(function(){
 
                 var formData = new FormData($(this).parents('form')[0]);
-                formData.append('_token','{{ csrf_token() }}');
 
+                formData.append('_token','{{ csrf_token() }}');
                 ableProcessingLoader();
 
                 $.ajax({
@@ -333,5 +322,26 @@
                 $("#content").css('opacity',1);
             }
         });
+            function getLogList(){
+                let user_id = $("#seller_id :selected").attr('user-id');
+
+                $.ajax({
+                    type: "POST",
+                    url: "{{route('report.sellers.log_list')}}",
+                    data: {
+                        user_id:user_id,
+                        _token: '{{csrf_token()}}'
+                    },
+                    dataType: 'html',
+                    success: function (data) {
+                        data = JSON.parse(data);
+                        if(data.status == 'error')
+                            toastr.error(data.message);
+                        else{
+                            $("#log_list").html(data.log_list);
+                        }
+                    }
+                });
+            }
     </script>
 @endpush

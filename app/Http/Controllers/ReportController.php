@@ -276,7 +276,6 @@ class ReportController extends Controller
             return doNotPermission();
     }
     public function sellers(){
-
         if(Gate::allows('permission','seller-report')
             || Gate::allows('permission','seller-report-admin')
             || Gate::allows('permission','seller-report-leader')
@@ -765,7 +764,10 @@ class ReportController extends Controller
         }
     }
     public function registeringCustomer(){
-        return view('reports.registering-customer');
+        if(Gate::allows('permission','registering-customer'))
+            return view('reports.registering-customer');
+        else
+            return doNotPermission();
     }
     public function registeringCustomerDataTable(Request $request){
         $orders = DB::table('web_order')->leftjoin('main_theme',function($join){
@@ -836,6 +838,56 @@ class ReportController extends Controller
         catch(\Exception $e){
             \Log::info($e);
             return response(['status'=>'error','message'=>'Failed!']);
+        }
+    }
+    public function logList(Request $request){
+        try{
+            $user_info = MainUser::where('user_id',$request->user_id)->first();
+            $phone_log = json_decode($user_info->user_phone_log,TRUE);
+            $sale_date = array_filter(explode(';',$user_info->getTeam->sale_date)); //Monday;Tuesday
+            $other_date = array_filter(explode(';',$user_info->getTeam->other_date)); // m/d/Y
+            $sale_target = $user_info->user_target_sale;
+            
+            $day_2_month_ago = today()->subMonths(2);
+
+            $period = new \DatePeriod(
+                new \DateTime($day_2_month_ago),
+                new \DateInterval('P1D'),
+                new \DateTime(today())
+            );
+            $log_list = "";
+
+            foreach($period as $day){
+                $number_phone = 0;
+                $format_m_d_Y = $day->format('m/d/Y');
+                $format_m_d = $day->format('d/m');
+                $format_Y_m_d = $day->format('Y-m-d');
+                $english_day = Carbon::parse($format_Y_m_d)->englishDayOfWeek;
+
+                if(!in_array($english_day,$sale_date) || in_array($format_m_d_Y,$other_date)){
+                    $bg = 'bg-secondary';
+                }else{
+                    if( isset($phone_log[$format_Y_m_d]) ){
+                        if($phone_log[$format_Y_m_d] > $sale_target || $phone_log[$format_Y_m_d] == $sale_target )
+                            $bg = 'bg-info';
+                        else
+                            $bg = 'bg-danger';
+                        $number_phone = $phone_log[$format_Y_m_d];
+                    }else
+                            $bg = 'bg-danger';
+                }
+                    $log_list .= '<div class="text-center m-1 date">
+                                        <div class="'.$bg.' text-white">'.$format_m_d.'</div>
+                                        '.$number_phone.'
+                                    </div>';
+                
+            }
+            
+            return response(['status'=>'success','log_list'=>$log_list]);
+        }
+        catch(\Exception $e){
+            \Log::info($e);
+            return response(['status'=>'error','message'=>'Failed! Get List Log Failed!']);
         }
     }
 }
