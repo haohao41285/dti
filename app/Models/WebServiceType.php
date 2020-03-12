@@ -15,7 +15,7 @@ class WebServiceType extends Model
     ];
     public $timestamps = false;
     public function services(){
-        return $this->hasMany(Webservice::class,'web_service_type_id','web_service_type_id');
+        return $this->hasMany(WebService::class,'web_service_type_id','web_service_type_id');
     }
 
 }
