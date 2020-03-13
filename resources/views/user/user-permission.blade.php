@@ -8,7 +8,7 @@
 <div  style="height:300px">
     <table class="table tabel-sm table-hover table-bordered" id="dataTable" >
         <thead>
-            <tr class="sticky-top bg-primary text-white" style="z-index: 1000">
+            <tr class=" bg-primary text-white" style="z-index: 1000;position: -webkit-sticky!important; position: sticky;top: 0;webkit-transform: translateZ(0)!important;">
                 <th style="width: 20%">Permission</th>
                 @foreach($role_list as $role)
                     <th class="text-center">{{$role->gu_name}}</th>
@@ -33,9 +33,12 @@
                 @endforeach
             </tr>
         @endforeach
-        @foreach($menu_parent as $menu)
+        @foreach($menu_parent as $key => $menu)
             <tr id="{{$menu->id}}" class="permission_parent ">
-                <th colspan="{{$role_list->count()+1}}"><i id="parent_{{$menu->id}}" class="fas fa-plus-circle text-primary"></i>{{$menu->name}}</th>
+                <th><i id="parent_{{$menu->id}}" class="fas fa-plus-circle text-primary"></i>{{$menu->name}}</th>
+                @foreach($role_list as $role)
+                    <td class="text-center text-info">{{$role->gu_name}}</td>
+                @endforeach
             </tr>
             @if($permission_list->where('menu_id',$menu->id)->count() != 0)
                 @foreach($permission_list->where('menu_id',$menu->id) as $permission)

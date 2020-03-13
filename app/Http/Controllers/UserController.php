@@ -398,7 +398,7 @@ class UserController extends Controller
         $data['team_list'] = MainTeamType::active()->get();
         // $data['service_type_list'] = MainComboServiceType::active()->get();
         $data['service_type_list'] = DB::table('main_combo_service_type')->where('status',1)->get();
-        $combo_service_list = DB::table('main_combo_service')->where('cs_status',1)->get();
+        $combo_service_list = DB::table('main_combo_service')->orderBy('cs_name','asc')->where('cs_status',1)->get();
         $data['combo_service_list'] = collect($combo_service_list);
 
         return view('user.service-permission',$data);

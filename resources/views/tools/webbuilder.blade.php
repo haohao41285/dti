@@ -162,7 +162,7 @@
           },
           columns: [
               // { data: 'delete', name: 'delete' },
-              { data: 'service_id', name: 'service_id',class:'text-center' },
+              { data: 'service_id', name: 'service_id',class:'text-center', orderable : false, searchable: false, },
               { data: 'service_id', name: 'service_id',class:'text-center' },
               { data: 'cateservice_name', name: 'cateservice_name' , searchable: false ,class:'text-left'},
               { data: 'service_name', name: 'service_name' ,class:'text-left'},

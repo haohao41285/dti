@@ -36,7 +36,7 @@
 <table id="services_datatable" class="table table-sm table-hover" style="width:100%">
     <thead class="thead-light">
       <tr>
-        <th></th>
+        <th class="text-center"></th>
         <th class="text-center" width="10">ID </th>  
         <th width="100" >Category </th>
         <th width="100">Service Name </th>
