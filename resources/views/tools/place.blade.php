@@ -440,6 +440,7 @@ PLACES
                                         <th>ID</th>
                                         <th>Theme Code</th>
                                         <th>Image</th>
+                                        <th class="d-none"></th>
                                         </tr>
                                     </thead>
                                 </table>
@@ -479,6 +480,8 @@ PLACES
                         <div class="card-body">
                             <form method="post" id="clone-update-form">
                                 @csrf
+                                <input type="hidden" name="theme_license" id="theme_license">
+                                <input type="hidden" name="place_id" id="place_id_clone">
                                 <div class="form-group row">
                                     <label class="col-3">License</label>
                                     <input readonly="true" name="get_license" id="get-license" class="col-9 form-control-sm form-control" type="text">
@@ -936,6 +939,7 @@ $(document).ready(function() {
             { data: 'theme_id', name: 'theme_id', class: "id" },
             { data: 'theme_name_temp', name: 'theme_name_temp', class: "code" },
             { data: 'theme_image', name: 'theme_image' },
+            { data: 'theme_license', name: 'theme_license',class:'d-none' },
 
         ],
         buttons: [
@@ -1235,40 +1239,52 @@ $(document).ready(function() {
 
 
     });
+    $('#themes-dataTable tbody').on('click','tr',function(){
+        $("#theme_license").val(themesTable.row(this).data()['theme_license']);
+    })
+
     //Create New Website
     $("#clone-update-form").on('submit', function(e) {
         e.preventDefault();
+        let checkThemeSelected = $('#themes-dataTable tr.selected').length;
 
-        var checkThemeProperties = $('#themeProperties tr');
-
-        if (checkThemeProperties.length > 1) {
-            var checkSelected = $('#themeProperties tr.selected');
-            if (checkSelected.length == 0) {
-                toastr.error("You have not selected website properties");
-                return false;
+        if(checkThemeSelected > 0){
+            var checkThemeProperties = $('#themeProperties tr');
+            if (checkThemeProperties.length > 1) {
+                var checkSelected = $('#themeProperties tr.selected');
+                if (checkSelected.length == 0) {
+                    toastr.error("You have not selected website properties");
+                    return false;
+                }
             }
+            $("#place_id_clone").val(placeId);
+            var form = $(this).serialize();
+
+            $.ajax({
+                url: "{{ route('cloneUpdateWebsite') }}",
+                method: "post",
+                data: form,
+                dataType: "json",
+                success: function(data) {
+                    if (data.status == 1) {
+                        toastr.success(data.msg);
+                        placeTable.draw();
+                        $("#setting").modal("hide");
+                    } else {
+                        toastr.error(data.msg);
+                    }
+                },
+                error: function() {
+                    toastr.error("Failed to change!");
+                }
+            });
+
+        }else{
+            toastr.error('Choose Theme!');
+            return;
         }
 
-        var form = $(this).serialize();
-
-        $.ajax({
-            url: "{{ route('cloneUpdateWebsite') }}",
-            method: "post",
-            data: form,
-            dataType: "json",
-            success: function(data) {
-                if (data.status == 1) {
-                    toastr.success(data.msg);
-                    placeTable.draw();
-                    $("#setting").modal("hide");
-                } else {
-                    toastr.error(data.msg);
-                }
-            },
-            error: function() {
-                toastr.error("Failed to change!");
-            }
-        });
+        
     });
 
     $("#themes-datatable tbody").on('click', "tr", function() {

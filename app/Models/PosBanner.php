@@ -30,7 +30,8 @@ class PosBanner extends BaseModel
         'updated_at',
         'created_by',
         'updated_by',
-        'ba_status'
+        'ba_status',
+        'ba_style'
     ];
 
     protected $guarded = [];
