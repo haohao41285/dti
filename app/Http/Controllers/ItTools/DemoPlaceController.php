@@ -127,7 +127,7 @@ class DemoPlaceController extends Controller
             $place_arr = [
                 'place_id' => $place_max,
                 'place_code'=> 'place_'.$place_max,
-                'place_logo' => 'logo',
+                'place_logo' => '',
                 'place_name' => 'Nail_'.$place_max,
                 'place_address' => 'address_'.$place_max,
                 'place_website' => 'website_'.$place_max,

@@ -418,7 +418,7 @@ class ChangeDataController extends Controller
                             'place_id' => $max_place_id,
                             'place_customer_id' => MainCustomer::max('customer_id'),
                             'place_code' => 'place-'.$max_place_id,
-                            'place_logo' => 'logo',
+                            'place_logo' => '',
                             'place_name' => $customer->business??"salon",
                             'place_website' => 'place_website',
                             'place_taxcode' => 'place_taxcode',

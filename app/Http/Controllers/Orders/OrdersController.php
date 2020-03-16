@@ -251,7 +251,7 @@ class OrdersController extends Controller
                 'place_id' => $place_id,
                 'place_customer_id' => $customer_id,
                 'place_code' => 'place-' . $place_id,
-                'place_logo' => 'logo',
+                'place_logo' => '',
                 'place_name' => $request->business_name,
                 'place_actiondate' => '{"mon": {"start": "09:00", "end": "21:00", "closed": false}, "tue": {"start": "09:00", "end": "21:00", "closed": false}, "wed": {"start": "09:00", "end": "21:00", "closed": false}, "thur": {"start": "09:00", "end": "21:00", "closed": false}, "fri": {"start": "09:00", "end": "21:00", "closed": false}, "sat": {"start": "09:00", "end": "21:00", "closed": false},"sun": {"start": "09:00", "end": "21:00", "closed": false} }',
                 'place_actiondate_option' => 0,
