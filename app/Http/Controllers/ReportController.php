@@ -307,17 +307,24 @@ class ReportController extends Controller
         else
             $user_list = MainUser::where('user_team',Auth::user()->user_team);
 
-        if($request->start_date != "" && $request->end_date){
-            $start_date = Carbon::parse($request->start_date)->subDay(1)->format('Y-m-d');
-            $end_date = Carbon::parse($request->end_date)->addDay(1)->format('Y-m-d');
-            $user_list->whereBetween('created_at',[$start_date,$end_date]);
-        }
+        // if($request->start_date != "" && $request->end_date){
+        //     $start_date = Carbon::parse($request->start_date)->subDay(1)->format('Y-m-d');
+        //     $end_date = Carbon::parse($request->end_date)->addDay(1)->format('Y-m-d');
+        //     $user_list->whereBetween('created_at',[$start_date,$end_date]);
+        // }
         if($request->seller_id != ""){
             $user_list->where('user_id',$request->seller_id);
         }
+        // return $user_list->get();
         $user_list =  $user_list->get();
 
-        $user_customer_place = MainUserCustomerPlace::all();
+        if($request->start_date != "" && $request->end_date){
+            $start_date = Carbon::parse($request->start_date)->subDay(1)->format('Y-m-d');
+            $end_date = Carbon::parse($request->end_date)->addDay(1)->format('Y-m-d');
+            $user_customer_place = MainUserCustomerPlace::whereBetween('created_at',[$start_date,$end_date])->get();
+        }else
+            $user_customer_place = MainUserCustomerPlace::all();
+
         $user_customer_place = collect($user_customer_place);
         $order_list_collect = MainComboServiceBought::all();
         $order_list_collect = collect($order_list_collect);
@@ -353,6 +360,7 @@ class ReportController extends Controller
             || Gate::allows('permission','seller-report-admin')
         ){
             $seller_list = self::getSellerList($request);
+            // return $seller_list;
             return DataTables::of($seller_list)
                 ->make(true);
         }else

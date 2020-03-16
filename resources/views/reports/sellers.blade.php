@@ -67,7 +67,7 @@
                     </div>
                     <div class="col-md-3">
                         <label for="">Seller</label>
-                        <select name="extension" id="seller_id" onchange="getLogList()" class="form-control form-control-sm">
+                        <select name="extension" id="user_id" onchange="getLogList()" class="form-control form-control-sm">
                             @foreach($sellers as $seller)
                                 <option value="{{$seller->user_phone_call}}" user-id={{$seller->user_id}}>{{$seller->getFullname()."(".$seller->user_nickname.")-".$seller->user_target_sale}}</option>
                             @endforeach
@@ -190,7 +190,7 @@
                         d.start_date = $("#start_date").val();
                         d.end_date = $("#end_date").val();
                         // d.address = $("#address").val();
-                        d.seller_id = $("#seller_id").val();
+                        d.seller_id = $("#seller_id :selected").val();
                     }
                 },
                 columns: [
@@ -323,7 +323,7 @@
             }
         });
             function getLogList(){
-                let user_id = $("#seller_id :selected").attr('user-id');
+                let user_id = $("#user_id :selected").attr('user-id');
 
                 $.ajax({
                     type: "POST",
