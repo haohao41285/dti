@@ -511,7 +511,7 @@
                 toastr.error(data.message);
               else if(data.status === 'success'){
                 toastr.success(data.message);
-                servicesTable.ajax.reload(null,false);
+                table_list.ajax.reload(null,false);
               }else {
                 toastr.error('Failed!');
               }
