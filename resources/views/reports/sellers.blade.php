@@ -58,7 +58,7 @@
             <form id="call-log-form">
                 <div class="form-group col-md-12 row">
                     <div class="col-md-4">
-                        <label for="">Created date</label>
+                        <label for="">Call date</label>
                         <div class="input-daterange input-group" id="from_to_date">
                             <input type="text" class="input-sm form-control form-control-sm" id="from_date" name="from_date" />
                             <span class="input-group-addon">to</span>

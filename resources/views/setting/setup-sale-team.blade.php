@@ -200,7 +200,7 @@ $(document).ready(function($) {
         columns: [
             { data: 'id', name: 'id', class: 'text-center' },
             { data: 'team_name', name: 'team_name' },
-            { data: 'team_type', name: 'team_type' },
+            { data: 'team_type_name', name: 'team_type_name' },
             { data: 'sale_date', name: 'sale_date' },
             { data: 'other_date', name: 'other_date', class: 'text-center' },
         ],

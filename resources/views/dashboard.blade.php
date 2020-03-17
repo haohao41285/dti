@@ -180,7 +180,7 @@
                             <th class="text-center">Status</th>
                             <th class="text-center">(%)Percent Complete</th>
                             <th class="text-center">Order#</th>
-                            <th class="text-center">Last Updated</th>
+                            <th class="text-center">Date End</th>
                         </tr>
                         </thead>
                     </table>
@@ -426,7 +426,7 @@
                     // { data: 'complete_percent', name: 'complete_percent',class: 'text-center' },
                     { data: 'complete_percent', name: 'complete_percent',class: 'text-right' },
                     { data: 'order_id', name: 'order_id',class: 'text-center' },
-                    { data: 'updated_at', name: 'updated_at',class: 'text-center'},
+                    { data: 'date_end', name: 'date_end',class: 'text-center'},
                 ],
             });
         });

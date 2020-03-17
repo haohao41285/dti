@@ -44,7 +44,11 @@ class SetupSaleTeam extends Controller
         return response(['status'=>'success','message'=>'Successfully!']);
     }
     public function datatableTeam(Request $request){
-        $teams = MainTeam::active()->with('getTeamType');
+        $teams = MainTeam::active()->join('main_team_type',function($join){
+            $join->on('main_team.team_type','main_team_type.id');
+        })
+        ->where('main_team_type.team_type_name','Telesale')
+        ->select('main_team.*','main_team_type.team_type_name');
         return DataTables::of($teams)
         ->addColumn('team_type',function($row){
             return $row->getTeamType->team_type_name;

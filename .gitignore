@@ -1,6 +1,10 @@
 /node_modules
 /public/hot
-/public/storage
+/public/storage/exports
+/public/storage/vendor
+/public/storage/tests
+/public/storage/logs
+/public/storage/framework
 /public/images
 /public/upload
 /storage/*.key
