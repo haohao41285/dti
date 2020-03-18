@@ -337,7 +337,8 @@ class MenuController extends Controller
                     
                 }
             }
-            return redirect()->route('menus')->with('message',"Import Menus Success!, update: ".$update." row, inserted: ".$insert."row");     
+            Session::put('menus',1);
+            return redirect()->route("place.webbuilder",Session::get('place_id'))->with(['success'=>"Import Menus Success!, update: ".$update." row, inserted: ".$insert."row"]);
 
         } catch (\Exception $e) {
             return back()->with('error','Import Menus Error!');           
