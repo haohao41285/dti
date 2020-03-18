@@ -130,7 +130,7 @@
                             {{-- <th>Task#</th> --}}
                             <th>Subject</th>
                             <th class="text-center">Status</th>
-                            <th class="text-center">(%)Percent Complete</th>
+                            <th class="text-center">% Complete</th>
                             <th class="text-center">Order#</th>
                             <th class="text-center">Last Updated</th>
                         </tr>
@@ -286,6 +286,8 @@
                 paging:false,
                 searching: false,
                 info:false,
+                scrollY: 350,
+                scrollCollapse: true,
                 // responsive: false,
                 ajax:{ url:"{{ route('customer-service-datatable') }}",
                     data: function (d) {
@@ -321,7 +323,7 @@
                 },
                 columns: [
                     // { data: 'task', name: 'task',class:'text-center' },
-                    { data: 'subject', name: 'subject',class:'text-center' },
+                    { data: 'subject', name: 'subject', },
                     // { data: 'priority', name: 'priority',class:'text-center' },
                     { data: 'status', name: 'status',class:'text-center' },
                     // { data: 'date_start', name: 'date_start',class:'text-center' },

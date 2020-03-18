@@ -537,7 +537,7 @@ class ChangeDataController extends Controller
     }
     function setServicedCustomer(){
 
-        DB::beginTransaction();
+        // DB::beginTransaction();
         $customers = ModelsCustomer::join('main_customer',function($join){
             $join->on('csr_customers.id','main_customer.customer_customer_template_id');
         })

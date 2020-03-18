@@ -1081,7 +1081,7 @@ class TaskController extends Controller
                     $detail_button = "<i class=\"fas fa-plus-circle details-control text-danger\" id='".$row->id."'></i> ";
                 }else $detail_button = "";
 
-                return $detail_button.'&nbsp&nbsp<a href="'.route('task-detail',$row->id).'"> #'.$row->id." ".$row->subject.'</a> ';
+                return $detail_button.'&nbsp&nbsp<a href="'.route('task-detail',$row->id).'"> '.$row->subject.'</a> ';
             })
             ->rawColumns(['order_id','subject'])
             ->make(true);
