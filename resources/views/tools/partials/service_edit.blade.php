@@ -173,15 +173,16 @@
         <div class="row form_group">
                 <label class="col-sm-3 col-md-2">Image</label>
                 <div class="col-sm-10 col-md-10" style="overflow: hidden;">
-                   <div class="catalog-image-upload">
+                   <div class="catalog-image-upload" style="position:relative">
                           <div class="catalog-image-edit">
                               <input type='file' id="imageUpload2"  name="service_image" data-target="#catalogImagePreview2" accept=".png, .jpg, .jpeg" />
                               <input type="hidden" value="{{(isset($service_item))?$service_item->service_image:old('service_image')}}" name="service_image_hidden">
                               {{-- <label for="imageUpload2"></label> --}}
                           </div>
                           <div class="catalog-image-preview" style="height:200px">
-                              <img id="catalogImagePreview2"  style='display:{{(isset($service_item)&&$service_item->service_image!="")?"":"none"}}' src="{{config('app.url_file_view')}}{{(isset($service_item))?$service_item->service_image:old('service_image')}}" height="100%" />
+                              <img id="catalogImagePreview2"  style='display:{{(isset($service_item)&&$service_item->service_image!="")?"":"none"}}' src="{{(isset($service_item))?config('app.url_file_view').$service_item->service_image:old('service_image')}}" height="100%" />
                           </div>
+                          <i class="fas fa-trash delete-image text-primary" style="position:absolute;top:10px;right:10px;border: 1px solid red;border-radius: 50%;padding: 5px;"></i>
                       </div>
                 </div>
        </div>
@@ -411,6 +412,15 @@ $(document).ready(function() {
             $("#submit").attr('disabled',false);
         }
     }
+    $(".delete-image").click(function(){
+        let image = $("#catalogImagePreview2");
+        if(image.attr('src') != ""){
+            if(confirm('Do you want delete this image?'))
+                image.attr('src','').hide();
+            else
+                return;
+        }
+    })
 
     });
 </script> 

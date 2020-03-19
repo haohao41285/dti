@@ -35,15 +35,17 @@
                 <div class="row" style="padding-bottom:10px;">
                  <label class="control-label col-md-2 col-sm-2 col-xs-12">Image</label>
                  <div class="col-md-9 col-sm-9 col-xs-12" style="overflow: hidden;">
-                    <div class="catalog-image-upload">
+                    <div class="catalog-image-upload" style="position:relative">
                            <div class="catalog-image-edit">
                               <input type="hidden" name="cateservice_image_old" value="{{isset($cateservice_item->cateservice_image)? $cateservice_item->cateservice_image:old('cateservice_image')}}">
                                <input type='file' class="cateservice_image" name="cateservice_image" data-target="#catalogImagePreview1" accept=".png, .jpg, .jpeg" />
                                {{-- <label for="cateservice_image"></label> --}}
                            </div>
                            <div class="catalog-image-preview" style="height:200px">
-                               <img id="catalogImagePreview1" style='display:{{(isset($cateservice_item)&&$cateservice_item->cateservice_image!="")?"":"none"}}' src ="{{config('app.url_file_view')}}{{isset($cateservice_item->cateservice_image)? $cateservice_item->cateservice_image:old('cateservice_image')}}" height ="100%" /> 
+                               <img id="catalogImagePreview1" style='display:{{(isset($cateservice_item)&&$cateservice_item->cateservice_image!="")?"":"none"}}' src ="{{isset($cateservice_item->cateservice_image)?config('app.url_file_view').$cateservice_item->cateservice_image:old('cateservice_image')}}" height ="100%" /> 
                            </div>
+                           <i class="fas fa-trash delete-image text-primary" style="position:absolute;top:10px;right:10px;border: 1px solid red;border-radius: 50%;padding: 5px;"></i>
+
                     </div>
                  </div>
                </div>  
@@ -51,16 +53,16 @@
                 <div class="row" style="padding-bottom:10px;">
                  <label class="control-label col-md-2 col-sm-2 col-xs-12">Icon Image</label>
                  <div class="col-md-9 col-sm-9 col-xs-12" style="overflow: hidden;">
-                    <div class="catalog-image-upload">
+                    <div class="catalog-image-upload" style="position:relative">
                            <div class="catalog-image-edit">
                               <input type="hidden" name="cateservice_icon_image_old" value="{{isset($cateservice_item->cateservice_icon_image)? $cateservice_item->cateservice_icon_image:old('cateservice_icon_image')}}">
                                <input type='file' class="cateservice_image" name="cateservice_icon_image" data-target="#catalogImagePreview2" accept=".png, .jpg, .jpeg" />
                                {{-- <label for="cateservice_image"></label> --}}
                            </div>
                            <div class="catalog-image-preview" style="height:200px">
-                               <img id="catalogImagePreview2" style='display:{{(isset($cateservice_item)&&$cateservice_item->cateservice_icon_image!="")?"":"none"}}' src ="{{config('app.url_file_view')}}{{isset($cateservice_item->cateservice_icon_image)? $cateservice_item->cateservice_icon_image:old('cateservice_icon_image')}}" height ="100%" /> 
-                                      
+                               <img id="catalogImagePreview2" style='display:{{(isset($cateservice_item)&&$cateservice_item->cateservice_icon_image!="")?"":"none"}}' src ="{{isset($cateservice_item->cateservice_icon_image)?config('app.url_file_view').$cateservice_item->cateservice_icon_image:old('cateservice_icon_image')}}" height ="100%" /> 
                            </div>
+                           <i class="fas fa-trash delete-image2 text-primary" style="position:absolute;top:10px;right:10px;border: 1px solid red;border-radius: 50%;padding: 5px;"></i>
 
                     </div>
                  </div>
@@ -207,6 +209,24 @@ $("input[type=file]").change(function() {
                 $("#submit").attr('disabled',false);
             }
         }
+        $(".delete-image").click(function(){
+            let image = $("#catalogImagePreview1");
+            if(image.attr('src') != ""){
+                if(confirm('Do you want delete this image?'))
+                    image.attr('src','').hide();
+                else
+                    return;
+            }
+        })
+        $(".delete-image2").click(function(){
+            let image = $("#catalogImagePreview2");
+            if(image.attr('src') != ""){
+                if(confirm('Do you want delete this image?'))
+                    image.attr('src','').hide();
+                else
+                    return;
+            }
+        })
 
     });
 </script> 
