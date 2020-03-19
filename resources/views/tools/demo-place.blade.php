@@ -169,6 +169,12 @@
                                 </div>
                                 <div class="input-group mb-3 input-group-sm col-md-12">
                                     <div class="input-group-prepend">
+                                        <span class="input-group-text">Business Name</span>
+                                    </div>
+                                    <input type="text" class="form-control" name="business_name">
+                                </div>
+                                <div class="input-group mb-3 input-group-sm col-md-12">
+                                    <div class="input-group-prepend">
                                         <span class="input-group-text">Phone<sup class="text-danger">*</sup></span>
                                     </div>
                                     <input type="text" onkeypress="return isNumberKey(event)" class="form-control customer_phone" name="customer_phone">

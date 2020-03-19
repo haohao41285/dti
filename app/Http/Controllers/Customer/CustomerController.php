@@ -318,7 +318,7 @@ class CustomerController extends Controller
             $update_customer = "nothing to update";
 
         if(!isset($update_user) || !isset($update_customer)){
-            DB::callback();
+            DB::rollBack();
             return response(['status'=>'error','message'=>'Getting Failed!']);
         }
         else{

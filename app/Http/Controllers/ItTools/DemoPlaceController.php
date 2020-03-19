@@ -23,7 +23,7 @@ class DemoPlaceController extends Controller
 {
     public function index(){
         $data['theme_list'] = MainTheme::where('theme_status',1)->get();
-        $data['services'] = MainComboService::active()->orderBy('cs_name','asc')->get();
+        $data['services'] = MainComboService::active()->orderBy('cs_name','desc')->get();
         return view('tools.demo-place',$data);
     }
     public function datatable(Request $request){
@@ -128,8 +128,8 @@ class DemoPlaceController extends Controller
                 'place_id' => $place_max,
                 'place_code'=> 'place_'.$place_max,
                 'place_logo' => '',
-                'place_name' => 'Nail_'.$place_max,
-                'place_address' => 'address_'.$place_max,
+                'place_name' => $request->business_name??'Nail_'.$place_max,
+                'place_address' => $request->customer_address??'address_'.$place_max,
                 'place_website' => 'website_'.$place_max,
                 'place_taxcode' => '1234'.$place_max,
                 'place_customer_type' => 1,

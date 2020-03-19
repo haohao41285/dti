@@ -145,7 +145,7 @@
          searching: false,
          paging: false,
          info: false,
-         scrollY: true,
+         scrollY: 700,
          buttons: [
          ],
          processing: true,

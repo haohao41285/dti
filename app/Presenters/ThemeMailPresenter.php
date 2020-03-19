@@ -21,7 +21,8 @@ class ThemeMailPresenter extends Presenter{
 	    foreach($this->combo_service_list as $combo_service){
 	        $combo_service_html .= '
 	         <tr>
-                    <td style="border: 1px solid black;">'.$combo_service->cs_name.'</td>
+                    <td style="border: 1px solid black;text-transform:capitalize">'.str_slug($combo_service->cs_name," ").'</td>
+                    <td style="border: 1px solid black;text-transform:capitalize">'.str_slug($combo_service->cs_description," ").'</td>
                     <td style="text-align: right;border: 1px solid black;">1</td>
                     <td style="text-align: right;border: 1px solid black;">'.$combo_service->cs_price.'</td>
                     <td style="text-align: right;border: 1px solid black;">'.$combo_service->cs_price.'</td>
@@ -74,10 +75,11 @@ class ThemeMailPresenter extends Presenter{
                         <table style=\"border-collapse: collapse;width: 100%\">
                             <thead>
                             <tr>
-                                <th style=\"text-align: left;border: 1px solid black;background-color: #b6b6b6;width: 50%\"><b>Item Service</b></th>
+                                <th style=\"text-align: left;border: 1px solid black;background-color: #b6b6b6;width: 35%\"><b>Item Service</b></th>
+                                <th style=\"text-align: left;border: 1px solid black;background-color: #b6b6b6;width: 35%\"><b>Description</b></th>
                                 <th style=\"text-align: center;border: 1px solid black;background-color: #b6b6b6;width: 10%\"><b>Quantity</b></th>
-                                <th style=\"text-align: center;border: 1px solid black;background-color: #b6b6b6;width: 20%\"><b>Unit Price</b></th>
-                                <th style=\"text-align: center;border: 1px solid black;background-color: #b6b6b6;width: 20%\"><b>Amount</b></th
+                                <th style=\"text-align: center;border: 1px solid black;background-color: #b6b6b6;width: 10%\"><b>Unit Price</b></th>
+                                <th style=\"text-align: center;border: 1px solid black;background-color: #b6b6b6;width: 10%\"><b>Amount</b></th
                             </tr>
                             </thead>
                             <tbody>
@@ -99,7 +101,7 @@ class ThemeMailPresenter extends Presenter{
                     </div>
                     <div style =\"clear: both;\"></div>
                     <div style=\"margin-top: 30px;\">
-                        <span style=\"width: 40%;float: left;\" >Payment made by:<b>".$this->getCreatedBy->user_firstname." ".$this->getCreatedBy->user_lastname."</b></span>
+                        <span style=\"width: 40%;float: left;\" >Payment made by:<b style='text-transform:capitalize'>".str_slug($this->getCreatedBy->user_firstname," ")." ".str_slug($this->getCreatedBy->user_lastname," ")."</b></span>
                         <span style=\"width: 30%;\" >".$image_check_1."Credit Cards End <b>".substr($this->csb_card_number,-5)."</b></span>
                         <span style=\"width: 30%;float: right\" >".$image_check_2."Check <b>#".$this->routing_number."</b></span>
                     </div>

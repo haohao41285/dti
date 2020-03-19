@@ -135,7 +135,10 @@ class OrdersController extends Controller
         $data['service_permission_arr'] = $service_permission_arr;
 
         //GET COMBO SERVICE NOT TYPE
-        $data['combo_service_orther'] = MainComboService::where('cs_status', 1)->whereIn('id', $service_permission_arr)->whereNull('cs_combo_service_type')->get();
+        $data['combo_service_orther'] = MainComboService::where('cs_status', 1)
+        ->whereIn('id', $service_permission_arr)->whereNull('cs_combo_service_type')
+        ->orderBy('cs_name','asc')
+        ->get();
 
         //GET SERVICE TYPE
         $service_type = MainComboService::whereIn('id',$service_permission_arr)->select('cs_combo_service_type')->get()->toArray();
@@ -144,7 +147,7 @@ class OrdersController extends Controller
         $data['combo_service_type'] = DB::table('main_combo_service_type')->whereIn('id',$service_type_arr)->where('status',1)->get();
 
         //GET COMBO SERVICE COLLECTION INSIDE TYPE
-        $combo_service = MainComboService::whereIn('id',$service_permission_arr)->get();
+        $combo_service = MainComboService::whereIn('id',$service_permission_arr)->orderBy('cs_name','asc')->get();
         $data['combo_service_list'] = collect($combo_service);
         $data['user_list'] = MainUser::active()->get();
 

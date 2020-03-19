@@ -88,7 +88,7 @@ class SetupTeamController  extends Controller
 				$user_update = MainUser::where('user_id',$team_leader)->update(['user_team'=>$team_id]);
 
 				if(!isset($team_update) || !isset($user_update)){
-					DB::calllback();
+					DB::rollBack();
 					return response(['status'=>'error','message'=>'Update Team Error!']);
 				}
 				else{
@@ -189,10 +189,10 @@ class SetupTeamController  extends Controller
 								$join->on('main_user.user_team','main_team.id');
 							})
 								->where('user_id',$user_id)
-								->select('main_team.id')
-								->get();
+								->select('main_team.team_leader')
+								->first();
 
-		if($user_info[0]->id == $user_id)
+		if($user_info->team_leader == $user_id)
 			return response(['status'=>'error','message'=>'Error! This User is Leader. Change leader first']);
 
 		$user_update = MainUser::where('user_id',$user_id)->update(['user_team'=>NULL]);
