@@ -29,6 +29,8 @@ use Session;
 use App\Models\PosWebSeo;
 use App\Models\PosMenu;
 use App\Models\PosBanner;
+use GuzzleHttp\Client;
+use Carbon\Carbon;
 
 
 
@@ -225,7 +227,6 @@ class PlaceController extends Controller
     public function changeNewPassword(Request $request){
         $validate = Validator::make($request->all(),[
             'newPassword' => 'required',
-            'confirmPassword' => 'required|same:newPassword',
         ]);
         $errorArr = [];
         if($validate->fails()){
@@ -234,16 +235,137 @@ class PlaceController extends Controller
             }
             return response()->json(['status'=>0,'msg'=>$errorArr]);
         }
+        DB::beginTransaction();
+        $user_info = PosUser::where('user_id',$request->userId)
+                        ->where('user_place_id',$request->placeId)->first();
 
-        $user = PosUser::where('user_id',$request->userId)
-                        ->where('user_place_id',$request->placeId)
-                        ->update([
+        $user = $user_info->update([
                             'user_password' => bcrypt($request->newPassword),
                         ]);
+        //SEND SMS
+        $receiver_total[] = [
+            'name' => $user_info->user_nickname??"quy khach",
+            'phone' => $user_info->user_phone,
+        ];
+        if(!empty($receiver_total)){
+            $date = now()->format('Y_m_d_His');
 
-        return response()->json(['status'=>1,'msg'=>"Changed successfully!"]);
+            $file_name = "receiver_sms_list_".$date;
 
+            \Excel::create($file_name,function($excel) use ($receiver_total){
+
+                $excel ->sheet('receiver_list_send_birthday', function ($sheet) use ($receiver_total)
+                {
+                    $sheet->cell('A1', function($cell) {$cell->setValue('phone');   });
+                    $sheet->cell('B1', function($cell) {$cell->setValue('{p2}');   });
+                    // $sheet->cell('C1', function($cell) {$cell->setValue('{p3}');   });
+
+                    if (!empty($receiver_total)) {
+                        foreach ($receiver_total as $key => $value) {
+                            $i= $key+2;
+                            if($value['phone'] != ""){
+                                $sheet->cell('A'.$i, $value['phone']);
+                                $sheet->cell('B'.$i, $value['name']);
+                                // $sheet->cell('C'.$i, Carbon::parse($value['birthday'])->format('d/m/Y'));
+                            }
+                        }
+                    }
+                });
+            })->store('xlsx', false, true);
+
+            $file_url = storage_path('exports/'.$file_name.".xlsx");
+
+            $sms_content_template = "Gui tu Dataeglobal! Mat khau dang nhap moi cua quy khach: ".$request->newPassword;
+
+            $url_event = 'pushsms';
+
+            $url = env('SMS_API_URL').$url_event;
+
+            $client = new Client([
+            ]);
+
+            $sms_content_template = str_replace("{phone}","{p1}",$sms_content_template);
+            $sms_content_template = str_replace("{name}","{p2}",$sms_content_template);
+            // $sms_content_template = str_replace("{birthday}","{p3}",$sms_content_template);
+
+            $date_time_send = format_date_d_m_y(now())." 00:00:00";
+            $date_time_end =  format_date_d_m_y(now())." 23:59:59";
+
+            $response = $client->request('POST', $url ,[
+                'multipart' => [
+                    [
+                        'name' => 'content',
+                        'contents' => $sms_content_template,
+                    ],
+                    [
+                        'name' => 'title',
+                        'contents' => 'reset password',
+                    ],
+                    [
+                        'name' => 'merchant_id',
+                        'contents' => 1,
+                    ],
+                    [
+                        'name' => 'start',
+                        'contents' => $date_time_send,
+                    ],
+                    [
+                        'name' => 'date_before',
+                        'contents' => '0',
+                    ],
+                    [
+                        'name' => 'repeat',
+                        'contents' => '0',
+                    ],
+                    [
+                        'name' => 'repeat_on',
+                        'contents' => '0',
+                    ],
+                    [
+                        'name' => 'timesend',
+                        'contents' => Carbon::parse(now())->addMinute(2)->format('H:i'),
+                    ],
+                    [
+                        'name' => 'type_event',
+                        'contents' => 1,
+                    ],
+                    [
+                        'name' => 'event_id',
+                        'contents' => 1,
+                    ],
+                    [
+                        'name' => 'end',
+                        'contents' => $date_time_end,
+                    ],
+                    [
+                        'name'     => 'upfile',
+                        'contents' => fopen($file_url,'r'),
+                    ],
+                    [
+                        'name' => 'status',
+                        'contents' => 1,
+                    ]
+
+                ],
+                'headers' => [
+                    'Authorization' => 'Bearer ' .env("SMS_API_KEY"),
+                ],
+            ]);
+
+        $resp =  (string)$response->getBody();
+        $send_sms_status = json_decode($resp)->status;
+        $message = 'Successfully'.' '.json_decode($resp)->messages;
+
+        if(!$user || $send_sms_status = 0){
+            DB::rollBack();
+            return response(['status'=>0,'msg'=>'Failed']);
+        }
+        else{
+            DB::commit();
+            return response()->json(['status'=>1,'msg'=>"Changed successfully!"]);
+        }
     }
+}
     /**
      * get detail place by placeId
      * @param  $request->placeId

@@ -85,15 +85,13 @@ PLACES
                                 @csrf
                                 <div class="form-group row col-12">
                                     <label class="col-5">New Password</label>
-                                    <input class="col-7 form-control-sm form-control" type="password" name="newPassword">
+                                    <input class="col-7 form-control-sm form-control" type="text" disabled id="pass" name="pass">
                                 </div>
-                                <div class="form-group row col-12">
-                                    <label class="col-5">Confirm Password</label>
-                                    <input class="col-7 form-control-sm form-control" type="password" name="confirmPassword">
-                                </div>
+                                <input type="hidden" name="newPassword" id="newPassword">
                                 <div class="form-group col-12 row">
                                     <label class="col-5"></label>
-                                    <input class="btn-sm btn btn-primary" type="submit" value="Save">
+                                    <input class="btn-sm btn btn-info generate-pass mr-2" type="button" value="Generate">
+                                    <input class="btn-sm btn btn-primary" type="submit" value="Save & SMS">
                                 </div>
                             </form>
                         </div>
@@ -997,6 +995,12 @@ $(document).ready(function() {
             toastr.error("Please select the user!");
             return false;
         }
+        let pass = $("#pass").val();
+        if(pass == ''){
+            toastr.error("Please generate password!");
+            return false;
+        }
+
 
         var form = $(this).serialize();
         form += "&placeId=" + placeId;
@@ -1786,6 +1790,11 @@ $(document).ready(function() {
             .fail(function() {
                 console.log('Faield! Change Status Faield');
             });
+    });
+    $(".generate-pass").click(function(){
+        let pass = Math.floor((Math.random() * 100000000) + 1);
+        $("#pass").val(pass);
+        $("#newPassword").val(pass);
     });
 
 });
