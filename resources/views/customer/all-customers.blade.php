@@ -504,8 +504,12 @@
                       <input type="hidden" name="" id="customer_id" value="`+data.id+`" placeholder="">
                     </div>
                     <div class="form-group row">
-                      <label class="col-md-4" for="ct_contact_name">Contact Name<i class="text-danger">*</i></label>
-                      <input type="text" class="col-md-8 form-control form-control-sm" name="ct_contact_name" id="ct_contact_name" value="`+data.ct_fullname+`" placeholder="">
+                      <label class="col-md-4" for="first_name">First Name<i class="text-danger">*</i></label>
+                      <input type="text" class="col-md-8 form-control form-control-sm" name="first_name" id="first_name" value="`+data.ct_firstname+`" placeholder="">
+                    </div>
+                    <div class="form-group row">
+                      <label class="col-md-4" for="last_name">Last Name<i class="text-danger">*</i></label>
+                      <input type="text" class="col-md-8 form-control form-control-sm" name="last_name" id="last_name" value="`+data.ct_lastname+`" placeholder="">
                     </div>
                     <div class="form-group row">
                       <label class="col-md-4" for="ct_business_phone">Business Phone<i class="text-danger">*</i></label>
@@ -552,7 +556,8 @@
     //SUBMIT EDIT CUSTOMER
     $(document).on("click",".submit-edit",function(){
 
-      var ct_salon_name = $("#ct_salon_name").val();
+      var first_name = $("#first_name").val();
+      var last_name = $("#last_name").val();
       var ct_contact_name = $("#ct_contact_name").val();
       var ct_business_phone = $("#ct_business_phone").val();
       var ct_cell_phone = $("#ct_cell_phone").val();
@@ -567,7 +572,8 @@
         type: 'GET',
         dataType: 'html',
         data: {
-          ct_salon_name: ct_salon_name,
+          first_name: first_name,
+          last_name: last_name,
           ct_contact_name: ct_contact_name,
           ct_business_phone: ct_business_phone,
           ct_cell_phone: ct_cell_phone,

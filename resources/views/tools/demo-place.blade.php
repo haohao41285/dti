@@ -144,7 +144,7 @@
     </div>
     {{-- detail place --}}
     <div class="modal fade" id="detail" tabindex="-1" role="dialog">
-        <div class="modal-dialog modal-dialog-scrollable modal-lg" width:80% role="document">
+        <div class="modal-dialog modal-dialog-scrollable modal-lg" style="max-width:80%" role="document">
             <form id="add-form">
                 <div class="modal-content">
                     <div class="modal-header">
@@ -155,46 +155,55 @@
                     <div class="modal-body row">
                         <div class="col-12 row">
                             <div class="col-md-8">
-                                <div class="input-group mb-3 input-group-sm col-md-12">
-                                    <div class="input-group-prepend">
-                                        <span class="input-group-text">First name</span>
+                                <div class="row">
+                                         <div class="input-group mb-3 input-group-sm col-md-6">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text">First name</span>
+                                        </div>
+                                        <input type="text" class="form-control" name="customer_firstname">
                                     </div>
-                                    <input type="text" class="form-control" name="customer_firstname">
-                                </div>
-                                <div class="input-group mb-3 input-group-sm col-md-12">
-                                    <div class="input-group-prepend">
-                                        <span class="input-group-text">Last Name</span>
+                                    <div class="input-group mb-3 input-group-sm col-md-6">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text">Last Name</span>
+                                        </div>
+                                        <input type="text" class="form-control" name="customer_lastname">
                                     </div>
-                                    <input type="text" class="form-control" name="customer_lastname">
-                                </div>
-                                <div class="input-group mb-3 input-group-sm col-md-12">
-                                    <div class="input-group-prepend">
-                                        <span class="input-group-text">Business Name</span>
+                                    <div class="input-group mb-3 input-group-sm col-md-6">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text">Business Name</span>
+                                        </div>
+                                        <input type="text" class="form-control" name="business_name">
                                     </div>
-                                    <input type="text" class="form-control" name="business_name">
-                                </div>
-                                <div class="input-group mb-3 input-group-sm col-md-12">
-                                    <div class="input-group-prepend">
-                                        <span class="input-group-text">Phone<sup class="text-danger">*</sup></span>
+                                    <div class="input-group mb-3 input-group-sm col-md-6">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text">Phone<sup class="text-danger">*</sup></span>
+                                        </div>
+                                        <input type="text" onkeypress="return isNumberKey(event)" class="form-control customer_phone" name="customer_phone">
                                     </div>
-                                    <input type="text" onkeypress="return isNumberKey(event)" class="form-control customer_phone" name="customer_phone">
-                                </div>
-                                <div class="input-group mb-3 input-group-sm col-md-12">
-                                    <div class="input-group-prepend">
-                                        <span class="input-group-text">Email</span>
+                                    <div class="input-group mb-3 input-group-sm col-md-6">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text">Email</span>
+                                        </div>
+                                        <input type="email" class="form-control" name="customer_email">
                                     </div>
-                                    <input type="email" class="form-control" name="customer_email">
-                                </div>
-                                <div class="input-group mb-3 input-group-sm col-md-12">
-                                    <div class="input-group-prepend">
-                                        <span class="input-group-text">Address</span>
+                                    <div class="input-group mb-3 input-group-sm col-md-6">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text">Address</span>
+                                        </div>
+                                        <input type="text" class="form-control" name="customer_address">
                                     </div>
-                                    <input type="text" class="form-control" name="customer_address">
+                                    <div class="input-group mb-3 input-group-sm col-md-6">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text">Website</span>
+                                        </div>
+                                        <input type="text" class="form-control" name="customer_website">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <span class="text-danger" style="font-size: 12px">*Customer Phone is not with character "0" at the first</span><br>
+                                        <span class="text-danger" style="font-size: 12px">*Customer Phone includes 10 characters</span>
+                                    </div>
                                 </div>
-                                <div class="col-md-6">
-                                    <span class="text-danger" style="font-size: 12px">*Customer Phone is not with character "0" at the first</span><br>
-                                    <span class="text-danger" style="font-size: 12px">*Customer Phone includes 10 characters</span>
-                                </div>
+                                
                                 <hr>
                                 <div class="custom-control custom-checkbox mb-3">
                                   <input type="checkbox" class="custom-control-input" id="place_demo" value="1" name="place_demo">
@@ -203,7 +212,7 @@
                                 <div class="col-md-12"></div>
                                 <div class="col-md-12 row border-bottom border-dark">
                                     @foreach($theme_list as $theme)
-                                        <div class="col-md-4">
+                                        <div class="col-md-3">
                                           <div class="gallery-card">
                                             <div class="gallery-card-body">
                                               <label class="block-check">

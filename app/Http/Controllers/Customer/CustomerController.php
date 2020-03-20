@@ -443,7 +443,8 @@ class CustomerController extends Controller
         // return $request->all();
 
         $ct_salon_name = $request->ct_salon_name;
-        $ct_contact_name = $request->ct_contact_name;
+        $first_name = $request->first_name;
+        $last_name = $request->last_name;
         $ct_business_phone = $request->ct_business_phone;
         $ct_cell_phone = $request->ct_cell_phone;
         $ct_email = $request->ct_email;
@@ -452,9 +453,11 @@ class CustomerController extends Controller
         $ct_note = $request->ct_note;
         $customer_id = $request->customer_id;
 
-        $customer_info = [
+        $customer_arr = [
             'ct_salon_name' => $ct_salon_name,
-            'ct_fullname' => $ct_contact_name,
+            'ct_fullname' => $last_name." ".$first_name,
+            'ct_firstname' => $first_name,
+            'ct_lastname' => $last_name,
             'ct_business_phone' => $ct_business_phone,
             'ct_cell_phone' => $ct_cell_phone,
             'ct_email' => $ct_email,
@@ -463,8 +466,19 @@ class CustomerController extends Controller
             'ct_note' => $ct_note,
             'updated_by' => Auth::user()->user_id,
         ];
-
-        $customer_update = MainCustomerTemplate::where('id',$customer_id)->update($customer_info);
+        $customer_info = MainCustomerTemplate::find($customer_id);
+        $customer_update = $customer_info->update($customer_arr);
+        //Check main_customer
+        $main_customer_info = MainCustomer::where('customer_customer_template_id',$customer_id)->first();
+        if($main_customer_info){
+            $main_customer_info->where('customer_customer_template_id',$customer_id)->update([
+                'customer_phone' => "1".$request->ct_cell_phone,
+                'customer_firstname' => $first_name,
+                'customer_lastname' => $last_name,
+                'customer_email' => $ct_email,
+                'customer_address' => $ct_address,
+            ]);
+        }
 
         if(!isset($customer_update))
             return 0;
