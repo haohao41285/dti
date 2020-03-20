@@ -13,6 +13,7 @@ use App\Helpers\ImagesHelper;
 use Validator;
 use Session;
 use App\Models\PosMenu;
+use DB;
 
 class ServiceController extends Controller
 {
@@ -329,7 +330,7 @@ class ServiceController extends Controller
             $update_count = 0;
             $insert_count = 0;
 
-            \DB::beginTransaction();
+            DB::beginTransaction();
 
             try{
                 $data = \Excel::load($path)->toArray();
@@ -451,24 +452,22 @@ class ServiceController extends Controller
                             }
                         }
                     }
-                    \DB::commit();
-                    $request->session()->flash('success','Import File Success , update:'.$update_count.'row, inserted:'.$insert_count.'row');
+                    Session::put('services',1);
+                    DB::commit();
+                    return redirect()->route("place.webbuilder",Session::get('place_id'))->with(['success'=>'Import File Success , update:'.$update_count.'row, inserted:'.$insert_count.'row']);
                 }
                 else{
-                    $request->session()->flash('error','Import File Not Data');
+                    DB::rollBack();
+                    return back()->with(['error'=>'Import File Not Data']);
                 }
             } catch(\Exception $e){
-
-                return $e->getMessage();
-                $request->session()->flash('error','Import File Error is Error! Please  check import again!');
+                \Log::info($e);
+                DB::rollBack();
+                return back()->with(['error'=>'Import File Error is Error! Please  check import again!']);
             }
         }
         else
-        {
-            $request->session()->flash('error','Please choose file import.');
-            
-        }
-        return back();
+            return back()->with(['error'=>'Please choose file import.']);
     }
     public function export()
     {
