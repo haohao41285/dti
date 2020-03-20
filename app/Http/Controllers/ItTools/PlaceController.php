@@ -55,100 +55,122 @@ class PlaceController extends Controller
 
 
     }
+    // public function cloneUpdateWebsite(Request $request)
+    // {
+    //     $place_id = $request->place_id;
+
+    //     //Check menu exit
+    //     $menus = PosMenu::where([['menu_place_id',$place_id],['menu_status',1]])->count();
+    //     $banners = PosBanner::where([['ba_place_id',$place_id],['ba_status',1]])->count();
+
+    //     if($menus > 0 || $banners > 0){
+    //         return response(['status'=>0,'msg'=>'Failed! Menu, Banner existed!']);
+    //     }else{
+    //         DB::beginTransaction();
+    //         try{
+    //                 //Check place_id in pos_place with pos_menu
+    //             $menu_place = DB::table('pos_place')->join('pos_menu',function($join){
+    //                 $join->on('pos_place.place_id','pos_menu.menu_place_id');
+    //             })
+    //             ->where('pos_place.place_ip_license',$request->theme_license)
+    //             ->where('pos_menu.menu_status',1)
+    //             ->select('pos_place.*','pos_menu.*')
+    //             ->get();
+
+    //             if($menu_place->count() > 0 ){
+    //                 $menu_arr = [];
+    //                 $stt = 1;
+    //                 foreach($menu_place as $key => $menu){
+    //                     $menu_arr[] = [
+    //                         'menu_id' => $stt,
+    //                         'menu_place_id' => $place_id,
+    //                         'menu_parent_id' => $menu->menu_parent_id,
+    //                         'menu_name' => $menu->menu_name,
+    //                         'menu_index' => $menu->menu_index,
+    //                         'menu_url' => $menu->menu_url,
+    //                         'menu_descript' => $menu->menu_descript,
+    //                         'menu_image' => $menu->menu_image,
+    //                         'menu_list_image' => $menu->menu_list_image,
+    //                         'menu_type' => $menu->menu_type,
+    //                         'created_by' => Auth::user()->user_id,
+    //                         'updated_by' => Auth::user()->user_id,
+    //                         'menu_status' => 1,
+    //                         'enable_status' => 1,
+    //                     ];
+    //                     $stt++;
+    //                 }
+    //                 PosMenu::insert($menu_arr);
+    //             }
+    //             //Check place_id in pos_place with pos_banner
+    //             $banner_place = DB::table('pos_place')->join('pos_banner',function($join){
+    //                 $join->on('pos_place.place_id','pos_banner.ba_place_id');
+    //             })
+    //             ->where('pos_place.place_ip_license',$request->theme_license)
+    //             ->where('pos_banner.ba_status',1)
+    //             ->get();
+
+    //             if($banner_place->count() > 0){
+    //                  $banner_arr = [];
+    //                  $stt_ba = 1;
+    //                 foreach($banner_place as $banner){
+
+    //                     $banner_arr[] = [
+    //                         'ba_id' => $stt_ba,
+    //                         'ba_place_id' => $place_id,
+    //                         'ba_name' => $banner->ba_name,
+    //                         'ba_index' => $banner->ba_index,
+    //                         'ba_descript' => $banner->ba_descript,
+    //                         'ba_image' => $banner->ba_image,
+    //                         'created_by' => Auth::user()->user_id,
+    //                         'updated_by' => Auth::user()->user_id,
+    //                         'ba_status' => 1,
+    //                         'ba_style'  => $banner->ba_style,
+    //                     ];
+    //                     $stt_ba++;
+    //                 }
+    //             }
+    //             $place = PosPlace::getPlaceIdByLicense($request->get_license);
+
+    //             $place->place_theme_code = $request->get_code;
+    //             $place->place_theme_property = $request->id_properties ?? NULL;
+    //             $place->save();
+
+    //             $placeId = $place->place_id;
+
+    //             PosWebsiteProperty::cloneUpdate($request->id_properties,$placeId);
+    //             DB::commit();
+    //             return response(['status'=>1,'msg'=>"Clone website successfully!"]);
+
+    //         }catch(\Exception $e){
+    //             DB::rollBack();
+    //             \Log::info($e);
+    //             return response(['status'=>0,'msg'=>"Failed! Clone website failed!"]);
+    //         }
+    //     }
+    // }
     public function cloneUpdateWebsite(Request $request)
     {
-        $place_id = $request->place_id;
+        DB::beginTransaction();
+        try{
+            $place = PosPlace::getPlaceIdByLicense($request->get_license);
 
-        //Check menu exit
-        $menus = PosMenu::where([['menu_place_id',$place_id],['menu_status',1]])->count();
-        $banners = PosBanner::where([['ba_place_id',$place_id],['ba_status',1]])->count();
+            $place->place_theme_code = $request->get_code;
+            $place->place_theme_property = $request->id_properties ?? NULL;
+            $place->save();
 
-        if($menus > 0 || $banners > 0){
-            return response(['status'=>0,'msg'=>'Failed! Menu, Banner existed!']);
-        }else{
-            DB::beginTransaction();
-            try{
-                    //Check place_id in pos_place with pos_menu
-                $menu_place = DB::table('pos_place')->join('pos_menu',function($join){
-                    $join->on('pos_place.place_id','pos_menu.menu_place_id');
-                })
-                ->where('pos_place.place_ip_license',$request->theme_license)
-                ->where('pos_menu.menu_status',1)
-                ->select('pos_place.*','pos_menu.*')
-                ->get();
+            $placeId = $place->place_id;
 
-                if($menu_place->count() > 0 ){
-                    $menu_arr = [];
-                    $stt = 1;
-                    foreach($menu_place as $key => $menu){
-                        $menu_arr[] = [
-                            'menu_id' => $stt,
-                            'menu_place_id' => $place_id,
-                            'menu_parent_id' => $menu->menu_parent_id,
-                            'menu_name' => $menu->menu_name,
-                            'menu_index' => $menu->menu_index,
-                            'menu_url' => $menu->menu_url,
-                            'menu_descript' => $menu->menu_descript,
-                            'menu_image' => $menu->menu_image,
-                            'menu_list_image' => $menu->menu_list_image,
-                            'menu_type' => $menu->menu_type,
-                            'created_by' => Auth::user()->user_id,
-                            'updated_by' => Auth::user()->user_id,
-                            'menu_status' => 1,
-                            'enable_status' => 1,
-                        ];
-                        $stt++;
-                    }
-                    PosMenu::insert($menu_arr);
-                }
-                //Check place_id in pos_place with pos_banner
-                $banner_place = DB::table('pos_place')->join('pos_banner',function($join){
-                    $join->on('pos_place.place_id','pos_banner.ba_place_id');
-                })
-                ->where('pos_place.place_ip_license',$request->theme_license)
-                ->where('pos_banner.ba_status',1)
-                ->get();
-
-                if($banner_place->count() > 0){
-                     $banner_arr = [];
-                     $stt_ba = 1;
-                    foreach($banner_place as $banner){
-
-                        $banner_arr[] = [
-                            'ba_id' => $stt_ba,
-                            'ba_place_id' => $place_id,
-                            'ba_name' => $banner->ba_name,
-                            'ba_index' => $banner->ba_index,
-                            'ba_descript' => $banner->ba_descript,
-                            'ba_image' => $banner->ba_image,
-                            'created_by' => Auth::user()->user_id,
-                            'updated_by' => Auth::user()->user_id,
-                            'ba_status' => 1,
-                            'ba_style'  => $banner->ba_style,
-                        ];
-                        $stt_ba++;
-                    }
-                }
-                $place = PosPlace::getPlaceIdByLicense($request->get_license);
-
-                $place->place_theme_code = $request->get_code;
-                $place->place_theme_property = $request->id_properties ?? NULL;
-                $place->save();
-
-                $placeId = $place->place_id;
-
-                PosWebsiteProperty::cloneUpdate($request->id_properties,$placeId);
-                DB::commit();
-                return response(['status'=>1,'msg'=>"Clone website successfully!"]);
-
-            }catch(\Exception $e){
-                DB::rollBack();
-                \Log::info($e);
-                return response(['status'=>0,'msg'=>"Failed! Clone website failed!"]);
-            }
+            PosWebsiteProperty::cloneUpdate($request->id_properties,$placeId);
+            //run sh file
+            DB::commit();
+            return response()->json(['status'=>1,'msg'=>"Clone website successfully!"]);
         }
+        catch(\Exception $e){
+            DB::rollBack();
+            return response(['status'=>0,'msg'=>'Failed!']);
+        }
+       
     }
-
 
     public function getPlacesDatatable(){
 
