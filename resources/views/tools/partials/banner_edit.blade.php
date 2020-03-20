@@ -41,8 +41,9 @@
                            {{--  <label for="imageUpload1"></label> --}}
                         </div>
                         <div class="catalog-image-preview" style="height:200px">
-                            <img id="catalogImagePreview2" style='display:{{(isset($ba_item)&&$ba_item->ba_image!="")?"":"none"}};height:100%' src="{{config('app.url_file_view')}}{{isset($ba_item->ba_image)? $ba_item->ba_image:old('ba_image')}}" height="100px" />
+                            <img id="catalogImagePreview2" style='display:{{(isset($ba_item)&&$ba_item->ba_image!="")?"":"none"}};height:100%' src="{{isset($ba_item->ba_image)?config('app.url_file_view').$ba_item->ba_image:old('ba_image')}}" height="100px" />
                         </div>
+                        <i class="fas fa-trash delete-image text-primary" style="position:absolute;top:10px;right:15px;border: 1px solid red;border-radius: 50%;padding: 5px;"></i>
                     </div>
                 </div>
             </div>
@@ -166,6 +167,18 @@ $(document).ready(function() {
             $("#submit").attr('disabled', false);
         }
     }
+    $(".delete-image").click(function(){
+        let image = $("#catalogImagePreview2");
+        if(image.attr('src') != ""){
+            if(confirm('Do you want delete this image?')){
+                $(this).siblings('.catalog-image-edit').children('input').val("");
+                image.attr('src','').hide();
+            }
+                
+            else
+                return;
+        }
+    })
 
 });
 

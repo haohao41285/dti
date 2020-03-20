@@ -76,13 +76,13 @@ class CateServiceController extends Controller
                 'cateservice_name' => 'required',
                 'cateservice_image' => 'mimes:jpeg,jpg,png,gif|max:1024', // max 3000kb
                 'cateservice_icon_image' => 'mimes:jpeg,svg,jpg,png,gif|max:1024', // max 3000kb
-                // 'cateservice_description' => 'required'
+                'cateservice_description' => 'required'
           ];
           $messages = [
             'cateservice_name.required' => "Please enter Full name",
             'cateservice_image.mimes' => 'Uploaded image is not in image format',
             'cateservice_image.max' => 'max size image 1Mb',
-            // 'cateservice_description.required' => 'Please enter Description'
+            'cateservice_description.required' => 'Please enter Description'
           ];
             $validator = Validator::make($request->all(), $rules, $messages);
 

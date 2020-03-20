@@ -180,7 +180,7 @@
                               {{-- <label for="imageUpload2"></label> --}}
                           </div>
                           <div class="catalog-image-preview" style="height:200px">
-                              <img id="catalogImagePreview2"  style='display:{{(isset($service_item)&&$service_item->service_image!="")?"":"none"}}' src="{{(isset($service_item))?config('app.url_file_view').$service_item->service_image:old('service_image')}}" height="100%" />
+                              <img id="catalogImagePreview2"  style='display:{{(isset($service_item)&&$service_item->service_image!="")?"":"none"}}' src="{{(isset($service_item->service_image))?config('app.url_file_view').$service_item->service_image:old('service_image')}}" height="100%" />
                           </div>
                           <i class="fas fa-trash delete-image text-primary" style="position:absolute;top:10px;right:10px;border: 1px solid red;border-radius: 50%;padding: 5px;"></i>
                       </div>
@@ -327,7 +327,7 @@ function readURL(input) {
         reader.onload = function(e) {
             $($(input).attr("data-target")).attr('src', e.target.result);
             $($(input).attr("data-target")).hide();
-            $($(input).attr("data-target")).fadeIn(650);
+            $($(input).attr("data-target")).fadeIn(100);
         }
         reader.readAsDataURL(input.files[0]);
     }      
@@ -415,8 +415,11 @@ $(document).ready(function() {
     $(".delete-image").click(function(){
         let image = $("#catalogImagePreview2");
         if(image.attr('src') != ""){
-            if(confirm('Do you want delete this image?'))
+            if(confirm('Do you want delete this image?')){
+                $(this).siblings('.catalog-image-edit').children('input').val("");
                 image.attr('src','').hide();
+            }
+                
             else
                 return;
         }

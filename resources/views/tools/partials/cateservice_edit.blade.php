@@ -37,7 +37,7 @@
                  <div class="col-md-9 col-sm-9 col-xs-12" style="overflow: hidden;">
                     <div class="catalog-image-upload" style="position:relative">
                            <div class="catalog-image-edit">
-                              <input type="hidden" name="cateservice_image_old" value="{{isset($cateservice_item->cateservice_image)? $cateservice_item->cateservice_image:old('cateservice_image')}}">
+                              <input type="hidden" name="cateservice_image_old" id="cateservice_image_old" value="{{isset($cateservice_item->cateservice_image)? $cateservice_item->cateservice_image:old('cateservice_image')}}">
                                <input type='file' class="cateservice_image" name="cateservice_image" data-target="#catalogImagePreview1" accept=".png, .jpg, .jpeg" />
                                {{-- <label for="cateservice_image"></label> --}}
                            </div>
@@ -55,7 +55,7 @@
                  <div class="col-md-9 col-sm-9 col-xs-12" style="overflow: hidden;">
                     <div class="catalog-image-upload" style="position:relative">
                            <div class="catalog-image-edit">
-                              <input type="hidden" name="cateservice_icon_image_old" value="{{isset($cateservice_item->cateservice_icon_image)? $cateservice_item->cateservice_icon_image:old('cateservice_icon_image')}}">
+                              <input type="hidden" name="cateservice_icon_image_old" id="cateservice_icon_image_old" value="{{isset($cateservice_item->cateservice_icon_image)? $cateservice_item->cateservice_icon_image:old('cateservice_icon_image')}}">
                                <input type='file' class="cateservice_image" name="cateservice_icon_image" data-target="#catalogImagePreview2" accept=".png, .jpg, .jpeg" />
                                {{-- <label for="cateservice_image"></label> --}}
                            </div>
@@ -120,9 +120,6 @@ $(document).ready(function() {
             radioClass: 'iradio_flat-green'
         });  
     }
-    $("input[type=file]").change(function() {
-        readURL(this);
-    });
     $('textarea.texteditor').summernote({
         height: 150,
         toolbar: [
@@ -137,46 +134,28 @@ $(document).ready(function() {
         ]
     });
 });
-$(document).ready(function() {
-     if ($("input.checkFlat")[0]) {
-        $('input.checkFlat').iCheck({
-            radioClass: 'iradio_flat-green',
-            checkboxClass: 'icheckbox_flat-green'
-        });       
-    }        
-    // initializeDropZone();
-    $("input[type=file]").change(function() {
-        readURL(this);
-    });
-});
-function readURL(input) {
-    if (input.files[0] && input.files[0]) {
-      $('img').show();
-        var reader = new FileReader();
-        reader.onload = function(e) {
-            $($(input).attr("data-target")).attr('src', e.target.result);
-            $($(input).attr("data-target")).hide();
-            $($(input).attr("data-target")).fadeIn(650);
-        }
-        reader.readAsDataURL(input.files[0]);
-    }    
-}
-$("input[type=file]").change(function() {
-    readURL(this);
-});
-
 </script>   
 <script>
   $(document).ready(function(){
     $(".catalog-image-preview").on('click',function(){
         $(this).parent().find(".cateservice_image").trigger("click");
-      // $(".cateservice_image").trigger("click");
     });
-    $('.cateservice_image').change(function(){            
+    $('.cateservice_image').change(function(){     
+        var image_target = $(this).parent().siblings('.catalog-image-preview').children('img');
          try{
-            var name = $(this)[0].files[0].name;            
+            var name = $(this)[0].files[0].name;
+            if (this.files[0] && this.files[0]) {
+                image_target.show();
+                var reader = new FileReader();
+                reader.onload = function(e) {
+                    image_target.attr('src', e.target.result);
+                    image_target.hide();
+                    image_target.fadeIn(500);
+                }
+                reader.readAsDataURL(this.files[0]);
+            }    
          }catch(err){            
-            $("#catalogImagePreview1").hide();          
+            image_target.hide();       
          }        
     });
   });
@@ -212,8 +191,11 @@ $("input[type=file]").change(function() {
         $(".delete-image").click(function(){
             let image = $("#catalogImagePreview1");
             if(image.attr('src') != ""){
-                if(confirm('Do you want delete this image?'))
+                if(confirm('Do you want delete this image?')){
                     image.attr('src','').hide();
+                    $("#cateservice_image_old").val("");
+                    $(this).siblings('.catalog-image-edit').children('.cateservice_image').val("");
+                }
                 else
                     return;
             }
@@ -221,8 +203,11 @@ $("input[type=file]").change(function() {
         $(".delete-image2").click(function(){
             let image = $("#catalogImagePreview2");
             if(image.attr('src') != ""){
-                if(confirm('Do you want delete this image?'))
+                if(confirm('Do you want delete this image?')){
                     image.attr('src','').hide();
+                    $("cateservice_icon_image_old").val("");
+                    $(this).siblings('.catalog-image-edit').children('.cateservice_image').val("");
+                }
                 else
                     return;
             }

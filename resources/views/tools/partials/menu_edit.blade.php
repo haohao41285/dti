@@ -75,8 +75,10 @@
                           </div>
                           
                           <div class="catalog-image-preview" style="height:200px">
-                              <img style='display:{{(isset($menu_item)&&$menu_item->menu_image!="")?"":"none"}};height:100%' id="catalogImagePreview2" src="{{config('app.url_file_view')}}{{isset($menu_item->menu_image)? $menu_item->menu_image:old('menu_image')}}" />
+                              <img style='display:{{(isset($menu_item)&&$menu_item->menu_image!="")?"":"none"}};height:100%' id="catalogImagePreview2" src="{{isset($menu_item->menu_image)?config('app.url_file_view').$menu_item->menu_image:old('menu_image')}}" />
                           </div>
+                          <i class="fas fa-trash delete-image text-primary" style="position:absolute;top:10px;right:15px;border: 1px solid red;border-radius: 50%;padding: 5px;"></i>
+
                       </div>
                 </div> 
                 <span style="color: red">{{$errors->first('menu_image')}}</span> 
@@ -297,6 +299,18 @@ $(document).ready(function() {
             $("#meu_submit").attr('disabled',false);
         }
     }
+    $(".delete-image").click(function(){
+        let image = $("#catalogImagePreview2");
+        if(image.attr('src') != ""){
+            if(confirm('Do you want delete this image?')){
+                $(this).siblings('.catalog-image-edit').children('input').val("");
+                image.attr('src','').hide();
+            }
+                
+            else
+                return;
+        }
+    })
     });
 </script> 
 @endpush
