@@ -387,6 +387,14 @@ Route::group(['middleware' => ['auth']], function () {
             Route::get('datatable-team', 'SetupSaleTeam@datatableTeam')->name('setting.sale_team.datatable_teams');
             Route::post('save-team', 'SetupSaleTeam@saveTeam')->name('setting.sale_team.save_team');
         });
+        //SETTING DISCOUNT
+        Route::group(['prefix' => 'setup-discount'], function() {
+            Route::get('/', 'SetupDiscount@index')->name('setting.discount.index');
+            Route::get('datatable', 'SetupDiscount@datatable')->name('setting.discount.datatable');
+            Route::post('save', 'SetupSaleTeam@save')->name('setting.sale_team.save');
+            Route::get('datatable-team', 'SetupSaleTeam@datatableTeam')->name('setting.sale_team.datatable_teams');
+            Route::post('save-team', 'SetupSaleTeam@saveTeam')->name('setting.sale_team.save_team');
+        });
         Route::get('menu-app','SetupServiceController@menuApp')->name('get_menu_app');
     });
 
