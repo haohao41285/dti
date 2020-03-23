@@ -32,7 +32,7 @@
     <div class="col-md-8">
         <div class="card shadow mb-3 ">
             <div class="card-header py-2">
-                <h6 class="m-0 font-weight-bold text-primary">Team Term Service</h6>
+                <h6 class="m-0 font-weight-bold text-primary">Discount List</h6>
             </div>
             <div class="card-body">
                 <table class="table table-sm table-bordered table-hover" id="dataTable" width="100%" cellspacing="0">
@@ -54,44 +54,42 @@
     <div class="col-md-4 ">
         <div class="card shadow mb-3 ">
             <div class="card-header py-2">
-                <h6 class="m-0 font-weight-bold text-primary tt-tip">Add Term Service</h6>
+                <h6 class="m-0 font-weight-bold text-primary tt-tip">Add Discount</h6>
             </div>
             <div class="card-body">
-                <form id="form-add-edit-term">
-                    <div class="form-group">
-                        <label for=""><b>Service</b></label>
-                        <select name="service_id" class="form-control form-control-sm" id="service_id">
-                            {{-- @foreach($services as $service)
-                                <option value="{{ $service->id }}">{{ $service->cs_name }}</option>
-                            @endforeach --}}
-                        </select>
-                    </div>
+                <form id="form-add-edit-discount">
                     <div class="form-group">
                         <label for="code"><b>Code</b></label>
-                        <input type="text" class="form-control form-control-sm" required name="code">
+                        <input type="text" class="form-control form-control-sm form-required text-uppercase" required name="code">
                     </div>
                     <div class="form-group">
-                        <label for="date_start"><b>Date Start</b></label>
-                    <input type="text" id="date_start" class="form-control form-control-sm" required name="date_start" value="{{today()->format('m/d/Y')}}">
+                        <label for=""><b>Date Range</b></label>
+                        <div class="input-daterange input-group" id="date_range">
+                        <input type="text" class="input-sm form-control form-control-sm form-required" value="{{today()->addDay(1)->format('m/d/Y')}}" id="date_start" name="date_start" />
+                          <span class="input-group-addon"><b>to</b></span>
+                          <input type="text" class="input-sm form-control form-control-sm form-required" value="{{today()->addDay(1)->format('m/d/Y')}}" id="date_end" name="date_end" />
+                        </div>
                     </div>
+                    <label for="amount"><b>Amount</b></label>
+                    <div class="input-group mb-3">
+                        <input type="text" class="form-control form-control-sm amount" onkeypress="return isNumberKey(event)" placeholder="Amount" id="amount_percent" name="amount">
+                        <div class="input-group-append">
+                            <select name="type" class="form-control form-control-sm" id="type">
+                                <option value="0">%</option>
+                                <option value="1">$</option>
+                            </select>
+                        </div>
+                      </div>
                     <div class="form-group">
-                        <label for="date_end"><b>Date End</b></label>
-                        <input type="text" id="date_end" class="form-control form-control-sm" required name="date_end">
-                    </div>
-                    <div class="form-group">
-                        <label for=""><b>Service</b></label>
-                        <select name="service_id" class="form-control form-control-sm" id="service_id">
-                            {{-- @foreach($services as $service)
-                                <option value="{{ $service->id }}">{{ $service->cs_name }}</option>
-                            @endforeach --}}
-                        </select>
+                        <label for="description"><b>Description</b></label>
+                        <textarea name="description" id="description" class="form-control forn-control-sm" rows="3"></textarea>
                     </div>
                     <div class="form-group" style="height: 300px">
                         <button type="button" class="btn btn-sm btn-primary" id="upload-file">Upload Files</button><br>
 
                         <div class="form-group mt-3">
-                            <label><b>File Name</b></label>
-                            <input type="hidden" class="form-control form-control-sm" value="" name="file_name" id="file_name_hidden">
+                            <label><b>Attachment</b></label>
+                            <input type="hidden" class="form-control form-control-sm" value="" name="document" id="file_name_hidden">
                             <input type="text" class="form-control form-control-sm" value="" disabled name="file_name" id="file_name">
                         </div>
                     </div>
@@ -162,22 +160,35 @@ var old_service = 0;
         $("#image").click();
     }
 $(document).ready(function($) {
-
-    $("#date_start").datepicker({
+    var check = 0;
+    
+    function formRequired(){
+            check = 0;
+        $('.form-required').each(function(){
+            let value = $(this).val();
+            if(value.length == 0){
+                $(this).addClass('is-invalid');
+                check++;
+            }
+            else{
+                if($(this).hasClass('is-valid'))
+                    $(this).removeClass('is-invalid');
+            }
+        })
+    }
+   
+    $(".form-required").keypress(function(){
+        let value = $(this).val();
+        if(value.length == 0)
+            $(this).addClass('is-invalid');
+        else
+            $(this).removeClass('is-invalid');
+    });
+    $("#date_range").datepicker({
         todayHighlight: true,
         setDate: new Date(),
         startDate: new Date()
     });
-    setDateEnd();
-    function setDateEnd(){
-        var date_start = $("#date_start").val();
-        $("#date_end").datepicker({
-            todayHighlight: true,
-            setDate: new Date(),
-            startDate: date_start
-        });
-    }
-
     function getFiles(){
         $.ajax({
             url: '{{ route('setup_term_service.get_files') }}',
@@ -224,7 +235,7 @@ $(document).ready(function($) {
             { data: 'code', name: 'code', },
             { data: 'date_start', name: 'date_start' },
             { data: 'date_end', name: 'date_end' },
-            { data: 'amount', name: 'amount',class:'text-right'},
+            { data: 'type_amount', name: 'type_amount',class:'text-right'},
             { data: 'description', name: 'description', },
             { data: 'action', name: 'action', orderable: false, searchable: false, class: 'text-center' },
         ],
@@ -253,12 +264,17 @@ $(document).ready(function($) {
     });
     $(document).on('click', '.submit-tt', function() {
 
+        formRequired();
+        if(check > 0){
+             return;
+        }
+        
         var formData = new FormData($(this).parents('form')[0]);
         formData.append('_token','{{ csrf_token() }}');
         formData.append('id',id);
 
         $.ajax({
-            url: '{{route('setup_term_sevice.save')}}',
+            url: '{{route('setting.discount.save')}}',
             type: 'POST',
             contentType: false,
             processData: false,
@@ -267,11 +283,13 @@ $(document).ready(function($) {
             })
             .done(function(data) {
                 data = JSON.parse(data);
+                // console.log(data);return;
                 if (data.status === 'error')
                     toastr.error(data.message);
                 else {
                     clearView();
                     dataTable.draw();
+                    toastr.success(data.message);
                 }
             })
             .fail(function(xhr, ajaxOptions, thrownError) {
@@ -356,10 +374,10 @@ $(document).ready(function($) {
         old_service = 0;
     }
     function clearView(){
-        $("#form-add-edit-term")[0].reset();
+        $("#form-add-edit-discount")[0].reset();
         old_service = 0;
         id = 0;
-        $(".tt-tip").text('Add Term Service');
+        $(".tt-tip").text('Add Discount');
     }
     $(document).on('click','.custom-control-input',function(){
         $.ajax({
@@ -411,7 +429,21 @@ $(document).ready(function($) {
                 toastr.error("error");
             });
         }
-    })
+    });
+    $("#amount_percent").keypress(function(){
+        let amount = $(this);
+        let amount_percent = parseFloat(amount.val());
+        if( amount_percent + 90 > 100)
+            return false;
+    });
+    $("#type").change(function(){
+
+        let type = $(this).val();
+        if( type == 0 )
+            $(".amount").attr('id','amount_percent');
+        else
+            $(".amount").attr('id','amount');
+    });
 });
 
 </script>

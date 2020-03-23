@@ -391,7 +391,7 @@ Route::group(['middleware' => ['auth']], function () {
         Route::group(['prefix' => 'setup-discount'], function() {
             Route::get('/', 'SetupDiscount@index')->name('setting.discount.index');
             Route::get('datatable', 'SetupDiscount@datatable')->name('setting.discount.datatable');
-            Route::post('save', 'SetupSaleTeam@save')->name('setting.sale_team.save');
+            Route::post('save', 'SetupDiscount@save')->name('setting.discount.save');
             Route::get('datatable-team', 'SetupSaleTeam@datatableTeam')->name('setting.sale_team.datatable_teams');
             Route::post('save-team', 'SetupSaleTeam@saveTeam')->name('setting.sale_team.save_team');
         });
