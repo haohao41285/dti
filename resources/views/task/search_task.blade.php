@@ -20,7 +20,7 @@
     </div>
     @if(\Illuminate\Support\Facades\Auth::user()->user_id == 1)
     <div class="col-md-2">
-        <label for="">Assignee</label>
+        <label for="">Assigne</label>
         <select id="assign_to" name="assign_to" class="form-control form-control-sm">
             <option value="">-- ALL --</option>
             @foreach ($user_list as $key => $user)

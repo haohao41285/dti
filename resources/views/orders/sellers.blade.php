@@ -1,6 +1,6 @@
 @extends('layouts.app')
 @section('content-title')
-    Seller's Orders
+    SELLER'S ORDERS
 @endsection
 @section('content')
 <div class="table-responsive">
@@ -50,7 +50,7 @@
     </div>
     </form>
     <hr>
-    <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+    <table class="table table-sm table-bordered table-hover" id="dataTable" width="100%" cellspacing="0">
         <thead>
                 <th>Id</th>
                 <th>Order Date</th>
@@ -60,7 +60,6 @@
                 <th>Discount($)</th>
                 <th>Total Charged($)</th>
                 <th>Serller</th>
-                <th style="width: 160px">Info</th>
             </tr>
         </thead>
     </table>
@@ -96,8 +95,6 @@
             { data: 'discount', name: 'discount',class:'text-right' },
             { data: 'total_charge', name: 'total_charge',class:'text-right' },
             { data: 'seller', name: 'seller' },
-            { data: 'information', name: 'information'},
-                  // { data: 'action' , name:'action' ,orderable: false, searcheble: false ,class:'text-center'}
         ],
     });
     $("#search-button").click(function(){

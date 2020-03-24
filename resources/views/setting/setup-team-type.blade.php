@@ -1,6 +1,6 @@
 @extends('layouts.app')
-@section('title')
-Team Type List
+@section('content-title')
+    SETUP TEAM TYPE
 @stop
 @section('content')
 <div class="col-12 row">
@@ -10,9 +10,9 @@ Team Type List
                 <h6 class="m-0 font-weight-bold text-primary">Team Type List</h6>
             </div>
             <div class="card-body">
-                <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                <table class="table table-sm table-bordered table-hover" id="dataTable" width="100%" cellspacing="0">
                     <thead>
-                        <tr>
+                        <tr class="thead-light">
                             <th class="text-center">ID</th>
                             <th>Team Type Name</th>
                             <th>Description</th>
@@ -51,8 +51,11 @@ Team Type List
 @push('scripts')
 <script type="text/javascript">
 //DEFINE VAR
-var gu_id = 0;
+var id = 0;
 $(document).ready(function($) {
+
+    var old_team_type_name = "";
+
     dataTable = $("#dataTable").DataTable({
         processing: true,
         serverSide: true,
@@ -115,6 +118,7 @@ $(document).ready(function($) {
         $("#team_type_description").val(dataTable.row(this).data()['team_type_description']);
         $(".tt-tip").text("Edit Team Type");
         id = dataTable.row(this).data()['id'];
+        old_team_type_name = dataTable.row(this).data()['team_type_name'];
 
     });
     $(document).on('click', '.submit-tt', function() {
@@ -122,7 +126,7 @@ $(document).ready(function($) {
         var team_type_description = $("#team_type_description").val();
         var team_type_name = $("#team_type_name").val();
 
-        if (team_type_name != "") {
+        if (team_type_name !== "") {
             $.ajax({
                     url: '{{route('add-team-type')}}',
                     type: 'GET',
@@ -130,13 +134,20 @@ $(document).ready(function($) {
                     data: {
                         team_type_description: team_type_description,
                         team_type_name: team_type_name,
-                        id: id
+                        id: id,
+                        old_team_type_name: old_team_type_name,
                     },
                 })
                 .done(function(data) {
                     data = JSON.parse(data);
-                    if (data.status == 'error') {
-                        toastr.error(data.message);
+                    if (data.status === 'error') {
+                        if(typeof(data.message) === 'string' )
+                            toastr.error(data.message);
+                        else{
+                            $.each(data.message,function (ind,val) {
+                                toastr.error(val);
+                            });
+                        }
                     } else {
                         clearView();
                         dataTable.draw();
@@ -147,7 +158,7 @@ $(document).ready(function($) {
                     // console.log(thrownError + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText);
                 });
         } else {
-            toastr.error('Please enter Team type name!')
+            toastr.error('Name is required');
         }
     });
     $(".cancel-tt").click(function() {
@@ -161,7 +172,7 @@ $(document).ready(function($) {
         id = 0;
     }
     $(document).on("click", ".delete-tt", function() {
-        clearView();
+        
         if (confirm("Do you want to delete this team type?")) {
 
             var tt_id = $(this).attr('tt_id');
@@ -170,7 +181,10 @@ $(document).ready(function($) {
                     url: '{{route('delete-team-type')}}',
                     type: 'GET',
                     dataType: 'html',
-                    data: { tt_id: tt_id },
+                    data: { 
+                        tt_id: tt_id,
+                        old_team_type_name: old_team_type_name
+                    },
                 })
                 .done(function(data) {
                     data = JSON.parse(data);
@@ -179,6 +193,7 @@ $(document).ready(function($) {
                     else {
                         toastr.success(data.message);
                         dataTable.draw();
+                        clearView();
                     }
                 })
                 .fail(function() {

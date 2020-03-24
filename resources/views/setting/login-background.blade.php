@@ -1,10 +1,7 @@
 @extends('layouts.app')
 @section('content-title')
- Setup Login Background
+  SETUP LOGIN BACKGROUND
 @endsection
-@push('scripts')
-
-@endpush
 @section('content')
 <div class="row col-12" >
                 <div class="col-12 ">

@@ -1,6 +1,6 @@
 @extends('layouts.app')
-@section('title')
-    Add Task
+@section('content-title')
+    EDIT TASK #{{$id}} - {{$task_info->subject}}
 @endsection
 @push('styles')
 <style type="text/css" media="screen">
@@ -11,7 +11,6 @@
 @endpush
 @section('content')
 	<div class="table-responsive">
-	<h4 class="border border-info border-top-0 border-right-0 border-left-0 text-info">EDIT TASK #{{$id}} - {{$task_info->getService->cs_name}}</h4>
     <form action="{{route('save-task')}}" id="form-task" method="post" accept-charset="utf-8">
         @csrf()
         <table class="table table-striped mt-4 table-bordered" id="dataTableAllCustomer" widtd="100%" cellspacing="0">
@@ -58,18 +57,31 @@
                         </select>
                     </th>
                     <th>
-                        <input type="text" id="date_start" class="form-control form-control-sm" value="{{$task_info->date_start}}" name="date_start">
+                        @if($task_info->date_start != "" && $task_info->date_start != null)
+                            <input type="text" id="date_start" disabled class="form-control form-control-sm" value="{{format_date($task_info->date_start)}}" name="date_start">
+                        @else
+                            <input type="text" id="date_start" class="form-control form-control-sm" value="" name="date_start">
+                        @endif
                     </th>
                     <th>
-                        <input type="text" id="date_end" class="form-control form-control-sm" name="date_end" value="{{$task_info->date_end}}">
+                        @if($task_info->date_end != "" && $task_info->date_end != null)
+                            <input type="text" id="date_end" disabled class="form-control form-control-sm" name="date_end" value="{{format_date($task_info->date_end)}}">
+                        @else
+                            <input type="text" id="date_end" class="form-control form-control-sm" name="date_end" value="">
+                        @endif
                     </th>
                     <th>
-                        <input type="number" id="complete_percent" class="form-control form-control-sm" value="{{$task_info->complete_percent}}" name="complete_percent">
+                        <input type="text" id="complete_percent" onkeypress="return isNumberKey(event)" class="form-control form-control-sm" value="{{$task_info->complete_percent}}" name="complete_percent">
                     </th>
+                    @php
+                        $assign_to = $task_info->assign_to;
+                        $assign_list = explode(';', $assign_to);
+                    @endphp
                     <th>
-                        <select name="assign_to" class="form-control form-control-sm text-capitalize">
+                        <select name="assign_to[]" id="assign_to" class="form-control form-control-sm text-capitalize" multiple>
+
                             @foreach($user_list as $key => $user)
-                            <option {{$task_info->status==$user->user_id?"selected":""}} value="{{$user->user_id}}" >{{$user->user_nickname}}({{$user->getFullname()}})</option>
+                            <option {{in_array($user->user_id,$assign_list)?"selected":""}} value="{{$user->user_id}}" >{{$user->user_nickname}}({{$user->getFullname()}})</option>
                             @endforeach
                         </select>
                     </th>
@@ -90,7 +102,7 @@
                         <textarea class="fom-control form-control-sm" name="note" id="note">{!!$task_info->note!!}</textarea>
                     </td>
                 </tr>
-                
+
             </tbody>
         </table>
         <div class="form-group">
@@ -157,6 +169,16 @@
             }
             $("#form-task").submit();
         });
+        $('#complete_percent').on('keydown keyup', function(e){
+            if ($(this).val() > 100 
+                && e.keyCode !== 46 // keycode for delete
+                && e.keyCode !== 8 // keycode for backspace
+               ) {
+               e.preventDefault();
+               $(this).val(100);
+            }
+        });
+        $("#assign_to").multiselect();
 	});
 </script>
 @endpush

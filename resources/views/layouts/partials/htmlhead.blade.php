@@ -9,6 +9,26 @@
 {{ Html::favicon( 'favicon.ico' ) }}
 {{ Html::style('fontawesome-free/css/all.min.css') }}
 {{ Html::style('css/app.css') }}
+<style type="text/css" media="screen">
+	table>tbody>tr>td>span.switchery>small{
+    top:-1px;
+    height: 25px!important;
+    width: 25px!important;
+}
+.switchery{
+    height: 25px!important;
+    width: 40px!important;
+}
+.note-popover{
+	display: none;
+}
+.table-responsive{
+    overflow-x: hidden;
+}
+.datepicker{
+    background-color: rgb(234, 236, 244);
+}
+</style>
 
 @stack('styles')
 {{-- Scripts --}}

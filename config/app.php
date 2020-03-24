@@ -174,14 +174,14 @@ return [
         // App\Providers\BroadcastServiceProvider::class,
         App\Providers\EventServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
-
         /**
          * My App
          */
         App\Providers\HelperServiceProvider::class,
         Maatwebsite\Excel\ExcelServiceProvider::class,
         App\Providers\ComposerServiceProvider::class,
-        Berkayk\OneSignal\OneSignalServiceProvider::class
+        Berkayk\OneSignal\OneSignalServiceProvider::class,
+        Shivella\Bitly\BitlyServiceProvider::class,
     ],
 
     /*
@@ -233,16 +233,18 @@ return [
         'Validator' => Illuminate\Support\Facades\Validator::class,
         'View' => Illuminate\Support\Facades\View::class,
         'Excel' => Maatwebsite\Excel\Facades\Excel::class,
-        'OneSignal' => Berkayk\OneSignal\OneSignalFacade::class
+        'OneSignal' => Berkayk\OneSignal\OneSignalFacade::class,
+        'Bitly' => Shivella\Bitly\Facade\Bitly::class,
+
     ],
 
     /*
      * File URL to view
      */
-    'url_file_view' => env( 'URL_FILE_VIEW', 'C:/xampp/htdocs/upload'),
+    'url_file_view' => env( 'URL_FILE_VIEW', 'http://localhost/uploads/'),    
     /*
      * URL Path to save file
      */
-    'url_file_write' => env( 'URL_FILE_WRITE', 'C:/xampp/htdocs/upload/'),
+    'url_file_write' => env( 'URL_FILE_WRITE', 'C:/xampp/htdocs/uploads/'),
 
 ];

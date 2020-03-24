@@ -1,6 +1,6 @@
 @extends('layouts.app')
-@section('title')
-    My Tasks
+@section('content-title')
+    DETAIL CUSTOMER
 @endsection
 @push('styles')
     <style type="text/css" media="screen">
@@ -11,31 +11,61 @@
         .note-popover.popover {
             display: none;
         }
+        .loader {
+          border: 8px solid #f3f3f3;
+          border-radius: 50%;
+          border-top: 8px solid blue;
+          border-right: 8px solid green;
+          border-bottom: 8px solid red;
+          border-left: 8px solid pink;
+          width: 80px;
+          height: 80px;
+          -webkit-animation: spin 2s linear infinite; /* Safari */
+          animation: spin 2s linear infinite;
+          position: fixed;
+          top: 50%;
+          left: 50%;
+          z-index: 100000;
+          display: none; 
+        }
+        /* Safari */
+        @-webkit-keyframes spin {
+          0% { -webkit-transform: rotate(0deg); }
+          100% { -webkit-transform: rotate(360deg); }
+        }
+
+        @keyframes spin {
+          0% { transform: rotate(0deg); }
+          100% { transform: rotate(360deg); }
+        }
     </style>
 @endpush
 @section('content')
-
-<h4 class="border border-info border-top-0 mb-3 border-right-0 border-left-0 text-info">CUSTOMER INFORMATION</h4>
     <div class="row">
         <div class="col-md-6">
             <span class="col-md-4"><b>FullName:</b></span>
-            <span class="col-md-8 text-uppercase">{{$main_customer_info->present()->getFullname()}}</span><br>
+            <span class="col-md-8 text-uppercase">{{$template_customer_info->getFullname()}}</span><br>
             <span class="col-md-4"><b>Cell Phone:</b></span>
             <span class="col-md-8">{{$template_customer_info->ct_cell_phone}}</span><br>
             <span class="col-md-4"><b>Business Phone:</b></span>
-            <span class="col-md-8">{{$main_customer_info->customer_phone}}</span><br>
+            <span class="col-md-8">{{$template_customer_info->ct_business_phone}}</span><br>
             <span class="col-md-4"><b>Business Name:</b></span>
             <span class="col-md-8">
                 @foreach($main_customer_info->getPlaces as $key => $place)
-                    <span class="text-uppercase text-info">{{$place->place_name}}{{$key>0?",":""}}</span>
+                    {{ $key+1 }} - <span class="text-uppercase text-info">{{$place->place_name}}</span>
                 @endforeach
             </span><br>
         </div>
-        <div class="col-md-6">
-            <span class="col-md-4"><b>Status:</b></span>
-            <span class="col-md-8 text-info">SERVICE</span><br>
-            <span class="col-md-4"><b>Seller:</b></span>
-            <span class="col-md-8"><span class="fullname_seller"></span><span class="email_seller"></span></span><br>
+        <div class="col-md-6 row">
+            <div class="col-md-4"><b>Status:</b></div>
+            <div class="col-md-8 text-info">SERVICE</div>
+            <div class="col-md-4"><b>Seller:</b></div>
+            <div class="col-md-8">
+                @foreach($seller_list as $seller)
+                    <span class="">{{ $seller->user_lastname." ".$seller->user_firstname }}</span>
+                    <span class="">-{{ $seller->user_email }}</span><br>
+                @endforeach
+            </div>
         </div>
         <div class="col-md-12">
             <span class="col-md-12"><b>Note:</b></span><br>
@@ -54,10 +84,11 @@
     </ul>
     <div class="tab-content" id="myTabContent">
         <div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">
-            <table class="table table-hover table-bordered" id="task-datatable" widtd="100%" cellspacing="0">
+            <table class="table table-hover table-sm table-bordered" id="task-datatable" widtd="100%" cellspacing="0">
         <thead  class="thead-light">
             <tr class="text-center">
                 <th>ORDER ID</th>
+                <th>PLACE NAME</th>
                 <th>ORDER DATE</th>
                 <th>Services</th>
                 <th>Subtotal($)</th>
@@ -89,18 +120,21 @@
              $seller_id = $order->created_by;
              if($count != 0)
                 $order_status= $status/$count;
+            //GET PLACE OF ORDER
+            $place_name = App\Models\PosPlace::where('place_id',$order->csb_place_id)->first();
 
             @endphp
-            @if($order_status == 1 ||$order_status == 2)
+            @if($order_status != 0)
             <tr>
                 <td class="text-center"><a href="{{route('order-view',$order->id)}}">#{{$order->id}}</a></td>
+                <td class="text-info">{{ isset($place_name)?$place_name->place_name:""}}</td>
                 <td class="text-center">{{format_datetime($order->created_at)}}</td>
                 <td>{!! $cs_list !!}</td>
                 <td class="text-right">${{$order->csb_amount?$order->csb_amount:0}}</td>
                 <td class="text-right">${{$order->csb_amount_deal!=""?$order->csb_amount_deal:0}}</td>
                 <td class="text-right">${{$order->csb_charge!=""?$order->csb_charge:0}}</td>
                 <td>{!! $task_list !!}</td>
-                <td class="text-center">{{$order_status==1?"NEW":"PROCESSING"}}</td>
+                <td class="text-center">{{getOrderStatus()[$order_status]}}</td>
             </tr>
             @endif
         @endforeach
@@ -108,21 +142,21 @@
     </table>
         </div>
         <div class="tab-pane fade" id="profile" role="tabpanel" aria-labelledby="profile-tab">
-            <table class="table table-hover table-bordered" id="place-order-datatable" widtd="100%" cellspacing="0">
+            <table class="table table-hover table-sm table-bordered" id="place-order-datatable" widtd="100%" cellspacing="0">
                 <thead  class="thead-light">
-                <tr class="text-center">
+                <tr>
                     <th>Place Name</th>
                     <th>Service Name</th>
-                    <th>Expired date</th>
-                    <th>Created At</th>
-                    <th></th>
+                    <th class="text-center">Expired date</th>
+                    <th class="text-center">Created At</th>
+                    <th class="text-center">Order</th>
                 </tr>
                 </thead>
                 <tbody>
-                @foreach($place_service as $key => $places)
+                @foreach($place_list as $key => $places)
                     <tr>
-                        <td class="text-uppercase">{{\App\Models\PosPlace::where('place_id',$key)->first()->place_name}}</td>
-                        <td class="">
+                        <td class="text-uppercase text-info">{{ $key }}</td>
+                        <td class="text-info">
                             @foreach($places as $place)
                                 {{$place->getComboService->cs_name}}<br>
                             @endforeach
@@ -134,10 +168,10 @@
                         </td>
                         <td class="text-center">
                             @foreach($places as $place)
-                                {{format_datetime($place->created_at)." by ".$place->getCreatedBy->user_nickname}}<br>
+                                {{format_datetime($place->customer_created_at)}}<br>
                             @endforeach
                         </td>
-                        <td class="text-center"><a href="{{route('add-order',$id)}}"><button class="btn btn-sm btn-secondary">Order</button></a></td>
+                        <td class="text-center text-info"><a href="{{route('add-order',$id)}}"><i class="fas fa-shopping-cart"></i></a></td>
                     </tr>
                 @endforeach
                 </tbody>
@@ -157,25 +191,32 @@
     </table>
 </div>
 <h4 class="border border-info border-top-0 border-right-0 border-left-0 text-info mt-5">ADD NEW COMMENT</h4>
-<form  enctype="multipart/form-data" accept-charset="utf-8">
+<form  enctype="multipart/form-data" accept-charset="utf-8" id="comment-form">
     @csrf()
-    <textarea  id="summernote2" class="form-control form-control-sm"  name="note"></textarea>
-    <input type="button" class="btn btn-sm btn-secondary mt-2" name="" value="Upload attchment's file" onclick="getFile2()" placeholder="">
+    <textarea  id="summernote2" class="form-control form-control-sm"  name="note" placeholder="Text Content..."></textarea>
+    <input type="button" class="btn btn-sm btn-secondary mt-2" name="" value="Upload attchment's file" onclick="getFile2()" placeholder=""><br>
+    <span id="file_names"></span>
+    <span id="total_file_size"></span>
     <input type="file" hidden id="file_image_list_2" multiple name="file_image_list[]">
     <input type="hidden" id="email_seller" name="email_seller" value="">
-    <p>(The maximum upload file size: 100M)</p>
+    <p class="text-danger">- The maximum upload file size: 50M<br>- The maximum amount of files: 20 files</p>
     <div style="height: 10px" class="bg-info">
     </div>
     <input type="hidden" value="" id="receiver_id">
     <hr style="border-top: 1px dotted grey;">
+            Send this comment as notification to email:
     <div class="input-group mb-2 mr-sm-2">
         <div class="input-group-prepend">
-            Send this comment as notification to email:
             <div class="input-group-text">Add CC:</div>
         </div>
-        <input type="text" class="form-control" name="email_list" id="email_list_2" placeholder="">
+        <select name="email_list[]" id="email_list" class="form-control form-control-m" multiple>
+            @foreach($user_list as $user)
+                <option value="{{ $user->user_email }}">{{ $user->user_nickname."( ".$user->user_email." )" }}</option>
+            @endforeach
+        </select>
+       
     </div>
-    <p>CC Multiple Email for example:<i> email_1@gmail.com;email_2@gmail.com</i></p>
+    
     <button type="botton" class="btn btn-sm btn-primary submit-comment">Submit Comment</button>
 </form>
 @endsection
@@ -185,17 +226,12 @@
             $("#file_image_list_2").click();
         }
         $(document).ready(function () {
-            $('#summernote2').summernote({
-                toolbar: [
-                    // [groupName, [list of button]]
-                    ['style', ['bold', 'italic', 'underline', 'clear']],
-                    ['font', ['strikethrough', 'superscript', 'subscript']],
-                    ['fontsize', ['fontsize']],
-                    ['color', ['color']],
-                    ['para', ['ul', 'ol', 'paragraph']],
-                    ['height', ['height']]
-                ]
-            });
+
+            var file_size_total = 0;
+            var file_image_list = [];
+
+            $("#email_list").multiselect();
+
             var table = $('#tracking-datatable').DataTable({
                 // dom: "lBfrtip",
                 order:[[0,'desc']],
@@ -220,6 +256,17 @@
                 var formData = new FormData($(this).parents('form')[0]);
                 formData.append('customer_id',{{$id}});
                 formData.append('_token','{{csrf_token()}}');
+                amount_files = file_image_list.length;
+
+                if(amount_files > 20){
+                    toastr.error("Amount of files maximum is 20 files");
+                    return;
+                }
+                if(file_size_total > 50){
+                    toastr.error('Total Files Size maximum is 50 MB!');
+                    return;
+                }
+                ableProcessingLoader();
 
                 $.ajax({
                     url: '{{route('post-comment-customer')}}',
@@ -234,9 +281,7 @@
                         return myXhr;
                     },
                     success: function (data) {
-                        // console.log(data);
-                        // return;
-
+                        // console.log(data);return;
                         let message = "";
                         if(data.status == 'success'){
                             toastr.success(data.message);
@@ -252,44 +297,56 @@
                                 toastr.error(message);
                             }
                         }
+                        unableProcessingLoader();
                     },
                     fail: function() {
                         console.log("error");
+                        unableProcessingLoader();
                     }
                 });
                 return false;
             });
             function clearView(){
-                $("#email_list_2").val("");
-                $("#summernote2").val("");
+                 $("#email_list_2").val("");
+                $('#summernote2').val("");
+                $("#file_names").text("");
+                file_image_list = [];
+                $('#comment-form')[0].reset();
+                $("#total_file_size").text("");
             }
             $(document).on("click",".file-comment",function(){
                 $(this).parent('form').submit();
             });
 
+            $(document).on('change','#file_image_list_2',function(e){
+                file_size_total = 0;
+                file_image_list = Array.from(e.target.files);
+                console.log(file_image_list);
 
-            $.ajax({
-                url: '{{route('get-seller')}}',
-                type: 'GET',
-                dataType: 'html',
-                data: {
-                    seller_id: {{$seller_id}},
-                },
-            })
-                .done(function(data) {
-                    data = JSON.parse(data);
-                    if(data.status == 'error'){
-                        toastr.error(data.message);
-                    }else{
-                        $(".email_seller").text(" ("+data.email+")");
-                        $(".fullname_seller").text(data.fullname);
-                        $("#email_seller").val(data.email);
-                        $("#receiver_id").val(data.receiver_id);
-                    }
-                })
-                .fail(function() {
-                    toastr.error('Saving Error!');
-                });
+                var names = [];
+                var name_html = "";
+                var stt = 0;
+
+                for (var i = 0; i < $(this).get(0).files.length; ++i) {
+                    stt = i +1;
+                    names.push($(this).get(0).files[i].name);
+                    file_size_total += parseFloat($(this).get(0).files[i].size/1048576);
+                    name_html += "<span>"+"<span class='text-danger '>"+stt+"-</span>"+$(this).get(0).files[i].name+ "</span><br>";
+                }
+                $("#file_names").html(name_html);
+                file_size_total = file_size_total.toFixed(2); 
+                $("#total_file_size").html("<b>TOTAL FILES SIZE: "+file_size_total+" MB<br>TOTAL FILES: "+stt+" files</b>");
+                console.log(file_size_total);
+            });
+
+        function ableProcessingLoader(){
+            $('.loader').css('display','inline');
+            $("#content").css('opacity',.5);
+        }
+        function unableProcessingLoader(){
+            $('.loader').css('display','none');
+            $("#content").css('opacity',1);
+        }
         });
     </script>
 @endpush

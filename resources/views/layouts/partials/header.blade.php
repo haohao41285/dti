@@ -9,7 +9,7 @@
   <!-- Topbar Search -->
   <form class="d-none d-sm-inline-block form-inline mr-auto ml-md-3 my-2 my-md-0 mw-100 navbar-search">
     <div class="input-group">
-      <input type="text" class="form-control bg-light border-0 small" id="customer_phone_search" placeholder="Search customer phone" aria-label="Search" aria-describedby="basic-addon2">
+      <input type="text" class="form-control bg-light small" style="border: .5px #80808088 solid;" onkeypress="return isNumberKey(event)" id="customer_phone_search" placeholder="Search customer phone" aria-label="Search" aria-describedby="basic-addon2">
       <div class="input-group-append">
         <button class="btn btn-primary search-customer" type="button">
           <i class="fas fa-search fa-sm"></i>
@@ -65,7 +65,7 @@
     </li>
 
     <!-- Nav Item - Messages -->
-    <li class="nav-item dropdown no-arrow mx-1">
+    {{-- <li class="nav-item dropdown no-arrow mx-1">
       <a class="nav-link dropdown-toggle" href="#" id="messagesDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
         <i class="fas fa-envelope fa-fw"></i>
         <!-- Counter - Messages -->
@@ -119,7 +119,7 @@
         <a class="dropdown-item text-center small text-gray-500" href="#">Read More Messages</a>
       </div>
     </li>
-
+ --}}
     <div class="topbar-divider d-none d-sm-block"></div>
 
     <!-- Nav Item - User Information -->
@@ -131,7 +131,7 @@
         <img class="img-profile rounded-circle" src="{{isset(Auth::user()->user_avatar) ? env('PATH_VIEW_IMAGE').Auth::user()->user_avatar : ''}}">
       </a>
       <!-- Dropdown - User Information -->
-      <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in" aria-labelledby="userDropdown">
+      <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in" style="z-index: 2000" aria-labelledby="userDropdown">
         <a class="dropdown-item" href="{{ route('editProfile') }}">
           <i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>
           Profile

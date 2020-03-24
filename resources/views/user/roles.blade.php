@@ -1,12 +1,12 @@
 @extends('layouts.app')
-@section('title')
-Role List
+@section('content-title')
+	ROLES
 @stop
 @section('content')
 <div class="row">
 	<div class="col-md-6">
 		<h5><b>Role List</b></h5>
-        <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+        <table class="table table-sm table-bordered" id="dataTable" width="100%" cellspacing="0">
 			<thead>
 				<tr>
 					<th class="text-center">ID</th>
@@ -21,11 +21,11 @@ Role List
 	<div class="col-md-5 offset-md-1" style="padding-top: 0px">
 		<h5><b class="role-tip">Add Role</b></h5>
 		<div class="form-group">
-			<label for="">Role Name</label>
+			<label for="">Name</label>
 			<input type="text" class="form-control form-control-sm" name="" id="gu_name">
 		</div>
 		<div class="form-group">
-			<label for="">Role Description</label>
+			<label for="">Description</label>
 			<textarea class="form-control form-control-sm" rows="3" id="gu_descript" ></textarea>
 		</div>
 		<div class="form-group">
@@ -108,7 +108,9 @@ Role List
 	    	var gu_descript = $("#gu_descript").val();
 	    	var gu_name = $("#gu_name").val();
 
-	    	if(gu_descript != "" && gu_name != ""){
+	    	if(gu_name === "")
+	    		toastr.error('Name is required!');
+	    	else{
 	    		$.ajax({
 		    		url: '{{route('add-role')}}',
 		    		type: 'GET',
@@ -144,6 +146,36 @@ Role List
 			$("#gu_name").val("");
 			gu_id = 0;
 	    }
+	    $(document).on('click','.role-delete',function(){
+
+	    	if(confirm('Do you want to delete this role?')){
+	    		$.ajax({
+		    		url: '{{route('delete-role')}}',
+		    		type: 'POST',
+		    		dataType: 'html',
+		    		data: {
+		    			gu_id: gu_id,
+		    			_token: '{{ csrf_token() }}'
+		    		},
+		    	})
+		    	.done(function(data) {
+		    		data = JSON.parse(data);
+		    		if(data.status == 'error')
+		    		    toastr.error(data.message);
+		    		else
+		    		    toastr.success(data.message);
+
+	      				clearView();
+		    			dataTable.draw();
+		    	})
+				.fail(function(data) {
+				    data = JSON.parse(data.responseText);
+				    toastr.error(data.message);
+	         	});
+	    	}
+	    	else
+	    		return;	    		
+	    });
 	});
 </script>
 @endpush

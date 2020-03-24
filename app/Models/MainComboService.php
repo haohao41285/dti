@@ -15,10 +15,14 @@ class MainComboService extends Model
     	'cs_menu_id',
     	'cs_description',
     	'cs_status',
-    	'cs_type', // Service or Combo
+    	'cs_type', // 1-combo 2-service
     	'cs_assign_to',
         'cs_form_type',
-        'cs_combo_service_type' //main_combo_service_type
+        'cs_combo_service_type', //main_combo_service_type
+        'cs_menu_inailso_app', // menu_id for use app
+        'cs_type_time', // 1-month 2-day
+        'cs_work_term', // thời hạn hoàn thành task
+        'cs_type_time_term', // 1-month 2 -day for work_term
     ];
 
     public function getComboServiceType(){
@@ -29,5 +33,8 @@ class MainComboService extends Model
         return self::select('id','cs_name','cs_price')
                     ->whereIn('id',$arr)
                     ->get();
-    } 
+    }
+    public function scopeActive(){
+        return $this->where('cs_status',1);
+    }
 }

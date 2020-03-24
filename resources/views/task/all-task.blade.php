@@ -1,6 +1,6 @@
 @extends('layouts.app')
-@section('title')
-    All Tasks
+@section('content-title')
+    ALL TASKS
 @endsection
 @section('content')
     {{-- MODAL INPUT FORM --}}
@@ -24,9 +24,8 @@
     </div>
     {{-- END MODAL --}}
     <div class="table-responsive">
-        <h4 class="border border-info border-top-0 border-right-0 border-left-0 text-info">ALL TASK</h4>
         @include('task.search_task')
-        <table class="table mt-4 table-hover table-bordered" id="task-datatable" width="100%" cellspacing="0">
+        <table class="table mt-4 table-sm table-hover" id="task-datatable" width="100%" cellspacing="0">
             <thead  class="thead-light">
             <tr>
                 <th>Task#</th>
@@ -90,7 +89,7 @@
                     { data: 'status', name: 'status',class:'text-center' },
                     { data: 'date_start', name: 'date_start',class:'text-center' },
                     { data: 'date_end', name: 'date_end',class:'text-center' },
-                    { data: 'complete_percent', name: 'complete_percent',class: 'text-center' },
+                    { data: 'complete_percent', name: 'complete_percent',class: 'text-right' },
                     { data: 'category', name: 'category',class: 'text-center' },
                     { data: 'order_id', name: 'order_id',class: 'text-center' },
                     { data: 'updated_at', name: 'updated_at',class: 'text-center'},
@@ -133,7 +132,7 @@
                                     <td>`+val.status+`</td>
                                     <td>`+val.date_start+`</td>
                                     <td>`+val.date_end+`</td>
-                                    <td>`+complete_percent+`</td>
+                                    <td class="text-right">`+complete_percent+`</td>
                                     <td>`+val.category+`</td>
                                     <td>`+val.assign_to+`</td>
                                     <td>`+val.updated_at+`</td>

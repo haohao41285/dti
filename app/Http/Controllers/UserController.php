@@ -9,6 +9,7 @@ use App\Models\MainGroupUser;
 use App\Models\MainMenuDti;
 use App\Models\MainPermissionDti;
 use App\Models\MainTeam;
+use App\Models\MainTeamType;
 use Illuminate\Http\Request;
 use App\Helpers\MenuHelper;
 use App\Helpers\GeneralHelper;
@@ -20,6 +21,8 @@ use App\Helpers\ImagesHelper;
 use Gate;
 use Validator;
 use Hash;
+use App\Models\MainComboServiceType;
+use Session;
 
 class UserController extends Controller
 {
@@ -46,6 +49,11 @@ class UserController extends Controller
     	],[
 
     	]);
+        //CHECK USER NICKNAME
+        $check_user = MainUser::where([['user_id','!=',$id],['user_nickname',$request->user_nickname]])->count();
+        if($check_user > 0)
+            return back()->with(['error'=>'User Nickname has taken, Choose Another']);
+
     	$user = MainUser::where('user_id',$id)->first();
         $user->user_nickname = $request->user_nickname;
     	$user->user_firstname = $request->user_firstname;
@@ -140,7 +148,8 @@ class UserController extends Controller
     				return '<input type="checkbox" gu_id="'.$row->gu_id.'" gu_status="'.$row->gu_status.'" class="js-switch"'.$checked.'/>';
     			})
     			->addColumn('action',function($row){
-    				return '<a class="btn btn-sm btn-secondary role-edit" href="javascript:void(0)"><i class="fas fa-edit"></i></a>';
+    				return '<a class="btn btn-sm btn-secondary role-edit" href="javascript:void(0)"><i class="fas fa-edit"></i></a>
+                            <a class="btn btn-sm btn-secondary role-delete" role-id="'.$row->gu_id.'" href="javascript:void(0)"><i class="fas fa-trash"></i></a>';
     	        })
     	        ->rawColumns(['gu_status','action'])
     	        ->make(true);
@@ -178,6 +187,12 @@ class UserController extends Controller
     	$gu_id = $request->gu_id;
     	$gu_name = $request->gu_name;
     	$gu_descript = $request->gu_descript;
+
+        //CHECK EXISTED ROLE NAME
+        $check_role = MainGroupUser::where([['gu_id','!=',$gu_id],['gu_name',$gu_name]])->count();
+
+        if($check_role > 0)
+            return response(['status'=>'error','message'=>'Failed! Role name has been taken!']);
 
     	if($gu_id > 0){
 
@@ -380,7 +395,11 @@ class UserController extends Controller
             return doNotPermission();
 
         $data['role_list'] = MainGroupUser::active()->get();
-        $data['service_list'] = MainComboService::where('cs_status',1)->get();
+        $data['team_list'] = MainTeamType::active()->get();
+        // $data['service_type_list'] = MainComboServiceType::active()->get();
+        $data['service_type_list'] = DB::table('main_combo_service_type')->where('status',1)->get();
+        $combo_service_list = DB::table('main_combo_service')->orderBy('cs_name','asc')->where('cs_status',1)->get();
+        $data['combo_service_list'] = collect($combo_service_list);
 
         return view('user.service-permission',$data);
     }
@@ -389,10 +408,10 @@ class UserController extends Controller
         if(Gate::denies('permission','service-permission-update'))
             return doNotPermissionAjax();
 
-        $role_id = $request->role_id;
+        $team_id = $request->team_id;
         $service_id = $request->service_id;
 
-        $service_permission = MainGroupUser::where('gu_id',$role_id)->first();
+        $service_permission = MainTeamType::find($team_id);
         $service_permission_list = $service_permission->service_permission;
 
         if($service_permission_list == ""){
@@ -408,7 +427,7 @@ class UserController extends Controller
             else
                 $service_permission_list = $service_permission_list.";".$service_id;
         }
-        $service_update = MainGroupUser::where('gu_id',$role_id)->update(['service_permission'=> $service_permission_list]);
+        $service_update = MainTeamType::find($team_id)->update(['service_permission'=> $service_permission_list]);
 
         if(!isset($service_update))
             return response(['status'=>'error','message'=>'Failed!']);
@@ -422,9 +441,14 @@ class UserController extends Controller
 
         $data['role_list'] = MainGroupUser::active()->get();
 
-        $data['permission_other'] = MainPermissionDti::active()->whereNull('menu_id')->get();
+        $data['permission_list'] = Session::get('permission_list');
 
-        $data['menu_parent'] = MainMenuDti::active()->where('parent_id',0)->with('getMenuChild')->with('getPermission')->get();
+        $data['menu_list_all'] = Session::get('menu_list_all');
+
+        $data['permission_other'] = $data['permission_list']->where('menu_id',null);
+
+        $data['menu_parent'] = $data['menu_list_all']->where('parent_id',0);
+
 
         return view('user.user-permission',$data);
 
@@ -436,20 +460,21 @@ class UserController extends Controller
 
         $permission_id = $request->permission_id;
         $role_id = $request->role_id;
-        $check = $request->check;
+//        $check = $request->check;
 
         $permission_role = MainGroupUser::where('gu_id',$role_id)->first()->gu_role_new;
         if($permission_role == "")
             $permission_list = $permission_id;
         else{
-            if($check == 0)
-                $permission_list = $permission_role.';'.$permission_id;
-            else{
-                $permission_role_arr = explode(';',$permission_role);
-                $key = array_search($permission_id,$permission_role_arr);
+            $permission_role_arr = explode(';',$permission_role);
+
+            if (($key = array_search($permission_id, $permission_role_arr)) !== false) {
                 unset($permission_role_arr[$key]);
-                $permission_list = implode(';',$permission_role_arr);
+            }else{
+                $permission_role_arr[] = $permission_id;
             }
+
+            $permission_list = implode(';',$permission_role_arr);
         }
         $role_permission_update = MainGroupUser::where('gu_id',$role_id)->update(['gu_role_new'=>$permission_list]);
 
@@ -457,5 +482,16 @@ class UserController extends Controller
             return response(['status'=>'error','message'=>'Set Permission Failed!']);
         else
             return response(['status'=>'success','message'=>'Set Successfully!']);
+    }
+    public function deleteRole(Request $request){
+
+        if(!$request->gu_id)
+            return response(['status'=>'error','message'=>'Not exist role to delete!']);
+        $delete_role = MainGroupUser::where('gu_id',$request->gu_id)->delete();
+
+        if(!$delete_role)
+            return response(['status'=>'error','message'=>'Failed! Delete Role Failed!']);
+
+        return response(['status'=>'success','message'=>'Successfully! Delete Role Successfully!']);
     }
 }

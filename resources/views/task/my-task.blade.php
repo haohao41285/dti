@@ -1,6 +1,6 @@
 @extends('layouts.app')
-@section('title')
-    My Tasks
+@section('content-title')
+    MY TASKS
 @endsection
 @section('content')
 {{-- MODAL INPUT FORM --}}
@@ -19,29 +19,60 @@
           <button type="button" class="btn btn-sm btn-primary">Submit</button>
         </div>
       </div>
-
     </div>
   </div>
 {{-- END MODAL --}}
 <div class="table-responsive">
-	<h4 class="border border-info border-top-0 border-right-0 border-left-0 text-info">MY TASK</h4>
     @include('task.search_task')
-    <table class="table mt-4 table-hover table-bordered" id="task-datatable" width="100%" cellspacing="0">
-        <thead  class="thead-light">
-            <tr>
-                <th>Task#</th>
-                <th>Subject</th>
-                <th class="text-center">Priority</th>
-                <th class="text-center">Status</th>
-                <th class="text-center">Date Start</th>
-                <th class="text-center">Date end</th>
-                <th class="text-center">%Complete</th>
-                <th class="text-center">Category</th>
-                <th class="text-center">Order#</th>
-                <th class="text-center">Last Updated</th>
-            </tr>
-        </thead>
-    </table>
+
+     <ul class="nav nav-tabs" role="tablist">
+        <li class="nav-item">
+          <a class="nav-link active" data-toggle="tab" href="#home">RECEIVER TASK</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" data-toggle="tab" href="#menu1">CREATE TASK</a>
+        </li>
+    </ul>
+
+      <!-- Tab panes -->
+    <div class="tab-content">
+        <div id="home" class="tab-pane active"><br>
+            <table class="table mt-4 table-hover table-sm" id="receiver-datatable" width="100%" cellspacing="0">
+                <thead  class="thead-light">
+                    <tr>
+                        <th>Task#</th>
+                        <th>Subject</th>
+                        <th class="text-center">Priority</th>
+                        <th class="text-center">Status</th>
+                        <th class="text-center">Date Start</th>
+                        <th class="text-center">Date end</th>
+                        <th class="text-center">%Complete</th>
+                        <th class="text-center">Category</th>
+                        <th class="text-center">Order#</th>
+                        <th class="text-center">Last Updated</th>
+                    </tr>
+                </thead>
+            </table>
+        </div>
+        <div id="menu1" class="tab-pane fade"><br>
+             <table class="table mt-4 table-hover table-sm" id="task-datatable" width="100%" cellspacing="0">
+                <thead  class="thead-light">
+                    <tr>
+                        <th>Task#</th>
+                        <th>Subject</th>
+                        <th class="text-center">Priority</th>
+                        <th class="text-center">Status</th>
+                        <th class="text-center">Date Start</th>
+                        <th class="text-center">Date end</th>
+                        <th class="text-center">%Complete</th>
+                        <th class="text-center">Category</th>
+                        <th class="text-center">Order#</th>
+                        <th class="text-center">Last Updated</th>
+                    </tr>
+                </thead>
+            </table>
+        </div>
+    </div>
 </div>
 
 @endsection
@@ -74,7 +105,7 @@
            ],
            processing: true,
            serverSide: true,
-           ajax:{ url:"{{route('my-task-datatable')}}",
+           ajax:{ url:"{{route('my_created_task_datatable')}}",
            data: function (d) {
                d.category = $("#category :selected").val();
                d.service_id = $("#service_id :selected").val();
@@ -90,7 +121,38 @@
                     { data: 'status', name: 'status',class:'text-center' },
                     { data: 'date_start', name: 'date_start',class:'text-center' },
                     { data: 'date_end', name: 'date_end',class:'text-center' },
-                    { data: 'complete_percent', name: 'complete_percent',class: 'text-center' },
+                    { data: 'complete_percent', name: 'complete_percent',class: 'text-right' },
+                    { data: 'category', name: 'category',class: 'text-center' },
+                    { data: 'order_id', name: 'order_id',class: 'text-center' },
+                    { data: 'updated_at', name: 'updated_at',class: 'text-center'},
+            ],
+        });
+         var tableReceiver = $('#receiver-datatable').DataTable({
+           // dom: "lBfrtip",
+            responsive: false,
+            order:[[9,'desc']],
+           info: false,
+           buttons: [
+           ],
+           processing: true,
+           serverSide: true,
+           ajax:{ url:"{{route('receiver-task-datatable')}}",
+           data: function (d) {
+               d.category = $("#category :selected").val();
+               d.service_id = $("#service_id :selected").val();
+               d.assign_to = $("#assign_to :selected").val();
+               d.priority = $("#priority :selected").val();
+               d.status = $("#status :selected").val();
+                }
+            },
+           columns: [
+                    { data: 'task', name: 'task',class:'text-center' },
+                    { data: 'subject', name: 'subject',class:'text-center' },
+                    { data: 'priority', name: 'priority',class:'text-center' },
+                    { data: 'status', name: 'status',class:'text-center' },
+                    { data: 'date_start', name: 'date_start',class:'text-center' },
+                    { data: 'date_end', name: 'date_end',class:'text-center' },
+                    { data: 'complete_percent', name: 'complete_percent',class: 'text-right' },
                     { data: 'category', name: 'category',class: 'text-center' },
                     { data: 'order_id', name: 'order_id',class: 'text-center' },
                     { data: 'updated_at', name: 'updated_at',class: 'text-center'},
@@ -133,7 +195,7 @@
                                     <td>`+val.status+`</td>
                                     <td>`+val.date_start+`</td>
                                     <td>`+val.date_end+`</td>
-                                    <td>`+complete_percent+`</td>
+                                    <td class="text-right">`+complete_percent+`</td>
                                     <td>`+val.category+`</td>
                                     <td>`+val.assign_to+`</td>
                                     <td>`+val.updated_at+`</td>

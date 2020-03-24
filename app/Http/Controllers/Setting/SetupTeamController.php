@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Setting;
 
 use App\Http\Controllers\Controller;
+use Validator;
 use Illuminate\Http\Request;
 use App\Helpers\GeneralHelper;
 use App\Models\MainTeam;
@@ -14,6 +15,10 @@ use DataTables;
 use DB;
 use Auth;
 use Gate;
+
+use Illuminate\Support\Facades\Schema;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Database\Migrations\Migration;
 
 class SetupTeamController  extends Controller
 {
@@ -83,7 +88,7 @@ class SetupTeamController  extends Controller
 				$user_update = MainUser::where('user_id',$team_leader)->update(['user_team'=>$team_id]);
 
 				if(!isset($team_update) || !isset($user_update)){
-					DB::calllback();
+					DB::rollBack();
 					return response(['status'=>'error','message'=>'Update Team Error!']);
 				}
 				else{
@@ -127,16 +132,23 @@ class SetupTeamController  extends Controller
 	}
 	public function deleteTeam(Request $request)
 	{
-		$team_id = $request->team_id;
-		if(!isset($team_id))
-			return response(['status'=>'error','message'=>'Error!']);
+		try{
+			$team_id = $request->team_id;
+			if(!isset($team_id))
+				return response(['status'=>'error','message'=>'Error!']);
+			//CHECK USER INSIDE TEAM
+			$user_list_count = MainUser::active()->where('user_team',$team_id)->count();
+			if($user_list_count > 0)
+				return response(['status'=>'error','message'=>'Error! Remove user inside team before delete team.']);
 
-		$delete_team = MainTeam::where('id',$team_id)->update(['team_status'=>0]);
+			$delete_team = MainTeam::where('id',$team_id)->delete();
 
-		if(!isset($delete_team))
-			return response(['status'=>'error','message'=>'Deleting Error!']);
-		else
 			return response(['status'=>'success','message'=>'Deleting Success!']);
+
+		}catch(\Exception $e){
+			return response(['status'=>'error','message'=>'Deleting Error!']);
+			\Log::info($e);
+		}
 	}
 	public function getMemberList(Request $request)
 	{
@@ -177,10 +189,10 @@ class SetupTeamController  extends Controller
 								$join->on('main_user.user_team','main_team.id');
 							})
 								->where('user_id',$user_id)
-								->select('main_team.id')
-								->get();
+								->select('main_team.team_leader')
+								->first();
 
-		if($user_info[0]->id == $user_id)
+		if($user_info->team_leader == $user_id)
 			return response(['status'=>'error','message'=>'Error! This User is Leader. Change leader first']);
 
 		$user_update = MainUser::where('user_id',$user_id)->update(['user_team'=>NULL]);
@@ -251,36 +263,89 @@ class SetupTeamController  extends Controller
 			$status = 0;
 		else
 			$status = 1;
-		$update_tt = MainTeamType::where('id',$id)->update(['team_type_status'=>$status]);
+		$team_type_info = MainTeamType::find($id);
+		$update_tt = $team_type_info->update(['team_type_status'=>$status]);
+		$update_team =  $team_type_info->getTeams()->update(['team_status'=>$status]);
 
-		if(!isset($update_tt))
+		if(!isset($update_tt) || !isset($update_team))
 			return response(['status'=>'error','message'=>'Error. Check again!']);
 		else
 			return response(['status'=>'success','message'=>'Success!']);
 	}
 	public function addTeamType(Request $request)
 	{
-		$id = $request->id;
+	    $rule = [
+	        'team_type_name' => 'required',
+        ];
+	    $message = [
+            'team_type_name.required' => 'Name is required'
+        ];
+	    $validattor = Validator::make($request->all(),$rule,$message);
+	    if($validattor->fails())
+	        return response([
+	            'status' => 'error',
+                'message' => $validattor->getMessageBag()->toArray(),
+            ]);
+
+	    $id = $request->id;
 		$team_type_description = $request->team_type_description;
 		$team_type_name = $request->team_type_name;
+		$slug = str_replace('-', '_', str_slug($team_type_name));
+		$old_team_type_name = $request->old_team_type_name;
 
-		if($id != 0){
-			$tt_update = MainTeamType::where('id',$id)->update(['team_type_description'=>$team_type_description,'team_type_name'=>$team_type_name]);
-		}else
-		    $tt_update = MainTeamType::insert([
-		    	'team_type_description'=>$team_type_description,
-		    	'team_type_name'=>$team_type_name,
-		    	'team_type_status'=>1,
-		    	'created_by' => Auth::user()->user_id,
-		    ]);
-		if(!isset($tt_update))
-			return response(['status'=>'error','message'=>'Error. Check again!']);
-		else
-			return response(['status'=>'success','message'=>'Success!']);
+		if($old_team_type_name == 'CSKH' || $old_team_type_name == 'Telesale' || $old_team_type_name == 'Review'){
+			return response(['status'=>'error','message'=>'Can NOT change name this type!']);
+		}
+
+	    $check = MainTeamType::where('id','!=',$id)->where('team_type_name',$team_type_name)->count();
+	    if($check > 0){
+	    	return response(['status'=>'error','message'=>'Failed! This name has been taken!']);
+	    }else{
+	    	if($id != 0){
+				$tt_update = MainTeamType::where('id',$id)->update([
+					'team_type_description'=>$team_type_description,
+					'team_type_name'=>$team_type_name,
+					'slug' => $slug
+				]);
+				if (Schema::hasColumn('main_customer_template', $old_team_type_name))
+	            {
+	                Schema::table('main_customer_template', function (Blueprint $table) use ($slug,$old_team_type_name)  {
+	                    $table->renameColumn($old_team_type_name,$slug);
+	                });
+	            }else{
+	                Schema::table('main_customer_template', function($table) use ($slug)  {
+	                    $table->integer($slug);
+	                });
+	            }
+			}else
+			    $tt_update = MainTeamType::insert([
+			    	'team_type_description'=>$team_type_description,
+			    	'team_type_name'=>$team_type_name,
+			    	'team_type_status'=>1,
+			    	'created_by' => Auth::user()->user_id,
+			    ]);
+			    if (Schema::hasColumn('main_customer_template', $slug))
+	            {
+	                Schema::table('main_customer_template', function (Blueprint $table) use ($slug)  {
+	                    $table->dropColumn($slug);
+	                });
+	            }
+	            Schema::table('main_customer_template', function($table) use ($slug)  {
+	                $table->integer($slug);
+	            });
+	            
+			if(!isset($tt_update))
+				return response(['status'=>'error','message'=>'Error. Check again!']);
+			else
+				return response(['status'=>'success','message'=>'Success!']);
+	    }
+
+			
 	}
 	public function deleteTeamType(Request $request)
 	{
 		$tt_id = $request->tt_id;
+		$slug = str_replace('-', '_', str_slug($request->old_team_type_name));
 
 		if(!isset($tt_id))
 			return response(['status'=>'error','message'=>'Error!']);
@@ -292,9 +357,105 @@ class SetupTeamController  extends Controller
 
 		$team_type_delete = MainTeamType::find($tt_id)->delete();
 
+
 		if(!isset($team_type_delete))
 			return response(['status'=>'error','message'=>'Error!']);
-		else
+		else{
+			 if (Schema::hasColumn('main_customer_template', $slug))
+            {
+                Schema::table('main_customer_template', function (Blueprint $table) use ($slug)  {
+                    $table->dropColumn($slug);
+                });
+            }
 			return response(['status'=>'success','message'=>'Success!']);
+		}
 	}
+	public function indexCskh(){
+		return view('setting.setup-cskh-team'); 
+	}
+	public function cskhDatatable(Request $request){
+
+		$team_type_cskh = MainTeamType::select('id')->where('team_type_name','CSKH')->first();
+
+		$team_cskh = MainTeam::with('getLeader')->active()->where('team_type',$team_type_cskh->id)->get();
+
+		return DataTables::of($team_cskh)
+			->editColumn('team_leader',function($row){
+				return $row->getleader->user_firstname." ".$row->getLeader->user_lastname;
+			})
+			->make(true);
+	}
+	public function otherDatatable(Request $request){
+
+		$team_type_cskh = MainTeamType::select('id')->where('team_type_name','CSKH')->first();
+
+		$team_other = MainTeam::with('getLeader')->with('getCskhTeam')->active()->where('team_type','!=',$team_type_cskh->id)->get();
+
+		return DataTables::of($team_other)
+			->editColumn('team_leader',function($row){
+				return $row->getleader->user_firstname." ".$row->getLeader->user_lastname;
+			})
+			->editColumn('team_cskh_id',function($row){
+				if($row->team_cskh_id != "")
+					return $row->getCskhTeam->team_name;
+				else
+					return "";
+			})
+			->make(true);
+	}
+	public function teamsDatatable(Request $request){
+		$team_id = $request->team_id;
+
+		$teams = MainTeam::active()->where('team_cskh_id',$team_id);
+
+		return DataTables::of($teams)
+			->addColumn('action',function($row){
+				return '<a class="btn btn-sm btn-secondary remove-member" team_id="'.$row->id.'" href="javascript:void(0)"><i class="fas fa-trash"></i></a>';
+			})
+			->rawColumns(['action'])
+			->make(true);
+	}
+	public function addTeamToTeamCskh(Request $request){
+
+		$team_id = $request->team_id;
+		$member_id = $request->member_id;
+
+		//CHECK TEAM WITH CSKH TEAM EXISTED
+		$team_info = MainTeam::find($member_id);
+
+		if( $team_info->team_cskh_id != null || $team_info->team_cskh_id != "")
+			return response(['status'=>'error','message'=>'Remove CSKH Team Before Add New!']);
+
+		$update_team = $team_info->update(['team_cskh_id'=>$team_id]);
+
+		if(!isset($update_team))
+			return response(['status'=>'error','message'=>'Failed! Add Team Failed!']);
+
+		return response(['status'=>'success','message'=>'Successfully! Add Team Successfully!']);
+	}
+	public function removeTeam(Request $request){
+
+		$member_id = $request->member_id;
+
+		$team_update = MainTeam::find($member_id)->update(['team_cskh_id'=>null]);
+
+		if(!isset($team_update))
+			return response(['status'=>'error','message'=>'Failed! Remove Team Failed!']);
+
+		return response(['status'=>'success','message'=>'Successfully! Remove Team Successfully!']);
+	}
+	public function userCskhDatatable(Request $request){
+
+		$team_id = $request->team_id;
+
+		$users = MainUser::where('user_team',$team_id);
+
+		return DataTables::of($users)
+			->addColumn('user_name',function($row){
+				return $row->getFullname();
+			})
+			->make(true);
+	}
+
+	
 }

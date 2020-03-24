@@ -1,0 +1,1 @@
+ALTER TABLE `main_combo_service_bought` ADD `csb_reason_cancel` TEXT NULL COMMENT 'for cancel order' AFTER `csb_user_call`; 

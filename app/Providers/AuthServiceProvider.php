@@ -33,7 +33,9 @@ class AuthServiceProvider extends ServiceProvider
 
         Gate::define('permission',function($user,$permission)
         {
-            $permission_list = MainPermissionDti::where('permission_slug',$permission)->first();
+            // $permission_list = MainPermissionDti::where('permission_slug',$permission)->first();
+            $permission_list = Session::get('permission_list');
+            $permission_list = $permission_list->where('permission_slug',$permission)->first();
 
             if($permission_list != ""){
                 $permission_list_session = Session::get('permission_list_session');

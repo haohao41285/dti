@@ -7,14 +7,23 @@ use Illuminate\Routing\Controller;
 use App\Models\MainTheme;
 use DataTables;
 use App\Helpers\ImagesHelper;
+use Gate;
 
 Class WebsiteThemeController extends Controller
 {
     public function index(){
+
+        if(Gate::denies('permission','website-theme'))
+            return doNotPermission();
+
         return view('tools.website-themes');
     }
 
     public function datatable(){
+
+        if(Gate::denies('permission','website-theme'))
+            return doNotPermission();
+        
         return MainTheme::getDatatable();
     }
     /**
@@ -66,6 +75,8 @@ Class WebsiteThemeController extends Controller
                 'theme_name_temp' => $request->code,
                 'theme_url' => $request->url,
                 'theme_price' => $request->price,
+                'theme_booking_css' => $request->booking_css,
+                'theme_booking_js' => $request->booking_js,
                 'theme_descript' => $request->description,
                 'theme_license' => $request->license,
                 'theme_status' => $request->status ?? 0,
@@ -78,18 +89,21 @@ Class WebsiteThemeController extends Controller
 
         } else {
             //update
+            $mainTheme = MainTheme::where('theme_id',$request->theme_id)->first(); 
             $arr = [
                 'theme_name' => $request->name,
                 'theme_name_temp' => $request->code,
                 'theme_url' => $request->url,
                 'theme_price' => $request->price,
+                'theme_booking_css' => $request->booking_css,
+                'theme_booking_js' => $request->booking_js,
                 'theme_descript' => $request->description,
                 'theme_license' => $request->license,
-                'theme_status' => $request->status ?? 0,
-                'theme_image' => $image ?? '',
+                // 'theme_status' => $request->status ?? 0,
+                'theme_image' => $image ?? $mainTheme->theme_image,
             ];
 
-            $mainTheme = MainTheme::where('theme_id',$request->theme_id)->first(); 
+            //$mainTheme = MainTheme::where('theme_id',$request->theme_id)->first(); 
             $mainTheme->update($arr);
         }
         

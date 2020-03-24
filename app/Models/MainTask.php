@@ -6,6 +6,7 @@ namespace App\Models;
 use App\Models\MainFile;
 use Auth;
 use App\Models\BaseModel;
+use Gate;
 
 class MainTask extends BaseModel
 {
@@ -56,11 +57,51 @@ class MainTask extends BaseModel
     public function getSubTask(){
         return $this->hasMany(MainTask::class,'task_parent_id','id');
     }
+    public function getOrder(){
+        return $this->belongsTo(MainComboServiceBought::class,'order_id','id');
+    }
 
+    public static function getListPendingTasks(){
+
+        if(Gate::allows('permission','dashboard-admin')){
+            return self::where('complete_percent','!=',"100");
+        }
+        elseif(Gate::allows('permission','dashboard-leader')){
+            //GET USER OF TEAM
+            $users = MainUser::where('user_team',Auth::user()->user_team)->get();
+            $task_list = [];
+            foreach ($users as $key => $user) {
+                $tasks = MainTask::where('complete_percent','!=',"100")->where(function($query) use ($user) {
+                    $query->where('assign_to',$user->user_id)
+                    ->orWhere('assign_to','LIKE','%;'.$user->user_id)
+                    ->orWhere('assign_to','LIKE','%;'.$user->user_id.';%')
+                    ->orWhere('assign_to','LIKE',$user->user_id.';%');
+                })->get();
+                foreach ($tasks as $key => $task) {
+                    $task_list[] = $task;
+                }
+            }
+            return array_unique($task_list);
+        }
+        else{
+            return self::where('complete_percent','!=',"100")
+                        ->where(function($query) {
+                            $query->where('assign_to',Auth::user()->user_id)
+                            ->orWhere('assign_to','LIKE','%;'.Auth::user()->user_id)
+                            ->orWhere('assign_to','LIKE','%;'.Auth::user()->user_id.';%')
+                            ->orWhere('assign_to','LIKE',Auth::user()->user_id.';%');
+                        });
+        }
+    }
     public static function getPendingTasks(){
-        return self::select('id','complete_percent')
-                    ->where('assign_to',Auth::user()->user_id)
-                    ->where('complete_percent','!=',"100")
-                    ->count();
+
+        $task_list = self::getListPendingTasks();
+
+        if(Gate::allows('permission','dashboard-admin'))
+            return $task_list->count();
+        elseif(Gate::allows('permission','dashboard-leader'))
+            return count($task_list);
+        else
+            return $task_list->count();
     }
 }

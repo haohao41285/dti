@@ -1,6 +1,8 @@
 @extends('layouts.app')
+@section('content-title')
+MY CUSTOMER
+@endsection
 @section('content')
-    <h4 class="border border-info border-top-0 mb-3 border-right-0 border-left-0 text-info">MY CUSTOMER</h4>
     <div class="modal fade" id="move-customers-modal" role="dialog">
         <div class="modal-dialog">
             <!-- Modal content-->
@@ -11,7 +13,7 @@
                 </div>
                 <form action="" method="get" accept-charset="utf-8">
                     <div class="modal-body">
-                        <table class="table table-hover table-striped">
+                        <table class="table table-sm table-hover table-striped">
                             <thead>
                                 <tr class="text-center">
                                     <th>Customer</th>
@@ -83,6 +85,43 @@
         </div>
     </div>
 </div>
+<div class="modal fade" id="move-place-modal" role="dialog">
+    <div class="modal-dialog">
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <h6 class="modal-title text-info"><b>MOVE PLACE:</b></h6>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+            <form id="form-place" action="" method="get" accept-charset="utf-8">
+                <div class="modal-body">
+                    <div class="input-group mb-2 mr-sm-2">
+                        <div class="input-group-prepend">
+                            <div class="input-group-text">Move Place:</div>
+                        </div>
+                        <input type="text" class="form-control text-info"  id="place_name" disabled>
+                        <input type="hidden" name="place_id" id="place_id_hidden">
+                        <input type="hidden" name="customer_id" id="customer_id_hidden">
+                    </div>
+                    <div class="input-group mb-2 mr-sm-2">
+                        <div class="input-group-prepend">
+                            <div class="input-group-text">To User:</div>
+                        </div>
+                        <select name="user_id" id="user_id" class="form-control  text-capitalize">
+                            @foreach($user_list as $user)
+                                <option value="{{$user->user_id}}">{{$user->user_nickname}} ( {{$user->getFullname()}} )</option>
+                            @endforeach
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-danger btn-sm cancel-move" data-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-sm btn-primary move-place-submit">Submit</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
 <div class="modal fade" id="add-note-modal" role="dialog">
         <div class="modal-dialog">
             <!-- Modal content-->
@@ -142,35 +181,31 @@
         </div>
     </div>
     <hr>
-    <table class="table table-striped table-hover" id="dataTableAllCustomer" width="100%" cellspacing="0">
+
+  <div style="height:700px" style="overflow:auto">
+    <table class="table table-sm table-hover" id="dataTableAllCustomer" width="100%" cellspacing="0">
         <thead>
+          <tr class="sticky-top bg-primary text-white"  style="z-index: 9">
             <th>ID</th>
-            <th>Nail Shop</th>
+            <th>Business</th>
             <th>Contact Name</th>
             <th>Business Phone</th>
             <th>Cell Phone</th>
-            <th>Status</th>
             <th>Note</th>
+            <th>Status</th>
             <th>Created Date</th>
-            <th>Action</th>
-            </tr>
+            <th style="width: 15%">Action</th>
+          </tr>
         </thead>
     </table>
+  </div>
 </div>
 
 <!-- Modal view-->
 <div class="modal fade" id="viewModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
   <div style="max-width: 70%" class="modal-dialog modal-sm" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title text-center" id="exampleModalLabel"><b>Customer Detail</b></h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      <div class="modal-body" id="content-customer-detail">
-
-      </div>
+    <div class="modal-content" id="content-customer-detail">
+      
     </div>
   </div>
 </div>
@@ -211,27 +246,13 @@
 <script type="text/javascript">
  $(document).ready(function() {
     $("#created_at").datepicker({});
+    var customer_id = 0;
     var table = $('#dataTableAllCustomer').DataTable({
        // dom: "lBfrtip",
-       order:[[6,"desc"]],
+       order:[[7,"desc"]],
        processing: true,
        serverSide: true,
        buttons: [
-           {
-               text: '<i class="fas fa-exchange-alt"></i> Move Customers',
-               className: "btn-sm move-customers"
-           },
-           {
-               text: '<i class="fas fa-download"></i> Import',
-               className: "btn-sm import-show"
-           },
-           {
-               text: '<i class="fas fa-upload"></i> Export',
-               className: "btn-sm export",
-               action: function ( e, dt, node, config ) {
-                  document.location.href = "{{route('export-my-customer')}}";
-              }
-           }
        ],
        ajax:{ url:"{{ route('get-my-customer') }}",
        data: function (d) {
@@ -243,14 +264,14 @@
         },
        columns: [
 
-                { data: 'id', name: 'id',class:'text-center' },
+                { data: 'id', name: 'id',class:'w-10' },
                 { data: 'ct_salon_name', name: 'ct_salon_name' },
                 { data: 'ct_fullname', name: 'ct_fullname'},
                 { data: 'ct_business_phone', name: 'ct_business_phone' ,class:'text-center'},
                 { data: 'ct_cell_phone', name: 'ct_cell_phone',class:'text-center' },
                 { data: 'ct_status', name: 'ct_status',class:'text-center' },
-                { data: 'note', name: 'note' },
-                { data: 'updated_at', name: 'updated_at' ,class:'text-center'},
+                { data: 'ct_note', name: 'ct_note' },
+                { data: 'created_at', name: 'created_at' ,class:'text-center'},
                 { data: 'action' , name:'action' ,orderable: false, searcheble: false ,class:'text-center'}
         ],
     });
@@ -263,7 +284,7 @@
 
     $(document).on("click",".view",function(){
 
-      var customer_id = $(this).attr('customer_id');
+      customer_id = $(this).attr('customer_id');
 
       $.ajax({
         url: '{{route('get-customer-detail')}}',
@@ -275,13 +296,11 @@
         },
       })
       .done(function(data) {
-        // console.log(data);
-        // return;
-
         if(data == 0){
           toastr.error('Get Detaill Customer Error!');
         }else{
           data = JSON.parse(data);
+          console.log(data);
           if(data.customer_list.ct_salon_name==null)data.customer_list.ct_salon_name="";
           if(data.customer_list.ct_fullname==null)data.customer_list.ct_fullname="";
           if(data.customer_list.ct_business_phone==null)data.customer_list.ct_business_phone="";
@@ -300,11 +319,11 @@
             content_table +=  `<tr>
                   <td>`+index+`</td>
                   <td>`+val+`</td>
-                </tr>;`
+                </tr>`
             });
-            place_service = `<table class="table table-hovered table-bordered" style="width: 100%">
+            place_service = `<table class="table-sm table table-hover table-bordered" style="width: 100%">
               <thead>
-                <tr>
+                <tr class="thead-light">
                   <th>Places</th>
                   <th>Service</th>
                 </tr>
@@ -318,8 +337,15 @@
           if(data.customer_list.ct_status === 'New Arrivals')
             button = `<button type="button" id=`+data.customer_list.id+` class="btn btn-primary btn-sm get-customer">Get</button>`;
           $("#content-customer-detail").html(`
+          <div class="modal-header">
+            <h5 class="modal-title text-center" id="exampleModalLabel"><b>Customer Detail</b></h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
             <div class="row pr-5 pl-5" >
-          <div class="col-md-6">
+            <div class="col-md-6">
               <div class="row">
                 <span class="col-md-4">Business:</span>
                 <p class="col-md-8"><b>`+data.customer_list.ct_salon_name+`</b></p>
@@ -365,6 +391,7 @@
 
             </div>
             `+place_service+`
+          </div>
             <div class="col-md-12">
               <div class="row float-right">
                 `+button+`
@@ -467,8 +494,10 @@
         $("#move-modal").modal("show");
     });
     $(".move-submit").click(function(){
+
         var formData = new FormData($(this).parents('form')[0]);
-        formData.append('_token','{{csrf_token()}}')
+        formData.append('_token','{{csrf_token()}}');
+
         $.ajax({
             url: '{{route('move-customer')}}',
             type: 'POST',
@@ -594,7 +623,254 @@
             .fail(function() {
                 console.log("error");
             });
+    });
+     $('#dataTableAllCustomer tbody').on('click', '.details-control', function () {
+
+         var customer_template_id = $(this).attr('id');
+         $(this).toggleClass('fa-plus-circle fa-minus-circle');
+         var tr = $(this).closest('tr');
+         var row = table.row( tr );
+         // var team_id = $("#team_id :selected").val();
+
+         if ( row.child.isShown() ) {
+             // This row is already open - close it
+             row.child.hide();
+             tr.removeClass('shown');
+         }else{
+             $.ajax({
+                 url: '{{route('get_place_my_customer')}}',
+                 type: 'GET',
+                 dataType: 'html',
+                 data: {
+                     customer_template_id: customer_template_id,
+                     team_id: '{{\Auth::user()->user_team}}'
+                 },
+             })
+                 .done(function(data) {
+                     data = JSON.parse(data);
+                     console.log(data);
+                     var subtask_html = "";
+                     $.each(data, function(index,val){
+
+                         if(val.get_user.length  != 0) var user_manage = val.get_user.user_nickname;
+                         else var user_manage = "";
+
+                         subtask_html += `
+                                <tr>
+                                    <td>`+val.get_place.place_name+`</td>
+                                    <td>`+val.get_place.place_phone+`</td>
+                                    <td>`+val.get_place.place_ip_license+`</td>
+                                    <td>`+user_manage+`</td>
+                                    <td class="text-center">
+                                         <a class="btn btn-sm btn-secondary move-place"
+                                            place_name="`+val.get_place.place_name+`"
+                                            place_id="`+val.get_place.place_id+`"
+                                            customer_id="`+val.customer_id+`" href="javascript:void(0)" title="Move Place To User">
+                                            <i class="fas fa-exchange-alt"></i>
+                                         </a>
+                                    </td>
+                                </tr> `;
+                     });
+                     row.child(format(row.data()) +subtask_html+"</table>" ).show();
+                     tr.addClass('shown');
+                 })
+                 .fail(function() {
+                     toastr.error('Get SubTask Failed!');
+                 });
+         }
+     } );
+
+     function format ( d ) {
+         // `d` is the original data object for the row
+         return `<table class="border border-info table-striped table table-border bg-white">
+            <tr class="bg-info text-white">
+                <th scope="col">Name</th>
+                <th scope="col">Phone</th>
+                <th>Liences</th>
+                <th>User Manager</th>
+                <th class="text-center">Action</th>
+            </tr>`;
+     }
+     $(document).on('click',".move-place",function(){
+         var place_name = $(this).attr('place_name');
+         var place_id = $(this).attr('place_id');
+         var customer_id = $(this).attr('customer_id');
+         $("#place_id_hidden").val(place_id);
+         $("#customer_id_hidden").val(customer_id);
+         $("#place_name").val(place_name);
+         $("#move-place-modal").modal('show');
+     });
+     $(".move-place-submit").click(function(){
+         var formData = new FormData($(this).parents('form')[0]);
+         formData.append('_token','{{csrf_token()}}');
+         formData.append('current_user','{{\Auth::user()->user_id}}');
+         formData.append('team_id','{{\Auth::user()->user_team}}');
+
+         $.ajax({
+             url: '{{route('move_place')}}',
+             type: 'POST',
+             dataType: 'html',
+             processData: false,
+             contentType: false,
+             data: formData,
+         })
+             .done(function(data) {
+                 // console.log(data);
+                 // return;
+                 data = JSON.parse(data);
+                 if(data.status == 'error')
+                     toastr.error(data.message);
+                 else{
+                     toastr.success(data.message);
+                     cleanModalPlace();
+                 }
+             })
+             .fail(function() {
+                 toastr.error('Get List User Failed!');
+             });
+     });
+     function cleanModalPlace(){
+         $("#form-place")[0].reset();
+         $("#move-place-modal").modal('hide');
+         table.ajax.reload(null, false);
+     }
+     $(".cancel-move").click(function () {
+         cleanModalPlace();
+     });
+     $(document).on('click','.edit-customer',function(){
+
+      customer_id = $(this).attr('customer_id');
+
+      $.ajax({
+        url: '{{route('editCustomer')}}',
+        type: 'GET',
+        dataType: 'html',
+        data: {customer_id: customer_id},
+      })
+      .done(function(data) {
+        if(data == 0){
+          toastr.error('Getting Error! Check again!');
+        }else{
+          data = JSON.parse(data);
+            if(data.ct_salon_name==null)data.ct_salon_name="";
+            if(data.ct_contact_name==null)data.ct_contact_name="";
+
+            let cell_phone = "";
+            let business_phone = "";
+            @if(\Gate::allows('permission','customer-admin'))
+              if(data.ct_business_phone==null) business_phone="";
+              else business_phone = `
+                <input type="text" class="col-md-8 form-control form-control-sm" onkeypress="return isNumberKey(event)" name="ct_business_phone" id="ct_business_phone" value="`+data.ct_business_phone+`" placeholder="">
+                `;
+              if(data.ct_cell_phone==null) cell_phone="";
+              else cell_phone = `
+                <input type="text" onkeypress="return isNumberKey(event)" class="col-md-8 form-control form-control-sm" name="ct_cell_phone" id="ct_cell_phone" value="`+data.ct_cell_phone+`" placeholder="">
+                `;
+            @else
+              business_phone="";
+              cell_phone="";
+            @endif
+            if(data.ct_email==null)data.ct_email="";
+            if(data.ct_address==null)data.ct_address="";
+            if(data.ct_website==null)data.ct_website="";
+            if(data.ct_note==null)data.ct_note="";
+            if(data.ct_status==null)data.ct_status="";
+
+          $("#content-customer-detail").html(`
+            <div class="modal-header">
+              <h5 class="modal-title text-center" id="exampleModalLabel"><b>Edit Customer</b></h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body"">
+              <form id="edit-customer-form">
+                <div class="row">
+                  <div class="col-md-6">
+                    <div class="form-group row">
+                      <label class="col-md-4" for="ct_salon_name">Business Name<i class="text-danger">*</i></label>
+                      <input type="text" class="col-md-8 form-control form-control-sm" name="ct_salon_name" id="ct_salon_name" value="`+data.ct_salon_name+`" placeholder="">
+                      <input type="hidden" name="" id="customer_id" value="`+data.id+`" placeholder="">
+                    </div>
+                    <div class="form-group row">
+                      <label class="col-md-4" for="ct_contact_name">Contact Name<i class="text-danger">*</i></label>
+                      <input type="text" class="col-md-8 form-control form-control-sm" name="ct_contact_name" id="ct_contact_name" value="`+data.ct_fullname+`" placeholder="">
+                    </div>
+                    <div class="form-group row">
+                      <label class="col-md-4" for="ct_email">Email</label>
+                      <input type="email" class="col-md-8 form-control form-control-sm" name="ct_email" id="ct_email" value="`+data.ct_email+`" placeholder="">
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <div class="form-group row">
+                      <label class="col-md-4" for="ct_address">Address</label>
+                      <input type="text" class="col-md-8 form-control form-control-sm" name="ct_address" id="ct_address" value="`+data.ct_address+`" placeholder="">
+                    </div>
+                    <div class="form-group row">
+                      <label class="col-md-4" for="ct_website">Website</label>
+                      <input type="text" class="col-md-8 form-control form-control-sm" name="ct_website" id="ct_website" value="`+data.ct_website+`" placeholder="">
+                    </div>
+                    <div class="form-group row">
+                      <label class="col-md-4" for="ct_note">Note</label>
+                      <textarea class="col-md-8 form-control form-control-sm" name="ct_note" id="ct_note" rows="3" >`+data.ct_note+`</textarea>
+                    </div>
+                    <div class="form-group float-right">
+                      <button type="button" class="btn btn-danger btn-sm" data-dismiss="modal">Cancel</button>
+                      <button type="button" class="btn btn-primary btn-sm submit-edit" >Submit</button>
+                    </div>
+                  </div>
+                </div>
+              </form>
+            </div>
+            `);
+          $("#viewModal").modal('show');
+        }
+      })
+      .fail(function() {
+        console.log("error");
+      });
+    });
+$(document).on("click",".submit-edit",function(){
+    var ct_salon_name = $("#ct_salon_name").val();
+    var ct_contact_name = $("#ct_contact_name").val();
+    var ct_business_phone = $("#ct_business_phone").val();
+    var ct_cell_phone = $("#ct_cell_phone").val();
+    var ct_email = $("#ct_email").val();
+    var ct_address = $("#ct_address").val();
+    var ct_website = $("#ct_website").val();
+    var ct_note = $("#ct_note").val();
+
+    $.ajax({
+      url: '{{route('save-customer')}}',
+      type: 'GET',
+      dataType: 'html',
+      data: {
+        ct_salon_name: ct_salon_name,
+        ct_contact_name: ct_contact_name,
+        ct_business_phone: ct_business_phone,
+        ct_cell_phone: ct_cell_phone,
+        ct_email: ct_email,
+        ct_address: ct_address,
+        ct_website: ct_website,
+        ct_note: ct_note,
+        customer_id: customer_id
+      },
     })
+    .done(function(data) {
+      // console.log(data);return;
+      if(data == 0){
+        toastr.error('Update Error! Check again!');
+      }else{
+        toastr.success('Update Success!');
+        $("#viewModal").modal('hide');
+        table.ajax.reload(null, false);
+        $(".modal-content").html("");
+      }
+    })
+    .fail(function() {
+      console.log("error");
+    });
+  });
 });
 </script>
 @endpush

@@ -1,63 +1,69 @@
 @extends('layouts.app')
-@section('title')
-    Service Permission
+@section('content-title')
+    SERVICE PERMISSIONS
 @stop
 @section('content')
-    <div class="container-fluid">
-
-        <div class="card shadow mb-4">
-            <div class="card-header py-3">
-                <h5><b>Permission for <i class="text-danger"></i> role</b></h5>
-            </div>
-            <table class="table table-hover table-bordered" id="service-permission">
-                <thead class="text-center thead-light">
+<div style="height:300px">
+    <table class="table table-sm table-hover table-bordered" id="service-permission">
+        <thead>
+            <tr  class="sticky-top bg-primary text-white" style="z-index: 1000">
                 <th>Services/Permissions</th>
-                @foreach($role_list as $role)
-                    <th>{{$role->gu_name}}</th>
+                @foreach($team_list as $team)
+                    <th class="text-center">{{$team->team_type_name}}</th>
                  @endforeach
-                </thead>
-                <tbody>
-                    @foreach($service_list as $service)
-                    <tr>
-                        <td>#{{$service->id}}-{{$service->cs_name}}</td>
-                        @foreach($role_list as $role)
-                            @php
-                                $service_permission_list = $role->service_permission;
-                                if($service_permission_list == "")
-                                    $checked = "";
-                                else{
-                                    $service_permission_arr = explode(';',$service_permission_list);
-                                    if(in_array($service->id,$service_permission_arr))
-                                        $checked = "checked";
-                                    else
-                                       $checked = "";
-                                }
-                            @endphp
-                            <td class="text-center">
-                                <input type="checkbox"
-                                       service_id="{{$service->id}}" role_id="{{$role->gu_id}}"
-                                       {{$checked}}
-                                class="js-switch"
-                            /></td>
-                        @endforeach
-                    </tr>
-                     @endforeach
-                </tbody>
-            </table>
-        </div>
-    </div>
+            </tr>
+        </thead>
+        <tbody>
+        @foreach($service_type_list as $service_type)
+            <tr>
+                <td colspan="{{$team_list->count()+1}}"><b>{{$service_type->name}}</b></td>
+            </tr>
+            {{-- @foreach($service_type->getComboService as $service) --}}
+            @foreach($combo_service_list->where('cs_combo_service_type',$service_type->id) as $service)
+            <tr>
+                <td>#{{$service->id}}-{{$service->cs_name}}</td>
+                @foreach($team_list as $team)
+                    @php
+                        $service_permission_list = $team->service_permission;
+                        if($service_permission_list == "")
+                            $checked = "";
+                        else{
+                            $service_permission_arr = explode(';',$service_permission_list);
+                            if(in_array($service->id,$service_permission_arr))
+                                $checked = "checked";
+                            else
+                               $checked = "";
+                        }
+                    @endphp
+                    <td class="text-center">
+                        {{-- <input type="checkbox"
+                               service_id="{{$service->id}}" team_id="{{$team->id}}"
+                               {{$checked}}
+                        class="js-switch"/> --}}
 
-    </div>
+                        <div class="custom-control custom-switch">
+                          <input type="checkbox" class="custom-control-input" service_id="{{$service->id}}" team_id="{{$team->id}}"
+                               {{$checked}} class="js-switch" id="switch_{{$service->id}}_{{$team->id}}">
+                          <label class="custom-control-label" for="switch_{{$service->id}}_{{$team->id}}"></label>
+                        </div>
+                </td>
+                @endforeach
+            </tr>
+             @endforeach
+        @endforeach
+        </tbody>
+    </table>
+</div>
 
 @stop
 @push('scripts')
     <script>
 
         $(document).ready(function() {
-            $(document).on('click','.switchery',function(){
+            $(document).on('click','.custom-control-input',function(){
 
-                var service_id = $(this).siblings('input').attr('service_id');
-                var role_id = $(this).siblings('input').attr('role_id');
+                var service_id = $(this).attr('service_id');
+                var team_id = $(this).attr('team_id');
 
                 $.ajax({
                     url: '{{route('change-service-permission')}}',
@@ -65,7 +71,7 @@
                     dataType: 'html',
                     data: {
                         service_id: service_id,
-                        role_id: role_id,
+                        team_id: team_id,
                     },
                 })
                     .done(function(data) {

@@ -19,10 +19,11 @@ mix.copy('resources/file', 'public/file');
 
 mix.js('resources/js/app.js', 'public/js').extract([
     'lodash', 'popper.js', 'jquery', 'bootstrap',
-    'summernote','bootstrap-datepicker', 'bootstrap-timepicker',
-    'datatables.net-bs4','datatables.net-buttons-bs4','datatables.net-fixedcolumns-bs4',
-    'datatables.net-fixedheader-bs4','datatables.net-keytable-bs4','datatables.net-responsive-bs4',
-    'datatables.net-rowgroup-bs4','datatables.net-select-bs4',
+    'dropzone', 'icheck', 'select2', 'eonasdan-bootstrap-datetimepicker',
+    'summernote', 'bootstrap-datepicker',
+    'datatables.net-bs4', 'datatables.net-buttons-bs4', 'datatables.net-fixedcolumns-bs4',
+    'datatables.net-fixedheader-bs4', 'datatables.net-keytable-bs4', 'datatables.net-responsive-bs4',
+    'datatables.net-rowgroup-bs4', 'datatables.net-select-bs4',
     'datatables.net-buttons/js/buttons.colVis',
     'datatables.net-buttons/js/buttons.html5',
     'datatables.net-buttons/js/buttons.print',

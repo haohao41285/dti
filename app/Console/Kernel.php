@@ -13,9 +13,13 @@ class Kernel extends ConsoleKernel
      * @var array
      */
     protected $commands = [
-//        Commands\SendNotificationCron::class,
+       Commands\SendNotificationCron::class,
         Commands\ServiceNotificationCron::class,
         Commands\TaskNotificationCron::class,
+        Commands\SendEventCskhCron::class,
+        Commands\ReviewNotificationCron::class,
+        Commands\SendSmsCron::class,
+        Commands\SaveNumberCallOfDay::class,
     ];
 
     /**
@@ -27,13 +31,26 @@ class Kernel extends ConsoleKernel
     protected function schedule(Schedule $schedule)
     {
         // $schedule->command('inspire')
-        //          ->hourly();
-//        $schedule->command('cron:sendnotification')
-//            ->dailyAt('18:00')->withoutOverlapping();
+                 // ->hourly();
+        //SEND NOTIFICATION FOR CUSTOMER
+       $schedule->command('cron:sendnotification')
+           ->dailyAt('18:00')->withoutOverlapping();
 //        $schedule->command('command:servicenotification')
 //            ->dailyAt('07:00')->withoutOverlapping();
         $schedule->command('command:taskNotification')
             ->dailyAt('07:30')->withoutOverlapping();
+            //SEND NOTIFICATION FOR CSKH TEAM
+        $schedule->command('command:SendEventCskhCron')
+        ->dailyAt('07:00')->withoutOverlapping();
+            //SEND REVIEW NOTIFICATION FOR EVERY MONTH
+        $schedule->command('command:reviewNotification')
+        ->dailyAt('08:00')->withoutOverlapping();
+            //AUTO GET SELLER'S NUMBER CALL LOG
+        $schedule->command('SaveNumberCallOfDay')
+        ->dailyAt('12:00')->withoutOverlapping();
+
+        $schedule->command('command:sendSmsCron')
+                 ->everyMinute()->withoutOverlapping();
     }
 
     /**

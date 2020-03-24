@@ -1,12 +1,12 @@
 /node_modules
 /public/hot
-/public/storage
-/public/js
+/public/storage/exports
+/public/storage/vendor
+/public/storage/tests
+/public/storage/logs
+/public/storage/framework
 /public/images
 /public/upload
-/public/css
-/public/fonts
-/public/fontawesome-free
 /storage/*.key
 /vendor
 /nbproject

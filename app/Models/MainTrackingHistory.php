@@ -26,9 +26,9 @@ class MainTrackingHistory extends Model
     	return $this->hasMany(MainFile::class,'tracking_id','id');
     }
     public function getUserCreated(){
-        return $this->belongsTo(MainUser::class,'created_by','user_id');
+        return $this->belongsTo(MainUser::class,'created_by','user_id')->withDefault();
     }
     public function getReceiver(){
-        return $this->belongsTo(MainUser::class,'created_by','receiver_id');
+        return $this->belongsTo(MainUser::class,'receiver_id','user_id')->withDefault();
     }
 }

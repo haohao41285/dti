@@ -8,7 +8,7 @@ if(!function_exists('getCategory')){
 		];
 	}
 }
-if(!function_exists('getPriorityTask')){
+if(!function_exists('getPriorityTPAask')){
 	function getPriorityTask(){
 	    return [
 	        1 => 'LOW',
@@ -25,7 +25,8 @@ if(!function_exists('getStatusTask')){
 	    return [
 	        1 => 'NEW',
 	        2 =>'PROCESSING',
-	        3 => 'DONE'
+	        3 => 'DONE',
+            4 => 'CANCEL'
 	    ];
 	}
 }
@@ -36,7 +37,8 @@ if(!function_exists('getFormService')){
             1 => 'Google',
             2 => 'Website',
             3 => 'Facebook',
-            4 => 'Domain'
+            4 => 'Domain',
+            5 => 'Default'
         ];
     }
 }
@@ -70,9 +72,57 @@ function checkPermission($role,$permission){
     return $check;
 }
 function doNotPermission(){
-    return back()->with('error','You do Not have this Permission!');
+    return back()->with('error','Permission Denies!');
 }
 function doNotPermissionAjax(){
-    return response(['status'=>'error','message'=>'You do Not have this Permission!']);
+    return response(['status'=>'error','message'=>'Permission Denies!']);
+}
+function getReviewStatus(){
+    return [
+        0 => 'FAILED',
+        1 => 'SUCCESSFULLY'
+    ];
+}
+// if(!function_exists('getTimeType'))
+function getTimeType(){
+    return [
+        1 => 'Month',
+        2 => 'Day'
+    ];
+}
+function getOrderStatus(){
+    return [
+        0 => 'NOTPAYMENT',
+        1 => 'PAID',
+        2 => 'PROCESSING',
+        3 => 'DONE',
+        4 => 'DELIVERED',
+        5 => 'FIXING',
+        6 => 'CANCEL'
+    ];
+}
+function ratingCustomer(){
+    return [
+        1 => 'Rất hài lòng',
+        2 => 'Hài lòng',
+        3 => 'Bình thường',
+        4 => 'Không hài lòng',
+        5 => 'Rất không hài lòng'
+    ];
+}
+function yesNo(){
+    return [
+        1 => 'Có',
+        2 => 'Không'
+    ];
+}
+function orderType(){
+    return [
+        1 => 'Website',
+        2 => 'Design',
+    ];
+}
+function dayOfWeek(){
+    return [ 'Monday','Tuesday','Wednesday','Thursday', 'Friday','Saturday','Sunday' ];
 }
 ?>

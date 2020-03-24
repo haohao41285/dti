@@ -2,11 +2,16 @@
 
 namespace App\Models;
 
+use App\Models\MainUser;
 use Illuminate\Database\Eloquent\Model;
 use Laracasts\Presenter\PresentableTrait;
 use DB;
+
 use DataTables;
 use App\Traits\StatisticsTrait;
+
+use Gate;
+
 
 class MainCustomer extends Model
 {
@@ -33,7 +38,10 @@ class MainCustomer extends Model
         'customer_status',
         'customer_customer_template_id',
         'created_at',
+        'customer_birthday'
     ];
+
+    public $timestamps = false;
 
     protected $guarded = [];
 
@@ -43,19 +51,31 @@ class MainCustomer extends Model
     public function getOrder(){
         return $this->hasMany(MainComboServiceBought::class,'csb_customer_id','customer_id');
     }
+    public function getCustomerTemplate(){
+        return $this->belongsTo(MainCustomerTemplate::class,'customer_customer_template_id','id');
+    }
 
     public static function getTotalNewCustomersEveryMonthByYear($year){
         $startDate = $year."-01-01";
         $endDate = $year."-12-31";
 
-        return self::select(
+        $new_customer_list = self::select(
                     DB::raw('DATE_FORMAT(created_at, "%m") as month'),
                     DB::raw('COUNT("month") as count' )
                         )
                     ->where('customer_status',1)
                     ->whereBetween('created_at',[$startDate,$endDate])
-                    ->groupBy('month')
-                    ->get();
+                    ->groupBy('month');
+        if(Gate::allows('permission','dashboard-admin')){
+        }
+        elseif(Gate::allows('permission','dashboard-leader'))
+            $new_customer_list = $new_customer_list->whereIn('customer_id',MainUser::getCustomerOfTeam());
+        else
+            $new_customer_list = $new_customer_list->whereIn('customer_id', MainUser::getCustomerOfUser());
+
+        $new_customer_list = $new_customer_list->get();
+
+        return $new_customer_list;
     }
     public function getFullname(){
         return  $this->customer_firstname. " ".$this->customer_lastname;
@@ -66,22 +86,22 @@ class MainCustomer extends Model
             $date = format_date_db(get_nowDate());
         }
 
-        $customers = null;  
+        $customers = null;
         // choose by type, from StatisticsTrait
         switch ($type) {
             case 'Daily':
                 $customers = self::getByDate($date);
                 break;
             case 'Monthly':
-                $customers = self::getByMonth($date); 
+                $customers = self::getByMonth($date);
                 break;
             case 'Quarterly':
-                $customers = self::getByQuarterly($date,$valueQuarter); 
+                $customers = self::getByQuarterly($date,$valueQuarter);
                 break;
             case 'Yearly':
-                $customers = self::getByYear($date); 
-                break;            
-        } 
+                $customers = self::getByYear($date);
+                break;
+        }
         //echo $customers; die();
 
         return Datatables::of($customers)
@@ -90,7 +110,7 @@ class MainCustomer extends Model
         })
         ->editColumn('created_at',function($customers){
             return format_datetime($customers->created_at);
-        })        
+        })
         ->make(true);
     }
 
@@ -107,5 +127,6 @@ class MainCustomer extends Model
                     ->whereBetween('created_at',[$startDate,$endDate])
                     ->get();
     }
+
 
 }

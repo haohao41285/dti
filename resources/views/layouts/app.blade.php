@@ -18,6 +18,8 @@
 @endif
 {{--end check--}}
 <div id="wrapper">
+    <div class="loader"></div>
+    <span id="page-top"></span>
     @include('layouts.partials.sidebar')
     <!-- Content Wrapper. Contains page content -->
         <div id="content-wrapper" class="d-flex flex-column">
@@ -25,9 +27,10 @@
         <div id="content">
             @include('layouts.partials.header')
             <!-- Begin Page Content -->
-            <div class="">
+            <div class="px-3">
               <!-- Page Heading -->
-              <h1 class="h3 mb-4 text-gray-800 col-12">@yield('content-title')</h1>
+              {{-- <h1 class="h3 mb-4 text-gray-800 col-12">@yield('content-title')</h1> --}}
+              <h4 class="border border-info border-top-0 mb-3 border-right-0 border-left-0 text-info">@yield('content-title')</h4>
               @yield('content')
             </div>
             <!-- /.container-fluid -->
@@ -49,7 +52,7 @@
     var OneSignal = window.OneSignal || [];
     OneSignal.push(function() {
         OneSignal.init({
-            appId: "d11fe280-bd65-4897-90b8-22835655a341", /*Đây là app ID của các bạn họ */
+            appId: '{{ENV('ONESIGNAL_APP_ID')}}', /*Đây là app ID của các bạn họ */
             autoRegister: true,
             requiresUserPrivacyConsent: false,
             // notifyButton: {
@@ -153,8 +156,8 @@
                     data: {customer_phone: customer_phone},
                 })
                     .done(function(data) {
-
                         data = JSON.parse(data);
+                        // console.log(data);return;
 
                         if(data.status == 'error'){
 

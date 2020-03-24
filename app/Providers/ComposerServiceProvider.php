@@ -40,15 +40,17 @@ class ComposerServiceProvider extends ServiceProvider
                 ->whereMonth('date',$month)
                 ->get();
 
-            foreach ($event_holidays as $event){
+            if($event_holidays->count() > 0){
+                foreach ($event_holidays as $event){
 
-                $event_info = [
-                    'name' => $event->name,
-                    'image' => $event->image
-                ];
+                    $event_info = [
+                        'name' => $event->name,
+                        'image' => $event->image
+                    ];
+                }
+                $data['event_info'] = $event_info;
+                //END GET EVENT HOLIDAY
             }
-            $data['event_info'] = $event_info;
-            //END GET EVENT HOLIDAY
 
             //GET BIRTHDAY STAFF
             $user_info = [];
@@ -61,23 +63,26 @@ class ComposerServiceProvider extends ServiceProvider
                 ->whereMonth('user_birthdate',$month)
                 ->get();
 
-            foreach ($user_list as $user){
+            if($user_list->count() >0 ){
+                foreach ($user_list as $user){
 
-                $user_info[] = [
-                    'id' => $user->user_id,
-                    'nickname' => $user->user_nickname,
-                    'fullname' => $user->getFullname()
-                ];
+                    $user_info[] = [
+                        'id' => $user->user_id,
+                        'nickname' => $user->user_nickname,
+                        'fullname' => $user->getFullname()
+                    ];
+                }
+                $data['image_birthday'] = $image_arr[rand(0,5)];
+                $data['user_info'] = $user_info;
             }
-            $data['image_birthday'] = $image_arr[rand(0,5)];
-            $data['user_info'] = $user_info;
 
             //GET NOTIFICATION
             if(isset(Auth::user()->user_id)){
                 $notification_count = MainNotification::where('receiver_id',Auth::user()->user_id)->notRead()->latest()->count();
                 $data['notification_count'] = $notification_count;
             }
-            $view->with('data',$data);
+            if(isset($data))
+                $view->with('data',$data);
         });
     }
 }

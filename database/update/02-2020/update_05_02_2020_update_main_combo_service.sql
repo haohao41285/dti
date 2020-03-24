@@ -1,0 +1,2 @@
+ALTER TABLE `main_combo_service` ADD `cs_work_term` INT(5) NULL COMMENT 'thời hạn hoàn thành task' AFTER `cs_expiry_period`; 
+ALTER TABLE `main_combo_service` ADD `cs_type_time_term` TINYINT(1) NULL COMMENT '1-month 2-day' AFTER `cs_work_term`; 

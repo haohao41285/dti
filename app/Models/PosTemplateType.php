@@ -18,6 +18,7 @@ class PosTemplateType extends Model
         'template_type_name',
         'template_type_status',
         'template_type_table_type',
+        'template_type_form'
     ];
 
     protected $guarded = [];
@@ -32,18 +33,31 @@ class PosTemplateType extends Model
     				->get();
     }
     /**
-     * get by template_type_table_type = 1
+     * get by type
      * @return mixed
      */
-    public static function getCouponDataTable(){
-    	$coupon = self::getByType(1);
+    public static function getDataTableByType($type){
+    	$coupon = self::getByType($type);
 
     	return DataTables::of($coupon)
         ->addColumn('action', function ($coupon){
                     return '<a class="btn btn-sm btn-secondary edit-coupon-type" data="'.$coupon->template_type_id.'" href="#" data-toggle="tooltip" title="Edit"><i   class="fas fa-edit"></i></a>
                     <a class="btn btn-sm btn-secondary delete-coupon-type" data="'.$coupon->template_type_id.'" href="#" data-toggle="tooltip" ><i  title="Delete" class="fas fa-trash"></i></a>';
             })
-        ->rawColumns(['theme_image','theme_status','action'])
+        ->editColumn('template_type_form',function($coupon){
+            if($coupon->template_type_form == 1)
+            {
+                $val = 'Happy Birthday' ;
+            }else if($coupon->template_type_form == 2)
+            {
+                $val = 'Remider' ;
+            }else{
+                $val = 'Holiday';
+            }
+            //$val = $coupon->template_type_form == 1 ? 'Happy Birthday' : ? == 2 ? 'Remider' : 'Holiday';
+            return "<span data='$coupon->template_type_form'>$val</span>";
+        })
+        ->rawColumns(['template_type_form','theme_image','theme_status','action'])
         ->make(true);
     }
 
@@ -51,5 +65,17 @@ class PosTemplateType extends Model
     	return self::where('template_type_id',$id)
     				->where('template_type_status',1)
     				->first();
+    }
+
+    public static function getAll(){
+        return self::where('template_type_status',1)
+                    ->get();
+    }
+
+    public static function deleteById($id){
+        $counpon = self::getById($id);
+        $counpon->template_type_status = 0;
+        $counpon->save();
+        return $counpon;
     }
 }

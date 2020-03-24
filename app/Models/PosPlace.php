@@ -58,7 +58,11 @@ class PosPlace extends BaseModel
         'place_timezone',
         'place_auto_print',
         'place_orderservice_price',
-        'place_theme_code'
+        'place_theme_code',
+        'place_demo',
+        'place_latlng',
+        'hide_service_price',
+        'booking_v2'
     ];
 
     protected $guarded = [];
@@ -69,5 +73,23 @@ class PosPlace extends BaseModel
                     ->where('place_status',1)
                     ->first();
     }
-        
+
+    public function getLicenseByPlaceId($placeId){
+        return self::select('place_id','place_ip_license','place_code')
+                    ->where('place_id',$placeId)
+                    ->where('place_status',1)
+                    ->first();
+    }
+
+    public function updateByPlaceIdAndArr($placeId, $arr){
+        return $this->where('place_id',$placeId)
+                    ->update($arr);
+    }
+    public function scopeActive($query){
+        return $query->where('place_status',1);
+    }
+    public function customer(){
+        return $this->belongsTo(MainCustomer::class,'place_customer_id','customer_id');
+    }
+
 }

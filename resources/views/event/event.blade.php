@@ -1,12 +1,12 @@
 @extends('layouts.app')
-@section('title')
-    Event List
+@section('content-title')
+    SETUP EVENT HOLIDAY
 @stop
 @section('content')
     <div class="col-12 row">
         <div class="col-md-6">
-            <h4 class="border border-info border-top-0 mb-3 border-right-0 border-left-0 text-info">EVENT LIST</h4>
-            <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+            <h4 class="border border-info border-top-0 mb-3 border-right-0 border-left-0 text-info">Event List</h4>
+            <table class="table table-sm table-hover table-bordered" id="dataTable" width="100%" cellspacing="0">
                 <thead>
                 <tr>
                     <th class="text-center">ID</th>
@@ -22,7 +22,7 @@
         </div>
         <div class="col-md-5 offset-md-1" style="padding-top: 0px">
          <form action="">
-            <h4 class="border border-info border-top-0 mb-3 border-right-0 border-left-0 text-info event-tip">ADD EVENT</h4>
+            <h4 class="border border-info border-top-0 mb-3 border-right-0 border-left-0 text-info event-tip">Add Event</h4>
             <div class="form-group">
                 <label for="">Name</label>
                 <input type="text" class="form-control form-control-sm" name="name" id="name">

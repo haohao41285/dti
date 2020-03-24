@@ -34,6 +34,7 @@ class SendNotification implements ShouldQueue
      */
     public function handle()
     {
+        // $message = file_get_contents('email_theme'); 
         $mail = new PHPMailer(true);
 
         $mail->SMTPOptions = array(
@@ -48,15 +49,21 @@ class SendNotification implements ShouldQueue
         $mail->isSMTP();                                      // Set mailer to use SMTP
         $mail->Host = env('MAIL_HOST');  // Specify main and backup SMTP servers
         $mail->SMTPAuth = true;                               // Enable SMTP authentication
-        $mail->Username = env('MAIL_USERNAME');                 // SMTP username
-        $mail->Password = env('MAIL_PASSWORD');                           // SMTP password
+        if(isset($this->input['mail_username_invoice']))
+            $mail->Username = $this->input['mail_username_invoice'];
+        else
+            $mail->Username = env('MAIL_USERNAME');                 // SMTP username
+        if(isset($this->input['mail_password_invoice']))
+            $mail->Password = $this->input['mail_password_invoice'];
+        else
+            $mail->Password = env('MAIL_PASSWORD');                           // SMTP password
         $mail->SMTPSecure = env('MAIL_ENCRYPTION');                            // Enable TLS encryption, `ssl` also accepted
         $mail->Port = env('MAIL_PORT');                                    // TCP port to connect to
 
         //Recipients
         $mail->setFrom(env('MAIL_USERNAME'), 'DataeGlobal Web Master');
          $mail->addAddress($this->input['email'], $this->input['name']);     // nguyenthieupro93@gmail.com
-        if(isset($this->input['email_arr'])){
+        if(isset($this->input['email_arr']) && !empty($this->input['email_arr'])) {
             foreach($this->input['email_arr'] as $email){
                 $mail->addAddress($email);
             }
@@ -66,7 +73,12 @@ class SendNotification implements ShouldQueue
         // $mail->addBCC('bcc@example.com');
 
         //Attachments
-//        $mail->addAttachment('invoice9267054355559.pdf');        // Add attachments
+        if(!empty($this->input['file_term_service'])){
+            foreach ($this->input['file_term_service'] as $key => $file) {
+                $mail->addAttachment(public_path($file)); 
+            }
+        }
+       // $mail->addAttachment(public_path('file/review_google.pdf'));        // Add attachments
         // $mail->addAttachment('/tmp/image.jpg', 'new.jpg');    // Optional name
 
         //Content

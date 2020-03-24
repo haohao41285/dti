@@ -1,6 +1,6 @@
 @extends('layouts.app')
 @section('content-title')
-    Notifications List
+    NOTIFICATIONS
 @endsection
 @push('styles')
     <style>

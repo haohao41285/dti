@@ -11,7 +11,7 @@ class ImagesHelper
 		if($checkImage){
             $img = $requestImage;
             $img_name = time()."-".$img->getClientOriginalName();
-            
+
             $img->move(env('PATH_UPLOAD_IMAGE'),$img_name);
             return $img_name;
         }
@@ -19,22 +19,23 @@ class ImagesHelper
 
     public static function uploadImage2($file, $current_month,$path_save) {
 
-        // $pathFile = config('app.url_file_write');
-        $name = $file->getClientOriginalName();
-        $name = str_replace(" ", "-", $name);
+        $file_name = $file->getClientOriginalName();
+        $original_name = pathinfo($file_name, PATHINFO_FILENAME);
+        $extension = pathinfo($file_name, PATHINFO_EXTENSION);
+
+        $name = str_slug($original_name).".".$extension;
         $pathImage = $path_save.$current_month.'/';
-        $filename = strtotime('now') . strtolower($name);
-        // //dd(config('app.url_file_write'));
-        // if (!file_exists($pathImage)) {
-        //     mkdir($pathImage, 0777, true);
-        // }
+
+        if($current_month != "term_service"){
+          $filename = strtotime('now') . strtolower($name);
+        }else{
+          $filename = strtolower($name);
+        }
+        
+         if (!file_exists($pathImage)) {
+             mkdir($pathImage, 0777, true);
+         }
         $file->move($path_save.$current_month, $filename);
-        // $tmpUpload = "tmp-upload/".$filename;
-
-        // self::sendRequestToApi($tmpUpload,$filename,$pathImage);
-        // unlink("tmp-upload/".$filename);
-
-        // die();
         return $pathImage. $filename;
     }
 
@@ -47,13 +48,13 @@ class ImagesHelper
     private static function sendRequestToApi($tmpUpload,$name,$path){
       try {
         $client = new Client;
-        $response = $client->request('POST', env('URL_FILE_WRITE'), 
-          [                
+        $response = $client->request('POST', env('URL_FILE_WRITE'),
+          [
                 'multipart' => [
                       [
                           'name'     => 'name',
                           'contents' => $name,
-                      ],                    
+                      ],
                       [
                           'name'     => 'fileUpload',
                           'contents' => fopen($tmpUpload, 'r'),
@@ -66,7 +67,7 @@ class ImagesHelper
                   'headers' => [
                       'Authorization' => 'Bearer '.env('UPLOAD_IMAGE_API_KEY'),
                   ],
-          ]); 
+          ]);
         $body = (string)$response->getBody();
         // echo ($body);
 
@@ -76,12 +77,12 @@ class ImagesHelper
       }
     }
 
-    public static function uploadImageToAPI($file, $folder_upload) { 
+    public static function uploadImageToAPI($file, $folder_upload) {
         $name = $file->getClientOriginalName();
         $name = str_replace(" ", "-", $name);
         $pathImage = '/images/' . $folder_upload . '/';
         $filename = strtotime('now') .'-'. strtolower($name);
-       
+
         $file->move("tmp-upload", $filename);
         $tmpUpload = "tmp-upload/".$filename;
 
@@ -93,19 +94,10 @@ class ImagesHelper
 
 
     /**
-<<<<<<< HEAD
-     * Auto upload image to SummerNote 
-     * @param  $content input
-     * @return $content output
-=======
-     * Auto upload image to SummerNote
-     * @param  $description is SummerNote content
-     * @return $description
->>>>>>> origin/thieu
      */
     public static function uploadImageSummerNote($content){
         $dom = new \DomDocument();
-        $dom->loadHtml('<?xml encoding="utf-8" ?>' .$content);   
+        $dom->loadHtml('<?xml encoding="utf-8" ?>' .$content);
         $images = $dom->getElementsByTagName('img');
 
         foreach($images as $k => $img){
@@ -127,7 +119,7 @@ class ImagesHelper
 
                     $img->removeAttribute('src');
                     $img->setAttribute('src', env('URL_FILE_VIEW').$pathImage.$filename);
-                    
+
                 } catch (\Exception $e) {
                   // \Log::info($e);
                   continue;
@@ -139,6 +131,60 @@ class ImagesHelper
         // \Log::info($content);
         return $content;
     }
+    public static function uploadImageWebbuilder($file , $folder_upload , $place_ip_license)
+    {
+          $name = $file->getClientOriginalName();
+          $name = str_replace(" ", "-", $name);
+          $filename = strtotime('now') .'-'. strtolower($name);
 
+          $pathImage = '/images/'.$place_ip_license.'/website/'.$folder_upload.'/';
+          $file->move("tmp-upload", $filename);
+          $tmpUpload = "tmp-upload/".$filename;
+
+          self::sendRequestToApi($tmpUpload,$filename,$pathImage);
+          // unlink("tmp-upload/".$filename);
+
+          return $pathImage.$filename;
+    }
+    public static function uploadImageDropZone($file , $folder_upload , $place_ip_license)
+    {     
+          return self::uploadImageDropZone_get_path($file , $folder_upload , $place_ip_license);
+          
+          // $place_ip_license = self::getLicense();
+
+          // $pathFile   = config('app.url_file_write');
+          // $name = preg_replace("/[^A-Za-z0-9\-]/",'_',$file->getClientOriginalName());
+          // $pathImage = '/images/'.$place_ip_license.'/website/'.$folder_upload.'/';
+          // // if (!file_exists($pathFile.$pathImage)) {
+          // //     mkdir($pathFile.$pathImage,0777, true);
+          // // }
+          // // $file->move($pathFile.$pathImage,$name);
+          // $file->move("tmp-upload", $name);
+          // $tmpUpload = "tmp-upload/".$name;
+
+          // self::sendRequestToApi($tmpUpload,$name,$pathImage);
+          // unlink("tmp-upload/".$name);
+          
+          // return $pathImage.$name;
+    }
+
+    public static function uploadImageDropZone_get_path($file , $folder_upload , $place_ip_license)
+    {     
+          $pathFile   = config('app.url_file_write');
+          $name = strtotime('now').'-'.preg_replace("/[^A-Za-z0-9\-]\./",'_',$file->getClientOriginalName());
+          $pathImage = '/images/'.$place_ip_license.'/website/'.$folder_upload.'/';
+
+          if (!file_exists($pathFile.$pathImage)) {
+              mkdir($pathFile.$pathImage,0775, true);
+          }
+        //   $file->move($pathFile.$pathImage,$name);
+          $file->move("tmp-upload", $name);
+          $tmpUpload = "tmp-upload/".$name;
+
+          self::sendRequestToApi($tmpUpload,$name,$pathImage);
+          // unlink("tmp-upload/".$name);
+          
+          return $pathImage.$name;
+    }
 }
 

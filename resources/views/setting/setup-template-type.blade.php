@@ -1,22 +1,27 @@
 @extends('layouts.app')
 @section('content-title')
-Template Type
+    SETUP TYPE TEAMPLATE
 @endsection
 @push('scripts')
 @endpush
 @section('content')
 <div class="row col-12">
     <div class="col-12 ">
+        <div class="form-group">
+            <button class="btn-sm btn-primary btn " id="btn-coupon">Coupon</button>
+            <button class="btn-sm btn-danger btn " id="btn-promotion">Promotion</button>
+        </div>
         <div class="card shadow mb-4 ">
             <div class="card-header py-2">
-                <h6 class="m-0 font-weight-bold text-primary">Type Coupon List</h6>
+                <h6 class="m-0 font-weight-bold text-primary table-title">Auto coupon list</h6>
             </div>
             <div class="card-body">
                 <div class="table-responsive dataTables_scrollBody dataTables_scroll">
-                    <table class="table table-bordered table-hover dataTable" id="coupon-type-datatable" width="100%" cellspacing="0">
+                    <table class="table table-sm table-bordered table-hover dataTable" id="coupon-type-datatable" width="100%" cellspacing="0">
                         <thead>
-                            <tr>
+                            <tr class="thead-light">
                                 <th>ID</th>
+                                <th>Form</th>
                                 <th>Name</th>
                                 <th>Action</th>
                             </tr>
@@ -40,6 +45,17 @@ Template Type
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group row col-12">
+                        <label class="col-2 ">Form</label>
+                        {{-- <input class="form-control-sm form-control col-10" type="text" name="name"> --}}
+                        <select class="form-control-sm form-control col-10" name="form">
+                            <option value="1">Happy Birthday</option>
+                            <option value="2">Remider</option>
+                            <option value="3">Holiday</option>
+                        </select>
+                    </div>
                 </div>
                 <div class="modal-body">
                     <div class="form-group row col-12">
@@ -101,12 +117,14 @@ function save(form_data, url) {
         method: "post",
         dataType: "json",
         data: form_data,
+        async: false,
         cache: false,
         contentType: false,
         processData: false,
         success: function(data) {
             if (data.status == 1) {
                 toastr.success("Saved successfully!");
+                return;
             } else {
                 toastr.error(data.msg);
             }
@@ -118,14 +136,20 @@ function save(form_data, url) {
 }
 
 $(document).ready(function() {
-
+    var type = null;
     var table = $('#coupon-type-datatable').DataTable({
         // dom: "lBfrtip",
         processing: true,
         serverSide: true,
-        ajax: { url: "{{ route('getDatatableSetupTypeTemplate') }}", },
+        ajax: {
+            url: "{{ route('getDatatableSetupTypeTemplate') }}",
+            data: function(data) {
+                data.type = type;
+            },
+        },
         columns: [
             { data: 'template_type_id', name: 'template_type_id', class: "id" },
+            { data: 'template_type_form', name: 'template_type_form', class: "form" },
             { data: 'template_type_name', name: 'template_type_name', class: "name" },
             { data: 'action', name: 'action', orderable: false, searcheble: false, class: "text-center" },
         ],
@@ -147,10 +171,13 @@ $(document).ready(function() {
     $(document).on('click', '.edit-coupon-type', function(e) {
         e.preventDefault();
         clear()
+        $("select[name='form']").find("option:selected").attr("selected", false);
         var id = $(this).attr("data");
         var name = $(this).parent().parent().find(".name").text();
-
+        var form = $(this).parent().parent().find(".form span").attr('data');
+        // alert(form);
         $("input[name='name']").val(name);
+        $("select[name='form']").find("option[value=" + form + "]").attr("selected", true);
 
         $("#coupon-type-modal").modal("show");
         $("#save-coupon-type").find('.modal-title').text("Edit Type");
@@ -173,14 +200,28 @@ $(document).ready(function() {
         var form = $(this)[0];
         var form_data = new FormData(form);
         var url = "{{ route('saveSetupTypeTemplate') }}";
+        form_data.append('type', type);
         save(form_data, url);
         $("#coupon-type-modal").modal("hide");
         table.ajax.reload(null, false);
     });
 
+    $("#btn-coupon").on('click', function(e) {
+        e.preventDefault();
+        type = 1;
+        $(".table-title").text("Auto coupon list");
+        table.draw();
+    });
+
+    $("#btn-promotion").on('click', function(e) {
+        e.preventDefault();
+        type = 2;
+        $(".table-title").text("Auto promotion list");
+        table.draw();
+    });
 
 
-
+    $("#btn-coupon").trigger("click");
 });
 
 </script>

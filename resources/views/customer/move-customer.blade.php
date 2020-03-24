@@ -1,6 +1,6 @@
 @extends('layouts.app')
 @section('content-title')
-    Move Customers
+    MOVE CUSTOMERS
 @endsection
 @section('styles')
 
@@ -9,7 +9,7 @@
     <div class="">
             <div class="form-group col-md-12">
                 <div class="form-inline">
-                    <label for="team_type_id"><b>Choose Team</b></label>
+                    <label for="team_type_id"><b>Choose Team Type</b></label>
                     <select name="team_type_id" id="team_type_id" class="form-control form-control-sm col-md-2">
                         @foreach($team_type_list as $team_type)
                             <option value="{{$team_type->id}}">{{$team_type->team_type_name}}</option>
@@ -29,7 +29,7 @@
 
                 </div>
                 <hr>
-                <table class="table table-striped table-hover" id="customer_user_1" width="100%" cellspacing="0">
+                <table class="table table-sm table-striped table-hover" id="customer_user_1" width="100%" cellspacing="0">
                     <thead>
                         <tr>
                             <th>ID</th>
@@ -47,7 +47,7 @@
                     </select>
                 </div>
                 <hr>
-                <table class="table table-striped table-hover" id="customer_user_2" width="100%" cellspacing="0">
+                <table class="table table-sm table-striped table-hover" id="customer_user_2" width="100%" cellspacing="0">
                     <thead>
                         <tr>
                             <th>ID</th>

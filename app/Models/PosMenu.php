@@ -34,7 +34,8 @@ class PosMenu extends BaseModel
         'updated_at',
         'created_by',
         'updated_by',
-        'menu_status'
+        'menu_status',
+        'enable_status'
     ];
 
     protected $guarded = [];

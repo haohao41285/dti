@@ -1,0 +1,1 @@
+ALTER TABLE `main_customer_rating` ADD `service` TINYINT(4) NOT NULL AFTER `note`, ADD `continue_buy` TINYINT(4) NOT NULL AFTER `service`, ADD `introduce` TINYINT(4) NOT NULL AFTER `continue_buy`; 
