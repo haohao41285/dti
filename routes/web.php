@@ -392,8 +392,10 @@ Route::group(['middleware' => ['auth']], function () {
             Route::get('/', 'SetupDiscount@index')->name('setting.discount.index');
             Route::get('datatable', 'SetupDiscount@datatable')->name('setting.discount.datatable');
             Route::post('save', 'SetupDiscount@save')->name('setting.discount.save');
-            Route::get('datatable-team', 'SetupSaleTeam@datatableTeam')->name('setting.sale_team.datatable_teams');
-            Route::post('save-team', 'SetupSaleTeam@saveTeam')->name('setting.sale_team.save_team');
+            Route::post('delete-discount', 'SetupDiscount@delete')->name('setting.discount.delete');
+            Route::get('discount-service', 'SetupDiscount@discountService')->name('setting.discount.discount_service');
+            Route::get('save-service', 'SetupDiscount@saveService')->name('setting.discount.save_service');
+            Route::post('remove-service', 'SetupDiscount@removeService')->name('setting.discount.remove_service');
         });
         Route::get('menu-app','SetupServiceController@menuApp')->name('get_menu_app');
     });

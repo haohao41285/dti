@@ -30,26 +30,80 @@
 @section('content')
 <div class="col-12 row">
     <div class="col-md-8">
-        <div class="card shadow mb-3 ">
-            <div class="card-header py-2">
-                <h6 class="m-0 font-weight-bold text-primary">Discount List</h6>
-            </div>
-            <div class="card-body">
-                <table class="table table-sm table-bordered table-hover" id="dataTable" width="100%" cellspacing="0">
-                    <thead>
-                        <tr class="thead-light">
-                            <th>ID</th>
-                            <th>Code</th>
-                            <th>Date Start</th>
-                            <th>Date End</th>
-                            <th>Amount</th>
-                            <th>Description</th>
-                            <th class="text-center" style="width:100px">Action</th>
-                        </tr>
-                    </thead>
-                </table>
+        <div class="col-md-12">
+            <div class="card shadow mb-3 ">
+                <div class="card-header py-2">
+                    <h6 class="m-0 font-weight-bold text-primary">Discount List</h6>
+                </div>
+                <div class="card-body">
+                    <table class="table table-sm table-bordered table-hover" id="dataTable" width="100%" cellspacing="0">
+                        <thead>
+                            <tr class="thead-light">
+                                <th>ID</th>
+                                <th>Code</th>
+                                <th>Date Start</th>
+                                <th>Date End</th>
+                                <th>Amount</th>
+                                <th hidden></th>
+                                <th hidden></th>
+                                <th>Description</th>
+                                <th class="text-center" style="width:100px">Action</th>
+                            </tr>
+                        </thead>
+                    </table>
+                </div>
             </div>
         </div>
+        <div class="col-md-12 row mr-0 pr-0">
+            <div class="col-md-6">
+                <div class="card shadow mb-3 ">
+                    <div class="card-header py-2">
+                        <h6 class="m-0 font-weight-bold text-primary">Service List</h6>
+                    </div>
+                    <div class="card-body" style="overflow: scroll;height: 500px">
+                        <table class="table table-sm table-bordered table-hover" id="service_list" width="100%" cellspacing="0">
+                            <thead>
+                                <tr class="thead-light">
+                                    <th hidden></th>
+                                    <th>Name</th>
+                                    <th>Price</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach($service_list as $service)
+                                    <tr>
+                                        <td hidden>{{ $service->id }}</td>
+                                        <td>{{ $service->cs_name }}</td>
+                                        <td class="text-right">{{ $service->cs_price }}</td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 mr-0 pr-0">
+                <div class="card shadow mb-3 ">
+                <div class="card-header py-2">
+                    <h6 class="m-0 font-weight-bold text-primary">Discount Service List</h6>
+                </div>
+                <div class="card-body">
+                    <table class="table table-sm table-bordered table-hover" id="discount_service_datatable" width="100%" cellspacing="0">
+                        <thead>
+                            <tr class="thead-light">
+                                <th hidden></th>
+                                <th>Name</th>
+                                <th>Price</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                    </table>
+                </div>
+                </div>
+            </div>
+        </div>
+            
+
     </div>
     <div class="col-md-4 ">
         <div class="card shadow mb-3 ">
@@ -60,7 +114,7 @@
                 <form id="form-add-edit-discount">
                     <div class="form-group">
                         <label for="code"><b>Code</b></label>
-                        <input type="text" class="form-control form-control-sm form-required text-uppercase" required name="code">
+                        <input type="text" class="form-control form-control-sm form-required text-uppercase" required id="code" name="code">
                     </div>
                     <div class="form-group">
                         <label for=""><b>Date Range</b></label>
@@ -84,11 +138,24 @@
                         <label for="description"><b>Description</b></label>
                         <textarea name="description" id="description" class="form-control forn-control-sm" rows="3"></textarea>
                     </div>
-                    <div class="form-group" style="height: 300px">
+                     <div class="form-group">
+                        <label for="description"><b>Customer</b></label>
+                        <select name="customer_list" id="customer_list" class="form-control form-control-sm">
+                            <option value="1">All</option>
+                            <option value="2">Customer use Service</option>
+                        </select>
+                    </div>
+                        <label for="description"><b>Attachment</b></label>
+                    <div class="input-group mb-3">
+                        <input type="text" class="form-control form-control-sm" value="documnet_1.pdf">
+                        <div class="input-group-append">
+                            <button class="btn btn-secondary btn-sm" type="button"><i class="fas fa-trash"></i></button>
+                        </div>
+                      </div>
+                    <div class="form-group" style="">
                         <button type="button" class="btn btn-sm btn-primary" id="upload-file">Upload Files</button><br>
 
                         <div class="form-group mt-3">
-                            <label><b>Attachment</b></label>
                             <input type="hidden" class="form-control form-control-sm" value="" name="document" id="file_name_hidden">
                             <input type="text" class="form-control form-control-sm" value="" disabled name="file_name" id="file_name">
                         </div>
@@ -144,6 +211,7 @@
 <script type="text/javascript">
 //DEFINE VAR
 var id = 0;
+var service_arr = [];
 var old_service = 0;
 
     var loadFile = function(event) {
@@ -236,6 +304,8 @@ $(document).ready(function($) {
             { data: 'date_start', name: 'date_start' },
             { data: 'date_end', name: 'date_end' },
             { data: 'type_amount', name: 'type_amount',class:'text-right'},
+            { data: 'type', name: 'type',class:'d-none'},
+            { data: 'amount', name: 'amount',class:'d-none'},
             { data: 'description', name: 'description', },
             { data: 'action', name: 'action', orderable: false, searchable: false, class: 'text-center' },
         ],
@@ -249,6 +319,27 @@ $(document).ready(function($) {
             });
         }
     })
+    discountServiceDataTable = $("#discount_service_datatable").DataTable({
+        processing: true, 
+        serverSide: true,
+        autoWidth: true,
+        searching: false,
+         paging: false,
+         info: false,
+        buttons: [],
+        ajax: { url: "{{route('setting.discount.discount_service')}}",
+            data: function (d) {
+                d.id = id;
+                d.service_arr = service_arr;
+            }
+        },
+        columns: [
+            { data: 'id', name:'id', class: 'd-none'},
+            { data: 'cs_name', name:'cs_name',},
+            { data: 'cs_price', name: 'cs_price', },
+            { data: 'action', name: 'action',class:'text-center'},
+        ],
+    })
     $("#upload-file").click(function(){
         getFiles();
         $('#modal-upload-file').modal('show');
@@ -256,12 +347,87 @@ $(document).ready(function($) {
     
     $('#dataTable tbody').on('click', 'tr', function() {
 
-        $("#service_id").val(dataTable.row(this).data()['service_id']);
-        $("#file_name").val(dataTable.row(this).data()['file_name']);
-        $("#file_name_hidden").val(dataTable.row(this).data()['file_name']);
-        $(".tt-tip").text("Edit Term Service");
+        $("#code").val(dataTable.row(this).data()['code']);
+        $("#date_start").val(dataTable.row(this).data()['date_start']);
+        $("#date_end").val(dataTable.row(this).data()['date_end']);
+        $("#description").val(dataTable.row(this).data()['description']);
+        $("#amount_percent").val(dataTable.row(this).data()['amount']);
+        let type = dataTable.row(this).data()['type'];
+        $("#type").val(type);
+        $(".tt-tip").text("Edit Discount");
         id = dataTable.row(this).data()['id'];
+        discountServiceDataTable.draw();
+        $(this).addClass(['bg-primary','text-white']);
+        $(this).siblings('tr').removeClass(['bg-primary','text-white']);
     });
+    $('#discount_service_datatable tbody').on('click', 'tr', function() {
+        let service_id = discountServiceDataTable.row(this).data()['id'];
+        
+    });
+    $("#service_list tbody").on('click','tr',function(){
+        let service_id = $(this).children('td:first').text();
+        if(id == 0){
+            service_arr.push(service_id);
+        }
+        else{
+            $.ajax({
+                url: '{{ route('setting.discount.save_service') }}',
+                type: 'GET',
+                dataType: 'html',
+                data: {
+                    service_id: service_id,
+                    id: id
+                },
+            })
+            .done(function(data) {
+                data = JSON.parse(data);
+                if(data.status == 'error')
+                    toastr.error(data.message);
+                else{}
+                console.log(data);
+            })
+            .fail(function() {
+                console.log("error");
+            })
+            .always(function() {
+                console.log("complete");
+            });
+            
+        }
+        discountServiceDataTable.draw();
+    });
+    $(document).on('click','.remove-service',function(){
+        let service_id = $(this).attr('id');
+        if(id == 0){
+            service_arr = $.grep(service_arr, function(value) {
+              return value != service_id;
+            });
+        }else{
+            $.ajax({
+                url: '{{ route('setting.discount.remove_service') }}',
+                type: 'POST',
+                dataType: 'html',
+                data: {
+                    id: id,
+                    service_id: service_id,
+                    _token: '{{ csrf_token() }}'
+                },
+            })
+            .done(function(data) {
+                data = JSON.parse(data);
+                if(data.status == 'error')
+                    toastr.error(data.message);
+                else{
+
+                }
+                console.log(data);
+            })
+            .fail(function() {
+                toastr.error('Failed!');
+            });
+        }
+        discountServiceDataTable.draw();
+    })
     $(document).on('click', '.submit-tt', function() {
 
         formRequired();
@@ -272,6 +438,7 @@ $(document).ready(function($) {
         var formData = new FormData($(this).parents('form')[0]);
         formData.append('_token','{{ csrf_token() }}');
         formData.append('id',id);
+        formData.append('service_arr',service_arr);
 
         $.ajax({
             url: '{{route('setting.discount.save')}}',
@@ -377,6 +544,8 @@ $(document).ready(function($) {
         $("#form-add-edit-discount")[0].reset();
         old_service = 0;
         id = 0;
+        service_arr = [];
+        discountServiceDataTable.draw();
         $(".tt-tip").text('Add Discount');
     }
     $(document).on('click','.custom-control-input',function(){
@@ -405,9 +574,9 @@ $(document).ready(function($) {
         $("#preview-image").attr('src',"{{ asset('/') }}"+file_name);
     });
     $(document).on('click','.btn-delete',function(){
-        if(confirm('Do you want to delete this Term Service?')){
+        if(confirm('Do you want to delete this Discount?')){
              $.ajax({
-                url: '{{ route('setup_term_service.delete') }}',
+                url: '{{ route('setting.discount.delete') }}',
                 type: 'POST',
                 dataType: 'html',
                 data: {

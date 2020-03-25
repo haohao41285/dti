@@ -16,5 +16,8 @@ class MainDiscount extends Model
         'type',  // 0: percent ,1 : amount
         'document', // implode path of document
         'status', // 0: disable, 1: enable
+        'customer_list', // 1 for all
+        'service_list',
+        'send', // 1 for send
     ];
 }
